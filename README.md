@@ -1,200 +1,88 @@
-# Kernora OS — development bootstrap
+# Kernora OS
 
-Это репозиторий разработки самостоятельного дистрибутива на базе Debian, а не
-набор команд для перекраски готового ISO.
+Kernora OS is a desktop Linux distribution based on Debian 13 (trixie). It
+runs KDE Plasma 6 with its own shell, apps and themes, designed after
+Material 3.
 
-Модель проекта:
+This repository has everything needed to build the live ISO: Kernora's own
+packages, the changes made to a few Debian packages, the image configuration,
+and the build scripts and tests.
 
-1. Debian 13 `trixie` используется как зафиксированный upstream.
-2. Исходные пакеты загружаются из подписанного снимка Debian и фиксируются по
-   SHA-256.
-3. Изменённые и собственные пакеты собираются как обычные Debian source/binary
-   packages.
-4. Они публикуются в отдельном подписанном APT-архиве дистрибутива.
-5. Rootfs и установочный образ строятся уже из нашего архива плюс неизменённой
-   части зафиксированного upstream.
+The project is in early development. Test builds are published under
+Releases. Packages are signed with a development key for now; there is no
+release key yet.
 
-Первый производный пакет уже хранится в
-`packages/derived/base-files`. Это полный исходный пакет Debian `base-files`,
-импортированный и изменённый как форк с сохранением информации об upstream, а
-не распаковка или повторная упаковка готового ISO. Сейчас форк задаёт системную
-идентичность Kernora OS. Нативный пакет `packages/native/kernora-base` версии
-`1.0` закрепляет эту идентичность как основу каждой установки. Оба пакета
-собираются как обычные Debian source и binary packages.
+## What's in the image
 
-## Текущий этап
+- Debian 13.6 from a fixed snapshot (2026-09-01), Linux 6.12, KDE Plasma 6.3.
+- A Kernora shell on top of Plasma: panel, app launcher, quick settings,
+  notifications, lock screen, Alt+Tab and power menu. All colours come from
+  one seed colour, `#ff6a1e`. Settings can switch the look between Material
+  Design 1, 2 and 3.
+- Kernora apps in place of KDE's: Settings, Files, Text Editor, Photos, Media
+  Player, Calculator, Screenshot, Terminal (Alacritty) and Welcome, plus a
+  file chooser that every program uses.
+- Live wallpapers: Kernora Shapes, Tower, Rhythm and Marble Run.
+- LibreWolf as the browser. It isn't in Debian, so the build installs one
+  pinned version from the LibreWolf repository, and the installed system
+  gets updates from there.
+- Calamares as the installer, restyled to match.
+- English and Russian. The live session language is chosen in the boot menu.
 
-- upstream: Debian 13.6 `trixie`;
-- снимок: `2026-09-01T00:00:00Z`;
-- идентификатор снимка в конфигурации: `20260901T000000Z`;
-- первая архитектура: `amd64`;
-- дистрибутив: Kernora OS 1 `ember`;
-- форк `base-files`: `13.8+deb13u6+kernora1`;
-- нативный метапакет `kernora-base`: `1.0`;
-- подписанный локальный development APT-архив: `out/archive/`;
-- воспроизводимый минимальный rootfs: `out/rootfs/`;
-- локальный development-ключ предназначен только для проверки pipeline и не
-  является ключом релиза;
-- Live ISO с Plasma и конфигурацией установщика Calamares: `out/iso/`;
-- production-ключ, реальные URL и email ещё не созданы.
+KDE's standalone apps (Dolphin, Konsole, Kate, Discover, Spectacle and others)
+are left out; the list is in `configs/live/excluded-packages.txt`.
 
-## Состав рабочего стола
+## Building
 
-Образ сохраняет оболочку Plasma, SDDM, «Параметры системы», управление сетью,
-звуком и питанием. Отдельные приложения KDE (Dolphin, Konsole, Kate, KWrite,
-Konqueror, Discover, Spectacle, KDE Connect и другие) исключены. Браузер —
-LibreWolf (вместо Firefox): его нет в Debian, поэтому сборка ставит пакет,
-закреплённый в `configs/upstream/librewolf.env` и проверенный по подписанному
-индексу репозитория LibreWolf (`make librewolf`), а установленная система
-получает его обновления из этого репозитория. Установщик Calamares остаётся.
+You need a Debian-based machine with:
 
-`configs/live/packages.txt` устанавливает Plasma напрямую без метапакета
-`kde-plasma-desktop`. Список `configs/live/excluded-packages.txt` превращается
-в отрицательные APT pins до подбора зависимостей и остаётся в установленной
-системе. Рекомендуемые зависимости сохраняются для работы оборудования.
+- unprivileged user namespaces and subuid/subgid mappings (everything builds
+  without root);
+- `apt-get`, `dpkg-dev`, `curl`, `gpg` and `gpgv`;
+- `grub-common`, `grub-pc-bin`, `grub-efi-amd64-bin`, `xorriso`,
+  `squashfs-tools` and `xz-utils` for the ISO;
+- `qemu-system-x86` for the boot tests;
+- about 10 GB of free disk space.
 
-Пакет `kernora-desktop` версии `1.3` превращает Plasma в рабочий стол Kernora
-с полноценным дизайном Material 3, сгенерированным из одного исходного цвета
-(`#ff6a1e`, «Ember»):
+The host's own APT setup is not touched. Keyrings, tools and caches live in
+the working tree.
 
-- цветовые схемы Kernora Dark/Light и тема Plasma `kernora` — плавающая
-  панель-«таблетка», всплывающие окна, подсказки, кнопки задач, ползунки;
-- тема значков `Kernora` из Material Symbols Rounded (значки приложений
-  остаются собственными, цветными);
-- меню приложений Kernora Launcher: поиск, закреплённые приложения, сетка всех
-  приложений, действия сеанса (Meta или Alt+F1);
-- быстрые настройки Kernora Quick Settings: область состояния в панели и
-  шторка, которую можно вытянуть вверх мышью, тачпадом или открыть Meta+A, с
-  ползунками яркости и громкости и плитками Wi-Fi, Bluetooth, звука,
-  микрофона, «Не беспокоить», ночного света, режима полёта и «Без сна»;
-- живые обои Kernora Shapes: фигуры Material 3 Expressive — «печенья»,
-  цветы, «солнца» — медленно вращаются, движутся по округлым траекториям,
-  по очереди проходят друг над другом и плавно меняют цвета; бесшовный цикл,
-  пауза за развёрнутыми окнами;
-- тема Kvantum `Kernora` для всех Qt-приложений: скруглённые контекстные меню
-  и подменю с тональной подсветкой, кнопки-«таблетки», поля, флажки,
-  переключатели, ползунки, вкладки и списки в одном стиле;
-- стиль Qt Quick `org.kernora.desktop` для Параметров системы и других
-  QML-приложений и оформление окон `kernora` со значками Material Symbols;
-- шрифт Roboto, русский перевод оболочки.
-
-Устройство дизайн-системы, панели, меню и шторки описано в
-[docs/DESKTOP.md](docs/DESKTOP.md). Быстрая проверка изменений оболочки в
-QEMU без пересборки образа: `scripts/preview-desktop`.
-
-Вместо приложений KDE в системе собственный набор Kernora в том же стиле
-(пакет `kernora-apps`): «Настройки» с поиском и рабочими страницами для
-сети, Bluetooth, экрана, звука, уведомлений, оформления, приложений, питания,
-устройств ввода, специальных возможностей, безопасности, аккаунта, даты,
-языка, обновлений и сведений о системе; «Файлы», «Текстовый редактор»,
-«Фото», «Медиаплеер», «Калькулятор», «Снимок экрана», «Терминал» и
-«Добро пожаловать» после установки. Установщик оформлен так же, а язык
-live-сессии (русский или английский) выбирается в загрузочном меню.
-Подробнее: [docs/APPS.md](docs/APPS.md).
-
-Селектор эмодзи и просмотрщик сбоев входят в обязательные пакеты Plasma,
-поэтому их пункты меню скрыты через XDG overrides в `/etc/skel` (`NoDisplay`:
-override с `Hidden` KDE отбрасывает целиком); необходимые компоненты оболочки
-сохранены. Это применяется к новому live-пользователю и новым установленным
-системам.
-
-Пересобрать образ: `make iso`. Проверка rootfs контролирует отсутствие
-исключённых пакетов, доступность системных компонентов и состав меню KDE;
-проверка ISO дополнительно проверяет список пакетов внутри образа.
-
-## Полный development-проход
-
-Собрать пакеты и локальный подписанный APT-архив:
+Build the ISO and check that it boots in QEMU (BIOS and UEFI):
 
 ```sh
-make local-archive
+make iso-smoke
 ```
 
-Архив в `out/archive/` содержит source и binary packages `base-files` и
-`kernora-base`, индексы `Packages`/`Sources`, `Release`, `Release.gpg` и
-`InRelease`. Его подпись и работа с APT автоматически проверяются. Для этого
-прохода создаётся локальный годовой development-ключ; его нельзя публиковать
-как production release key.
+The result is `out/iso/kernora-1-ember-live-amd64.iso` with a `.sha256`
+file next to it. `make iso` builds the ISO without the boot tests.
 
-Собрать и проверить минимальную систему:
+Steps can also be run one at a time, for example `make local-archive` (all
+packages and the signed APT archive) or `make live-rootfs`. See the
+`Makefile` for the full list.
 
-```sh
-make minimal-rootfs
-```
+Builds are reproducible: the Debian snapshot, tool versions and every
+downloaded file are pinned by SHA-256, and archives are written with fixed
+file order, times and owners. Build outputs (`_build/`, `_cache/`, `out/`,
+`_state/`) stay out of Git.
 
-Эта цель включает всю предыдущую цепочку и создаёт:
+To try changes to the shell or the apps without rebuilding the ISO,
+`scripts/preview-desktop` boots the desktop in QEMU and syncs files into it.
 
-```text
-out/rootfs/kernora-1-ember-amd64.tar.xz
-out/rootfs/kernora-1-ember-amd64.tar.xz.sha256
-```
+## Layout
 
-Проверить checksum можно так:
+- `packages/native/`: Kernora's own packages (`kernora-base`,
+  `kernora-desktop`, `kernora-apps`).
+- `packages/derived/`: changes to Debian's `base-files`, Calamares and
+  `polkit-kde-agent-1`.
+- `configs/`: the upstream pins, the live image and the system identity.
+- `scripts/`: build steps. `tests/`: checks for every package and image.
+- `docs/`: how it all works. Start with
+  [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), then
+  [docs/DESKTOP.md](docs/DESKTOP.md) for the shell and design system and
+  [docs/APPS.md](docs/APPS.md) for the apps.
 
-```sh
-(cd out/rootfs && sha256sum -c kernora-1-ember-amd64.tar.xz.sha256)
-```
+## License
 
-В rootfs установлены `kernora-base=1.0` и Kernora-версия `base-files`. В него
-также встроены локальный development-архив, его публичный ключ и APT sources для
-этого архива, а Debian `trixie`, `trixie-updates` и `trixie-security` привязаны
-к снимку `20260901T000000Z`.
-
-## Отдельные шаги
-
-Получить первый набор upstream-исходников без изменения APT-конфигурации
-хост-системы:
-
-```sh
-make sources
-```
-
-Собрать source package из отслеживаемого форка:
-
-```sh
-make base-files-source
-```
-
-Результат появится в `_build/source-packages/` как `.dsc` и `.tar.xz`.
-
-Собрать binary package в чистом Debian `buildd`-rootfs без прав root:
-
-```sh
-make base-files-binary
-```
-
-Эта цель проверяет исходники, получает зафиксированный `mmdebstrap`, создаёт
-или повторно использует `_cache/chroots/trixie-amd64-buildd.tar.xz`, собирает
-пакет в изолированном пользовательском пространстве имён и запускает тест
-готового `.deb`. Результаты `.deb`, `.buildinfo` и `.changes` находятся в
-`_build/binary-packages/`.
-
-Нативный метапакет собирается аналогично:
-
-```sh
-make kernora-base-source
-make kernora-base-binary
-```
-
-Для rootless-сборки хост должен поддерживать непривилегированные user
-namespaces и subordinate UID/GID mappings. Системный `/etc/apt` не изменяется:
-APT state, keyrings, инструменты и кэши находятся внутри рабочего дерева.
-
-Проверить структуру, идентичность форка и скачанные upstream-файлы:
-
-```sh
-make verify
-```
-
-Цепочка воспроизводимости фиксирует suite, timestamp снимка, версии инструментов
-и SHA-256 входных файлов. Rootfs упаковывается с фиксированными порядком файлов,
-временем, владельцами и служебными tar-атрибутами, а рядом записывается SHA-256.
-Скачанные tarball/DSC, собранные пакеты, rootfs, архив и будущий ISO считаются
-производными артефактами и в Git не добавляются; исходным состоянием проекта
-остаются отслеживаемые package sources, конфигурация, манифесты и сценарии
-сборки.
-
-Stage 1 и Stage 2 уже работают как локальное development-доказательство
-архитектуры. До production-релиза необходимо заменить адреса `.invalid`,
-указать публичные URL, провести отдельную церемонию создания release key и
-реализовать установщик/ISO.
+Kernora OS is released under the GNU GPL version 3 (`LICENSE`). Kernora's own
+files are GPL-2.0-or-later. `NOTICE` lists the parts that come from others
+and their licenses.
