@@ -1,0 +1,11 @@
+data/calamares/settings.conf etc/calamares
+data/calamares/modules etc/calamares
+data/calamares/branding/kernora etc/calamares/branding
+generated/branding/kernora-logo.png etc/calamares/branding/kernora
+generated/branding/lang etc/calamares/branding/kernora
+generated/branding/images etc/calamares/branding/kernora
+generated/branding/stylesheet.qss etc/calamares/branding/kernora
+data/installer/kernora-installer usr/bin
+data/installer/org.kernora.installer.policy usr/share/polkit-1/actions
+data/installer/49-kernora-installer.rules usr/share/polkit-1/rules.d
+data/installer/org.kernora.installer.desktop usr/share/applications

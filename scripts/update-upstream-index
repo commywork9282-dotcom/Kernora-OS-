@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/apt-env.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/apt-env.sh"
+
+require_command apt-get
+configure_project_apt
+
+apt-get "${APT_OPTIONS[@]}" update
+

@@ -1,0 +1,152 @@
+#!/usr/bin/env python3
+"""usage: fetch-symbols [--check]
+       --check verifies the vendored files against the lock without network
+"""
+
+from __future__ import annotations
+
+import hashlib
+import pathlib
+import sys
+import urllib.error
+import urllib.request
+
+import symbols_map
+
+TOOLS = pathlib.Path(__file__).resolve().parent
+PACKAGE = TOOLS.parent
+ASSETS = PACKAGE / "data" / "symbols"
+LOCK = PACKAGE / "data" / "symbols.lock"
+
+UPSTREAM_REF = "master"
+BASE_URL = (
+    "https://raw.githubusercontent.com/google/material-design-icons/"
+    f"{UPSTREAM_REF}/symbols/web"
+)
+
+
+def url_for(symbol: str, fill: bool) -> str:
+    return f"{BASE_URL}/{symbol}/materialsymbolsrounded/{symbols_map.asset_name(symbol, fill)}"
+
+
+def digest(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def read_lock() -> dict[str, str]:
+    if not LOCK.exists():
+        return {}
+    entries: dict[str, str] = {}
+    for line in LOCK.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        checksum, name = line.split("  ", 1)
+        entries[name] = checksum
+    return entries
+
+
+def write_lock(entries: dict[str, str]) -> None:
+    lines = [
+        "# Material Symbols Rounded, weight 400, 24dp, from",
+        f"# https://github.com/google/material-design-icons at {UPSTREAM_REF}.",
+        "# Format: SHA256 two-spaces filename, relative to data/symbols/.",
+    ]
+    for name in sorted(entries):
+        lines.append(f"{entries[name]}  {name}")
+    LOCK.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def check() -> int:
+    entries = read_lock()
+    if not entries:
+        print("no lock file; run fetch-symbols first", file=sys.stderr)
+        return 1
+    failures = 0
+    for name, checksum in entries.items():
+        path = ASSETS / name
+        if not path.exists():
+            print(f"missing: {name}", file=sys.stderr)
+            failures += 1
+            continue
+        if digest(path.read_bytes()) != checksum:
+            print(f"checksum mismatch: {name}", file=sys.stderr)
+            failures += 1
+    extra = {p.name for p in ASSETS.glob("*.svg")} - set(entries)
+    for name in sorted(extra):
+        print(f"not in lock: {name}", file=sys.stderr)
+        failures += 1
+    if failures:
+        return 1
+    print(f"symbols: {len(entries)} files verified")
+    return 0
+
+
+LICENSE_URL = (
+    "https://raw.githubusercontent.com/google/material-design-icons/"
+    f"{UPSTREAM_REF}/LICENSE"
+)
+
+
+def fetch() -> int:
+    ASSETS.mkdir(parents=True, exist_ok=True)
+    entries: dict[str, str] = {}
+    missing: list[str] = []
+
+    license_path = ASSETS / "LICENSE"
+    if not license_path.exists():
+        with urllib.request.urlopen(LICENSE_URL, timeout=30) as response:
+            license_path.write_bytes(response.read())
+        print("vendored upstream LICENSE")
+
+    wanted = symbols_map.unique_symbols()
+    for index, (symbol, fill) in enumerate(wanted, start=1):
+        name = symbols_map.asset_name(symbol, fill)
+        target = ASSETS / name
+        if target.exists():
+            entries[name] = digest(target.read_bytes())
+            continue
+        try:
+            with urllib.request.urlopen(url_for(symbol, fill), timeout=30) as response:
+                data = response.read()
+        except urllib.error.HTTPError as error:
+            print(f"[{index}/{len(wanted)}] {symbol} fill={fill}: HTTP {error.code}")
+            missing.append(f"{symbol} (fill)" if fill else symbol)
+            continue
+        if b'viewBox="0 -960 960 960"' not in data:
+            print(f"[{index}/{len(wanted)}] {symbol} fill={fill}: legacy drawing, not a Material Symbol")
+            missing.append(f"{symbol} (fill)" if fill else symbol)
+            continue
+        target.write_bytes(data)
+        entries[name] = digest(data)
+        print(f"[{index}/{len(wanted)}] {name}")
+
+    for path in ASSETS.glob("*.svg"):
+        if path.name not in entries:
+            path.unlink()
+            print(f"removed unreferenced {path.name}")
+
+    write_lock(entries)
+    print(f"\nvendored {len(entries)} symbols into {ASSETS}")
+    if missing:
+        print("\nnot found upstream, fix symbols_map.py:", file=sys.stderr)
+        for name in missing:
+            print(f"  {name}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) > 2:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    if len(argv) == 2:
+        if argv[1] != "--check":
+            print(__doc__.strip(), file=sys.stderr)
+            return 2
+        return check()
+    return fetch()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

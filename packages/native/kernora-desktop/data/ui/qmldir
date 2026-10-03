@@ -1,0 +1,24 @@
+module org.kernora.ui
+AppIcon 1.0 AppIcon.qml
+AppWindow 1.0 AppWindow.qml
+Avatar 1.0 Avatar.qml
+Banner 1.0 Banner.qml
+ChoiceDialog 1.0 ChoiceDialog.qml
+ChoiceItem 1.0 ChoiceItem.qml
+Dialog 1.0 Dialog.qml
+EmptyState 1.0 EmptyState.qml
+Group 1.0 Group.qml
+HeroSwitch 1.0 HeroSwitch.qml
+IconButton 1.0 IconButton.qml
+IconCircle 1.0 IconCircle.qml
+InputField 1.0 InputField.qml
+LinearProgress 1.0 LinearProgress.qml
+ListItem 1.0 ListItem.qml
+NavigationItem 1.0 NavigationItem.qml
+Page 1.0 Page.qml
+RadioRow 1.0 RadioRow.qml
+RoundedClip 1.0 RoundedClip.qml
+SearchField 1.0 SearchField.qml
+SegmentedButtons 1.0 SegmentedButtons.qml
+SliderItem 1.0 SliderItem.qml
+Snackbar 1.0 Snackbar.qml

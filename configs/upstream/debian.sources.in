@@ -1,0 +1,16 @@
+Types: deb deb-src
+URIs: @DEBIAN_SNAPSHOT@/@SNAPSHOT_TIMESTAMP@/
+Suites: @BASE_CODENAME@ @BASE_CODENAME@-updates
+Components: main
+Architectures: @BASE_ARCH@
+Signed-By: @DEBIAN_KEYRING@
+Check-Valid-Until: no
+
+Types: deb deb-src
+URIs: @DEBIAN_SECURITY_SNAPSHOT@/@SNAPSHOT_TIMESTAMP@/
+Suites: @BASE_CODENAME@-security
+Components: main
+Architectures: @BASE_ARCH@
+Signed-By: @DEBIAN_KEYRING@
+Check-Valid-Until: no
+

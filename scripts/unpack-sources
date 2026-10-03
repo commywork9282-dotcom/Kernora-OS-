@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+require_command dpkg-source
+require_command gpgv
+
+source_dir="$PROJECT_ROOT/_cache/upstream-sources"
+unpack_dir="$PROJECT_ROOT/_build/upstream-sources"
+signer_keyring="$PROJECT_ROOT/_state/trust/debian-keyring-root/usr/share/keyrings/debian-source-signers.pgp"
+[[ -d "$source_dir" ]] || die "source cache is missing; run make sources"
+[[ -s "$signer_keyring" ]] || die "source signer keyring is missing; run make signer-keyring"
+mkdir -p "$unpack_dir"
+
+"$PROJECT_ROOT/scripts/verify-sources"
+
+dsc_files=("$source_dir"/*.dsc)
+(( ${#dsc_files[@]} > 0 )) || die "no .dsc files found in source cache"
+
+for dsc_file in "${dsc_files[@]}"; do
+  source_name=$(sed -n 's/^Source: //p' "$dsc_file" | head -n 1)
+  source_version=$(sed -n 's/^Version: //p' "$dsc_file" | head -n 1)
+  [[ -n "$source_name" && -n "$source_version" ]] || die "cannot parse $dsc_file"
+
+  gpgv --keyring "$signer_keyring" "$dsc_file"
+
+  target_dir="$unpack_dir/${source_name}-${source_version}"
+  if [[ -d "$target_dir" ]]; then
+    printf 'already unpacked: %s\n' "$target_dir"
+    continue
+  fi
+
+  dpkg-source --no-check --extract "$dsc_file" "$target_dir"
+done
+
+printf 'Unpacked source trees: %s\n' "$unpack_dir"

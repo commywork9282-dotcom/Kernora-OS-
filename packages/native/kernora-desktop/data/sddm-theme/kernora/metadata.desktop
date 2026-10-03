@@ -1,0 +1,14 @@
+[SddmGreeterTheme]
+Name=Kernora
+Name[ru]=Kernora
+Description=The Material 3 login screen of Kernora OS
+Description[ru]=Экран входа Kernora OS в стиле Material 3
+Author=Kernora Developers
+License=GPL-2.0-or-later
+Type=sddm-theme
+Version=1.0
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=kernora
+Theme-API=2.0
+QtVersion=6

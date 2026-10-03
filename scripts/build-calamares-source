@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in dpkg-source dpkg-parsechangelog install; do
+  require_command "$dependency"
+done
+
+package_root="$PROJECT_ROOT/packages/derived/calamares"
+upstream_dir="$PROJECT_ROOT/_cache/upstream-sources"
+output_dir="$PROJECT_ROOT/_build/source-packages"
+upstream_dsc="$upstream_dir/calamares_3.3.14-1.dsc"
+orig_tar="calamares_3.3.14.orig.tar.gz"
+[[ -s "$upstream_dsc" ]] || die "calamares upstream source is missing; run make sources"
+
+package_version=$(dpkg-parsechangelog -l"$package_root/changelog" -S Version)
+SOURCE_DATE_EPOCH=$(dpkg-parsechangelog -l"$package_root/changelog" -S Timestamp)
+export SOURCE_DATE_EPOCH
+
+mkdir -p "$PROJECT_ROOT/_build" "$output_dir"
+temporary_root=$(mktemp -d "$PROJECT_ROOT/_build/.calamares-source.XXXXXX")
+trap 'find "$temporary_root" -depth -delete' EXIT
+
+(
+  cd "$temporary_root"
+  dpkg-source --no-copy --skip-patches --extract "$upstream_dsc" tree >/dev/null
+)
+install -m 0644 "$upstream_dir/$orig_tar" "$temporary_root/$orig_tar"
+tree="$temporary_root/tree"
+
+mkdir -p "$tree/debian/patches"
+while read -r patch; do
+  [[ -n "$patch" && "$patch" != \#* ]] || continue
+  install -m 0644 "$package_root/patches/$patch" "$tree/debian/patches/$patch"
+  printf '%s\n' "$patch" >> "$tree/debian/patches/series"
+done < "$package_root/patches/series"
+
+{
+  cat "$package_root/changelog"
+  printf '\n'
+  cat "$tree/debian/changelog"
+} > "$temporary_root/changelog"
+install -m 0644 "$temporary_root/changelog" "$tree/debian/changelog"
+
+(
+  cd "$temporary_root"
+  dpkg-source --build tree
+)
+
+for artifact in \
+  "$temporary_root/calamares_${package_version}.dsc" \
+  "$temporary_root/calamares_${package_version}.debian.tar.xz"; do
+  [[ -s "$artifact" ]] || die "source package artifact was not produced: $artifact"
+  install -m 0644 "$artifact" "$output_dir/"
+done
+install -m 0644 "$upstream_dir/$orig_tar" "$output_dir/$orig_tar"
+
+"$PROJECT_ROOT/tests/test-calamares-source.sh"
+printf 'source package: %s/calamares_%s.dsc\n' "$output_dir" "$package_version"

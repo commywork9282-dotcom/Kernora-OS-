@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = install ] || [ "$1" = upgrade ]; then
+    dpkg-divert --package kernora-apps --add --rename \
+        --divert /usr/bin/systemsettings.kde /usr/bin/systemsettings
+fi

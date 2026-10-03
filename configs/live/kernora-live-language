@@ -1,0 +1,41 @@
+#!/bin/sh
+set -eu
+
+lang=
+for word in $(cat /proc/cmdline); do
+    case "$word" in
+        kernora.lang=*) lang=${word#kernora.lang=} ;;
+    esac
+done
+[ -n "$lang" ] || exit 0
+case "$lang" in *[!A-Za-z0-9._@-]*) exit 0 ;; esac
+locale -a 2>/dev/null | grep -qix "$(printf '%s' "$lang" | sed 's/UTF-8/utf8/')" || exit 0
+
+language=${lang%%.*}
+printf 'LANG=%s\n' "$lang" > /etc/default/locale
+printf 'LANG=%s\n' "$lang" > /etc/locale.conf
+
+home=$(getent passwd @LIVE_USER@ | cut -d: -f6)
+[ -d "$home" ] || exit 0
+config="$home/.config"
+mkdir -p "$config"
+cat > "$config/plasma-localerc" <<LOCALE
+[Formats]
+LANG=$lang
+
+[Translations]
+LANGUAGE=$language:en_US
+LOCALE
+case "$language" in
+    en_*) ;;
+    *)
+        cat > "$config/kxkbrc" <<LAYOUT
+[Layout]
+LayoutList=us,${language%%_*}
+Options=grp:alt_shift_toggle
+ResetOldOptions=true
+Use=true
+LAYOUT
+        ;;
+esac
+chown -R @LIVE_USER@: "$config"

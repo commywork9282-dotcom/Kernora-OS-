@@ -1,0 +1,9 @@
+Origin: @DIST_NAME@
+Label: @DIST_NAME@
+Suite: @DIST_CODENAME@
+Codename: @DIST_CODENAME@
+Architectures: amd64 source
+Components: main
+Description: @DIST_NAME@ package archive
+SignWith: @DIST_ARCHIVE_KEY_FINGERPRINT@
+

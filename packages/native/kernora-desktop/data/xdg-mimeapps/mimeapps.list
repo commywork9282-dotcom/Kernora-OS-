@@ -1,0 +1,13 @@
+[Default Applications]
+x-scheme-handler/http=librewolf.desktop;
+x-scheme-handler/https=librewolf.desktop;
+text/html=librewolf.desktop;
+application/xhtml+xml=librewolf.desktop;
+application/pdf=librewolf.desktop;
+image/png=org.kernora.photos.desktop;
+image/jpeg=org.kernora.photos.desktop;
+image/gif=org.kernora.photos.desktop;
+image/webp=org.kernora.photos.desktop;
+application/json=org.kernora.editor.desktop;
+application/xml=org.kernora.editor.desktop;
+text/xml=org.kernora.editor.desktop;

@@ -1,0 +1,190 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in awk chmod cp date find install mkdir mktemp mv sed sha256sum \
+  tar truncate unshare; do
+  require_command "$dependency"
+done
+load_project_config
+load_upstream_config
+load_librewolf_config
+load_live_config
+
+snapshot_iso="${SNAPSHOT_TIMESTAMP:0:4}-${SNAPSHOT_TIMESTAMP:4:2}-${SNAPSHOT_TIMESTAMP:6:2}"
+snapshot_iso+=" ${SNAPSHOT_TIMESTAMP:9:2}:${SNAPSHOT_TIMESTAMP:11:2}:${SNAPSHOT_TIMESTAMP:13:2} UTC"
+source_date_epoch=$(date --utc --date="$snapshot_iso" +%s)
+export SOURCE_DATE_EPOCH=$source_date_epoch
+
+SNAPSHOT_DATE="${SNAPSHOT_TIMESTAMP:0:4}-${SNAPSHOT_TIMESTAMP:4:2}-${SNAPSHOT_TIMESTAMP:6:2}"
+export SNAPSHOT_DATE
+
+tool="$PROJECT_ROOT/_state/tools/mmdebstrap/usr/bin/mmdebstrap"
+debian_key="$PROJECT_ROOT/_state/trust/debian-trixie-archive-keyring.gpg"
+kernora_key="$PROJECT_ROOT/_state/keys/development-archive.gpg"
+local_archive="$PROJECT_ROOT/out/archive"
+package_manifest="$PROJECT_ROOT/configs/live/packages.txt"
+live_config="$PROJECT_ROOT/configs/live"
+librewolf_package="$PROJECT_ROOT/_cache/librewolf/librewolf_${LIBREWOLF_VERSION}_${BASE_ARCH}.deb"
+librewolf_key="$PROJECT_ROOT/_state/trust/librewolf-archive-keyring.gpg"
+
+[[ -x "$tool" ]] || die "mmdebstrap is missing; run make build-tools"
+[[ -s "$debian_key" ]] || die "Debian archive keyring is missing"
+[[ -s "$kernora_key" ]] || die "Kernora development archive key is missing"
+[[ -s "$local_archive/dists/$DIST_CODENAME/InRelease" ]] \
+  || die "Kernora local archive is missing; run make local-archive"
+[[ -s "$librewolf_package" && -s "$librewolf_key" ]] \
+  || die "LibreWolf is missing; run make librewolf"
+printf '%s  %s\n' "$LIBREWOLF_SHA256" "$librewolf_package" | sha256sum --check --status \
+  || die "LibreWolf package checksum mismatch"
+
+mapfile -t requested_packages < <(
+  awk 'NF && $1 !~ /^#/ { print $1 }' "$package_manifest"
+)
+(( ${#requested_packages[@]} > 0 )) || die "live package manifest is empty"
+include=$(IFS=,; printf '%s' "${requested_packages[*]}")
+
+temporary_root=$(mktemp -d /tmp/kernora-live-rootfs.XXXXXX)
+chmod 0777 "$temporary_root"
+rootfs="$temporary_root/rootfs"
+temporary_archive="$temporary_root/archive"
+keyring_dir="$temporary_root/keyrings"
+final_sources="$temporary_root/sources.list"
+librewolf_sources="$temporary_root/librewolf.sources"
+librewolf_deb="$temporary_root/librewolf/librewolf_${LIBREWOLF_VERSION}_${BASE_ARCH}.deb"
+sddm_autologin="$temporary_root/sddm-autologin.conf"
+apt_preferences="$temporary_root/kernora.pref"
+mkdir -p "$keyring_dir"
+cp -a "$local_archive" "$temporary_archive"
+install -d -m 0755 "$temporary_root/librewolf"
+install -m 0644 "$librewolf_package" "$librewolf_deb"
+install -m 0644 "$debian_key" \
+  "$keyring_dir/debian-trixie-archive-keyring.gpg"
+install -m 0644 "$kernora_key" \
+  "$keyring_dir/kernora-development-archive-keyring.gpg"
+
+{
+  printf 'deb [signed-by=/usr/share/keyrings/kernora-development-archive-keyring.gpg] file:/usr/share/kernora/archive %s main\n' \
+    "$DIST_CODENAME"
+  printf 'deb [check-valid-until=no signed-by=/usr/share/keyrings/debian-trixie-archive-keyring.gpg] %s/%s %s main\n' \
+    "$DEBIAN_SNAPSHOT" "$SNAPSHOT_TIMESTAMP" "$BASE_CODENAME"
+  printf 'deb [check-valid-until=no signed-by=/usr/share/keyrings/debian-trixie-archive-keyring.gpg] %s/%s %s-updates main\n' \
+    "$DEBIAN_SNAPSHOT" "$SNAPSHOT_TIMESTAMP" "$BASE_CODENAME"
+  printf 'deb [check-valid-until=no signed-by=/usr/share/keyrings/debian-trixie-archive-keyring.gpg] %s/%s %s-security main\n' \
+    "$DEBIAN_SECURITY_SNAPSHOT" "$SNAPSHOT_TIMESTAMP" "$BASE_CODENAME"
+} > "$final_sources"
+
+cat > "$librewolf_sources" <<SOURCES
+Types: deb
+URIs: $LIBREWOLF_REPOSITORY
+Suites: $LIBREWOLF_SUITE
+Components: main
+Architectures: $BASE_ARCH
+Signed-By: /usr/share/keyrings/librewolf-archive-keyring.gpg
+SOURCES
+
+sed \
+  -e "s|@LIVE_USER@|$LIVE_USER|g" \
+  -e "s|@LIVE_SESSION@|$LIVE_SESSION|g" \
+  "$live_config/sddm-autologin.conf.in" > "$sddm_autologin"
+live_language="$temporary_root/kernora-live-language"
+sed -e "s|@LIVE_USER@|$LIVE_USER|g" "$live_config/kernora-live-language" > "$live_language"
+chmod 0755 "$live_language"
+
+cp "$live_config/apt-preferences" "$apt_preferences"
+awk 'NF && $1 !~ /^#/ {
+  printf "\nPackage: %s\nPin: release *\nPin-Priority: -1\n", $1
+}' "$live_config/excluded-packages.txt" >> "$apt_preferences"
+
+cleanup() {
+  set +e
+  if [[ -e "$rootfs" ]]; then
+    unshare --map-auto --setuid 0 --setgid 0 \
+      find "$rootfs" -depth -delete
+  fi
+  find "$temporary_root" -depth -delete
+}
+trap cleanup EXIT
+
+"$tool" \
+  --mode=unshare \
+  --variant=minbase \
+  --architectures="$BASE_ARCH" \
+  --include="$include" \
+  --include="$librewolf_deb" \
+  --keyring="$keyring_dir" \
+  --aptopt='Acquire::Check-Valid-Until "false"' \
+  --aptopt='Acquire::Languages "none"' \
+  --aptopt='APT::Sandbox::User "root"' \
+  --aptopt='Apt::Install-Recommends "true"' \
+  --setup-hook='mkdir -p "$1/usr/share/keyrings" "$1/usr/share/kernora" "$1/etc/apt/preferences.d"' \
+  --setup-hook="upload $apt_preferences /etc/apt/preferences.d/kernora.pref" \
+  --setup-hook="upload $debian_key /usr/share/keyrings/debian-trixie-archive-keyring.gpg" \
+  --setup-hook="upload $kernora_key /usr/share/keyrings/kernora-development-archive-keyring.gpg" \
+  --setup-hook="copy-in $temporary_archive /usr/share/kernora" \
+  --setup-hook="mkdir -p \"\$1$temporary_root/librewolf\"" \
+  --setup-hook="upload $librewolf_deb $librewolf_deb" \
+  --customize-hook="rm -rf \"\$1$temporary_root\"" \
+  --customize-hook="upload $librewolf_key /usr/share/keyrings/librewolf-archive-keyring.gpg" \
+  --customize-hook="upload $librewolf_sources /etc/apt/sources.list.d/librewolf.sources" \
+  --customize-hook='mkdir -p "$1/etc/systemd/system/getty@tty1.service.d" "$1/etc/systemd/system/multi-user.target.wants"' \
+  --customize-hook="upload $final_sources /etc/apt/sources.list" \
+  --customize-hook='rm -rf "$1"/usr/share/wallpapers/Next/*' \
+  --customize-hook="upload $live_config/hostname /etc/hostname" \
+  --customize-hook="upload $live_config/hosts /etc/hosts" \
+  --customize-hook="upload $live_config/autologin.conf /etc/systemd/system/getty@tty1.service.d/autologin.conf" \
+  --customize-hook="upload $live_config/kernora-boot-ready.service /etc/systemd/system/kernora-boot-ready.service" \
+  --customize-hook="upload $live_config/kscreenlockerrc /etc/xdg/kscreenlockerrc" \
+  --customize-hook='ln -s ../kernora-boot-ready.service "$1/etc/systemd/system/multi-user.target.wants/kernora-boot-ready.service"' \
+  --customize-hook='mkdir -p "$1/etc/sddm.conf.d"' \
+  --customize-hook='printf "en_US.UTF-8 UTF-8\nru_RU.UTF-8 UTF-8\n" > "$1/etc/locale.gen"' \
+  --customize-hook='chroot "$1" locale-gen' \
+  --customize-hook='printf "LANG=en_US.UTF-8\n" > "$1/etc/default/locale"' \
+  --customize-hook='mkdir -p "$1/usr/lib/kernora"' \
+  --customize-hook="upload $live_language /usr/lib/kernora/live-language" \
+  --customize-hook='chmod 0755 "$1/usr/lib/kernora/live-language"' \
+  --customize-hook="upload $live_config/kernora-live-language.service /etc/systemd/system/kernora-live-language.service" \
+  --customize-hook='ln -s ../kernora-live-language.service "$1/etc/systemd/system/multi-user.target.wants/kernora-live-language.service"' \
+  --customize-hook="upload $sddm_autologin /etc/sddm.conf.d/kernora-autologin.conf" \
+  --customize-hook='chroot "$1" useradd --create-home --uid "${LIVE_USER_UID:?}" --shell /bin/bash --comment "${LIVE_USER_GECOS:?}" --groups "${LIVE_USER_GROUPS:?}" --password "${LIVE_USER_PASSWORD_HASH:?}" "${LIVE_USER:?}"' \
+  --customize-hook='chroot "$1" chage --lastday "${SNAPSHOT_DATE:?}" "${LIVE_USER:?}"' \
+  --customize-hook='ln -sf /usr/lib/systemd/system/graphical.target "$1/etc/systemd/system/default.target"' \
+  --customize-hook='chroot "$1" update-initramfs -u -k all' \
+  --customize-hook='rm -f "$1/etc/apt/apt.conf.d/99mmdebstrap" "$1/etc/resolv.conf" "$1/var/lib/systemd/random-seed"' \
+  --customize-hook='truncate -s 0 "$1/etc/machine-id"' \
+  "$BASE_CODENAME" \
+  "$rootfs" \
+  "deb copy:$temporary_archive $DIST_CODENAME main" \
+  "deb $DEBIAN_SNAPSHOT/$SNAPSHOT_TIMESTAMP $BASE_CODENAME main" \
+  "deb $DEBIAN_SNAPSHOT/$SNAPSHOT_TIMESTAMP $BASE_CODENAME-updates main" \
+  "deb $DEBIAN_SECURITY_SNAPSHOT/$SNAPSHOT_TIMESTAMP $BASE_CODENAME-security main"
+
+"$PROJECT_ROOT/tests/test-live-rootfs.sh" "$rootfs"
+
+output_dir="$PROJECT_ROOT/out/rootfs"
+artifact_name="kernora-${DIST_VERSION}-${DIST_CODENAME}-live-${BASE_ARCH}.tar.xz"
+artifact="$output_dir/$artifact_name"
+temporary_artifact="$output_dir/.$artifact_name.tmp"
+packages_file="$output_dir/kernora-${DIST_VERSION}-${DIST_CODENAME}-live-${BASE_ARCH}.packages"
+mkdir -p "$output_dir"
+
+unshare --map-auto --setuid 0 --setgid 0 \
+  chroot "$rootfs" dpkg-query -W -f='${binary:Package}\t${Version}\n' \
+  | sort > "$packages_file"
+unshare --map-auto --setuid 0 --setgid 0 \
+  tar \
+    --sort=name \
+    --mtime="@$source_date_epoch" \
+    --numeric-owner \
+    --pax-option=delete=atime,delete=ctime \
+    -C "$rootfs" -cJf - . > "$temporary_artifact"
+mv -- "$temporary_artifact" "$artifact"
+(
+  cd "$output_dir"
+  sha256sum "$artifact_name" > "$artifact_name.sha256"
+)
+
+printf 'live rootfs: %s\n' "$artifact"
+printf 'live package manifest: %s\n' "$packages_file"

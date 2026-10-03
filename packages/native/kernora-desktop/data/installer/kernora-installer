@@ -1,0 +1,20 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -eu
+
+if [ "$(id -u)" != 0 ]; then
+    exec pkexec /usr/bin/kernora-installer --session "${LANG:-C.UTF-8}" "${LANGUAGE:-}"
+fi
+
+if [ "${1:-}" = --session ]; then
+    lang=$2 language=${3:-}
+    case "$lang$language" in *[!A-Za-z0-9._@:-]*) echo "kernora-installer: bad session value" >&2; exit 2 ;; esac
+    export LANG="$lang"
+    [ -n "$language" ] && export LANGUAGE="$language"
+fi
+
+export QT_QPA_PLATFORM=xcb
+export QT_QPA_PLATFORMTHEME=kde KDE_FULL_SESSION=true XDG_CURRENT_DESKTOP=KDE
+export QT_QUICK_CONTROLS_STYLE=org.kernora.desktop
+exec /usr/bin/calamares

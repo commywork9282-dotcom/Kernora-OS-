@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Files
+Name[ru]=Файлы
+GenericName=File manager
+GenericName[ru]=Файловый менеджер
+Icon=org.kernora.files
+Exec=kernora-files %U
+Categories=Qt;System;FileManager;Core;
+MimeType=inode/directory;
+Keywords=folder;explorer;manager;папка;проводник;
+StartupNotify=true

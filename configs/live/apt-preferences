@@ -1,0 +1,11 @@
+Package: plasma-welcome
+Pin: release *
+Pin-Priority: -1
+
+Package: desktop-base
+Pin: release *
+Pin-Priority: -1
+
+Package: sddm-theme-debian-breeze
+Pin: release *
+Pin-Priority: -1

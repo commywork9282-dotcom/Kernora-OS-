@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome
+Name[ru]=Добро пожаловать
+Icon=org.kernora.welcome
+Exec=kernora-welcome --first-run
+NoDisplay=true
+OnlyShowIn=KDE;
+X-KDE-autostart-condition=kernora-welcomerc:General:ShowOnLogin:true
+X-KDE-autostart-phase=2

@@ -1,0 +1,13 @@
+singleton M3 M3.qml
+MButton MButton.qml
+MIcon MIcon.qml
+MIconButton MIconButton.qml
+MMenu MMenu.qml
+MScrollIndicator MScrollIndicator.qml
+MSearchBar MSearchBar.qml
+MSlider MSlider.qml
+MSpring MSpring.qml
+MStateLayer MStateLayer.qml
+MSwitch MSwitch.qml
+MText MText.qml
+MTile MTile.qml

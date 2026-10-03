@@ -1,0 +1,13 @@
+[Unit]
+Description=Kernora live session language from the boot menu
+DefaultDependencies=no
+After=local-fs.target
+Before=display-manager.service sddm.service systemd-user-sessions.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/kernora/live-language
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

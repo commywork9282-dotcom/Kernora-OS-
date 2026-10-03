@@ -1,0 +1,234 @@
+#!/usr/bin/env python3
+"""usage: gen-wallpaper-assets OUTPUT_DIRECTORY [tower|rhythm|marbles]
+"""
+
+from __future__ import annotations
+
+import json
+import math
+import pathlib
+import sys
+
+import kernora_design as design
+import m3color
+import material_shapes
+
+UNITS = 1000
+
+FAMILIES = [
+    ("mauve", -85, 30),
+    ("plum", -52, 36),
+    ("rose", -24, 46),
+    ("ember", 0, 56),
+    ("amber", 26, 52),
+]
+
+MOODS = 3
+FADE = 0.07
+TRACK_STEPS = 120
+
+TONES = [24, 28, 32, 36, 42, 48, 56, 64, 72, 80, 86]
+
+BACKGROUND_TONE = 7
+BACKGROUND_CHROMA = 5
+
+
+def colour(hue: float, chroma: float, tone: float) -> str:
+    return m3color.hex_from_rgb(m3color.rgb_from_hct(hue % 360, chroma, tone))
+
+
+def smooth(t: float) -> float:
+    return 0.0 if t <= 0 else 1.0 if t >= 1 else t * t * (3 - 2 * t)
+
+
+def mood_weights(phase: float) -> list[float]:
+    weights = []
+    for m in range(MOODS):
+        centre = (m + 0.5) / MOODS
+        d = abs(phase - centre)
+        d = min(d, 1 - d)
+        half = 0.5 / MOODS
+        weights.append(1 - smooth((d - (half - FADE / 2)) / FADE))
+    total = sum(weights)
+    return [w / total for w in weights]
+
+
+def blend_hct(members: list[tuple[float, float, float]], tone: float) -> str:
+    x = sum(math.cos(math.radians(h)) * w for h, _, w in members)
+    y = sum(math.sin(math.radians(h)) * w for h, _, w in members)
+    hue = math.degrees(math.atan2(y, x))
+    chroma = sum(c * w for _, c, w in members)
+    return colour(hue, chroma, tone)
+
+
+def palette() -> dict:
+    seed = m3color.Hct.from_hex(design.SEED)
+    n = len(FAMILIES)
+    tracks = []
+    fixed = []
+    for slot in range(n):
+        slot_tracks = {}
+        slot_fixed = {}
+        for tone in TONES:
+            track = []
+            for step in range(TRACK_STEPS):
+                weights = mood_weights(step / TRACK_STEPS)
+                members = []
+                for mood, w in enumerate(weights):
+                    if w > 1e-6:
+                        _, offset, chroma = FAMILIES[(slot + mood) % n]
+                        members.append((seed.hue + offset, chroma, w))
+                track.append(blend_hct(members, tone))
+            slot_tracks[str(tone)] = track
+            _, offset, chroma = FAMILIES[slot]
+            slot_fixed[str(tone)] = colour(seed.hue + offset, chroma, tone)
+        tracks.append(slot_tracks)
+        fixed.append(slot_fixed)
+    return {
+        "seed": design.SEED,
+        "background": colour(seed.hue, BACKGROUND_CHROMA, BACKGROUND_TONE),
+        "families": [name for name, _, _ in FAMILIES],
+        "steps": TRACK_STEPS,
+        "tracks": tracks,
+        "fixed": fixed,
+    }
+
+
+THEMES = {
+    "tower": {
+        "paper": (None, 10), "ember": (None, 62), "amber": (78, 52), "rose": (12, 48),
+        "plum": (338, 36), "teal": (192, 34), "ink": (262, 26),
+    },
+    "rhythm": {
+        "night": (268, 22), "rose": (8, 48), "ember": (None, 58), "amber": (78, 50),
+        "mint": (160, 38), "teal": (196, 36), "sky": (242, 40), "violet": (292, 40),
+    },
+    "marbles": {
+        "board": (172, 22), "track": (60, 30), "ember": (None, 62), "amber": (78, 52),
+        "rose": (8, 48), "sky": (232, 40), "violet": (292, 40), "cream": (70, 14),
+    },
+}
+THEME_TONES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 34, 38, 42, 46, 50, 55,
+               60, 65, 70, 75, 80, 85, 88, 90, 92, 94, 96, 98]
+
+
+def theme_colour(hue: float, chroma: float, tone: float) -> str:
+    c = chroma
+    while True:
+        result = colour(hue, c, tone)
+        if m3color.Hct.from_hex(result).chroma >= c * 0.6 or c < 2:
+            return result
+        c *= 0.85
+
+
+def theme_palette(theme: str) -> dict:
+    seed = m3color.Hct.from_hex(design.SEED)
+    families = {}
+    for name, (hue, chroma) in THEMES[theme].items():
+        h = seed.hue if hue is None else hue
+        families[name] = {str(t): theme_colour(h, chroma, t) for t in THEME_TONES}
+    return {"seed": design.SEED, "tones": THEME_TONES, "families": families}
+
+
+def hull(cubics) -> list[list[float]]:
+    points = sorted({(round(p.x - 0.5, 4), round(p.y - 0.5, 4))
+                     for c in cubics for p in (material_shapes._point_on(c, i / 16) for i in range(17))})
+
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+    lower, upper = [], []
+    for p in points:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 1e-6:
+            lower.pop()
+        lower.append(p)
+    for p in reversed(points):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 1e-6:
+            upper.pop()
+        upper.append(p)
+    ring = lower[:-1] + upper[:-1]
+    kept = True
+    while kept and len(ring) > 8:
+        kept = False
+        for i in range(len(ring)):
+            a, p, b = ring[i - 1], ring[i], ring[(i + 1) % len(ring)]
+            length = math.hypot(b[0] - a[0], b[1] - a[1])
+            if length > 0 and abs(cross(a, b, p)) / length < 0.003:
+                del ring[i]
+                kept = True
+                break
+    return [[round(x, 3), round(y, 3)] for x, y in ring]
+
+
+def shapes() -> dict:
+    result = {}
+    for name, cubics in material_shapes.shape_definitions().items():
+        cubics = material_shapes.normalized(cubics)
+        radius = 0.0
+        for c in cubics:
+            for i in range(33):
+                p = material_shapes._point_on(c, i / 32)
+                radius = max(radius, math.hypot(p.x - 0.5, p.y - 0.5))
+        result[name] = {
+            "path": material_shapes.svg_path(cubics, UNITS, digits=1),
+            "radius": round(radius, 4),
+            "hull": hull(cubics),
+        }
+    return result
+
+
+HEADER = """// Generated by tools/gen-wallpaper-assets; do not edit.
+// {what}
+.pragma library
+"""
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) not in (2, 3) or (len(argv) == 3 and argv[2] not in THEMES):
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    output = pathlib.Path(argv[1])
+    output.mkdir(parents=True, exist_ok=True)
+    theme = argv[2] if len(argv) == 3 else None
+
+    shape_data = shapes()
+    (output / "materialshapes.js").write_text(
+        HEADER.format(what="Material 3 Expressive shapes (AndroidX MaterialShapes, Apache-2.0).")
+        + f"var units = {UNITS};\n"
+        + "var shapes = {\n"
+        + ",\n".join(f" {json.dumps(name)}: {json.dumps(data, separators=(',', ':'))}"
+                      for name, data in shape_data.items())
+        + "\n};\n",
+        encoding="utf-8",
+    )
+    if theme:
+        (output / "palette.js").write_text(
+            HEADER.format(what=f"The {theme} wallpaper's tonal palette, with the seed {design.SEED}.")
+            + "var palette = " + json.dumps(theme_palette(theme), indent=1) + ";\n"
+            + "// The colour of a family at a tone, c(\"sea\", 30); between the tones\n"
+            + "// the palette has, the nearest one.\n"
+            + "function c(family, tone) {\n"
+            + "    var tones = palette.families[family];\n"
+            + "    var best = palette.tones[0];\n"
+            + "    for (var i = 0; i < palette.tones.length; ++i) {\n"
+            + "        if (Math.abs(palette.tones[i] - tone) < Math.abs(best - tone)) {\n"
+            + "            best = palette.tones[i];\n"
+            + "        }\n"
+            + "    }\n"
+            + "    return tones[String(best)];\n"
+            + "}\n",
+            encoding="utf-8",
+        )
+        print(f"wallpaper assets: {len(shape_data)} shapes, the {theme} palette in {output}")
+        return 0
+    (output / "palette.js").write_text(
+        HEADER.format(what=f"Kernora Shapes colours, from the seed {design.SEED}.")
+        + "var palette = " + json.dumps(palette(), indent=1) + ";\n",
+        encoding="utf-8",
+    )
+    print(f"wallpaper assets: {len(shape_data)} shapes, {len(FAMILIES)} colour families in {output}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

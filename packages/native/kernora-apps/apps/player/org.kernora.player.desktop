@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Media Player
+Name[ru]=Медиаплеер
+GenericName=Video and music player
+GenericName[ru]=Видео и музыка
+Icon=org.kernora.player
+Exec=kernora-player %U
+Categories=Qt;AudioVideo;Player;Video;Audio;
+MimeType=video/mp4;video/x-matroska;video/webm;video/mpeg;video/quicktime;video/x-msvideo;video/ogg;audio/mpeg;audio/flac;audio/ogg;audio/x-wav;audio/mp4;audio/x-vorbis+ogg;audio/opus;
+Keywords=video;music;movie;audio;player;видео;музыка;плеер;
+StartupNotify=true

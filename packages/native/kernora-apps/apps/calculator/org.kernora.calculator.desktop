@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Calculator
+Name[ru]=Калькулятор
+GenericName=Calculator
+GenericName[ru]=Калькулятор
+Icon=org.kernora.calculator
+Exec=kernora-calculator
+Categories=Qt;Utility;Calculator;
+Keywords=calculator;math;калькулятор;
+StartupNotify=true

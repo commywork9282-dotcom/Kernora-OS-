@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in chmod find install tar unshare; do
+  require_command "$dependency"
+done
+load_upstream_config
+
+tool="$PROJECT_ROOT/_state/tools/mmdebstrap/usr/bin/mmdebstrap"
+archive_keyring="$PROJECT_ROOT/_state/trust/debian-trixie-archive-keyring.gpg"
+cache_dir="$PROJECT_ROOT/_cache/chroots"
+cache_file="$cache_dir/trixie-amd64-buildd.tar.xz"
+
+[[ -x "$tool" ]] || die "mmdebstrap is missing; run scripts/bootstrap-build-tools"
+[[ -s "$archive_keyring" ]] || die "Debian archive keyring is missing"
+
+if [[ -s "$cache_file" ]] \
+  && tar -tJf "$cache_file" './usr/bin/dh' './usr/bin/rsvg-convert' \
+    './usr/bin/python3' './usr/bin/grub-mkfont' \
+    './usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/Roboto-Regular.ttf' >/dev/null 2>&1; then
+  printf 'build rootfs cache: %s\n' "$cache_file"
+  exit 0
+fi
+
+temporary_root=$(mktemp -d /tmp/kernora-build-rootfs.XXXXXX)
+chmod 0777 "$temporary_root"
+rootfs="$temporary_root/rootfs"
+temporary_keyring="$temporary_root/debian-trixie-archive-keyring.gpg"
+install -m 0644 "$archive_keyring" "$temporary_keyring"
+
+cleanup() {
+  set +e
+  if [[ -e "$rootfs" ]]; then
+    unshare --map-auto --setuid 0 --setgid 0 \
+      find "$rootfs" -depth -delete
+  fi
+  find "$temporary_root" -depth -delete
+}
+trap cleanup EXIT
+
+"$tool" \
+  --mode=unshare \
+  --variant=buildd \
+  --architectures="$BASE_ARCH" \
+  --include=debhelper,debian-archive-keyring,ca-certificates,librsvg2-bin,python3,grub-common,fonts-roboto-unhinted \
+  --keyring="$temporary_keyring" \
+  --aptopt='Acquire::Check-Valid-Until "false"' \
+  --aptopt='Acquire::Languages "none"' \
+  --customize-hook='rm -f "$1/etc/hostname" "$1/etc/resolv.conf"' \
+  "$BASE_CODENAME" \
+  "$rootfs" \
+  "deb $DEBIAN_SNAPSHOT/$SNAPSHOT_TIMESTAMP $BASE_CODENAME main"
+
+mkdir -p "$cache_dir"
+temporary_cache="$cache_dir/.trixie-amd64-buildd.tar.xz.tmp"
+unshare --map-auto --setuid 0 --setgid 0 \
+  tar --numeric-owner -C "$rootfs" -cJf - . > "$temporary_cache"
+mv -- "$temporary_cache" "$cache_file"
+
+printf 'created build rootfs cache: %s\n' "$cache_file"

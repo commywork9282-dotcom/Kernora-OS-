@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+"""usage: gen-installer-style TEMPLATE OUTPUT
+"""
+
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+import kernora_design as design
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 3:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    template = pathlib.Path(argv[1]).read_text(encoding="utf-8")
+    missing = sorted({role for role in re.findall(r"@([A-Za-z]+)@", template) if role not in design.DARK})
+    if missing:
+        print(f"gen-installer-style: unknown roles: {', '.join(missing)}", file=sys.stderr)
+        return 1
+    output = pathlib.Path(argv[2])
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(re.sub(r"@([A-Za-z]+)@", lambda m: design.DARK[m.group(1)], template), encoding="utf-8")
+    print(f"installer stylesheet: {output}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

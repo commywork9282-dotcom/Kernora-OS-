@@ -1,0 +1,2394 @@
+# Russian translation of Kernora Settings.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-settings\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-09-25 20:40-0700\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: apps/settings/qml/Main.qml:20 apps/settings/qml/Main.qml:145
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:91
+msgid "Settings"
+msgstr "Настройки"
+
+#: apps/settings/qml/Main.qml:153
+msgid "Search settings"
+msgstr "Поиск настроек"
+
+#: apps/settings/qml/components/AccountCard.qml:69
+msgid "Account, picture, password"
+msgstr "Аккаунт, фото, пароль"
+
+#: apps/settings/qml/components/Catalog.qml:17
+#: apps/settings/qml/pages/AccountPage.qml:23
+msgid "Account"
+msgstr "Аккаунт"
+
+#: apps/settings/qml/components/Catalog.qml:17
+msgid "Name, picture, password"
+msgstr "Имя, фото, пароль"
+
+#: apps/settings/qml/components/Catalog.qml:18
+#: apps/settings/qml/pages/NetworkPage.qml:24
+msgid "Network & internet"
+msgstr "Сеть и интернет"
+
+#: apps/settings/qml/components/Catalog.qml:18
+msgid "Wi-Fi, wired, airplane mode, VPN"
+msgstr "Wi-Fi, проводная сеть, режим полёта, VPN"
+
+#: apps/settings/qml/components/Catalog.qml:19
+#: apps/settings/qml/pages/BluetoothPage.qml:24
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+#: apps/settings/qml/components/Catalog.qml:19
+msgid "Pairing, connected devices"
+msgstr "Сопряжение, подключённые устройства"
+
+#: apps/settings/qml/components/Catalog.qml:20
+msgid "Brightness, Night Light, resolution, scale"
+msgstr "Яркость, ночной режим, разрешение, масштаб"
+
+#: apps/settings/qml/components/Catalog.qml:20
+#: apps/settings/qml/pages/DisplayPage.qml:24
+msgid "Display & brightness"
+msgstr "Экран и яркость"
+
+#: apps/settings/qml/components/Catalog.qml:21
+#: apps/settings/qml/pages/SoundPage.qml:24
+msgid "Sound"
+msgstr "Звук"
+
+#: apps/settings/qml/components/Catalog.qml:21
+msgid "Volume, output, microphone"
+msgstr "Громкость, вывод, микрофон"
+
+#: apps/settings/qml/components/Catalog.qml:22
+msgid "Do Not Disturb, pop-ups, history"
+msgstr "«Не беспокоить», всплывающие окна, история"
+
+#: apps/settings/qml/components/Catalog.qml:22
+#: apps/settings/qml/pages/NotificationsPage.qml:23
+msgid "Notifications"
+msgstr "Уведомления"
+
+#: apps/settings/qml/components/Catalog.qml:23
+msgid "Dark theme, wallpaper, text size"
+msgstr "Тёмная тема, обои, размер текста"
+
+#: apps/settings/qml/components/Catalog.qml:23
+#: apps/settings/qml/pages/AppearancePage.qml:23
+msgid "Wallpaper & style"
+msgstr "Обои и стиль"
+
+#: apps/settings/qml/components/Catalog.qml:24
+#: apps/settings/qml/pages/AppsPage.qml:21
+#: apps/settings/qml/pages/NotificationsPage.qml:202
+#: apps/settings/qml/pages/SoundPage.qml:182
+msgid "Apps"
+msgstr "Приложения"
+
+#: apps/settings/qml/components/Catalog.qml:24
+msgid "Default apps, startup apps"
+msgstr "Приложения по умолчанию, автозапуск"
+
+#: apps/settings/qml/components/Catalog.qml:25
+#: apps/settings/qml/pages/PowerPage.qml:25
+msgid "Battery & power"
+msgstr "Батарея и питание"
+
+#: apps/settings/qml/components/Catalog.qml:25
+msgid "Power mode, screen timeout, sleep"
+msgstr "Режим питания, отключение экрана, сон"
+
+#: apps/settings/qml/components/Catalog.qml:26
+#: apps/settings/qml/pages/InputPage.qml:23
+msgid "Keyboard, mouse & touchpad"
+msgstr "Клавиатура, мышь и тачпад"
+
+#: apps/settings/qml/components/Catalog.qml:26
+msgid "Layouts, pointer speed, scrolling"
+msgstr "Раскладки, скорость указателя, прокрутка"
+
+#: apps/settings/qml/components/Catalog.qml:27
+#: apps/settings/qml/pages/AccessibilityPage.qml:22
+msgid "Accessibility"
+msgstr "Специальные возможности"
+
+#: apps/settings/qml/components/Catalog.qml:27
+msgid "Zoom, larger text, motion, keys"
+msgstr "Лупа, крупный текст, анимация, клавиши"
+
+#: apps/settings/qml/components/Catalog.qml:28
+msgid "Screen lock, file search, history"
+msgstr "Блокировка экрана, поиск файлов, история"
+
+#: apps/settings/qml/components/Catalog.qml:28
+#: apps/settings/qml/pages/PrivacyPage.qml:22
+msgid "Security & privacy"
+msgstr "Безопасность и конфиденциальность"
+
+#: apps/settings/qml/components/Catalog.qml:29
+msgid "Language, date & time, updates, storage"
+msgstr "Язык, дата и время, обновления, хранилище"
+
+#: apps/settings/qml/components/Catalog.qml:29
+#: apps/settings/qml/pages/SystemPage.qml:22
+msgid "System"
+msgstr "Система"
+
+#: apps/settings/qml/components/Catalog.qml:30
+#: apps/settings/qml/pages/AboutPage.qml:22
+#: apps/settings/qml/pages/SystemPage.qml:97
+msgid "About Kernora"
+msgstr "О Kernora"
+
+#: apps/settings/qml/components/Catalog.qml:30
+msgid "Device name, hardware, legal"
+msgstr "Имя устройства, оборудование, правовая информация"
+
+#: apps/settings/qml/components/Catalog.qml:40
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: apps/settings/qml/components/Catalog.qml:40
+msgid "wireless network hotspot internet connect password"
+msgstr "wifi вайфай беспроводная сеть точка доступа интернет подключение пароль wireless network"
+
+#: apps/settings/qml/components/Catalog.qml:41
+#: apps/settings/qml/pages/NetworkPage.qml:284
+msgid "Airplane mode"
+msgstr "Режим полёта"
+
+#: apps/settings/qml/components/Catalog.qml:41
+msgid "flight offline radio"
+msgstr "самолёт полёт офлайн радио airplane"
+
+#: apps/settings/qml/components/Catalog.qml:42
+msgid "Wired network"
+msgstr "Проводная сеть"
+
+#: apps/settings/qml/components/Catalog.qml:42
+msgid "ethernet cable lan"
+msgstr "ethernet кабель локальная сеть lan"
+
+#: apps/settings/qml/components/Catalog.qml:43
+#: apps/settings/qml/pages/NetworkPage.qml:259
+msgid "VPN"
+msgstr "VPN"
+
+#: apps/settings/qml/components/Catalog.qml:43
+msgid "virtual private network tunnel"
+msgstr "виртуальная частная сеть туннель vpn"
+
+#: apps/settings/qml/components/Catalog.qml:44
+msgid "Proxy and advanced network settings"
+msgstr "Прокси и дополнительные настройки сети"
+
+#: apps/settings/qml/components/Catalog.qml:44
+msgid "ip dns proxy static"
+msgstr "ip dns прокси статический адрес"
+
+#: apps/settings/qml/components/Catalog.qml:45
+#: apps/settings/qml/pages/BluetoothPage.qml:148
+#: apps/settings/qml/pages/BluetoothPairPage.qml:23
+msgid "Pair a new device"
+msgstr "Подключить новое устройство"
+
+#: apps/settings/qml/components/Catalog.qml:45
+msgid "bluetooth headphones speaker mouse keyboard add"
+msgstr "блютуз bluetooth наушники колонка мышь клавиатура добавить сопряжение"
+
+#: apps/settings/qml/components/Catalog.qml:46
+#: apps/settings/qml/pages/DisplayPage.qml:44
+msgid "Brightness"
+msgstr "Яркость"
+
+#: apps/settings/qml/components/Catalog.qml:46
+msgid "screen backlight dim"
+msgstr "экран подсветка затемнение"
+
+#: apps/settings/qml/components/Catalog.qml:47
+#: apps/settings/qml/pages/DisplayPage.qml:119
+msgid "Night Light"
+msgstr "Ночной режим"
+
+#: apps/settings/qml/components/Catalog.qml:47
+msgid "blue light warm colour temperature evening"
+msgstr "синий свет тёплый цвет температура вечер ночь"
+
+#: apps/settings/qml/components/Catalog.qml:48
+#: apps/settings/qml/pages/DisplayPage.qml:289
+msgid "Resolution"
+msgstr "Разрешение"
+
+#: apps/settings/qml/components/Catalog.qml:48
+msgid "screen monitor size pixels"
+msgstr "экран монитор размер пиксели"
+
+#: apps/settings/qml/components/Catalog.qml:49
+#: apps/settings/qml/pages/DisplayPage.qml:302
+msgid "Refresh rate"
+msgstr "Частота обновления"
+
+#: apps/settings/qml/components/Catalog.qml:49
+msgid "hz frequency monitor"
+msgstr "гц герц частота монитор"
+
+#: apps/settings/qml/components/Catalog.qml:50
+#: apps/settings/qml/pages/DisplayPage.qml:311
+msgid "Scale"
+msgstr "Масштаб"
+
+#: apps/settings/qml/components/Catalog.qml:50
+msgid "zoom size hidpi display scaling"
+msgstr "масштабирование размер hidpi экран"
+
+#: apps/settings/qml/components/Catalog.qml:51
+#: apps/settings/qml/pages/DisplayPage.qml:320
+msgid "Orientation"
+msgstr "Ориентация"
+
+#: apps/settings/qml/components/Catalog.qml:51
+msgid "rotate portrait landscape"
+msgstr "поворот книжная альбомная"
+
+#: apps/settings/qml/components/Catalog.qml:52
+#: apps/settings/qml/pages/SoundPage.qml:108
+msgid "Volume"
+msgstr "Громкость"
+
+#: apps/settings/qml/components/Catalog.qml:52
+msgid "loud quiet mute speaker"
+msgstr "громко тихо без звука динамик"
+
+#: apps/settings/qml/components/Catalog.qml:53
+msgid "Output device"
+msgstr "Устройство вывода"
+
+#: apps/settings/qml/components/Catalog.qml:53
+msgid "speakers headphones hdmi"
+msgstr "динамики колонки наушники hdmi"
+
+#: apps/settings/qml/components/Catalog.qml:54
+msgid "Microphone"
+msgstr "Микрофон"
+
+#: apps/settings/qml/components/Catalog.qml:54
+msgid "input record mic"
+msgstr "ввод запись микрофон"
+
+#: apps/settings/qml/components/Catalog.qml:55
+msgid "App volume"
+msgstr "Громкость приложений"
+
+#: apps/settings/qml/components/Catalog.qml:55
+msgid "mixer applications streams"
+msgstr "микшер приложения потоки"
+
+#: apps/settings/qml/components/Catalog.qml:56
+#: apps/settings/qml/pages/NotificationsPage.qml:79
+msgid "Do Not Disturb"
+msgstr "Не беспокоить"
+
+#: apps/settings/qml/components/Catalog.qml:56
+msgid "quiet silence focus"
+msgstr "тишина беззвучный фокус"
+
+#: apps/settings/qml/components/Catalog.qml:57
+msgid "Notification history"
+msgstr "История уведомлений"
+
+#: apps/settings/qml/components/Catalog.qml:57
+msgid "popups list"
+msgstr "всплывающие окна список"
+
+#: apps/settings/qml/components/Catalog.qml:58
+msgid "Dark theme"
+msgstr "Тёмная тема"
+
+#: apps/settings/qml/components/Catalog.qml:58
+msgid "light dark mode colour scheme night"
+msgstr "светлая тёмная тема цветовая схема ночь оформление"
+
+#: apps/settings/qml/components/Catalog.qml:59
+#: apps/settings/qml/pages/AppearancePage.qml:234
+msgid "Wallpaper"
+msgstr "Обои"
+
+#: apps/settings/qml/components/Catalog.qml:59
+msgid "background picture desktop live shapes"
+msgstr "фон картинка рабочий стол живые фигуры"
+
+#: apps/settings/qml/components/Catalog.qml:60
+#: apps/settings/qml/pages/AccessibilityPage.qml:74
+#: apps/settings/qml/pages/AppearancePage.qml:371
+msgid "Text size"
+msgstr "Размер текста"
+
+#: apps/settings/qml/components/Catalog.qml:60
+msgid "font size bigger smaller"
+msgstr "шрифт размер крупнее мельче"
+
+#: apps/settings/qml/components/Catalog.qml:61
+#: apps/settings/qml/pages/AppearancePage.qml:384
+msgid "Animations"
+msgstr "Анимация"
+
+#: apps/settings/qml/components/Catalog.qml:61
+msgid "speed effects motion"
+msgstr "скорость эффекты движение"
+
+#: apps/settings/qml/components/Catalog.qml:62
+#: apps/settings/qml/pages/AppsPage.qml:32
+#: apps/settings/qml/pages/DefaultAppsPage.qml:21
+msgid "Default apps"
+msgstr "Приложения по умолчанию"
+
+#: apps/settings/qml/components/Catalog.qml:62
+msgid "browser mail files open with association"
+msgstr "браузер почта файлы открыть с помощью ассоциации"
+
+#: apps/settings/qml/components/Catalog.qml:63
+#: apps/settings/qml/pages/AppsPage.qml:40
+#: apps/settings/qml/pages/AutostartPage.qml:22
+msgid "Startup apps"
+msgstr "Автозапуск"
+
+#: apps/settings/qml/components/Catalog.qml:63
+msgid "autostart login launch"
+msgstr "автозапуск вход запуск"
+
+#: apps/settings/qml/components/Catalog.qml:64
+#: apps/settings/qml/pages/PowerPage.qml:97
+msgid "Power mode"
+msgstr "Режим питания"
+
+#: apps/settings/qml/components/Catalog.qml:64
+msgid "performance balanced power saver profile"
+msgstr "производительность сбалансированный энергосбережение профиль"
+
+#: apps/settings/qml/components/Catalog.qml:65
+msgid "Screen timeout"
+msgstr "Отключение экрана"
+
+#: apps/settings/qml/components/Catalog.qml:65
+msgid "dim turn off display idle"
+msgstr "затемнение выключение экрана бездействие"
+
+#: apps/settings/qml/components/Catalog.qml:66
+#: apps/settings/qml/pages/PowerPage.qml:184
+#: apps/settings/qml/pages/PowerPage.qml:206
+#: apps/settings/qml/pages/PowerPage.qml:224
+msgid "Sleep"
+msgstr "Сон"
+
+#: apps/settings/qml/components/Catalog.qml:66
+msgid "suspend idle lid power button"
+msgstr "спящий режим бездействие крышка кнопка питания"
+
+#: apps/settings/qml/components/Catalog.qml:67
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:51
+msgid "Battery"
+msgstr "Батарея"
+
+#: apps/settings/qml/components/Catalog.qml:67
+msgid "charge percentage"
+msgstr "заряд проценты аккумулятор"
+
+#: apps/settings/qml/components/Catalog.qml:68
+#: apps/settings/qml/pages/InputPage.qml:36
+#: apps/settings/qml/pages/LanguagePage.qml:88
+msgid "Keyboard layouts"
+msgstr "Раскладки клавиатуры"
+
+#: apps/settings/qml/components/Catalog.qml:68
+msgid "language input switch keymap"
+msgstr "язык ввод переключение раскладка"
+
+#: apps/settings/qml/components/Catalog.qml:69
+msgid "Key repeat"
+msgstr "Повтор клавиш"
+
+#: apps/settings/qml/components/Catalog.qml:69
+msgid "delay rate typing"
+msgstr "задержка скорость набор"
+
+#: apps/settings/qml/components/Catalog.qml:70
+#: apps/settings/qml/pages/InputPage.qml:236
+msgid "Pointer speed"
+msgstr "Скорость указателя"
+
+#: apps/settings/qml/components/Catalog.qml:70
+msgid "mouse acceleration sensitivity"
+msgstr "мышь ускорение чувствительность"
+
+#: apps/settings/qml/components/Catalog.qml:71
+#: apps/settings/qml/pages/InputPage.qml:255
+msgid "Natural scrolling"
+msgstr "Естественная прокрутка"
+
+#: apps/settings/qml/components/Catalog.qml:71
+msgid "reverse scroll direction touchpad"
+msgstr "обратная прокрутка направление тачпад"
+
+#: apps/settings/qml/components/Catalog.qml:72
+#: apps/settings/qml/pages/InputPage.qml:265
+msgid "Tap to click"
+msgstr "Касание для нажатия"
+
+#: apps/settings/qml/components/Catalog.qml:72
+msgid "touchpad tapping"
+msgstr "тачпад касание"
+
+#: apps/settings/qml/components/Catalog.qml:73
+msgid "Primary button"
+msgstr "Основная кнопка"
+
+#: apps/settings/qml/components/Catalog.qml:73
+msgid "left handed mouse"
+msgstr "левша мышь"
+
+#: apps/settings/qml/components/Catalog.qml:74
+#: apps/settings/qml/pages/AccessibilityPage.qml:62
+msgid "Zoom"
+msgstr "Лупа"
+
+#: apps/settings/qml/components/Catalog.qml:74
+msgid "magnifier enlarge screen"
+msgstr "увеличение экрана экранная лупа"
+
+#: apps/settings/qml/components/Catalog.qml:75
+#: apps/settings/qml/pages/AccessibilityPage.qml:142
+msgid "Reduce motion"
+msgstr "Уменьшить движение"
+
+#: apps/settings/qml/components/Catalog.qml:75
+msgid "animations off"
+msgstr "анимация выключить"
+
+#: apps/settings/qml/components/Catalog.qml:76
+#: apps/settings/qml/pages/AccessibilityPage.qml:194
+msgid "Sticky keys"
+msgstr "Залипание клавиш"
+
+#: apps/settings/qml/components/Catalog.qml:76
+msgid "modifier keys shift"
+msgstr "клавиши-модификаторы shift"
+
+#: apps/settings/qml/components/Catalog.qml:77
+#: apps/settings/qml/pages/AccessibilityPage.qml:88
+msgid "Cursor size"
+msgstr "Размер курсора"
+
+#: apps/settings/qml/components/Catalog.qml:77
+msgid "pointer large mouse"
+msgstr "указатель крупный мышь"
+
+#: apps/settings/qml/components/Catalog.qml:78
+#: apps/settings/qml/pages/PrivacyPage.qml:41
+msgid "Screen lock"
+msgstr "Блокировка экрана"
+
+#: apps/settings/qml/components/Catalog.qml:78
+msgid "lock password idle security"
+msgstr "блокировка пароль бездействие безопасность"
+
+#: apps/settings/qml/components/Catalog.qml:79
+#: apps/settings/qml/pages/PrivacyPage.qml:109
+msgid "File search"
+msgstr "Поиск файлов"
+
+#: apps/settings/qml/components/Catalog.qml:79
+msgid "indexing baloo search files"
+msgstr "индексация поиск файлы"
+
+#: apps/settings/qml/components/Catalog.qml:80
+msgid "Recent files"
+msgstr "Недавние файлы"
+
+#: apps/settings/qml/components/Catalog.qml:80
+msgid "history clear activity"
+msgstr "история очистить активность"
+
+#: apps/settings/qml/components/Catalog.qml:81
+#: apps/settings/qml/pages/AccountPage.qml:111
+#: apps/settings/qml/pages/NetworkPage.qml:336
+msgid "Password"
+msgstr "Пароль"
+
+#: apps/settings/qml/components/Catalog.qml:81
+msgid "change password login"
+msgstr "сменить пароль вход"
+
+#: apps/settings/qml/components/Catalog.qml:82
+msgid "Account picture"
+msgstr "Фото аккаунта"
+
+#: apps/settings/qml/components/Catalog.qml:82
+msgid "avatar photo face user"
+msgstr "аватар фото лицо пользователь"
+
+#: apps/settings/qml/components/Catalog.qml:83
+#: apps/settings/qml/pages/AboutPage.qml:219
+#: apps/settings/qml/pages/AccountPage.qml:95
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:43
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:89
+msgid "Name"
+msgstr "Имя"
+
+#: apps/settings/qml/components/Catalog.qml:83
+msgid "full name user"
+msgstr "полное имя пользователь"
+
+#: apps/settings/qml/components/Catalog.qml:84
+#: apps/settings/qml/pages/DateTimePage.qml:23
+#: apps/settings/qml/pages/SystemPage.qml:42
+msgid "Date & time"
+msgstr "Дата и время"
+
+#: apps/settings/qml/components/Catalog.qml:84
+msgid "clock time zone automatic 24-hour"
+msgstr "часы часовой пояс автоматически 24-часовой"
+
+#: apps/settings/qml/components/Catalog.qml:85
+#: apps/settings/qml/pages/LanguagePage.qml:23
+#: apps/settings/qml/pages/SystemPage.qml:34
+msgid "Language & region"
+msgstr "Язык и регион"
+
+#: apps/settings/qml/components/Catalog.qml:85
+msgid "language translation locale formats region"
+msgstr "язык перевод локаль форматы регион"
+
+#: apps/settings/qml/components/Catalog.qml:86
+#: apps/settings/qml/pages/SystemPage.qml:50
+#: apps/settings/qml/pages/UpdatesPage.qml:21
+#: apps/settings/qml/pages/UpdatesPage.qml:41
+msgid "Software updates"
+msgstr "Обновления"
+
+#: apps/settings/qml/components/Catalog.qml:86
+msgid "upgrade packages install security"
+msgstr "обновить пакеты установить безопасность"
+
+#: apps/settings/qml/components/Catalog.qml:87
+#: apps/settings/qml/pages/StoragePage.qml:21
+#: apps/settings/qml/pages/SystemPage.qml:60
+msgid "Storage"
+msgstr "Хранилище"
+
+#: apps/settings/qml/components/Catalog.qml:87
+msgid "disk space free trash"
+msgstr "диск место свободно корзина"
+
+#: apps/settings/qml/components/Catalog.qml:88
+#: apps/settings/qml/pages/ModulesPage.qml:21
+#: apps/settings/qml/pages/SystemPage.qml:89
+msgid "More settings"
+msgstr "Другие настройки"
+
+#: apps/settings/qml/components/Catalog.qml:88
+msgid "advanced kde modules printers shortcuts fonts"
+msgstr "дополнительно модули kde принтеры сочетания клавиш шрифты"
+
+#: apps/settings/qml/components/Catalog.qml:89
+#: apps/settings/qml/pages/AboutPage.qml:126
+#: apps/settings/qml/pages/AboutPage.qml:207
+msgid "Device name"
+msgstr "Имя устройства"
+
+#: apps/settings/qml/components/Catalog.qml:89
+msgid "hostname computer name"
+msgstr "имя компьютера hostname"
+
+#: apps/settings/qml/components/Catalog.qml:90
+msgid "System information"
+msgstr "Сведения о системе"
+
+#: apps/settings/qml/components/Catalog.qml:90
+msgid "version hardware processor memory graphics kernel"
+msgstr "версия оборудование процессор память графика ядро"
+
+#: apps/settings/qml/components/Catalog.qml:91
+#: apps/settings/qml/pages/AboutPage.qml:178
+#: apps/settings/qml/pages/LegalPage.qml:23
+msgid "Legal information"
+msgstr "Правовая информация"
+
+#: apps/settings/qml/components/Catalog.qml:91
+msgid "licenses copyright authors credits open source"
+msgstr "лицензии авторские права авторы открытый код"
+
+#: apps/settings/qml/components/SearchResults.qml:77
+msgid "Section"
+msgstr "Раздел"
+
+#: apps/settings/qml/components/SearchResults.qml:96
+msgid "Nothing found"
+msgstr "Ничего не найдено"
+
+#: apps/settings/qml/components/SearchResults.qml:97
+msgid "Try another word, like “Wi-Fi”, “wallpaper” or “password”."
+msgstr "Попробуйте другое слово, например «Wi-Fi», «обои» или «пароль»."
+
+#: apps/settings/qml/pages/AboutPage.qml:42
+msgid "The name could not be changed."
+msgstr "Не удалось изменить имя."
+
+#: apps/settings/qml/pages/AboutPage.qml:60
+msgid "Based on Debian %1"
+msgstr "На основе Debian %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:61
+msgid "Processor: %1"
+msgstr "Процессор: %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:62
+msgid "Memory: %1"
+msgstr "Память: %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:63
+msgid "Graphics: %1"
+msgstr "Графика: %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:64
+msgid "Kernel: %1"
+msgstr "Ядро: %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:65
+msgid "Desktop: KDE Plasma %1, Frameworks %2, Qt %3"
+msgstr "Рабочий стол: KDE Plasma %1, Frameworks %2, Qt %3"
+
+#: apps/settings/qml/pages/AboutPage.qml:105
+msgid "Version %1"
+msgstr "Версия %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:113
+msgid "Running from the installation medium"
+msgstr "Запущена с установочного носителя"
+
+#: apps/settings/qml/pages/AboutPage.qml:123
+#: apps/settings/qml/pages/StoragePage.qml:60
+msgid "This computer"
+msgstr "Этот компьютер"
+
+#: apps/settings/qml/pages/AboutPage.qml:134
+msgid "Model"
+msgstr "Модель"
+
+#: apps/settings/qml/pages/AboutPage.qml:142
+msgid "Processor"
+msgstr "Процессор"
+
+#: apps/settings/qml/pages/AboutPage.qml:144
+msgid "%2, %1 thread"
+msgid_plural "%2, %1 threads"
+msgstr[0] "%2, %1 поток"
+msgstr[1] "%2, %1 потока"
+msgstr[2] "%2, %1 потоков"
+
+#: apps/settings/qml/pages/AboutPage.qml:149
+msgid "Memory"
+msgstr "Память"
+
+#: apps/settings/qml/pages/AboutPage.qml:151
+msgid "%1, %2 available"
+msgstr "%1, доступно %2"
+
+#: apps/settings/qml/pages/AboutPage.qml:156
+msgid "Graphics"
+msgstr "Графика"
+
+#: apps/settings/qml/pages/AboutPage.qml:165
+msgid "Software"
+msgstr "Программное обеспечение"
+
+#: apps/settings/qml/pages/AboutPage.qml:168
+msgid "Based on"
+msgstr "Основа"
+
+#: apps/settings/qml/pages/AboutPage.qml:168
+msgid "Debian %1"
+msgstr "Debian %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:169
+msgid "Kernel"
+msgstr "Ядро"
+
+#: apps/settings/qml/pages/AboutPage.qml:170
+msgid "KDE Plasma"
+msgstr "KDE Plasma"
+
+#: apps/settings/qml/pages/AboutPage.qml:171
+msgid "KDE Frameworks"
+msgstr "KDE Frameworks"
+
+#: apps/settings/qml/pages/AboutPage.qml:172
+msgid "Qt"
+msgstr "Qt"
+
+#: apps/settings/qml/pages/AboutPage.qml:173
+msgid "Graphics platform"
+msgstr "Графическая платформа"
+
+#: apps/settings/qml/pages/AboutPage.qml:179
+msgid "Licences, authors and copyrights of the software in Kernora"
+msgstr "Лицензии, авторы и авторские права программ в Kernora"
+
+#: apps/settings/qml/pages/AboutPage.qml:186
+msgid "Copy system details"
+msgstr "Копировать сведения о системе"
+
+#: apps/settings/qml/pages/AboutPage.qml:187
+msgid "For a bug report or a support request"
+msgstr "Для сообщения об ошибке или обращения в поддержку"
+
+#: apps/settings/qml/pages/AboutPage.qml:194
+msgid "System details copied."
+msgstr "Сведения о системе скопированы."
+
+#: apps/settings/qml/pages/AboutPage.qml:208
+msgid "Other devices on the network and Bluetooth see this computer by this name."
+msgstr "Под этим именем компьютер видят другие устройства в сети и по Bluetooth."
+
+#: apps/settings/qml/pages/AboutPage.qml:209
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:79
+msgid "Rename"
+msgstr "Переименовать"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:59
+msgid "Seeing"
+msgstr "Зрение"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:63
+msgid "Magnify the screen with Meta and + or −; Meta and 0 goes back"
+msgstr "Увеличение: Meta и + или −; Meta и 0 — обратно"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:78
+#: apps/settings/qml/pages/AppearancePage.qml:375
+msgid "Small"
+msgstr "Мелкий"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:79
+#: apps/settings/qml/pages/AccessibilityPage.qml:92
+#: apps/settings/qml/pages/AppearancePage.qml:376
+#: apps/settings/qml/pages/InputPage.qml:246
+#: apps/settings/qml/pages/InputPage.qml:296
+msgid "Default"
+msgstr "По умолчанию"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:80
+#: apps/settings/qml/pages/AccessibilityPage.qml:93
+#: apps/settings/qml/pages/AppearancePage.qml:377
+msgid "Large"
+msgstr "Крупный"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:81
+#: apps/settings/qml/pages/AccessibilityPage.qml:94
+#: apps/settings/qml/pages/AppearancePage.qml:378
+msgid "Larger"
+msgstr "Крупнее"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:82
+#: apps/settings/qml/pages/AccessibilityPage.qml:95
+msgid "Largest"
+msgstr "Самый крупный"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:106
+msgid "Colour filter"
+msgstr "Цветовой фильтр"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:110
+#: apps/settings/qml/pages/AppearancePage.qml:388
+#: apps/settings/qml/pages/DisplayPage.qml:127
+#: apps/settings/qml/pages/InputPage.qml:179
+#: apps/settings/qml/pages/NotificationsPage.qml:66
+msgid "Off"
+msgstr "Выключено"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:111
+msgid "Red-green (protanopia)"
+msgstr "Красный-зелёный (протанопия)"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:112
+msgid "Green-red (deuteranopia)"
+msgstr "Зелёный-красный (дейтеранопия)"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:113
+msgid "Blue-yellow (tritanopia)"
+msgstr "Синий-жёлтый (тританопия)"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:114
+msgid "Greyscale"
+msgstr "Оттенки серого"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:139
+msgid "Motion and sound"
+msgstr "Движение и звук"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:143
+msgid "Turn off animations everywhere"
+msgstr "Выключить анимацию везде"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:154
+msgid "Flash the screen for alerts"
+msgstr "Вспышка экрана при сигналах"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:155
+msgid "Show the system bell instead of only playing it"
+msgstr "Показывать системный сигнал, а не только проигрывать его"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:166
+msgid "Screen reader"
+msgstr "Экранный диктор"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:167
+msgid "Orca reads out what is on the screen"
+msgstr "Orca зачитывает содержимое экрана"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:191
+msgid "Keyboard"
+msgstr "Клавиатура"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:195
+msgid "Press Shift, Ctrl or Alt one after another instead of together"
+msgstr "Нажимайте Shift, Ctrl или Alt по очереди, а не одновременно"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:206
+msgid "Slow keys"
+msgstr "Медленные клавиши"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:207
+msgid "A key counts only when held down for a moment"
+msgstr "Нажатие засчитывается, только если клавишу немного подержать"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:218
+msgid "Bounce keys"
+msgstr "Игнорировать повторные нажатия"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:219
+msgid "Ignore a key pressed again too quickly"
+msgstr "Не засчитывать слишком быстрое повторное нажатие"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:233
+msgid "More accessibility options"
+msgstr "Другие специальные возможности"
+
+#: apps/settings/qml/pages/AccountPage.qml:31
+msgid "Your password was changed."
+msgstr "Пароль изменён."
+
+#: apps/settings/qml/pages/AccountPage.qml:84
+msgid "Administrator · %1"
+msgstr "Администратор · %1"
+
+#: apps/settings/qml/pages/AccountPage.qml:92
+msgid "Your account"
+msgstr "Ваш аккаунт"
+
+#: apps/settings/qml/pages/AccountPage.qml:96
+#: apps/settings/qml/pages/DefaultAppsPage.qml:35
+msgid "Not set"
+msgstr "Не задано"
+
+#: apps/settings/qml/pages/AccountPage.qml:103
+msgid "Picture"
+msgstr "Фото"
+
+#: apps/settings/qml/pages/AccountPage.qml:104
+msgid "Choose a picture or a photo of your own"
+msgstr "Выберите картинку или своё фото"
+
+#: apps/settings/qml/pages/AccountPage.qml:112
+msgid "Used to log in, unlock the screen and install software"
+msgstr "Нужен для входа, разблокировки экрана и установки программ"
+
+#: apps/settings/qml/pages/AccountPage.qml:121
+msgid "Other accounts"
+msgstr "Другие аккаунты"
+
+#: apps/settings/qml/pages/AccountPage.qml:124
+msgid "Manage accounts"
+msgstr "Управление аккаунтами"
+
+#: apps/settings/qml/pages/AccountPage.qml:125
+msgid "Add people who use this computer"
+msgstr "Добавьте тех, кто пользуется этим компьютером"
+
+#: apps/settings/qml/pages/AccountPage.qml:137
+msgid "Your name"
+msgstr "Ваше имя"
+
+#: apps/settings/qml/pages/AccountPage.qml:138
+msgid "Shown on the login screen and in the launcher."
+msgstr "Показывается на экране входа и в меню запуска."
+
+#: apps/settings/qml/pages/AccountPage.qml:139
+msgid "Save"
+msgstr "Сохранить"
+
+#: apps/settings/qml/pages/AccountPage.qml:149
+msgid "Full name"
+msgstr "Полное имя"
+
+#: apps/settings/qml/pages/AccountPage.qml:160
+#: apps/settings/qml/pages/AccountPage.qml:217
+#: apps/settings/qml/pages/AppearancePage.qml:411
+msgid "Choose a picture"
+msgstr "Выберите изображение"
+
+#: apps/settings/qml/pages/AccountPage.qml:206
+msgid "Choose a file…"
+msgstr "Выбрать файл…"
+
+#: apps/settings/qml/pages/AccountPage.qml:218
+msgid "Pictures (*.png *.jpg *.jpeg *.webp *.avif)"
+msgstr "Изображения (*.png *.jpg *.jpeg *.webp *.avif)"
+
+#: apps/settings/qml/pages/AccountPage.qml:230
+#: apps/settings/qml/pages/PrivacyPage.qml:94
+msgid "Change password"
+msgstr "Сменить пароль"
+
+#: apps/settings/qml/pages/AccountPage.qml:231
+msgid "Use at least 8 characters. The system asks for your current password to confirm."
+msgstr "Не менее 8 символов. Для подтверждения система запросит текущий пароль."
+
+#: apps/settings/qml/pages/AccountPage.qml:232
+msgid "Change"
+msgstr "Сменить"
+
+#: apps/settings/qml/pages/AccountPage.qml:248
+msgid "New password"
+msgstr "Новый пароль"
+
+#: apps/settings/qml/pages/AccountPage.qml:250
+msgid "At least 8 characters"
+msgstr "Не менее 8 символов"
+
+#: apps/settings/qml/pages/AccountPage.qml:255
+msgid "Repeat the new password"
+msgstr "Повторите новый пароль"
+
+#: apps/settings/qml/pages/AccountPage.qml:257
+msgid "The passwords are different"
+msgstr "Пароли не совпадают"
+
+#: apps/settings/qml/pages/AppearancePage.qml:33
+msgid "The theme could not be changed."
+msgstr "Не удалось сменить тему."
+
+#: apps/settings/qml/pages/AppearancePage.qml:209
+msgid "Theme"
+msgstr "Тема"
+
+#: apps/settings/qml/pages/AppearancePage.qml:217
+msgid "Light"
+msgstr "Светлая"
+
+#: apps/settings/qml/pages/AppearancePage.qml:218
+msgid "Dark"
+msgstr "Тёмная"
+
+#: apps/settings/qml/pages/AppearancePage.qml:244
+#: apps/settings/qml/pages/AppearancePage.qml:288
+msgid "Kernora Shapes"
+msgstr "Фигуры Kernora"
+
+#: apps/settings/qml/pages/AppearancePage.qml:245
+msgid "Live"
+msgstr "Живые"
+
+#: apps/settings/qml/pages/AppearancePage.qml:263
+msgid "Your picture"
+msgstr "Своё изображение"
+
+#: apps/settings/qml/pages/AppearancePage.qml:264
+msgid "Choose…"
+msgstr "Выбрать…"
+
+#: apps/settings/qml/pages/AppearancePage.qml:275
+msgid "Use on the lock screen too"
+msgstr "Также на экране блокировки"
+
+#: apps/settings/qml/pages/AppearancePage.qml:292
+msgid "Speed"
+msgstr "Скорость"
+
+#: apps/settings/qml/pages/AppearancePage.qml:299
+#: apps/settings/qml/pages/InputPage.qml:296
+msgid "%1×"
+msgstr "%1×"
+
+#: apps/settings/qml/pages/AppearancePage.qml:299
+#: apps/settings/qml/pages/AppearancePage.qml:390
+msgid "Normal"
+msgstr "Обычная"
+
+#: apps/settings/qml/pages/AppearancePage.qml:303
+msgid "Changing colours"
+msgstr "Смена цветов"
+
+#: apps/settings/qml/pages/AppearancePage.qml:304
+msgid "The shapes slowly move through the palette"
+msgstr "Фигуры медленно меняют цвета палитры"
+
+#: apps/settings/qml/pages/AppearancePage.qml:316
+msgid "Pause behind windows"
+msgstr "Пауза за окнами"
+
+#: apps/settings/qml/pages/AppearancePage.qml:317
+msgid "Saves power while a maximised window covers the desktop"
+msgstr "Экономит энергию, пока развёрнутое окно закрывает рабочий стол"
+
+#: apps/settings/qml/pages/AppearancePage.qml:368
+msgid "Text and motion"
+msgstr "Текст и анимация"
+
+#: apps/settings/qml/pages/AppearancePage.qml:389
+msgid "Faster"
+msgstr "Быстрее"
+
+#: apps/settings/qml/pages/AppearancePage.qml:391
+msgid "Slower"
+msgstr "Медленнее"
+
+#: apps/settings/qml/pages/AppearancePage.qml:400
+msgid "Fonts"
+msgstr "Шрифты"
+
+#: apps/settings/qml/pages/AppearancePage.qml:401
+msgid "Typefaces for the interface and for code"
+msgstr "Шрифты интерфейса и для кода"
+
+#: apps/settings/qml/pages/AppearancePage.qml:412
+msgid "Pictures (*.png *.jpg *.jpeg *.webp *.avif *.svg)"
+msgstr "Изображения (*.png *.jpg *.jpeg *.webp *.avif *.svg)"
+
+#: apps/settings/qml/pages/AppsPage.qml:33
+msgid "Browser, email, files and media"
+msgstr "Браузер, почта, файлы и медиа"
+
+#: apps/settings/qml/pages/AppsPage.qml:33
+msgid "Browser: %1"
+msgstr "Браузер: %1"
+
+#: apps/settings/qml/pages/AppsPage.qml:41
+#: apps/settings/qml/pages/AutostartPage.qml:31
+msgid "Nothing starts at login"
+msgstr "При входе ничего не запускается"
+
+#: apps/settings/qml/pages/AppsPage.qml:42
+msgid "%1 app starts at login"
+msgid_plural "%1 apps start at login"
+msgstr[0] "%1 приложение запускается при входе"
+msgstr[1] "%1 приложения запускаются при входе"
+msgstr[2] "%1 приложений запускаются при входе"
+
+#: apps/settings/qml/pages/AppsPage.qml:49
+#: apps/settings/qml/pages/NotificationAppsPage.qml:23
+#: apps/settings/qml/pages/NotificationsPage.qml:205
+msgid "App notifications"
+msgstr "Уведомления приложений"
+
+#: apps/settings/qml/pages/AppsPage.qml:50
+msgid "Which apps may show pop-ups"
+msgstr "Каким приложениям можно показывать всплывающие окна"
+
+#: apps/settings/qml/pages/AppsPage.qml:59
+#: apps/settings/qml/pages/InputPage.qml:304
+#: apps/settings/qml/pages/NetworkPage.qml:281
+#: apps/settings/qml/pages/SystemPage.qml:86
+msgid "More"
+msgstr "Ещё"
+
+#: apps/settings/qml/pages/AppsPage.qml:62
+msgid "File types"
+msgstr "Типы файлов"
+
+#: apps/settings/qml/pages/AppsPage.qml:63
+msgid "Choose an app for any kind of file"
+msgstr "Выбор приложения для любого типа файлов"
+
+#: apps/settings/qml/pages/AppsPage.qml:70
+#: apps/settings/qml/pages/InputPage.qml:307
+msgid "Keyboard shortcuts"
+msgstr "Сочетания клавиш"
+
+#: apps/settings/qml/pages/AppsPage.qml:71
+msgid "Shortcuts for apps and the desktop"
+msgstr "Сочетания для приложений и рабочего стола"
+
+#: apps/settings/qml/pages/AutostartPage.qml:23
+msgid "These apps start when you log in."
+msgstr "Эти приложения запускаются при входе в систему."
+
+#: apps/settings/qml/pages/AutostartPage.qml:32
+msgid "Add an app to have it ready as soon as you log in."
+msgstr "Добавьте приложение, чтобы оно было готово сразу после входа."
+
+#: apps/settings/qml/pages/AutostartPage.qml:54
+#: apps/settings/qml/pages/InputPage.qml:78
+msgid "Remove"
+msgstr "Убрать"
+
+#: apps/settings/qml/pages/AutostartPage.qml:73
+msgid "Add an app"
+msgstr "Добавить приложение"
+
+#: apps/settings/qml/pages/AutostartPage.qml:83
+msgid "Start at login"
+msgstr "Запуск при входе"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:21
+#: apps/settings/qml/pages/BluetoothPage.qml:70
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:33
+#: apps/settings/qml/pages/NetworkPage.qml:118
+msgid "Connected"
+msgstr "Подключено"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:21
+#: apps/settings/qml/pages/BluetoothPage.qml:70
+#: apps/settings/qml/pages/NetworkPage.qml:130
+msgid "Not connected"
+msgstr "Не подключено"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:27
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:58
+#: apps/settings/qml/pages/NetworkPage.qml:322
+msgid "Connect"
+msgstr "Подключить"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:27
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:49
+msgid "Disconnect"
+msgstr "Отключить"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:32
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:99
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:68
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:110
+msgid "Forget"
+msgstr "Забыть"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:40
+msgid "Device"
+msgstr "Устройство"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:54
+#: apps/settings/qml/pages/DisplayPage.qml:238
+#: apps/settings/qml/pages/PowerPage.qml:80
+#: apps/settings/qml/pages/SoundPage.qml:116
+#: apps/settings/qml/pages/SoundPage.qml:155
+#: apps/settings/qml/pages/SoundPage.qml:197
+#: apps/settings/qml/pages/StoragePage.qml:71
+msgid "%1%"
+msgstr "%1%"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:59
+msgid "Connect automatically"
+msgstr "Подключаться автоматически"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:60
+msgid "Let the device connect without asking"
+msgstr "Разрешить устройству подключаться без запроса"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:68
+msgid "Address"
+msgstr "Адрес"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:78
+msgid "Rename device"
+msgstr "Переименовать устройство"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:97
+msgid "Forget this device?"
+msgstr "Забыть это устройство?"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:98
+msgid "To use it again you have to pair it again."
+msgstr "Чтобы снова им пользоваться, его придётся заново подключить."
+
+#: apps/settings/qml/pages/BluetoothPage.qml:72
+msgid "%1% battery"
+msgstr "Заряд %1%"
+
+#: apps/settings/qml/pages/BluetoothPage.qml:80
+msgid "No Bluetooth adapter"
+msgstr "Нет адаптера Bluetooth"
+
+#: apps/settings/qml/pages/BluetoothPage.qml:81
+msgid "This computer has no Bluetooth, or its adapter is switched off in hardware."
+msgstr "На этом компьютере нет Bluetooth или адаптер выключен аппаратно."
+
+#: apps/settings/qml/pages/BluetoothPage.qml:87
+msgid "Use Bluetooth"
+msgstr "Bluetooth"
+
+#: apps/settings/qml/pages/BluetoothPage.qml:98
+msgid "Visible to nearby devices as “%1” while this page is open."
+msgstr "Пока открыта эта страница, устройства поблизости видят компьютер как «%1»."
+
+#: apps/settings/qml/pages/BluetoothPage.qml:102
+msgid "Your devices"
+msgstr "Ваши устройства"
+
+#: apps/settings/qml/pages/BluetoothPage.qml:104
+msgid "No paired devices yet."
+msgstr "Подключённых устройств пока нет."
+
+#: apps/settings/qml/pages/BluetoothPage.qml:128
+msgid "Device details"
+msgstr "Об устройстве"
+
+#: apps/settings/qml/pages/BluetoothPage.qml:149
+msgid "Headphones, speakers, keyboards, mice, phones"
+msgstr "Наушники, колонки, клавиатуры, мыши, телефоны"
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:24
+msgid "Make sure the device is in pairing mode and close by."
+msgstr "Устройство должно быть рядом и в режиме сопряжения."
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:56
+msgid "Couldn't pair with %1"
+msgstr "Не удалось подключить %1"
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:61
+msgid "Paired with %1"
+msgstr "%1 подключено"
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:79
+msgid "Searching…"
+msgstr "Поиск…"
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:84
+msgid "Available devices"
+msgstr "Доступные устройства"
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:85
+msgid "No devices found yet."
+msgstr "Устройства пока не найдены."
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:93
+msgid "Pairing…"
+msgstr "Сопряжение…"
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:94
+msgid "Pairing failed. Try again."
+msgstr "Сопряжение не удалось. Попробуйте ещё раз."
+
+#: apps/settings/qml/pages/DateTimePage.qml:92
+msgid "Set the time automatically"
+msgstr "Устанавливать время автоматически"
+
+#: apps/settings/qml/pages/DateTimePage.qml:93
+msgid "From time servers on the internet"
+msgstr "По серверам времени в интернете"
+
+#: apps/settings/qml/pages/DateTimePage.qml:104
+msgid "Time zone"
+msgstr "Часовой пояс"
+
+#: apps/settings/qml/pages/DateTimePage.qml:107
+msgid "Choose a time zone"
+msgstr "Выберите часовой пояс"
+
+#: apps/settings/qml/pages/DateTimePage.qml:116
+#: apps/settings/qml/pages/DateTimePage.qml:138
+msgid "Set date and time"
+msgstr "Установить дату и время"
+
+#: apps/settings/qml/pages/DateTimePage.qml:127
+msgid "Time and date format"
+msgstr "Формат даты и времени"
+
+#: apps/settings/qml/pages/DateTimePage.qml:128
+msgid "Follows your region"
+msgstr "Как принято в вашем регионе"
+
+#: apps/settings/qml/pages/DateTimePage.qml:139
+msgid "Set"
+msgstr "Установить"
+
+#: apps/settings/qml/pages/DateTimePage.qml:155
+msgid "The time could not be set."
+msgstr "Не удалось установить время."
+
+#: apps/settings/qml/pages/DateTimePage.qml:161
+msgid "Date (YYYY-MM-DD)"
+msgstr "Дата (ГГГГ-ММ-ДД)"
+
+#: apps/settings/qml/pages/DateTimePage.qml:166
+msgid "Time (HH:MM)"
+msgstr "Время (ЧЧ:ММ)"
+
+#: apps/settings/qml/pages/DefaultAppsPage.qml:22
+msgid "The apps that open links, folders and files."
+msgstr "Приложения, которые открывают ссылки, папки и файлы."
+
+#: apps/settings/qml/pages/DisplayPage.qml:53
+msgid "Screen brightness"
+msgstr "Яркость экрана"
+
+#: apps/settings/qml/pages/DisplayPage.qml:121
+msgid "Night Light makes the screen warmer, which is easier on the eyes in the evening."
+msgstr "Ночной режим делает цвета экрана теплее — вечером так легче глазам."
+
+#: apps/settings/qml/pages/DisplayPage.qml:124
+msgid "Use Night Light"
+msgstr "Ночной режим"
+
+#: apps/settings/qml/pages/DisplayPage.qml:126
+msgid "On now"
+msgstr "Сейчас включён"
+
+#: apps/settings/qml/pages/DisplayPage.qml:126
+msgid "Paused for now"
+msgstr "Временно приостановлен"
+
+#: apps/settings/qml/pages/DisplayPage.qml:126
+msgid "Waiting for the evening"
+msgstr "Включится вечером"
+
+#: apps/settings/qml/pages/DisplayPage.qml:138
+msgid "Schedule"
+msgstr "Расписание"
+
+#: apps/settings/qml/pages/DisplayPage.qml:143
+msgid "Always on"
+msgstr "Всегда"
+
+#: apps/settings/qml/pages/DisplayPage.qml:144
+msgid "Custom times"
+msgstr "Своё время"
+
+#: apps/settings/qml/pages/DisplayPage.qml:144
+msgid "From %1 to %2"
+msgstr "С %1 до %2"
+
+#: apps/settings/qml/pages/DisplayPage.qml:145
+msgid "Follows your location"
+msgstr "По вашему местоположению"
+
+#: apps/settings/qml/pages/DisplayPage.qml:145
+msgid "Sunset to sunrise"
+msgstr "От заката до рассвета"
+
+#: apps/settings/qml/pages/DisplayPage.qml:154
+msgid "Turns on at"
+msgstr "Включается в"
+
+#: apps/settings/qml/pages/DisplayPage.qml:167
+msgid "Turns off at"
+msgstr "Выключается в"
+
+#: apps/settings/qml/pages/DisplayPage.qml:180
+msgid "Warmth"
+msgstr "Теплота"
+
+#: apps/settings/qml/pages/DisplayPage.qml:189
+msgid "%1 K"
+msgstr "%1 K"
+
+#: apps/settings/qml/pages/DisplayPage.qml:219
+msgid "The display settings could not be applied."
+msgstr "Не удалось применить настройки экрана."
+
+#: apps/settings/qml/pages/DisplayPage.qml:262
+#: apps/settings/qml/pages/PowerPage.qml:151
+msgid "Screen"
+msgstr "Экран"
+
+#: apps/settings/qml/pages/DisplayPage.qml:265
+msgid "Use this screen"
+msgstr "Использовать этот экран"
+
+#: apps/settings/qml/pages/DisplayPage.qml:274
+msgid "Main screen"
+msgstr "Основной экран"
+
+#: apps/settings/qml/pages/DisplayPage.qml:275
+msgid "Holds the panel and new windows"
+msgstr "На нём панель и новые окна"
+
+#: apps/settings/qml/pages/DisplayPage.qml:296
+msgid "Recommended"
+msgstr "Рекомендуется"
+
+#: apps/settings/qml/pages/DisplayPage.qml:306
+msgid "%1 Hz"
+msgstr "%1 Гц"
+
+#: apps/settings/qml/pages/DisplayPage.qml:325
+msgid "Landscape"
+msgstr "Альбомная"
+
+#: apps/settings/qml/pages/DisplayPage.qml:326
+msgid "Portrait"
+msgstr "Книжная"
+
+#: apps/settings/qml/pages/DisplayPage.qml:327
+msgid "Landscape, flipped"
+msgstr "Альбомная, перевёрнутая"
+
+#: apps/settings/qml/pages/DisplayPage.qml:328
+msgid "Portrait, flipped"
+msgstr "Книжная, перевёрнутая"
+
+#: apps/settings/qml/pages/DisplayPage.qml:338
+msgid "Arrange screens and more"
+msgstr "Расположение экранов и другое"
+
+#: apps/settings/qml/pages/DisplayPage.qml:339
+msgid "Position of several screens, overscan, colour profiles"
+msgstr "Расположение нескольких экранов, выход за края, цветовые профили"
+
+#: apps/settings/qml/pages/DisplayPage.qml:353
+msgid "Keep these display settings?"
+msgstr "Сохранить эти настройки экрана?"
+
+#: apps/settings/qml/pages/DisplayPage.qml:354
+msgid "The previous settings come back in %1 second."
+msgid_plural "The previous settings come back in %1 seconds."
+msgstr[0] "Прежние настройки вернутся через %1 секунду."
+msgstr[1] "Прежние настройки вернутся через %1 секунды."
+msgstr[2] "Прежние настройки вернутся через %1 секунд."
+
+#: apps/settings/qml/pages/DisplayPage.qml:355
+msgid "Keep"
+msgstr "Сохранить"
+
+#: apps/settings/qml/pages/DisplayPage.qml:356
+msgid "Revert"
+msgstr "Вернуть"
+
+#: apps/settings/qml/pages/InputPage.qml:37
+msgid "The first layout is used when you log in."
+msgstr "Первая раскладка используется при входе в систему."
+
+#: apps/settings/qml/pages/InputPage.qml:46
+msgid "Main layout"
+msgstr "Основная раскладка"
+
+#: apps/settings/qml/pages/InputPage.qml:67
+msgid "Make main layout"
+msgstr "Сделать основной"
+
+#: apps/settings/qml/pages/InputPage.qml:91
+#: apps/settings/qml/pages/InputPage.qml:121
+msgid "Add a layout"
+msgstr "Добавить раскладку"
+
+#: apps/settings/qml/pages/InputPage.qml:103
+msgid "Switch layouts with"
+msgstr "Переключение раскладок"
+
+#: apps/settings/qml/pages/InputPage.qml:108
+msgid "Meta+Alt+K"
+msgstr "Meta+Alt+K"
+
+#: apps/settings/qml/pages/InputPage.qml:108
+msgid "The desktop shortcut"
+msgstr "Сочетание рабочего стола"
+
+#: apps/settings/qml/pages/InputPage.qml:109
+msgid "Alt+Shift"
+msgstr "Alt+Shift"
+
+#: apps/settings/qml/pages/InputPage.qml:110
+msgid "Ctrl+Shift"
+msgstr "Ctrl+Shift"
+
+#: apps/settings/qml/pages/InputPage.qml:111
+msgid "Caps Lock"
+msgstr "Caps Lock"
+
+#: apps/settings/qml/pages/InputPage.qml:112
+msgid "Super+Space (XKB)"
+msgstr "Super+Пробел (XKB)"
+
+#: apps/settings/qml/pages/InputPage.qml:142
+msgid "Typing"
+msgstr "Набор текста"
+
+#: apps/settings/qml/pages/InputPage.qml:145
+msgid "Repeat keys"
+msgstr "Повтор клавиш"
+
+#: apps/settings/qml/pages/InputPage.qml:146
+msgid "Holding a key down types it again and again"
+msgstr "Удерживаемая клавиша вводится повторно"
+
+#: apps/settings/qml/pages/InputPage.qml:154
+msgid "Delay before repeating"
+msgstr "Задержка перед повтором"
+
+#: apps/settings/qml/pages/InputPage.qml:160
+msgid "%1 ms"
+msgstr "%1 мс"
+
+#: apps/settings/qml/pages/InputPage.qml:164
+msgid "Repeat speed"
+msgstr "Скорость повтора"
+
+#: apps/settings/qml/pages/InputPage.qml:170
+msgid "%1 per second"
+msgstr "%1 в секунду"
+
+#: apps/settings/qml/pages/InputPage.qml:174
+msgid "Num Lock at login"
+msgstr "Num Lock при входе"
+
+#: apps/settings/qml/pages/InputPage.qml:178
+msgid "On"
+msgstr "Включено"
+
+#: apps/settings/qml/pages/InputPage.qml:180
+msgid "Leave as it is"
+msgstr "Не менять"
+
+#: apps/settings/qml/pages/InputPage.qml:219
+msgid "The setting could not be changed."
+msgstr "Не удалось изменить параметр."
+
+#: apps/settings/qml/pages/InputPage.qml:232
+msgid "Mouse"
+msgstr "Мышь"
+
+#: apps/settings/qml/pages/InputPage.qml:232
+msgid "Touchpad"
+msgstr "Тачпад"
+
+#: apps/settings/qml/pages/InputPage.qml:256
+msgid "Content moves the way your fingers move"
+msgstr "Содержимое движется вслед за пальцами"
+
+#: apps/settings/qml/pages/InputPage.qml:274
+msgid "Ignore while typing"
+msgstr "Отключать во время набора"
+
+#: apps/settings/qml/pages/InputPage.qml:283
+msgid "Right button is the primary one"
+msgstr "Основная кнопка — правая"
+
+#: apps/settings/qml/pages/InputPage.qml:284
+msgid "For the left hand"
+msgstr "Для левой руки"
+
+#: apps/settings/qml/pages/InputPage.qml:293
+msgid "Scrolling speed"
+msgstr "Скорость прокрутки"
+
+#: apps/settings/qml/pages/InputPage.qml:314
+msgid "Touchpad gestures and advanced options"
+msgstr "Жесты тачпада и дополнительные параметры"
+
+#: apps/settings/qml/pages/InputPage.qml:321
+msgid "Advanced keyboard options"
+msgstr "Дополнительные параметры клавиатуры"
+
+#: apps/settings/qml/pages/InputPage.qml:322
+msgid "Compose key, special keys, keyboard model"
+msgstr "Клавиша Compose, особые клавиши, модель клавиатуры"
+
+#: apps/settings/qml/pages/LanguagePage.qml:42
+msgid "Log out to finish"
+msgstr "Выйдите, чтобы завершить"
+
+#: apps/settings/qml/pages/LanguagePage.qml:43
+msgid "Apps use the new language and formats after you log in again."
+msgstr "Приложения перейдут на новый язык и форматы после повторного входа."
+
+#: apps/settings/qml/pages/LanguagePage.qml:44
+msgid "Log out"
+msgstr "Выйти"
+
+#: apps/settings/qml/pages/LanguagePage.qml:56
+msgid "Language"
+msgstr "Язык"
+
+#: apps/settings/qml/pages/LanguagePage.qml:65
+msgid "Region"
+msgstr "Регион"
+
+#: apps/settings/qml/pages/LanguagePage.qml:70
+msgid "Formats of region"
+msgstr "Форматы региона"
+
+#: apps/settings/qml/pages/LanguagePage.qml:78
+msgid "Examples"
+msgstr "Примеры"
+
+#: apps/settings/qml/pages/LanguagePage.qml:80
+msgid "Date"
+msgstr "Дата"
+
+#: apps/settings/qml/pages/LanguagePage.qml:81
+msgid "Time"
+msgstr "Время"
+
+#: apps/settings/qml/pages/LanguagePage.qml:82
+msgid "Numbers"
+msgstr "Числа"
+
+#: apps/settings/qml/pages/LanguagePage.qml:83
+msgid "Money"
+msgstr "Деньги"
+
+#: apps/settings/qml/pages/LanguagePage.qml:95
+msgid "Detailed formats"
+msgstr "Подробные форматы"
+
+#: apps/settings/qml/pages/LanguagePage.qml:96
+msgid "Separate settings for numbers, time, currency and measurement units"
+msgstr "Отдельные настройки для чисел, времени, валюты и единиц измерения"
+
+#: apps/settings/qml/pages/LegalPage.qml:24
+msgid "Kernora OS is free software, made from the work of many open-source projects. Their authors and licences are listed here."
+msgstr "Kernora OS — свободная система, созданная из труда многих проектов с открытым кодом. Здесь перечислены их авторы и лицензии."
+
+#: apps/settings/qml/pages/LegalPage.qml:35
+#: apps/settings/qml/pages/LegalPage.qml:38
+msgid "Kernora OS"
+msgstr "Kernora OS"
+
+#: apps/settings/qml/pages/LegalPage.qml:39
+msgid "The Kernora shell, apps and design: GNU General Public License 2.0 or later"
+msgstr "Оболочка, приложения и оформление Kernora: GNU General Public License 2.0 или новее"
+
+#: apps/settings/qml/pages/LegalPage.qml:46
+msgid "GNU General Public License 2.0"
+msgstr "GNU General Public License 2.0"
+
+#: apps/settings/qml/pages/LegalPage.qml:55
+msgid "Built with"
+msgstr "Создана с помощью"
+
+#: apps/settings/qml/pages/LegalPage.qml:73
+msgid "All installed packages"
+msgstr "Все установленные пакеты"
+
+#: apps/settings/qml/pages/LegalPage.qml:77
+msgid "Show every package"
+msgstr "Показать все пакеты"
+
+#: apps/settings/qml/pages/LegalPage.qml:78
+msgid "The copyright file of each of the installed packages"
+msgstr "Сведения об авторских правах каждого установленного пакета"
+
+#: apps/settings/qml/pages/LegalPage.qml:93
+msgid "Filter %1 package"
+msgid_plural "Filter %1 packages"
+msgstr[0] "Фильтр по %1 пакету"
+msgstr[1] "Фильтр по %1 пакетам"
+msgstr[2] "Фильтр по %1 пакетам"
+
+#: apps/settings/qml/pages/LicensePage.qml:31
+msgid "Project website"
+msgstr "Сайт проекта"
+
+#: apps/settings/qml/pages/LicensePage.qml:57
+msgid "The licence text is not installed."
+msgstr "Текст лицензии не установлен."
+
+#: apps/settings/qml/pages/ModulesPage.qml:22
+msgid "Every option of the system, including the rarely used ones."
+msgstr "Все параметры системы, включая редко используемые."
+
+#: apps/settings/qml/pages/ModulesPage.qml:36
+msgid "Filter"
+msgstr "Фильтр"
+
+#: apps/settings/qml/pages/ModulesPage.qml:40
+msgid "Nothing matches."
+msgstr "Ничего не подходит."
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:33
+msgid "Saved network"
+msgstr "Сохранённая сеть"
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:76
+msgid "Details"
+msgstr "Сведения"
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:94
+msgid "Edit connection"
+msgstr "Изменить подключение"
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:95
+msgid "Password, automatic connection, IP addresses, DNS"
+msgstr "Пароль, автоподключение, IP-адреса, DNS"
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:106
+msgid "Forget “%1”?"
+msgstr "Забыть «%1»?"
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:108
+msgid "The saved password is removed. You can connect again later by entering it."
+msgstr "Сохранённый пароль будет удалён. Подключиться снова можно, введя его ещё раз."
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:109
+msgid "The saved settings of this connection are removed."
+msgstr "Сохранённые настройки подключения будут удалены."
+
+#: apps/settings/qml/pages/NetworkPage.qml:120
+msgid "Connecting…"
+msgstr "Подключение…"
+
+#: apps/settings/qml/pages/NetworkPage.qml:122
+msgid "Disconnecting…"
+msgstr "Отключение…"
+
+#: apps/settings/qml/pages/NetworkPage.qml:126
+msgid "Saved"
+msgstr "Сохранена"
+
+#: apps/settings/qml/pages/NetworkPage.qml:128
+msgid "Open network"
+msgstr "Открытая сеть"
+
+#: apps/settings/qml/pages/NetworkPage.qml:130
+msgid "Available"
+msgstr "Доступно"
+
+#: apps/settings/qml/pages/NetworkPage.qml:170
+msgid "Use Wi-Fi"
+msgstr "Wi-Fi"
+
+#: apps/settings/qml/pages/NetworkPage.qml:181
+msgid "Airplane mode is on"
+msgstr "Включён режим полёта"
+
+#: apps/settings/qml/pages/NetworkPage.qml:182
+msgid "Wi-Fi and Bluetooth are off until you turn airplane mode off."
+msgstr "Wi-Fi и Bluetooth выключены, пока включён режим полёта."
+
+#: apps/settings/qml/pages/NetworkPage.qml:183
+msgid "Turn off"
+msgstr "Выключить"
+
+#: apps/settings/qml/pages/NetworkPage.qml:191
+msgid "Wi-Fi networks"
+msgstr "Сети Wi-Fi"
+
+#: apps/settings/qml/pages/NetworkPage.qml:193
+msgid "Looking for networks…"
+msgstr "Поиск сетей…"
+
+#: apps/settings/qml/pages/NetworkPage.qml:223
+msgid "Network details"
+msgstr "О сети"
+
+#: apps/settings/qml/pages/NetworkPage.qml:234
+msgid "Wired"
+msgstr "Проводная сеть"
+
+#: apps/settings/qml/pages/NetworkPage.qml:285
+msgid "Turns off Wi-Fi, Bluetooth and mobile data"
+msgstr "Выключает Wi-Fi, Bluetooth и мобильную связь"
+
+#: apps/settings/qml/pages/NetworkPage.qml:297
+msgid "Add a VPN or connection"
+msgstr "Добавить VPN или подключение"
+
+#: apps/settings/qml/pages/NetworkPage.qml:298
+msgid "WireGuard, OpenVPN, hidden Wi-Fi, static addresses"
+msgstr "WireGuard, OpenVPN, скрытые сети Wi-Fi, статические адреса"
+
+#: apps/settings/qml/pages/NetworkPage.qml:305
+msgid "Advanced network settings"
+msgstr "Дополнительные настройки сети"
+
+#: apps/settings/qml/pages/NetworkPage.qml:306
+msgid "Addresses, DNS, proxy and every saved connection"
+msgstr "Адреса, DNS, прокси и все сохранённые подключения"
+
+#: apps/settings/qml/pages/NetworkPage.qml:320
+msgid "Connect to “%1”"
+msgstr "Подключение к «%1»"
+
+#: apps/settings/qml/pages/NetworkPage.qml:321
+msgid "Enter the network password."
+msgstr "Введите пароль сети."
+
+#: apps/settings/qml/pages/NotificationAppsPage.qml:24
+msgid "Apps are listed after they have sent a notification."
+msgstr "Приложение появится здесь, когда пришлёт уведомление."
+
+#: apps/settings/qml/pages/NotificationAppsPage.qml:61
+msgid "No apps yet"
+msgstr "Пока нет приложений"
+
+#: apps/settings/qml/pages/NotificationAppsPage.qml:62
+msgid "When an app sends a notification, you can choose here how it may notify you."
+msgstr "Когда приложение пришлёт уведомление, здесь можно будет выбрать, как ему разрешено вас оповещать."
+
+#: apps/settings/qml/pages/NotificationAppsPage.qml:74
+msgid "Only in the history"
+msgstr "Только в истории"
+
+#: apps/settings/qml/pages/NotificationAppsPage.qml:74
+msgid "Pop-ups allowed"
+msgstr "Всплывающие окна разрешены"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:69
+msgid "Turned on by an app"
+msgstr "Включено приложением"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:72
+msgid "On until you turn it off"
+msgstr "Включено, пока вы не выключите"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:74
+msgid "On until %1"
+msgstr "Включено до %1"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:86
+msgid "Status"
+msgstr "Состояние"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:93
+msgid "For one hour"
+msgstr "На один час"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:101
+msgid "Until tomorrow morning"
+msgstr "До завтрашнего утра"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:114
+msgid "Show critical notifications"
+msgstr "Показывать важные уведомления"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:115
+msgid "Even while Do Not Disturb is on"
+msgstr "Даже в режиме «Не беспокоить»"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:123
+msgid "Quiet while sharing the screen"
+msgstr "Тишина при трансляции экрана"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:124
+msgid "Turn on Do Not Disturb while screens are mirrored or shared"
+msgstr "Включать «Не беспокоить», когда экран дублируется или транслируется"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:138
+msgid "Pop-ups"
+msgstr "Всплывающие окна"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:141
+msgid "Position"
+msgstr "Положение"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:145
+msgid "Near the notification bell"
+msgstr "Рядом со значком уведомлений"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:146
+msgid "Top right"
+msgstr "Справа вверху"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:147
+msgid "Top centre"
+msgstr "По центру вверху"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:148
+msgid "Top left"
+msgstr "Слева вверху"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:149
+msgid "Bottom right"
+msgstr "Справа внизу"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:150
+msgid "Bottom centre"
+msgstr "По центру внизу"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:151
+msgid "Bottom left"
+msgstr "Слева внизу"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:157
+msgid "Hide pop-ups after"
+msgstr "Скрывать всплывающие окна через"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:160
+msgid "%1 second"
+msgid_plural "%1 seconds"
+msgstr[0] "%1 секунду"
+msgstr[1] "%1 секунды"
+msgstr[2] "%1 секунд"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:165
+msgid "Low-priority notifications"
+msgstr "Маловажные уведомления"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:166
+msgid "Show pop-ups for less important messages"
+msgstr "Показывать всплывающие окна для менее важных сообщений"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:174
+msgid "Progress of file transfers"
+msgstr "Ход передачи файлов"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:175
+msgid "Show copying and downloads as notifications"
+msgstr "Показывать копирование и загрузки в уведомлениях"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:183
+msgid "Notification sounds"
+msgstr "Звуки уведомлений"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:191
+msgid "Badges on app icons"
+msgstr "Счётчики на значках приложений"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:192
+msgid "Count unread notifications on the taskbar"
+msgstr "Число непрочитанных уведомлений на панели задач"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:206
+msgid "Choose which apps may show notifications"
+msgstr "Выберите, каким приложениям можно показывать уведомления"
+
+#: apps/settings/qml/pages/PowerPage.qml:46
+#: apps/settings/qml/pages/PrivacyPage.qml:49
+msgid "Never"
+msgstr "Никогда"
+
+#: apps/settings/qml/pages/PowerPage.qml:49
+#: apps/settings/qml/pages/PrivacyPage.qml:49
+msgid "After %1 minute"
+msgid_plural "After %1 minutes"
+msgstr[0] "Через %1 минуту"
+msgstr[1] "Через %1 минуты"
+msgstr[2] "Через %1 минут"
+
+#: apps/settings/qml/pages/PowerPage.qml:51
+msgid "After %1 hour"
+msgid_plural "After %1 hours"
+msgstr[0] "Через %1 час"
+msgstr[1] "Через %1 часа"
+msgstr[2] "Через %1 часов"
+
+#: apps/settings/qml/pages/PowerPage.qml:86
+msgid "Charging"
+msgstr "Заряжается"
+
+#: apps/settings/qml/pages/PowerPage.qml:86
+msgid "Fully charged"
+msgstr "Полностью заряжена"
+
+#: apps/settings/qml/pages/PowerPage.qml:87
+msgid "On battery power"
+msgstr "Работа от батареи"
+
+#: apps/settings/qml/pages/PowerPage.qml:103
+msgid "Power saver"
+msgstr "Экономия"
+
+#: apps/settings/qml/pages/PowerPage.qml:104
+msgid "Balanced"
+msgstr "Баланс"
+
+#: apps/settings/qml/pages/PowerPage.qml:105
+msgid "Performance"
+msgstr "Производительность"
+
+#: apps/settings/qml/pages/PowerPage.qml:118
+msgid "Faster, but uses more power and may run warmer."
+msgstr "Быстрее, но расходует больше энергии и может сильнее греться."
+
+#: apps/settings/qml/pages/PowerPage.qml:119
+msgid "Longer battery life; the computer may feel slower."
+msgstr "Дольше работает от батареи, но может быть медленнее."
+
+#: apps/settings/qml/pages/PowerPage.qml:120
+msgid "A balance of speed and battery life."
+msgstr "Баланс скорости и времени работы от батареи."
+
+#: apps/settings/qml/pages/PowerPage.qml:130
+msgid "Plugged in"
+msgstr "От сети"
+
+#: apps/settings/qml/pages/PowerPage.qml:131
+msgid "On battery"
+msgstr "От батареи"
+
+#: apps/settings/qml/pages/PowerPage.qml:154
+msgid "Dim the screen"
+msgstr "Затемнять экран"
+
+#: apps/settings/qml/pages/PowerPage.qml:168
+#: apps/settings/qml/pages/PowerPage.qml:209
+#: apps/settings/qml/pages/PowerPage.qml:226
+msgid "Turn off the screen"
+msgstr "Выключать экран"
+
+#: apps/settings/qml/pages/PowerPage.qml:187
+msgid "Sleep when inactive"
+msgstr "Спящий режим при бездействии"
+
+#: apps/settings/qml/pages/PowerPage.qml:201
+msgid "Power button"
+msgstr "Кнопка питания"
+
+#: apps/settings/qml/pages/PowerPage.qml:205
+msgid "Ask what to do"
+msgstr "Спрашивать"
+
+#: apps/settings/qml/pages/PowerPage.qml:207
+#: apps/settings/qml/pages/PowerPage.qml:227
+msgid "Shut down"
+msgstr "Выключить"
+
+#: apps/settings/qml/pages/PowerPage.qml:208
+#: apps/settings/qml/pages/PowerPage.qml:225
+msgid "Lock the screen"
+msgstr "Заблокировать экран"
+
+#: apps/settings/qml/pages/PowerPage.qml:210
+#: apps/settings/qml/pages/PowerPage.qml:228
+msgid "Do nothing"
+msgstr "Ничего не делать"
+
+#: apps/settings/qml/pages/PowerPage.qml:219
+msgid "When the lid is closed"
+msgstr "При закрытии крышки"
+
+#: apps/settings/qml/pages/PowerPage.qml:240
+msgid "Advanced power settings"
+msgstr "Дополнительные настройки питания"
+
+#: apps/settings/qml/pages/PowerPage.qml:241
+msgid "Low battery, charge limits, other devices"
+msgstr "Низкий заряд, пределы зарядки, другие устройства"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:44
+msgid "Lock the screen automatically"
+msgstr "Автоматическая блокировка"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:61
+msgid "Lock after waking up"
+msgstr "Блокировать после пробуждения"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:62
+msgid "Ask for the password when the computer wakes from sleep"
+msgstr "Запрашивать пароль после выхода из спящего режима"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:73
+msgid "Unlock without a password for"
+msgstr "Разблокировка без пароля в течение"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:79
+msgid "%1 second after locking"
+msgid_plural "%1 seconds after locking"
+msgstr[0] "%1 секунды после блокировки"
+msgstr[1] "%1 секунд после блокировки"
+msgstr[2] "%1 секунд после блокировки"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:79
+msgid "No time"
+msgstr "Не разрешать"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:88
+msgid "Lock now"
+msgstr "Заблокировать сейчас"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:111
+msgid "The index stays on this computer. It lets search find files by name and by what they contain."
+msgstr "Индекс хранится только на этом компьютере. Он позволяет искать файлы по имени и содержимому."
+
+#: apps/settings/qml/pages/PrivacyPage.qml:114
+msgid "Index files for search"
+msgstr "Индексировать файлы для поиска"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:125
+msgid "Only file names"
+msgstr "Только имена файлов"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:126
+msgid "Don't look inside documents"
+msgstr "Не заглядывать внутрь документов"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:155
+msgid "The history of recent files was cleared."
+msgstr "История недавних файлов очищена."
+
+#: apps/settings/qml/pages/PrivacyPage.qml:159
+msgid "History"
+msgstr "История"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:162
+msgid "Remember recently used files"
+msgstr "Запоминать недавние файлы"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:163
+msgid "Show them in the launcher, in Files and in apps"
+msgstr "Показывать их в меню запуска, «Файлах» и приложениях"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:171
+msgid "Clear history"
+msgstr "Очистить историю"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:172
+msgid "Forget recently used files and folders"
+msgstr "Забыть недавние файлы и папки"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:183
+msgid "Clear history?"
+msgstr "Очистить историю?"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:184
+msgid "Lists of recently used files and folders are emptied. The files themselves stay."
+msgstr "Списки недавних файлов и папок будут очищены. Сами файлы останутся."
+
+#: apps/settings/qml/pages/PrivacyPage.qml:185
+msgid "Clear"
+msgstr "Очистить"
+
+#: apps/settings/qml/pages/SoundPage.qml:99
+msgid "No sound devices"
+msgstr "Нет звуковых устройств"
+
+#: apps/settings/qml/pages/SoundPage.qml:100
+msgid "Connect speakers or headphones to hear sound."
+msgstr "Подключите колонки или наушники, чтобы слышать звук."
+
+#: apps/settings/qml/pages/SoundPage.qml:104
+msgid "Output"
+msgstr "Вывод"
+
+#: apps/settings/qml/pages/SoundPage.qml:116
+#: apps/settings/qml/pages/SoundPage.qml:155
+#: apps/settings/qml/pages/SoundPage.qml:197
+msgid "Muted"
+msgstr "Без звука"
+
+#: apps/settings/qml/pages/SoundPage.qml:120
+msgid "Play sound through"
+msgstr "Воспроизводить через"
+
+#: apps/settings/qml/pages/SoundPage.qml:133
+msgid "Mute"
+msgstr "Без звука"
+
+#: apps/settings/qml/pages/SoundPage.qml:143
+msgid "Input"
+msgstr "Ввод"
+
+#: apps/settings/qml/pages/SoundPage.qml:147
+msgid "Microphone volume"
+msgstr "Громкость микрофона"
+
+#: apps/settings/qml/pages/SoundPage.qml:159
+msgid "Record sound from"
+msgstr "Записывать с"
+
+#: apps/settings/qml/pages/SoundPage.qml:172
+msgid "Mute microphone"
+msgstr "Выключить микрофон"
+
+#: apps/settings/qml/pages/SoundPage.qml:184
+msgid "Apps appear here while they play sound."
+msgstr "Приложения появляются здесь, пока воспроизводят звук."
+
+#: apps/settings/qml/pages/SoundPage.qml:215
+msgid "System sounds"
+msgstr "Системные звуки"
+
+#: apps/settings/qml/pages/SoundPage.qml:218
+msgid "Volume change sound"
+msgstr "Звук при изменении громкости"
+
+#: apps/settings/qml/pages/SoundPage.qml:219
+msgid "Play a short sound when the volume changes"
+msgstr "Короткий сигнал при изменении громкости"
+
+#: apps/settings/qml/pages/SoundPage.qml:227
+msgid "Advanced sound settings"
+msgstr "Дополнительные настройки звука"
+
+#: apps/settings/qml/pages/SoundPage.qml:228
+msgid "Profiles, channel balance, every device"
+msgstr "Профили, баланс каналов, все устройства"
+
+#: apps/settings/qml/pages/StoragePage.qml:66
+msgid "%1 free of %2"
+msgstr "Свободно %1 из %2"
+
+#: apps/settings/qml/pages/StoragePage.qml:85
+#: apps/settings/qml/pages/StoragePage.qml:88
+msgid "Trash"
+msgstr "Корзина"
+
+#: apps/settings/qml/pages/StoragePage.qml:89
+#: apps/settings/qml/pages/StoragePage.qml:94
+#: apps/settings/qml/pages/StoragePage.qml:115
+msgid "Empty"
+msgstr "Очистить"
+
+#: apps/settings/qml/pages/StoragePage.qml:89
+msgid "Takes %1"
+msgstr "Занимает %1"
+
+#: apps/settings/qml/pages/StoragePage.qml:102
+msgid "Open Files"
+msgstr "Открыть «Файлы»"
+
+#: apps/settings/qml/pages/StoragePage.qml:113
+msgid "Empty the trash?"
+msgstr "Очистить корзину?"
+
+#: apps/settings/qml/pages/StoragePage.qml:114
+msgid "Everything in the trash is deleted for good."
+msgstr "Всё содержимое корзины будет удалено безвозвратно."
+
+#: apps/settings/qml/pages/SystemPage.qml:52
+msgid "%1 update available"
+msgid_plural "%1 updates available"
+msgstr[0] "Доступно %1 обновление"
+msgstr[1] "Доступно %1 обновления"
+msgstr[2] "Доступно %1 обновлений"
+
+#: apps/settings/qml/pages/SystemPage.qml:53
+msgid "Security fixes and new versions"
+msgstr "Исправления безопасности и новые версии"
+
+#: apps/settings/qml/pages/SystemPage.qml:61
+msgid "Free space, trash"
+msgstr "Свободное место, корзина"
+
+#: apps/settings/qml/pages/SystemPage.qml:70
+msgid "Session"
+msgstr "Сеанс"
+
+#: apps/settings/qml/pages/SystemPage.qml:73
+msgid "When you log in"
+msgstr "При входе в систему"
+
+#: apps/settings/qml/pages/SystemPage.qml:77
+msgid "Start with an empty desktop"
+msgstr "Начинать с пустого рабочего стола"
+
+#: apps/settings/qml/pages/SystemPage.qml:78
+msgid "Reopen the apps that were open"
+msgstr "Открывать приложения, которые были открыты"
+
+#: apps/settings/qml/pages/SystemPage.qml:90
+msgid "Printers, shortcuts, fonts and every other option"
+msgstr "Принтеры, сочетания клавиш, шрифты и все прочие параметры"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:34
+msgid "Checking for updates…"
+msgstr "Проверка обновлений…"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:35
+msgid "Your system is up to date"
+msgstr "Система обновлена"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:36
+msgid "%1 update is available"
+msgid_plural "%1 updates are available"
+msgstr[0] "Доступно %1 обновление"
+msgstr[1] "Доступно %1 обновления"
+msgstr[2] "Доступно %1 обновлений"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:37
+msgid "Installing updates…"
+msgstr "Установка обновлений…"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:38
+msgid "Updates are installed"
+msgstr "Обновления установлены"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:39
+msgid "Updating did not work"
+msgstr "Обновить не удалось"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:45
+msgid "The update service is not available."
+msgstr "Служба обновлений недоступна."
+
+#: apps/settings/qml/pages/UpdatesPage.qml:54
+msgid "Restart the computer to finish."
+msgstr "Перезагрузите компьютер, чтобы завершить."
+
+#: apps/settings/qml/pages/UpdatesPage.qml:57
+msgid "Last checked %1"
+msgstr "Последняя проверка: %1"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:120
+msgid "Install now"
+msgstr "Установить"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:127
+msgid "Restart"
+msgstr "Перезагрузить"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:133
+msgid "Check again"
+msgstr "Проверить снова"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:143
+msgid "What changes"
+msgstr "Что изменится"
+
+#: src/apps/host.cpp:64
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:72
+msgid "Files or pages to open."
+msgstr "Файлы или страницы для открытия."
+
+#: src/apps/settings.cpp:8
+msgctxt "@title application name"
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "The style could not be changed."
+msgstr "Не удалось сменить стиль."
+
+msgid "Style"
+msgstr "Стиль"
+
+msgid "Every generation of Material, drawn in the Kernora colours: shapes, depth, buttons and the quick settings change with it."
+msgstr "Любое поколение Material в цветах Kernora: вместе с ним меняются формы, тени, кнопки и быстрые настройки."
+
+
+#: apps/settings/qml/pages/AppearancePage.qml
+msgid "Applying…"
+msgstr "Применяется…"
+
+#: apps/settings/qml/pages/AppearancePage.qml
+msgid "Dark backgrounds for the system and apps"
+msgstr "Тёмный фон в системе и приложениях"
+
+#: apps/settings/qml/pages/AppearancePage.qml
+msgid "Shapes, depth, buttons and the quick settings follow the chosen generation of Material."
+msgstr "Формы, тени, кнопки и быстрые настройки следуют выбранному поколению Material."
+
+#: apps/settings/qml/pages/AppearancePage.qml
+msgid "Interface style"
+msgstr "Стиль интерфейса"
+
+#: apps/settings/qml/pages/AppearancePage.qml
+msgid "2021 · Material You"
+msgstr "2021 · Material You"
+
+#: apps/settings/qml/pages/AppearancePage.qml
+msgid "2018 · Material Theming"
+msgstr "2018 · Material Theming"
+
+#: apps/settings/qml/pages/AppearancePage.qml
+msgid "2014 · paper and ink"
+msgstr "2014 · бумага и чернила"

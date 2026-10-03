@@ -1,0 +1,9 @@
+polkit-kde-agent-1 (4:6.3.6-1kernora1) UNRELEASED; urgency=medium
+
+  * Kernora OS: the authentication prompt as a Material 3 dialog -- a
+    frameless card with rounded corners and a shadow, the lock on a tonal
+    circle, the headline and the reason centred, the password in a pill,
+    the account as a chip, text buttons for Details and Cancel and a
+    filled OK (debian/patches/kernora-material-auth-dialog.patch).
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 29 Sep 2026 12:00:00 -0700

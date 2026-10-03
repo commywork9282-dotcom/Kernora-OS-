@@ -1,0 +1,132 @@
+# Russian translations for kernora-player package.
+# Copyright (C) 2026 THE kernora-player'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-player package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-player\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-09-25 20:40-0700\n"
+"PO-Revision-Date: 2026-09-25 20:40-0700\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: apps/player/qml/Main.qml:32 apps/player/qml/Main.qml:157
+msgid "Media Player"
+msgstr "Медиаплеер"
+
+#: apps/player/qml/Main.qml:115
+msgid "This file cannot be played."
+msgstr "Этот файл не удаётся воспроизвести."
+
+#: apps/player/qml/Main.qml:160 apps/player/qml/Main.qml:230
+msgid "Open a file"
+msgstr "Открыть файл"
+
+#: apps/player/qml/Main.qml:191
+msgid "Music"
+msgstr "Музыка"
+
+#: apps/player/qml/Main.qml:206
+msgid "Videos"
+msgstr "Видео"
+
+#: apps/player/qml/Main.qml:228
+msgid "Nothing to play yet"
+msgstr "Пока нечего воспроизводить"
+
+#: apps/player/qml/Main.qml:229
+msgid "Music from your Music folder and videos from your Videos folder appear here. You can also open any file."
+msgstr "Здесь появятся музыка из папки «Музыка» и видео из папки «Видео». Можно также открыть любой файл."
+
+#: apps/player/qml/Main.qml:324
+msgid "Library"
+msgstr "Медиатека"
+
+#: apps/player/qml/Main.qml:396
+msgid "Up next"
+msgstr "Далее в очереди"
+
+#: apps/player/qml/Main.qml:459
+msgid "Repeat: all"
+msgstr "Повтор: все"
+
+#: apps/player/qml/Main.qml:459
+msgid "Repeat: off"
+msgstr "Повтор: выключен"
+
+#: apps/player/qml/Main.qml:459
+msgid "Repeat: this one"
+msgstr "Повтор: текущий"
+
+#: apps/player/qml/Main.qml:465
+msgid "Previous"
+msgstr "Предыдущее"
+
+#: apps/player/qml/Main.qml:472
+msgid "Pause"
+msgstr "Пауза"
+
+#: apps/player/qml/Main.qml:472
+msgid "Play"
+msgstr "Воспроизвести"
+
+#: apps/player/qml/Main.qml:475
+msgid "Next"
+msgstr "Далее"
+
+#: apps/player/qml/Main.qml:480
+msgid "Speed: %1×"
+msgstr "Скорость: %1×"
+
+#: apps/player/qml/Main.qml:487
+msgid "Mute"
+msgstr "Без звука"
+
+#: apps/player/qml/Main.qml:487
+msgid "Unmute"
+msgstr "Включить звук"
+
+#: apps/player/qml/Main.qml:494
+msgid "Full screen"
+msgstr "Во весь экран"
+
+#: apps/player/qml/Main.qml:543
+msgid "%1×"
+msgstr "%1×"
+
+#: apps/player/qml/Main.qml:543
+msgid "Normal"
+msgstr "Обычная"
+
+#: apps/player/qml/Main.qml:555
+msgid "Open a video or music file"
+msgstr "Открыть видео или музыку"
+
+#: apps/player/qml/Main.qml:557
+msgid "All files (*)"
+msgstr "Все файлы (*)"
+
+#: apps/player/qml/Main.qml:557
+msgid "Media files (*.mp4 *.mkv *.webm *.avi *.mov *.m4v *.ogv *.mpg *.mp3 *.flac *.ogg *.oga *.opus *.wav *.m4a *.aac)"
+msgstr "Медиафайлы (*.mp4 *.mkv *.webm *.avi *.mov *.m4v *.ogv *.mpg *.mp3 *.flac *.ogg *.oga *.opus *.wav *.m4a *.aac)"
+
+#: src/apps/host.cpp:64
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:72
+msgid "Files or pages to open."
+msgstr "Файлы или страницы для открытия."
+
+#: src/apps/player.cpp:8
+msgctxt "@title application name"
+msgid "Media Player"
+msgstr "Медиаплеер"

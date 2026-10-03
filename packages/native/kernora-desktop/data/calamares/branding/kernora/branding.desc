@@ -1,0 +1,34 @@
+---
+componentName: kernora
+
+welcomeStyleCalamares: true
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 1040px,720px
+windowPlacement: center
+
+strings:
+    productName:         Kernora OS
+    shortProductName:    Kernora
+    version:             Ember
+    shortVersion:        1
+    versionedName:       Kernora OS 1 "Ember"
+    shortVersionedName:  Kernora 1
+    bootloaderEntryName: Kernora
+
+sidebar: qml
+navigation: qml
+
+images:
+    productLogo:    "kernora-logo.png"
+    productIcon:    "kernora-logo.png"
+    productWelcome: "kernora-welcome.png"
+
+slideshow:    "show.qml"
+slideshowAPI: 2
+
+style:
+    SidebarBackground:        "#201a18"
+    SidebarText:              "#d7c2ba"
+    SidebarTextCurrent:       "#ffdbcc"
+    SidebarBackgroundCurrent: "#7f2b00"

@@ -1,0 +1,19 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "System Information",
+        "Description": "Status area and the Material 3 quick settings shade, pulled up from the panel",
+        "Description[ru]": "Область состояния и шторка быстрых настроек Material 3, вытягиваемая из панели",
+        "Icon": "preferences-system",
+        "Id": "org.kernora.quicksettings",
+        "License": "GPL-2.0+",
+        "Name": "Kernora Quick Settings",
+        "Name[ru]": "Быстрые настройки Kernora"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

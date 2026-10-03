@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in chroot cp dpkg-parsechangelog find install nproc tar unshare; do
+  require_command "$dependency"
+done
+load_upstream_config
+
+name=${1:-}
+[[ "$name" =~ ^[a-z0-9][a-z0-9+.-]*$ ]] || die "usage: build-derived-binary NAME"
+
+"$PROJECT_ROOT/scripts/build-derived-source" "$name"
+
+package_root="$PROJECT_ROOT/packages/derived/$name"
+package_version=$(dpkg-parsechangelog -l"$package_root/changelog" -S Version)
+package_file_version=${package_version#*:}
+SOURCE_DATE_EPOCH=$(dpkg-parsechangelog -l"$package_root/changelog" -S Timestamp)
+export SOURCE_DATE_EPOCH
+source_dir="$PROJECT_ROOT/_build/source-packages"
+output_dir="$PROJECT_ROOT/_build/binary-packages"
+dsc_name="${name}_${package_file_version}.dsc"
+cache_file="$PROJECT_ROOT/_cache/chroots/trixie-amd64-buildd-$name.tar.xz"
+jobs=$(nproc)
+
+"$PROJECT_ROOT/scripts/create-qt-build-rootfs" "$source_dir/$dsc_name" "$name"
+
+temporary_root=$(mktemp -d /tmp/kernora-package-build.XXXXXX)
+chmod 0777 "$temporary_root"
+rootfs="$temporary_root/rootfs"
+input_dir="$temporary_root/input"
+mkdir -p "$input_dir"
+install -m 0644 "$source_dir/$dsc_name" "$input_dir/"
+while read -r file; do
+  install -m 0644 "$source_dir/$file" "$input_dir/$file"
+done < <(awk '/^Files:/ { files = 1; next } /^[^ ]/ { files = 0 } files { print $3 }' "$source_dir/$dsc_name")
+cached_rootfs="$temporary_root/build-rootfs.tar.xz"
+install -m 0644 "$cache_file" "$cached_rootfs"
+
+cleanup() {
+  set +e
+  if [[ -e "$rootfs" ]]; then
+    unshare --map-auto --setuid 0 --setgid 0 \
+      find "$rootfs" -depth -delete
+  fi
+  find "$temporary_root" -depth -delete
+}
+trap cleanup EXIT
+
+unshare --map-auto --setuid 0 --setgid 0 sh -c '
+  mkdir -p "$1"
+  tar -xJf "$2" -C "$1"
+  mkdir -p "$1/build"
+  cp "$3"/* "$1/build/"
+' kernora-extract "$rootfs" "$cached_rootfs" "$input_dir"
+
+unshare \
+  --map-auto \
+  --setuid 0 \
+  --setgid 0 \
+  --mount \
+  --pid \
+  --net \
+  --fork \
+  --mount-proc="$rootfs/proc" \
+  chroot "$rootfs" /bin/bash -lc '
+    set -Eeuo pipefail
+    cd /build
+    dpkg-source --extract "$1" source
+    cd source
+    DEB_BUILD_OPTIONS="parallel=$2 nocheck" \
+      dpkg-buildpackage --build=binary --build-profiles=nocheck --no-sign
+  ' kernora-build "$dsc_name" "$jobs"
+
+mkdir -p "$output_dir"
+debs=("$rootfs/build/"*_"${package_file_version}"_*.deb)
+[[ -s "${debs[0]}" ]] || die "no binary package was built for $name"
+for artifact in "${debs[@]}" \
+  "$rootfs/build/${name}_${package_file_version}"_*.buildinfo \
+  "$rootfs/build/${name}_${package_file_version}"_*.changes; do
+  [[ -s "$artifact" ]] && install -m 0644 "$artifact" "$output_dir/"
+done
+
+"$PROJECT_ROOT/tests/test-derived-binary.sh" "$name"
+for deb in "${debs[@]}"; do
+  printf 'binary package: %s/%s\n' "$output_dir" "$(basename "$deb")"
+done

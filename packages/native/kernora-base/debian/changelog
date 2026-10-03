@@ -1,0 +1,6 @@
+kernora-base (1.0) UNRELEASED; urgency=medium
+
+  * Initial native metapackage for Kernora OS 1 (Ember).
+  * Require the Kernora base-files identity package.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 01 Sep 2026 17:43:35 -0700

@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Description": "Default Kernora OS desktop appearance",
+        "Id": "org.kernora.desktop",
+        "License": "LicenseRef-Kernora-Artwork",
+        "Name": "Kernora"
+    }
+}

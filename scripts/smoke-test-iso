@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in cp find grep kill mkdir qemu-system-x86_64; do
+  require_command "$dependency"
+done
+load_project_config
+load_upstream_config
+
+iso="$PROJECT_ROOT/out/iso/kernora-${DIST_VERSION}-${DIST_CODENAME}-live-${BASE_ARCH}.iso"
+[[ -s "$iso" ]] || die "ISO is missing; run make iso"
+
+logs="$PROJECT_ROOT/out/test-logs"
+mkdir -p "$logs"
+accel=tcg
+if [[ -r /dev/kvm && -w /dev/kvm ]]; then
+  accel=kvm
+fi
+
+run_boot_test() {
+  local firmware=$1
+  local log="$logs/iso-${firmware}.log"
+  local temporary_root pid marker_seen=0
+  local -a firmware_args=()
+
+  temporary_root=$(mktemp -d /tmp/kernora-qemu.XXXXXX)
+  if [[ "$firmware" == "uefi" ]]; then
+    [[ -s /usr/share/OVMF/OVMF_CODE_4M.fd ]] \
+      || die "OVMF_CODE_4M.fd is missing"
+    [[ -s /usr/share/OVMF/OVMF_VARS_4M.fd ]] \
+      || die "OVMF_VARS_4M.fd is missing"
+    cp /usr/share/OVMF/OVMF_VARS_4M.fd "$temporary_root/OVMF_VARS_4M.fd"
+    firmware_args=(
+      -drive if=pflash,format=raw,unit=0,readonly=on,file=/usr/share/OVMF/OVMF_CODE_4M.fd
+      -drive "if=pflash,format=raw,unit=1,file=$temporary_root/OVMF_VARS_4M.fd"
+    )
+  fi
+
+  : > "$log"
+  qemu-system-x86_64 \
+    -machine "q35,accel=$accel" \
+    -cpu max \
+    -m 1024 \
+    -boot once=d \
+    -drive "file=$iso,media=cdrom,readonly=on" \
+    "${firmware_args[@]}" \
+    -display none \
+    -monitor none \
+    -serial "file:$log" \
+    -no-reboot \
+    -no-shutdown &
+  pid=$!
+
+  for ((second = 0; second < 90; second += 1)); do
+    if grep -Fq 'KERNORA_BOOT_OK' "$log"; then
+      marker_seen=1
+      break
+    fi
+    if ! kill -0 "$pid" 2>/dev/null; then
+      break
+    fi
+    sleep 1
+  done
+
+  kill "$pid" 2>/dev/null || true
+  wait "$pid" 2>/dev/null || true
+  find "$temporary_root" -depth -delete
+  (( marker_seen == 1 )) \
+    || die "$firmware boot did not reach KERNORA_BOOT_OK; see $log"
+  printf '%s boot smoke test: OK (%s)\n' "$firmware" "$accel"
+}
+
+run_boot_test bios
+run_boot_test uefi

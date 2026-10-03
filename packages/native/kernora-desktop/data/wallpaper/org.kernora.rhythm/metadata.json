@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/Wallpaper",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "",
+        "Description": "A ring of Material shapes swinging in and out of step: spirals, stars, and back to a circle",
+        "Description[ru]": "Кольцо фигур Material качается то вразнобой, то в такт: спирали, звёзды и снова круг",
+        "Icon": "preferences-desktop-wallpaper",
+        "Id": "org.kernora.rhythm",
+        "License": "GPL-2.0+",
+        "Name": "Rhythm",
+        "Name[ru]": "Ритм"
+    },
+    "X-KDE-ParentApp": "org.kde.plasmashell",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

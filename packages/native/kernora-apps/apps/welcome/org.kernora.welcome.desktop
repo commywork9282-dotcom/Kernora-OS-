@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome
+Name[ru]=Добро пожаловать
+GenericName=Introduction to Kernora OS
+GenericName[ru]=Знакомство с Kernora OS
+Icon=org.kernora.welcome
+Exec=kernora-welcome
+Categories=Qt;System;
+Keywords=welcome;tour;introduction;приветствие;знакомство;
+StartupNotify=true

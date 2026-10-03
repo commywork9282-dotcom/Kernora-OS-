@@ -1,0 +1,9 @@
+calamares (3.3.14-1kernora1) UNRELEASED; urgency=medium
+
+  * Kernora OS: the partition page in Material 3 -- flat segmented disk
+    bars, a legend readable on dark themes, partition colours from the
+    Kernora palette, option rows the branding's stylesheet draws as cards,
+    and images from the branding in place of the built-in icons
+    (debian/patches/kernora-material-partitions.patch).
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 27 Sep 2026 12:00:00 -0700

@@ -1,0 +1,41 @@
+kernora-apps (1.0) UNRELEASED; urgency=medium
+
+  * Initial release: the everyday applications of Kernora OS in its
+    Material 3 design, instead of KDE's.
+  * Settings: network, Bluetooth, display and Night Light, sound,
+    notifications, wallpaper and style (light or dark for the whole
+    system), apps, battery and power, keyboard, mouse and touchpad,
+    accessibility, security and privacy, account, date and time,
+    language and region, updates, storage, about and legal information,
+    with search; the systemsettings command is diverted to it.
+  * Files, Text Editor, Photos, Media Player, Calculator and Screenshot.
+  * Welcome at the first logins of an installed system.
+  * Style: Material Design 1, 2 or 3 for the whole system, in Settings
+    (Wallpaper & style) and as a step of Welcome, each choice drawn as a
+    small window in that generation's look; org.kernora.system's
+    Appearance switches the schemes, Plasma theme, Kvantum, window frames
+    and panel together, and keeps the choice in ~/.config/kernorarc.
+  * org.kernora.system, the Qt Quick module the applications use to read
+    and change the system, with MprisPlayer: an application's MPRIS
+    presence for the quick settings media card, the lock screen and media
+    keys.
+  * Media Player speaks MPRIS and shows the album's cover (from the file or
+    a cover image in its folder).
+  * Russian translations.
+  * File chooser: every program's open, save and folder dialogs in
+    Kernora's design instead of KDE's, as an xdg-desktop-portal backend
+    (kernora-filechooser) built from Files' places, path bar and tiles:
+    filters, several files, folders, a suggested name, replacing, new
+    folders, the program's own choices. Qt programs (plasma-integration)
+    and GTK programs are sent to the portal; a KWin rule keeps the window
+    centred and above, as Qt programs on Wayland cannot name their window.
+  * Settings and Welcome: light or dark and the Material generation as
+    plain rows (a Dark theme switch and an Interface style choice; radio rows
+    in Welcome) instead of illustrated cards; every Kernora live wallpaper is
+    offered, with a still of its scene (Files.liveWallpapers(),
+    Files.setLiveWallpaper(id)).
+  * The web browser is LibreWolf: Welcome lists it among the apps, and
+    About > Legal names it, with the copyright summary Kernora ships for it
+    (/usr/share/kernora/copyright/librewolf), as its package has none.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 25 Sep 2026 12:00:00 -0700

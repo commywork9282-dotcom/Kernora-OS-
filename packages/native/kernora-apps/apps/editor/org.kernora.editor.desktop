@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Text Editor
+Name[ru]=Текстовый редактор
+GenericName=Text editor
+GenericName[ru]=Текстовый редактор
+Icon=org.kernora.editor
+Exec=kernora-editor %U
+Categories=Qt;Utility;TextEditor;
+MimeType=text/plain;text/markdown;text/x-log;application/x-shellscript;text/x-python;application/json;application/xml;text/x-c;text/x-c++src;text/css;text/html;
+Keywords=text;editor;notepad;текст;редактор;блокнот;
+StartupNotify=true

@@ -1,0 +1,140 @@
+# Russian translations for kernora-photos package.
+# Copyright (C) 2026 THE kernora-photos'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-photos package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-photos\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-09-25 20:40-0700\n"
+"PO-Revision-Date: 2026-09-25 20:40-0700\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: apps/photos/qml/Main.qml:29
+msgid "Photos"
+msgstr "Фото"
+
+#: apps/photos/qml/Main.qml:94
+msgid "Moved to the trash"
+msgstr "Перемещено в корзину"
+
+#: apps/photos/qml/Main.qml:137
+msgid "Back"
+msgstr "Назад"
+
+#: apps/photos/qml/Main.qml:144
+msgid "Pictures"
+msgstr "Изображения"
+
+#: apps/photos/qml/Main.qml:148
+msgid "Open in Files"
+msgstr "Открыть в «Файлах»"
+
+#: apps/photos/qml/Main.qml:225
+msgid "No pictures yet"
+msgstr "Пока нет изображений"
+
+#: apps/photos/qml/Main.qml:226
+msgid "Pictures you save to the Pictures folder, and screenshots, show up here."
+msgstr "Здесь появятся изображения из папки «Изображения» и снимки экрана."
+
+#: apps/photos/qml/Main.qml:325
+msgid "Back to the gallery"
+msgstr "Назад к галерее"
+
+#: apps/photos/qml/Main.qml:338
+msgid "%1 of %2"
+msgstr "%1 из %2"
+
+#: apps/photos/qml/Main.qml:343
+msgid "Rotate left"
+msgstr "Повернуть влево"
+
+#: apps/photos/qml/Main.qml:344
+msgid "Rotate right"
+msgstr "Повернуть вправо"
+
+#: apps/photos/qml/Main.qml:345
+msgid "Slideshow"
+msgstr "Слайд-шоу"
+
+#: apps/photos/qml/Main.qml:346 apps/photos/qml/Main.qml:396
+msgid "Details"
+msgstr "Сведения"
+
+#: apps/photos/qml/Main.qml:347
+msgid "Full screen"
+msgstr "Во весь экран"
+
+#: apps/photos/qml/Main.qml:351
+msgid "More"
+msgstr "Ещё"
+
+#: apps/photos/qml/Main.qml:362
+msgid "Previous"
+msgstr "Предыдущее"
+
+#: apps/photos/qml/Main.qml:371
+msgid "Next"
+msgstr "Далее"
+
+#: apps/photos/qml/Main.qml:397
+msgid "Name"
+msgstr "Имя"
+
+#: apps/photos/qml/Main.qml:399
+msgid "Size"
+msgstr "Размер"
+
+#: apps/photos/qml/Main.qml:400
+msgid "%1 × %2 pixels · %3"
+msgstr "%1 × %2 пикселей · %3"
+
+#: apps/photos/qml/Main.qml:401
+msgid "Modified"
+msgstr "Изменён"
+
+#: apps/photos/qml/Main.qml:403
+msgid "Folder"
+msgstr "Папка"
+
+#: apps/photos/qml/Main.qml:420
+msgid "Set as wallpaper"
+msgstr "Сделать обоями"
+
+#: apps/photos/qml/Main.qml:424
+msgid "Wallpaper changed"
+msgstr "Обои изменены"
+
+#: apps/photos/qml/Main.qml:427
+msgid "Show in Files"
+msgstr "Показать в «Файлах»"
+
+#: apps/photos/qml/Main.qml:429
+msgid "Open with another app"
+msgstr "Открыть в другом приложении"
+
+#: apps/photos/qml/Main.qml:434
+msgid "Move to trash"
+msgstr "В корзину"
+
+#: src/apps/host.cpp:64
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:72
+msgid "Files or pages to open."
+msgstr "Файлы или страницы для открытия."
+
+#: src/apps/photos.cpp:8
+msgctxt "@title application name"
+msgid "Photos"
+msgstr "Фото"

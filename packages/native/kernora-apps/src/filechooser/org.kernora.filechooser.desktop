@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=File Chooser
+Name[ru]=Выбор файла
+Comment=Kernora's file dialogs
+Comment[ru]=Диалоги открытия и сохранения файлов Kernora
+Icon=org.kernora.files
+Exec=false
+NoDisplay=true

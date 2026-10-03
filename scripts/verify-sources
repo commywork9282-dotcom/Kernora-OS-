@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+lock_file="$PROJECT_ROOT/manifests/upstream.lock"
+
+if ! grep -Eq '^[0-9a-f]{64}  _cache/upstream-sources/' "$lock_file"; then
+  printf 'source verification: no locked artifacts yet (run make sources)\n'
+  exit 0
+fi
+
+(
+  cd "$PROJECT_ROOT"
+  sha256sum --check "$lock_file"
+)
+

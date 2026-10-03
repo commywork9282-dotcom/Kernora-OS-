@@ -1,0 +1,16 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: LibreWolf
+Source: https://librewolf.dev/librewolf/source
+Comment: The LibreWolf package, from https://repo.librewolf.net, carries no
+ copyright file of its own; this is Kernora's summary of it. LibreWolf is
+ Mozilla Firefox with LibreWolf's changes: Firefox's source is at
+ https://hg.mozilla.org/releases/mozilla-release, LibreWolf's at the Source
+ above. Firefox includes code by others under further licences, listed in the
+ browser at about:license.
+
+Files: *
+Copyright: Mozilla Foundation and contributors
+           LibreWolf contributors
+License: MPL-2.0
+ On Debian systems, the full text of the Mozilla Public License 2.0 can be
+ found in /usr/share/common-licenses/MPL-2.0.

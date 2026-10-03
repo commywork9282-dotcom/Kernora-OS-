@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+require_command dpkg-source
+require_command dpkg-parsechangelog
+
+package_root="$PROJECT_ROOT/packages/derived/base-files"
+output_dir="$PROJECT_ROOT/_build/source-packages"
+mkdir -p "$PROJECT_ROOT/_build" "$output_dir"
+
+"$PROJECT_ROOT/tests/test-base-files-identity.sh"
+
+package_version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
+SOURCE_DATE_EPOCH=$(dpkg-parsechangelog \
+  -l"$package_root/debian/changelog" -S Timestamp)
+export SOURCE_DATE_EPOCH
+temporary_root=$(mktemp -d "$PROJECT_ROOT/_build/.base-files-source.XXXXXX")
+trap 'find "$temporary_root" -depth -delete' EXIT
+working_tree="$temporary_root/base-files-$package_version"
+mkdir -p "$working_tree"
+cp -a "$package_root/." "$working_tree/"
+
+(
+  cd "$working_tree"
+  dpkg-source --build .
+)
+
+for artifact in "$temporary_root"/base-files_"$package_version".*; do
+  [[ -f "$artifact" ]] || continue
+  mv -- "$artifact" "$output_dir/"
+done
+
+dsc="$output_dir/base-files_${package_version}.dsc"
+tarball="$output_dir/base-files_${package_version}.tar.xz"
+[[ -s "$dsc" && -s "$tarball" ]] || die "source package artifacts were not produced"
+
+printf 'Built source package:\n%s\n%s\n' "$dsc" "$tarball"

@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Install System
+Exec=calamares
+NoDisplay=true

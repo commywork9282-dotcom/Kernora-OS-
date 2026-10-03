@@ -1,0 +1,185 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in awk date dpkg-parsechangelog dpkg-scanpackages \
+  dpkg-scansources find gpg gzip install md5sum mv sha256sum stat; do
+  require_command "$dependency"
+done
+load_project_config
+load_upstream_config
+
+"$PROJECT_ROOT/scripts/create-development-archive-key"
+
+package_root="$PROJECT_ROOT/packages/derived/base-files"
+package_version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
+meta_root="$PROJECT_ROOT/packages/native/kernora-base"
+meta_version=$(dpkg-parsechangelog -l"$meta_root/debian/changelog" -S Version)
+desktop_root="$PROJECT_ROOT/packages/native/kernora-desktop"
+desktop_version=$(dpkg-parsechangelog \
+  -l"$desktop_root/debian/changelog" -S Version)
+apps_root="$PROJECT_ROOT/packages/native/kernora-apps"
+apps_version=$(dpkg-parsechangelog -l"$apps_root/debian/changelog" -S Version)
+calamares_version=$(dpkg-parsechangelog \
+  -l"$PROJECT_ROOT/packages/derived/calamares/changelog" -S Version)
+source_dir="$PROJECT_ROOT/_build/source-packages"
+binary_dir="$PROJECT_ROOT/_build/binary-packages"
+gnupg_home="$PROJECT_ROOT/_state/gnupg/development-archive"
+fingerprint_file="$PROJECT_ROOT/_state/keys/development-archive.fingerprint"
+public_key="$PROJECT_ROOT/_state/keys/development-archive.gpg"
+fingerprint=$(<"$fingerprint_file")
+key_created_epoch=$(gpg --homedir "$gnupg_home" --batch --with-colons \
+  --list-keys "$fingerprint" \
+  | awk -F: '$1 == "pub" { print $6; exit }')
+[[ "$key_created_epoch" =~ ^[0-9]+$ ]] \
+  || die "could not determine development key creation time"
+signature_epoch=$((key_created_epoch + 1))
+
+temporary_root=$(mktemp -d "$PROJECT_ROOT/_build/.local-archive.XXXXXX")
+archive_root="$temporary_root/archive"
+pool="$archive_root/pool/main/b/base-files"
+meta_pool="$archive_root/pool/main/k/kernora-base"
+desktop_pool="$archive_root/pool/main/k/kernora-desktop"
+apps_pool="$archive_root/pool/main/k/kernora-apps"
+calamares_pool="$archive_root/pool/main/c/calamares"
+binary_index="$archive_root/dists/$DIST_CODENAME/main/binary-$BASE_ARCH"
+source_index="$archive_root/dists/$DIST_CODENAME/main/source"
+release="$archive_root/dists/$DIST_CODENAME/Release"
+
+cleanup() {
+  set +e
+  find "$temporary_root" -depth -delete
+}
+trap cleanup EXIT
+
+mkdir -p "$pool" "$meta_pool" "$desktop_pool" "$apps_pool" "$calamares_pool" \
+  "$binary_index" "$source_index"
+for artifact in \
+  "$source_dir/base-files_${package_version}.dsc" \
+  "$source_dir/base-files_${package_version}.tar.xz" \
+  "$binary_dir/base-files_${package_version}_${BASE_ARCH}.deb"; do
+  [[ -s "$artifact" ]] || die "missing archive input: $artifact"
+  install -m 0644 "$artifact" "$pool/"
+done
+for artifact in \
+  "$source_dir/kernora-base_${meta_version}.dsc" \
+  "$source_dir/kernora-base_${meta_version}.tar.xz" \
+  "$binary_dir/kernora-base_${meta_version}_all.deb"; do
+  [[ -s "$artifact" ]] || die "missing archive input: $artifact"
+  install -m 0644 "$artifact" "$meta_pool/"
+done
+for artifact in \
+  "$source_dir/kernora-desktop_${desktop_version}.dsc" \
+  "$source_dir/kernora-desktop_${desktop_version}.tar.xz" \
+  "$binary_dir/kernora-desktop_${desktop_version}_all.deb" \
+  "$binary_dir/kernora-calamares_${desktop_version}_all.deb"; do
+  [[ -s "$artifact" ]] || die "missing archive input: $artifact"
+  install -m 0644 "$artifact" "$desktop_pool/"
+done
+for artifact in \
+  "$source_dir/kernora-apps_${apps_version}.dsc" \
+  "$source_dir/kernora-apps_${apps_version}.tar.xz" \
+  "$binary_dir/kernora-apps_${apps_version}_${BASE_ARCH}.deb"; do
+  [[ -s "$artifact" ]] || die "missing archive input: $artifact"
+  install -m 0644 "$artifact" "$apps_pool/"
+done
+for artifact in \
+  "$source_dir/calamares_${calamares_version}.dsc" \
+  "$source_dir/calamares_${calamares_version}.debian.tar.xz" \
+  "$source_dir/calamares_3.3.14.orig.tar.gz" \
+  "$binary_dir/calamares_${calamares_version}_${BASE_ARCH}.deb"; do
+  [[ -s "$artifact" ]] || die "missing archive input: $artifact"
+  install -m 0644 "$artifact" "$calamares_pool/"
+done
+for derived in polkit-kde-agent-1; do
+  derived_version=$(dpkg-parsechangelog \
+    -l"$PROJECT_ROOT/packages/derived/$derived/changelog" -S Version)
+  derived_file_version=${derived_version#*:}
+  derived_dsc="$source_dir/${derived}_${derived_file_version}.dsc"
+  [[ -s "$derived_dsc" ]] || die "missing archive input: $derived_dsc"
+  derived_pool="$archive_root/pool/main/${derived:0:1}/$derived"
+  mkdir -p "$derived_pool"
+  install -m 0644 "$derived_dsc" "$derived_pool/"
+  while read -r file; do
+    [[ -s "$source_dir/$file" ]] || die "missing archive input: $source_dir/$file"
+    install -m 0644 "$source_dir/$file" "$derived_pool/"
+  done < <(awk '/^Files:/ { files = 1; next } /^[^ ]/ { files = 0 } files { print $3 }' "$derived_dsc")
+  for binary in $(awk -F': ' '/^Binary:/ { print $2 }' "$derived_dsc" | tr -d ' ' | tr ',' ' '); do
+    deb=$(compgen -G "$binary_dir/${binary}_${derived_file_version}_*.deb" | head -n1 || true)
+    [[ -n "$deb" && -s "$deb" ]] || die "missing archive input: ${binary}_${derived_file_version}"
+    install -m 0644 "$deb" "$derived_pool/"
+  done
+done
+install -m 0644 "$public_key" \
+  "$archive_root/kernora-development-archive-keyring.gpg"
+
+(
+  cd "$archive_root"
+  dpkg-scanpackages --arch "$BASE_ARCH" pool/main /dev/null \
+    > "dists/$DIST_CODENAME/main/binary-$BASE_ARCH/Packages"
+  dpkg-scansources pool/main /dev/null \
+    > "dists/$DIST_CODENAME/main/source/Sources"
+)
+gzip -n -9 -c "$binary_index/Packages" > "$binary_index/Packages.gz"
+gzip -n -9 -c "$source_index/Sources" > "$source_index/Sources.gz"
+
+snapshot_iso="${SNAPSHOT_TIMESTAMP:0:4}-${SNAPSHOT_TIMESTAMP:4:2}-${SNAPSHOT_TIMESTAMP:6:2}"
+snapshot_iso+=" ${SNAPSHOT_TIMESTAMP:9:2}:${SNAPSHOT_TIMESTAMP:11:2}:${SNAPSHOT_TIMESTAMP:13:2} UTC"
+release_date=$(date --utc --date="$snapshot_iso" --rfc-email)
+{
+  printf 'Origin: %s\n' "$DIST_NAME"
+  printf 'Label: %s\n' "$DIST_NAME"
+  printf 'Suite: %s\n' "$DIST_CODENAME"
+  printf 'Codename: %s\n' "$DIST_CODENAME"
+  printf 'Version: %s\n' "$DIST_VERSION"
+  printf 'Date: %s\n' "$release_date"
+  printf 'Architectures: %s\n' "$BASE_ARCH"
+  printf '%s\n' 'Components: main'
+  printf 'Description: %s development package archive\n' "$DIST_NAME"
+  printf '%s\n' 'MD5Sum:'
+  while IFS= read -r index; do
+    relative=${index#"$archive_root/dists/$DIST_CODENAME/"}
+    printf ' %s %16s %s\n' \
+      "$(md5sum "$index" | awk '{print $1}')" \
+      "$(stat --format='%s' "$index")" "$relative"
+  done < <(find "$archive_root/dists/$DIST_CODENAME/main" -type f | sort)
+  printf '%s\n' 'SHA256:'
+  while IFS= read -r index; do
+    relative=${index#"$archive_root/dists/$DIST_CODENAME/"}
+    printf ' %s %16s %s\n' \
+      "$(sha256sum "$index" | awk '{print $1}')" \
+      "$(stat --format='%s' "$index")" "$relative"
+  done < <(find "$archive_root/dists/$DIST_CODENAME/main" -type f | sort)
+} > "$release"
+
+gpg --homedir "$gnupg_home" --batch --yes --local-user "$fingerprint" \
+  --faked-system-time "${signature_epoch}!" \
+  --digest-algo SHA256 --armor --detach-sign \
+  --output "$release.gpg" "$release"
+gpg --homedir "$gnupg_home" --batch --yes --local-user "$fingerprint" \
+  --faked-system-time "${signature_epoch}!" \
+  --digest-algo SHA256 --clearsign \
+  --output "$archive_root/dists/$DIST_CODENAME/InRelease" "$release"
+
+output_parent="$PROJECT_ROOT/out"
+output_archive="$output_parent/archive"
+previous_archive="$output_parent/.archive.previous.$$"
+mkdir -p "$output_parent"
+[[ "$output_archive" == "$PROJECT_ROOT/out/archive" ]] \
+  || die "refusing to replace an unexpected archive path"
+
+if [[ -e "$output_archive" ]]; then
+  mv -- "$output_archive" "$previous_archive"
+fi
+if ! mv -- "$archive_root" "$output_archive"; then
+  [[ ! -e "$previous_archive" ]] || mv -- "$previous_archive" "$output_archive"
+  die "could not install the newly built archive"
+fi
+if [[ -e "$previous_archive" ]]; then
+  find "$previous_archive" -depth -delete
+fi
+
+"$PROJECT_ROOT/tests/test-local-archive.sh"
+printf 'signed development archive: %s\n' "$output_archive"

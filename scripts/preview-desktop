@@ -1,0 +1,475 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/apt-env.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/apt-env.sh"
+
+load_project_config
+load_upstream_config
+
+work="$PROJECT_ROOT/_build/preview"
+rootfs_tar="$PROJECT_ROOT/out/rootfs/kernora-${DIST_VERSION}-${DIST_CODENAME}-live-${BASE_ARCH}.tar.xz"
+base="$work/base.img"
+overlay="$work/overlay.img"
+scratch="$work/scratch.img"
+qmp_socket="$work/qmp.sock"
+serial_socket="$work/serial.sock"
+pid_file="$work/qemu.pid"
+qmp="$PROJECT_ROOT/scripts/lib/preview-qmp.py"
+package_root="$PROJECT_ROOT/packages/native/kernora-desktop"
+apps_package="$PROJECT_ROOT/packages/native/kernora-apps"
+apps_root=/tmp/kernora-apps-dev
+
+extra_packages=(qt6-style-kvantum qml-qt6)
+
+build_base() {
+  [[ -s "$rootfs_tar" ]] || die "live rootfs is missing; run make live-rootfs"
+  if [[ -s "$base" && "$base" -nt "$rootfs_tar" ]]; then
+    return
+  fi
+  printf 'preview: building base disk from %s\n' "$rootfs_tar"
+  mkdir -p "$work"
+  local temporary
+  temporary=$(mktemp -d /tmp/kernora-preview.XXXXXX)
+  chmod 0777 "$temporary"
+  install -m 0644 "$rootfs_tar" "$temporary/rootfs.tar.xz"
+  cat > "$temporary/overlay.service" <<'EOF'
+[Unit]
+Description=Kernora preview: apply the package overlay
+DefaultDependencies=no
+After=local-fs.target
+Before=display-manager.service sddm.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'if [ -b /dev/vdb ]; then mkdir -p /run/kernora-overlay && mount -o ro /dev/vdb /run/kernora-overlay && cp -a /run/kernora-overlay/root/. / && umount /run/kernora-overlay && fc-cache -s; fi'
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  rm -f "$base.tmp"
+  truncate -s 12G "$base.tmp"
+  chmod 0666 "$base.tmp"
+  unshare --map-auto --setuid 0 --setgid 0 sh -euc '
+    temporary=$1
+    mkdir "$temporary/rootfs"
+    tar -xJf "$temporary/rootfs.tar.xz" -C "$temporary/rootfs"
+    rm "$temporary/rootfs.tar.xz"
+    install -m 0644 "$temporary/overlay.service" \
+      "$temporary/rootfs/etc/systemd/system/kernora-preview-overlay.service"
+    ln -s ../kernora-preview-overlay.service \
+      "$temporary/rootfs/etc/systemd/system/multi-user.target.wants/kernora-preview-overlay.service"
+    printf "/dev/vda / ext4 defaults 0 1\n" > "$temporary/rootfs/etc/fstab"
+    # A root shell on the serial console, driven by `preview-desktop run`.
+    mkdir -p "$temporary/rootfs/etc/systemd/system/serial-getty@ttyS0.service.d"
+    printf "[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin root --noclear --keep-baud 115200 %%I dumb\n" \
+      > "$temporary/rootfs/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf"
+    install -m 0644 "$temporary"/rootfs/boot/vmlinuz-* "$temporary/vmlinuz"
+    install -m 0644 "$temporary"/rootfs/boot/initrd.img-* "$temporary/initrd.img"
+    mke2fs -q -F -t ext4 -L kernora-preview -d "$temporary/rootfs" /proc/self/fd/3
+    find "$temporary/rootfs" -depth -delete
+  ' preview "$temporary" 3<>"$base.tmp"
+  cp "$temporary/vmlinuz" "$work/vmlinuz"
+  cp "$temporary/initrd.img" "$work/initrd.img"
+  chmod 0644 "$base.tmp"
+  mv "$base.tmp" "$base"
+  unshare --map-auto --setuid 0 --setgid 0 find "$temporary" -mindepth 1 -depth -delete
+  rmdir "$temporary"
+}
+
+build_overlay() {
+  local version deb
+  version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
+  deb="$PROJECT_ROOT/_build/binary-packages/kernora-desktop_${version}_all.deb"
+  [[ -s "$deb" ]] || die "kernora-desktop $version is not built; run make kernora-desktop-binary"
+
+  local downloads="$work/packages"
+  mkdir -p "$downloads"
+  local missing=()
+  for package in "${extra_packages[@]}"; do
+    compgen -G "$downloads/${package}_*.deb" >/dev/null || missing+=("$package")
+  done
+  if (( ${#missing[@]} > 0 )); then
+    configure_project_apt
+    (cd "$downloads" && apt-get "${APT_OPTIONS[@]}" download "${missing[@]}")
+  fi
+
+  local temporary
+  temporary=$(mktemp -d /tmp/kernora-preview-overlay.XXXXXX)
+  chmod 0777 "$temporary"
+  install -m 0644 "$deb" "$downloads"/*.deb "$temporary/"
+  local calamares_version calamares_deb
+  calamares_version=$(dpkg-parsechangelog -l"$PROJECT_ROOT/packages/derived/calamares/changelog" -S Version)
+  calamares_deb="$PROJECT_ROOT/_build/binary-packages/calamares_${calamares_version}_${BASE_ARCH}.deb"
+  [[ -s "$calamares_deb" ]] && install -m 0644 "$calamares_deb" "$temporary/"
+  local polkit_version polkit_deb
+  polkit_version=$(dpkg-parsechangelog -l"$PROJECT_ROOT/packages/derived/polkit-kde-agent-1/changelog" -S Version)
+  polkit_deb="$PROJECT_ROOT/_build/binary-packages/polkit-kde-agent-1_${polkit_version#*:}_${BASE_ARCH}.deb"
+  [[ -s "$polkit_deb" ]] && install -m 0644 "$polkit_deb" "$temporary/"
+  rm -f "$overlay"
+  truncate -s 256M "$overlay"
+  chmod 0666 "$overlay"
+  unshare --map-auto --setuid 0 --setgid 0 sh -euc '
+    temporary=$1
+    mkdir -p "$temporary/tree/root"
+    for deb in "$temporary"/*.deb; do
+      dpkg-deb -x "$deb" "$temporary/tree/root"
+    done
+    # The live account predates the package; give it the new skeleton as a
+    # freshly created account would get it. uid/gid 1000 is the live user.
+    mkdir -p "$temporary/tree/root/home/live"
+    cp -a "$temporary/tree/root/etc/skel/." "$temporary/tree/root/home/live/"
+    chown -R 1000:1000 "$temporary/tree/root/home/live"
+    mke2fs -q -F -t ext4 -L kernora-overlay -d "$temporary/tree" /proc/self/fd/3
+    find "$temporary" -mindepth 1 -depth -delete
+  ' preview "$temporary" 3<>"$overlay"
+  rmdir "$temporary"
+  chmod 0644 "$overlay"
+  printf 'preview: overlay with %s\n' "$(basename "$deb")"
+}
+
+running() {
+  [[ -s "$pid_file" ]] && kill -0 "$(cat "$pid_file")" 2>/dev/null
+}
+
+start() {
+  require_command qemu-system-x86_64
+  running && die "preview VM is already running; use stop first"
+  build_base
+  build_overlay
+  rm -f "$scratch"
+  truncate -s 20G "$scratch"
+  local accel=tcg
+  [[ -r /dev/kvm && -w /dev/kvm ]] && accel=kvm
+  rm -f "$qmp_socket" "$serial_socket"
+  : > "$work/serial.log"
+  qemu-system-x86_64 \
+    -machine "q35,accel=$accel" \
+    -cpu max \
+    -smp 4 \
+    -m 4096 \
+    -kernel "$work/vmlinuz" \
+    -initrd "$work/initrd.img" \
+    -append "root=/dev/vda rw console=ttyS0,115200n8 quiet systemd.show_status=0" \
+    -drive "file=$base,if=virtio,format=raw,snapshot=on" \
+    -drive "file=$overlay,if=virtio,format=raw,readonly=on" \
+    -drive "file=$scratch,if=virtio,format=raw" \
+    -device virtio-vga,xres=1440,yres=900 \
+    -device qemu-xhci \
+    -device usb-tablet \
+    -device usb-kbd \
+    -nic user,model=virtio-net-pci \
+    -audiodev none,id=audio0 \
+    -device intel-hda -device hda-output,audiodev=audio0 \
+    -display none \
+    -qmp "unix:$qmp_socket,server,nowait" \
+    -chardev "socket,id=serial0,path=$serial_socket,server=on,wait=off,logfile=$work/serial.log" \
+    -serial chardev:serial0 \
+    -pidfile "$pid_file" \
+    -daemonize
+  printf 'preview: booting (%s); serial log in %s\n' "$accel" "$work/serial.log"
+}
+
+stop() {
+  if running; then
+    python3 "$qmp" "$qmp_socket" quit || kill "$(cat "$pid_file")"
+  fi
+  rm -f "$pid_file" "$qmp_socket" "$serial_socket"
+}
+
+launch_helper() {
+  mkdir -p "$1/root"
+  cat > "$1/root/kernora-launch" <<'LAUNCH'
+#!/bin/sh
+[ -s /tmp/plasmashell.env ] || { cat /proc/$(pgrep -u live -x kded6 | head -1)/environ > /tmp/plasmashell.env; chmod 644 /tmp/plasmashell.env; }
+log=/tmp/$(basename "$1").log
+pkill -f "^$1( |\$)"
+sleep 1
+runuser -u live -- bash -c 'while IFS= read -r -d "" kv; do export "$kv"; done < /tmp/plasmashell.env; for f in /etc/xdg/plasma-workspace/env/*.sh; do . "$f"; done; exec setsid "$@"' launch "$@" > "$log" 2>&1 < /dev/null &
+sleep "${KERNORA_LAUNCH_WAIT:-5}"
+grep -av 'UTF-8\|locale\|more information\|libEGL\|QThreadStorage\|qt.multimedia.ffmpeg\|VDPAU' "$log" | cut -c1-400 | head -40
+LAUNCH
+  chmod 0755 "$1/root/kernora-launch"
+}
+
+cursor_theme() {
+  local target=$1 root=/tmp/kernora-desktop-dev/root
+  if [[ ! -x $root/usr/bin/rsvg-convert ]]; then
+    mkdir -p /tmp/kernora-desktop-dev
+    chmod 0777 /tmp/kernora-desktop-dev
+    xz -T0 -dc "$PROJECT_ROOT/_cache/chroots/trixie-amd64-buildd.tar.xz" \
+      | unshare --map-auto --setuid 0 --setgid 0 sh -c "mkdir -p '$root' && tar -x -C '$root'"
+  fi
+  tar -C "$tools" -cf - --exclude=__pycache__ . \
+    | unshare --map-auto --setuid 0 --setgid 0 sh -c "rm -rf '$root/build/tools' '$root/build/cursors'; mkdir -p '$root/build/tools' '$root/build/cursors'; tar -x -C '$root/build/tools'"
+  unshare --map-auto --setuid 0 --setgid 0 --mount --pid --fork --mount-proc="$root/proc" chroot "$root" \
+    /bin/bash -lc "cd /build/tools && python3 gen-cursor-theme /build/cursors/kernora_cursors" >/dev/null
+  mkdir -p "$target"
+  unshare --map-auto --setuid 0 --setgid 0 tar -C "$root/build/cursors" -cf - kernora_cursors | tar -C "$target" -xf - --no-same-owner
+}
+
+sync() {
+  running || die "preview VM is not running; use start"
+  local reset=${1:-}
+  local temporary tools="$package_root/tools"
+  temporary=$(mktemp -d /tmp/kernora-preview-sync.XXXXXX)
+  local tree="$temporary/tree"
+  mkdir -p "$tree/usr/share/plasma/plasmoids" "$tree/usr/share/plasma/look-and-feel" \
+    "$tree/usr/share/plasma/desktoptheme" "$tree/usr/share/icons/Kernora" \
+    "$tree/usr/share/color-schemes" "$tree/etc/xdg" "$tree/usr/share"
+  export PYTHONDONTWRITEBYTECODE=1
+  local entry source id target
+  for entry in launcher:org.kernora.launcher shade:org.kernora.quicksettings clipboard:org.kernora.clipboard; do
+    source=${entry%%:*}
+    id=${entry#*:}
+    target="$tree/usr/share/plasma/plasmoids/$id"
+    mkdir -p "$target"
+    cp -a "$package_root/data/shell/$source/." "$target/"
+    cp -a "$package_root/data/shell/m3" "$target/contents/ui/m3"
+    python3 "$tools/gen-qml-tokens" "$target/contents/ui/m3/M3.qml" >/dev/null
+  done
+  cp -a "$package_root/data/look-and-feel/org.kernora.desktop" "$tree/usr/share/plasma/look-and-feel/"
+  mkdir -p "$tree/usr/share/plasma/wallpapers"
+  cp -a "$package_root/data/wallpaper/org.kernora.shapes" "$tree/usr/share/plasma/wallpapers/"
+  python3 "$tools/gen-wallpaper-assets" "$tree/usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui" >/dev/null
+  local theme
+  for theme in tower rhythm marbles; do
+    cp -a "$package_root/data/wallpaper/org.kernora.$theme" "$tree/usr/share/plasma/wallpapers/"
+    python3 "$tools/gen-wallpaper-assets" "$tree/usr/share/plasma/wallpapers/org.kernora.$theme/contents/ui" "$theme" >/dev/null
+  done
+  python3 "$tools/gen-plasma-theme" "$package_root/data/symbols" "$tree/usr/share/plasma/desktoptheme/kernora" >/dev/null
+  python3 "$tools/gen-icon-theme" "$package_root/data/symbols" "$tree/usr/share/icons/Kernora" >/dev/null
+  python3 "$tools/gen-color-schemes" "$tree/usr/share/color-schemes" >/dev/null
+  python3 "$tools/gen-kdeglobals" "$tree/etc/xdg/kdeglobals" >/dev/null
+  local generation
+  for generation in md1 md2 md3; do
+    KERNORA_GENERATION=$generation python3 "$tools/gen-kvantum-theme" "$tree/usr/share/Kvantum" >/dev/null
+    KERNORA_GENERATION=$generation python3 "$tools/gen-aurorae-theme" "$tree/usr/share/aurorae/themes" >/dev/null
+    [[ $generation == md3 ]] && continue
+    KERNORA_GENERATION=$generation python3 "$tools/gen-color-schemes" "$tree/usr/share/color-schemes" >/dev/null
+    KERNORA_GENERATION=$generation python3 "$tools/gen-plasma-theme" "$package_root/data/symbols" \
+      "$tree/usr/share/plasma/desktoptheme/kernora-$generation" >/dev/null
+  done
+  mkdir -p "$tree/etc/xdg/Kvantum"
+  cp "$package_root/data/kvantum/kvantum.kvconfig" "$tree/etc/xdg/Kvantum/"
+  local style="$tree/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop"
+  mkdir -p "$style" "$tree/usr/lib/x86_64-linux-gnu/qt6/plugins/kf6/kirigami/platform" "$tree/etc/xdg/plasma-workspace/env"
+  cp -a "$package_root/data/style/org.kernora.desktop/." "$style/"
+  cp -a "$package_root/data/shell/m3" "$style/impl"
+  python3 "$tools/gen-qml-tokens" "$style/impl/M3.qml" >/dev/null
+  ln -s org.kde.desktop.so "$tree/usr/lib/x86_64-linux-gnu/qt6/plugins/kf6/kirigami/platform/org.kernora.desktop.so"
+  local modules="$tree/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora"
+  cp -a "$package_root/data/shell/m3" "$modules/m3"
+  sed -i '1i module org.kernora.m3' "$modules/m3/qmldir"
+  python3 "$tools/gen-qml-tokens" "$modules/m3/M3.qml" >/dev/null
+  cp -a "$package_root/data/ui" "$modules/ui"
+  cp "$package_root/data/plasma-env/kernora-qtquick-style.sh" "$tree/etc/xdg/plasma-workspace/env/"
+  cp "$package_root/data/xdg-kwinrc/kwinrc" "$tree/etc/xdg/"
+  cp "$package_root/data/xdg-klipperrc/klipperrc" "$tree/etc/xdg/"
+  cp "$package_root/data/xdg-kcminputrc/kcminputrc" "$package_root/data/xdg-klaunchrc/klaunchrc" "$tree/etc/xdg/"
+  cursor_theme "$tree/usr/share/icons"
+  mkdir -p "$tree/usr/share/knotifications6"
+  cp "$package_root/data/knotifications/kernora-devices.notifyrc" "$tree/usr/share/knotifications6/"
+  python3 "$tools/gen-translations" "$package_root/data/shell/po" "$tree/usr/share/locale" >/dev/null
+  local shell_tree="$tree/usr/share/plasma/shells/org.kde.plasma.desktop/contents"
+  mkdir -p "$shell_tree/lockscreen" "$shell_tree/osd"
+  cp "$package_root/data/lockscreen/LockScreen.qml" "$package_root/data/lockscreen/KernoraMediaControls.qml" "$shell_tree/lockscreen/"
+  cp "$package_root/data/osd/Osd.qml" "$package_root/data/osd/KernoraOsdItem.qml" "$shell_tree/osd/"
+  mkdir -p "$shell_tree/configuration"
+  cp "$package_root/data/configuration/AppletConfiguration.qml" \
+    "$package_root/data/configuration/ConfigurationContainmentAppearance.qml" \
+    "$package_root/data/configuration/ConfigurationContainmentActions.qml" \
+    "$package_root/data/configuration/AboutPlugin.qml" \
+    "$package_root/data/configuration/ConfigurationShortcuts.qml" "$shell_tree/configuration/"
+  local folder_ui="$tree/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui"
+  mkdir -p "$folder_ui"
+  cp "$package_root/data/folderview/ConfigLocation.qml" "$package_root/data/folderview/ConfigIcons.qml" \
+    "$package_root/data/folderview/ConfigFilter.qml" "$folder_ui/"
+  local notifications="$tree/usr/share/plasma/plasmoids/org.kde.plasma.notifications/contents/ui"
+  mkdir -p "$notifications"
+  cp -a "$package_root/data/notifications/." "$notifications/"
+  local tasks="$tree/usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui"
+  mkdir -p "$tasks"
+  cp "$package_root/data/taskmanager/Badge.qml" "$package_root/data/taskmanager/ToolTipInstance.qml" "$tasks/"
+  mkdir -p "$tree/usr/share/librewolf/distribution/extensions" "$tree/usr/share/librewolf/browser/defaults/preferences"
+  python3 "$tools/gen-browser-theme" "$tree/usr/share/librewolf/distribution/extensions/theme@kernora.os.xpi" >/dev/null
+  cp "$package_root/data/librewolf/kernora.js" "$tree/usr/share/librewolf/browser/defaults/preferences/"
+  mkdir -p "$tree/etc/xdg"
+  cp "$package_root/data/xdg-mimeapps/mimeapps.list" "$tree/etc/xdg/"
+  mkdir -p "$tree/usr/share/kglobalaccel"
+  cp "$package_root/data/kglobalaccel/org.kde.krunner.desktop" "$tree/usr/share/kglobalaccel/"
+  cp "$package_root/data/kglobalaccel/org.kde.plasma.emojier.desktop" "$tree/usr/share/kglobalaccel/"
+  mkdir -p "$tree/usr/share/kwin/tabbox"
+  cp -a "$package_root/data/kwin-tabbox/org.kernora.switcher" "$tree/usr/share/kwin/tabbox/"
+  mkdir -p "$tree/etc/calamares/branding" "$tree/usr/bin" "$tree/usr/share/polkit-1/actions" \
+    "$tree/usr/share/polkit-1/rules.d" "$tree/usr/share/applications"
+  cp -a "$package_root/data/calamares/settings.conf" "$package_root/data/calamares/modules" "$tree/etc/calamares/"
+  cp -a "$package_root/data/calamares/branding/kernora" "$tree/etc/calamares/branding/"
+  python3 "$tools/gen-qm" "$package_root/data/calamares/lang/calamares-kernora_ru.ts" \
+    "$tree/etc/calamares/branding/kernora/lang/calamares-kernora_ru.qm" >/dev/null
+  python3 "$tools/gen-installer-icons" "$package_root/data/symbols" \
+    "$tree/etc/calamares/branding/kernora/images" >/dev/null
+  python3 "$tools/gen-installer-style" "$package_root/data/calamares/stylesheet.qss.in" \
+    "$tree/etc/calamares/branding/kernora/stylesheet.qss" >/dev/null
+  cp "$package_root/data/installer/kernora-installer" "$tree/usr/bin/"
+  cp "$package_root/data/installer/org.kernora.installer.policy" "$tree/usr/share/polkit-1/actions/"
+  cp "$package_root/data/installer/49-kernora-installer.rules" "$tree/usr/share/polkit-1/rules.d/"
+  cp "$package_root/data/installer/org.kernora.installer.desktop" "$tree/usr/share/applications/"
+  mkdir -p "$tree/root"
+  launch_helper "$tree"
+  cat > "$tree/root/kernora-refresh-defaults.sh" <<'REFRESH'
+# Rewrite ~/.config/kdedefaults from the look-and-feel defaults, the way the
+# first login did, so a changed default shows without a new account.
+defaults=/usr/share/plasma/look-and-feel/org.kernora.desktop/contents/defaults
+file=
+groups=
+while IFS= read -r line; do
+  case "$line" in
+    "["*"]["*"]")
+      rest=${line#"["}; file=${rest%%"]"*}; rest=${rest#*"]"}
+      groups=
+      while [ -n "$rest" ]; do
+        group=${rest#"["}; group=${group%%"]"*}; rest=${rest#*"]"}
+        groups="$groups --group $group"
+      done ;;
+    "["*) file= ;;
+    *=*) [ -n "$file" ] && runuser -u live -- kwriteconfig6 --file "/home/live/.config/kdedefaults/$file" \
+           $groups --key "${line%%=*}" "${line#*=}" ;;
+  esac
+done < "$defaults"
+REFRESH
+  mkdir -p "$temporary/serve"
+  tar -czf "$temporary/serve/sync.tar.gz" -C "$tree" .
+  python3 "$qmp" "$serial_socket" run 'rm -rf /usr/share/plasma/plasmoids/org.kernora.* /usr/share/plasma/plasmoids/org.kde.plasma.notifications/contents/ui/kernora /usr/share/plasma/wallpapers/org.kernora.* /usr/share/plasma/desktoptheme/kernora /usr/share/plasma/desktoptheme/kernora-light /usr/share/plasma/desktoptheme/kernora-md* /usr/share/Kvantum/Kernora /usr/share/Kvantum/KernoraMD* /usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop /usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3 /usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui /usr/share/aurorae/themes/kernora /usr/share/aurorae/themes/kernora-light /usr/share/aurorae/themes/kernora-md*; find /usr/share/icons/Kernora/scalable -mindepth 1 -maxdepth 1 ! -name apps -exec rm -rf {} +' >/dev/null
+  local port=$((20000 + RANDOM % 20000))
+  python3 -m http.server "$port" --bind 127.0.0.1 --directory "$temporary/serve" >/dev/null 2>&1 &
+  local server=$!
+  sleep 0.5
+  python3 "$qmp" "$serial_socket" run "python3 -c 'import urllib.request,sys; sys.stdout.buffer.write(urllib.request.urlopen(\"http://10.0.2.2:$port/sync.tar.gz\").read())' | tar -xzf - --no-same-owner -C / && echo pushed" >/dev/null
+  kill "$server" 2>/dev/null || true
+  rm -rf "$temporary"
+
+  local restart='[ -s /root/plasmashell.env ] || cat /proc/$(pgrep -u live -x kded6 | head -1)/environ > /root/plasmashell.env'
+  restart+='; pkill -u live -x plasmashell; sleep 1'
+  if [[ "$reset" == "--reset" ]]; then
+    restart+='; rm -f /home/live/.config/plasma-org.kde.plasma.desktop-appletsrc /home/live/.config/plasmashellrc'
+  fi
+  restart+='; sh /root/kernora-refresh-defaults.sh'
+  restart+='; runuser -u live -- bash -c '"'"'while IFS= read -r -d "" kv; do export "$kv"; done < /tmp/plasmashell.env; qdbus6 org.kde.KWin /KWin reconfigure'"'"' >/dev/null 2>&1'
+  restart+='; w() { runuser -u live -- kwriteconfig6 --file "/home/live/.config/$@"; }'
+  restart+='; w powerdevilrc --group AC --group Display --key DimDisplayWhenIdle false'
+  restart+='; w powerdevilrc --group AC --group Display --key TurnOffDisplayWhenIdle false'
+  restart+='; w kscreenlockerrc --group Daemon --key Autolock false'
+  restart+='; rm -rf /home/live/.cache/plasmashell/qmlcache /home/live/.cache/plasma_theme_* /home/live/.cache/icon-cache.kcache'
+  restart+='; cp /root/plasmashell.env /tmp/plasmashell.env; chmod 644 /tmp/plasmashell.env'
+  restart+='; runuser -u live -- bash -c '"'"'while IFS= read -r -d "" kv; do export "$kv"; done < /tmp/plasmashell.env; for f in /etc/xdg/plasma-workspace/env/*.sh; do . "$f"; done; exec setsid plasmashell --no-respawn'"'"' > /tmp/plasmashell.log 2>&1 < /dev/null &'
+  restart+=' sleep 12; grep -vE "libEGL|locale|UTF-8|reconfigure|more information|preload policy|Toolbox not loading|FolderViewDropArea|desktopcontainment/contents/ui/main.qml:201" /tmp/plasmashell.log'
+  python3 "$qmp" "$serial_socket" run "$restart"
+}
+
+
+apps_build() {
+  if [[ ! -d "$apps_root/root/usr" ]]; then
+    "$PROJECT_ROOT/scripts/create-qt-build-rootfs"
+    mkdir -p "$apps_root"
+    chmod 0777 "$apps_root"
+    xz -T0 -dc "$PROJECT_ROOT/_cache/chroots/trixie-amd64-buildd-qt.tar.xz" \
+      | unshare --map-auto --setuid 0 --setgid 0 sh -c "mkdir -p '$apps_root/root' && tar -x -C '$apps_root/root'"
+  fi
+  tar -C "$apps_package" -cf - --exclude=debian . \
+    | unshare --map-auto --setuid 0 --setgid 0 sh -c "mkdir -p '$apps_root/root/build/src' && tar -x -C '$apps_root/root/build/src'"
+  local listing
+  listing=$(mktemp)
+  chmod 0644 "$listing"
+  (cd "$apps_package" && find . -path ./debian -prune -o -type f -print) | LC_ALL=C sort > "$listing"
+  unshare --map-auto --setuid 0 --setgid 0 sh -c "cd '$apps_root/root/build/src' && find . -type f | LC_ALL=C sort | LC_ALL=C comm -13 '$listing' - | while IFS= read -r stale; do rm -f \"\$stale\"; done"
+  rm -f "$listing"
+  unshare --map-auto --setuid 0 --setgid 0 --mount --pid --net --fork \
+    --mount-proc="$apps_root/root/proc" chroot "$apps_root/root" /bin/bash -lc '
+      set -Eeuo pipefail
+      export LC_ALL=C.UTF-8
+      mkdir -p /build/obj
+      cd /build/obj
+      [[ -f Makefile ]] || cmake ../src -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=OFF \
+        -DCMAKE_INSTALL_PREFIX=/usr -DKDE_INSTALL_USE_QT_SYS_PATHS=ON >/dev/null
+      status=0
+      make -k -j"$(nproc)" > /build/make.log 2>&1 || status=$?
+      grep -E "error:|required from here|undefined reference|CMake Error" /build/make.log | cut -c1-400 || true
+      [[ $status -eq 0 ]] || exit $status
+      rm -rf /build/install
+      make install DESTDIR=/build/install > /dev/null
+    '
+}
+
+apps() {
+  running || die "preview VM is not running; use start"
+  local mode=${1:-}
+  local temporary tree
+  temporary=$(mktemp -d /tmp/kernora-preview-apps.XXXXXX)
+  chmod 0777 "$temporary"
+  tree="$temporary/tree"
+  mkdir -p "$tree"
+  if [[ "$mode" == "--qml-only" ]]; then
+    mkdir -p "$tree/usr/share/kernora"
+    local app
+    for app in "$apps_package"/apps/*/; do
+      cp -a "$app/qml" "$tree/usr/share/kernora/$(basename "$app")"
+    done
+  else
+    apps_build
+    unshare --map-auto --setuid 0 --setgid 0 tar -C "$apps_root/root/build/install" -cf - . \
+      | tar -C "$tree" -xf - --no-same-owner
+  fi
+  export PYTHONDONTWRITEBYTECODE=1
+  local modules="$tree/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora"
+  mkdir -p "$modules" "$tree/usr/share/locale" "$tree/root"
+  cp -a "$package_root/data/shell/m3" "$modules/m3"
+  sed -i '1i module org.kernora.m3' "$modules/m3/qmldir"
+  python3 "$package_root/tools/gen-qml-tokens" "$modules/m3/M3.qml" >/dev/null
+  cp -a "$package_root/data/ui" "$modules/ui"
+  python3 "$package_root/tools/gen-translations" "$package_root/data/shell/po" "$tree/usr/share/locale" >/dev/null
+  launch_helper "$tree"
+  mkdir -p "$temporary/serve"
+  tar -czf "$temporary/serve/apps.tar.gz" -C "$tree" .
+  local port=$((20000 + RANDOM % 20000))
+  python3 -m http.server "$port" --bind 127.0.0.1 --directory "$temporary/serve" >/dev/null 2>&1 &
+  local server=$!
+  sleep 0.5
+  python3 "$qmp" "$serial_socket" run "rm -rf /usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3 /usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui /usr/share/kernora; python3 -c 'import urllib.request,sys; sys.stdout.buffer.write(urllib.request.urlopen(\"http://10.0.2.2:$port/apps.tar.gz\").read())' | tar -xzf - --no-same-owner -C / && runuser -u live -- kbuildsycoca6 >/dev/null 2>&1; echo installed"
+  kill "$server" 2>/dev/null || true
+  unshare --map-auto --setuid 0 --setgid 0 find "$temporary" -mindepth 1 -depth -delete 2>/dev/null || rm -rf "$temporary"
+  rmdir "$temporary" 2>/dev/null || true
+}
+
+case "${1:-}" in
+  start) start ;;
+  sync)
+    shift
+    sync "$@"
+    ;;
+  apps)
+    shift
+    apps "$@"
+    ;;
+  launch)
+    shift
+    [[ -n "${1:-}" ]] || die "usage: preview-desktop launch APP [ARGS]"
+    python3 "$qmp" "$serial_socket" run "/root/kernora-launch $*"
+    ;;
+  stop) stop ;;
+  shot)
+    [[ -n "${2:-}" ]] || die "usage: preview-desktop shot FILE.png"
+    python3 "$qmp" "$qmp_socket" shot "$(realpath -m "$2")"
+    ;;
+  input)
+    shift
+    python3 "$qmp" "$qmp_socket" "$@"
+    ;;
+  run)
+    shift
+    python3 "$qmp" "$serial_socket" run "$*"
+    ;;
+  *)
+    die "usage: preview-desktop start|stop|sync [--reset]|apps [--qml-only]|launch APP [ARGS]|shot FILE|input COMMAND...|run COMMAND"
+    ;;
+esac

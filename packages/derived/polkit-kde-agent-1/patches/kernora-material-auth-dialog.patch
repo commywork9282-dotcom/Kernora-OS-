@@ -1,0 +1,460 @@
+Description: Material 3 authentication dialog for Kernora OS
+ The prompt becomes a frameless card that draws its own rounded surface and
+ shadow: the lock on a tonal circle, the headline and the reason centred, the
+ account as a chip (a menu when there is a choice), the password in a pill,
+ errors in the error colour under it, and text buttons with a filled OK.
+ Colours and fonts come from the system colour scheme through Kirigami, so
+ the agent needs no QML from other packages.
+Author: Kernora Developers <developers@kernora.invalid>
+Forwarded: not-needed
+Last-Update: 2026-09-29
+---
+--- a/qml/QuickAuthDialog.qml
++++ b/qml/QuickAuthDialog.qml
+@@ -1,11 +1,21 @@
+ /*  This file is part of the KDE project
+     SPDX-FileCopyrightText: 2021 Aleix Pol Gonzalez <aleixpol@kde.org>
+     SPDX-FileCopyrightText: 2023 Devin Lin <devin@kde.org>
++    SPDX-FileCopyrightText: 2026 Kernora Developers
+ 
+     SPDX-License-Identifier: GPL-2.0-or-later
++
++    Kernora OS: the authentication prompt as a Material 3 dialog -- a card
++    with rounded corners floating over the desktop (no window frame), the
++    lock on a tonal circle, the headline and the reason centred under it,
++    the password in a pill, and the actions as text buttons at the end.
++    Only Kirigami and Qt Quick Controls: the colours and the font come from
++    the system's colour scheme, so the agent never depends on another
++    package's QML.
+ */
+ 
+ import QtQuick
++import QtQuick.Effects
+ import QtQuick.Layouts
+ import QtQuick.Controls as QQC2
+ import org.kde.kirigami 2.19 as Kirigami
+@@ -15,6 +25,12 @@
+     id: root
+     title: i18n("Authentication Required")
+ 
++    // The card draws its own surface and shadow.
++    flags: Qt.Dialog | Qt.FramelessWindowHint
++    color: "transparent"
++
++    readonly property int shadowMargin: 40
++
+     maximumHeight: intendedWindowHeight
+     minimumHeight: intendedWindowHeight
+     minimumWidth: intendedWindowWidth
+@@ -22,16 +38,16 @@
+     width: intendedWindowWidth
+     height: intendedWindowHeight
+ 
++    property bool waitingForAuthentication: false
++
+     property alias password: passwordField.text
+-    property alias inlineMessageType: inlineMessage.type
+-    property alias inlineMessageText: inlineMessage.text
+-    property alias inlineMessageIcon: inlineMessage.icon
++    property int inlineMessageType: Kirigami.MessageType.Information
++    property string inlineMessageText
++    property string inlineMessageIcon
+     property alias identitiesModel: identitiesCombo.model
+     property alias identitiesCurrentIndex: identitiesCombo.currentIndex
+     property alias selectedIdentity: identitiesCombo.currentValue
+ 
+-    property bool waitingForAuthentication: false
+-
+     // passed in by QuickAuthDialog.cpp
+     property string mainText
+     property string subtitle
+@@ -60,16 +76,16 @@
+     }
+ 
+     function rejectPassword() {
++        waitingForAuthentication = false
+         passwordField.clear()
+         passwordField.enabled = true
+         passwordField.focus = true
+-        waitingForAuthentication = false
+         rejectPasswordAnim.start();
+     }
+ 
+     function authenticationFailure() {
+-        inlineMessage.type = Kirigami.MessageType.Error;
+-        inlineMessage.text = i18n("Authentication failure, please try again.");
++        inlineMessageType = Kirigami.MessageType.Error;
++        inlineMessageText = i18n("Authentication failure, please try again.");
+         rejectPassword()
+     }
+ 
+@@ -79,9 +95,9 @@
+         }
+     }
+ 
+-    readonly property real intendedWindowWidth: Kirigami.Units.gridUnit * 35
++    readonly property real intendedWindowWidth: 440 + shadowMargin * 2
+     // HACK: Window doesn't seem to automatically update height from binding, so manually set the height value
+-    readonly property real intendedWindowHeight: column.implicitHeight + column.anchors.topMargin + column.anchors.bottomMargin;
++    readonly property real intendedWindowHeight: card.implicitHeight + shadowMargin * 2
+     onIntendedWindowHeightChanged: {
+         minimumHeight = intendedWindowHeight;
+         height = intendedWindowHeight;
+@@ -99,6 +115,7 @@
+         if (visible) {
+             // immediately focus on password field on load
+             passwordField.forceActiveFocus();
++            appear.restart();
+         } else {
+             // reject on close
+             root.reject();
+@@ -117,137 +134,245 @@
+         }
+     }
+ 
+-    // add separator to window decorations
+-    Kirigami.Separator {
+-        anchors.top: parent.top
+-        anchors.left: parent.left
+-        anchors.right: parent.right
+-    }
+-
+     RejectPasswordAnimation {
+         id: rejectPasswordAnim
+-        target: column
++        target: card
++    }
++
++    // Material's roles, from the colour scheme.
++    readonly property color surfaceColor: Kirigami.Theme.backgroundColor
++    readonly property color textColor: Kirigami.Theme.textColor
++    readonly property color softTextColor: Qt.alpha(Kirigami.Theme.textColor, 0.72)
++    // The scheme's focus decoration is Material's primary; its selection
++    // is the primary container.
++    readonly property color primaryColor: Kirigami.Theme.focusColor
++    readonly property color tonalColor: Qt.alpha(Kirigami.Theme.focusColor, 0.2)
++    readonly property color errorColor: Kirigami.Theme.negativeTextColor
++
++    MultiEffect {
++        source: surface
++        anchors.fill: surface
++        shadowEnabled: true
++        shadowColor: "#000000"
++        shadowOpacity: 0.45
++        shadowBlur: 1.0
++        shadowVerticalOffset: 8
++        blurMax: 48
++        opacity: surface.opacity
++        scale: surface.scale
++    }
++
++    Rectangle {
++        id: surface
++        anchors.fill: card
++        radius: 28
++        color: root.surfaceColor
++
++        // Material's dialog entrance: a slight grow with a fade.
++        opacity: 0
++        scale: 0.92
++        ParallelAnimation {
++            id: appear
++            NumberAnimation { target: surface; property: "opacity"; from: 0; to: 1; duration: 200; easing.type: Easing.OutCubic }
++            NumberAnimation { target: surface; property: "scale"; from: 0.92; to: 1; duration: 350; easing.type: Easing.OutQuint }
++        }
+     }
+ 
+     // dialog contents
+     ColumnLayout {
+-        id: column
++        id: card
++        x: root.shadowMargin
++        y: root.shadowMargin
++        width: root.width - root.shadowMargin * 2
+         spacing: 0
+-        anchors.top: parent.top
+-        anchors.left: parent.left
+-        anchors.right: parent.right
+-        anchors.margins: Kirigami.Units.largeSpacing
+-
+-        RowLayout {
+-            Layout.fillWidth: true
+-            Layout.topMargin: Kirigami.Units.largeSpacing
++        opacity: surface.opacity
++        scale: surface.scale
+ 
++        // The lock on a tonal circle.
++        Rectangle {
++            Layout.alignment: Qt.AlignHCenter
++            Layout.topMargin: 24
++            implicitWidth: 56
++            implicitHeight: 56
++            radius: 28
++            color: root.tonalColor
+             Kirigami.Icon {
+-                Layout.leftMargin: Kirigami.Units.largeSpacing
+-                Layout.rightMargin: Kirigami.Units.gridUnit
+-                Layout.topMargin: Kirigami.Units.largeSpacing
+-                Layout.alignment: Qt.AlignTop
+-                source: "dialog-password"
+-                implicitWidth: Kirigami.Units.iconSizes.huge
+-                implicitHeight: Kirigami.Units.iconSizes.huge
++                anchors.centerIn: parent
++                width: 28
++                height: 28
++                source: "system-lock-screen"
++                color: root.primaryColor
++                isMask: true
+             }
++        }
+ 
+-            ColumnLayout {
+-                Layout.fillWidth: true
+-                spacing: Kirigami.Units.largeSpacing
+-
+-                Kirigami.Heading {
+-                    Layout.fillWidth: true
+-                    level: 3
+-                    text: root.mainText
+-                    wrapMode: Text.Wrap
+-                    font.weight: Font.Bold
+-                }
++        QQC2.Label {
++            Layout.fillWidth: true
++            Layout.topMargin: 16
++            Layout.leftMargin: 24
++            Layout.rightMargin: 24
++            text: root.title
++            color: root.textColor
++            font.pixelSize: 24
++            horizontalAlignment: Text.AlignHCenter
++            wrapMode: Text.Wrap
++        }
+ 
+-                // user information, only shown if there is more than one user to select from
+-                Flow {
+-                    spacing: Kirigami.Units.smallSpacing
+-                    Layout.fillWidth: true
+-                    Layout.bottomMargin: Kirigami.Units.smallSpacing
++        QQC2.Label {
++            Layout.fillWidth: true
++            Layout.topMargin: 16
++            Layout.leftMargin: 24
++            Layout.rightMargin: 24
++            text: root.mainText
++            color: root.softTextColor
++            font.pixelSize: 14
++            lineHeight: 20
++            lineHeightMode: Text.FixedHeight
++            horizontalAlignment: Text.AlignHCenter
++            wrapMode: Text.Wrap
++        }
+ 
++        // Who authenticates; a menu of accounts when there is a choice.
++        QQC2.AbstractButton {
++            id: switchButton
++            Layout.alignment: Qt.AlignHCenter
++            Layout.topMargin: 16
++            implicitHeight: 32
++            implicitWidth: identityRow.implicitWidth + 24
++            enabled: identitiesCombo.count > 1
++            hoverEnabled: true
++            onClicked: {
++                identitiesCombo.popup.parent = switchButton;
++                identitiesCombo.popup.open();
++            }
++            background: Rectangle {
++                radius: 16
++                color: switchButton.hovered && switchButton.enabled ? Qt.alpha(root.textColor, 0.08) : "transparent"
++                border.width: 1
++                border.color: Qt.alpha(root.textColor, 0.24)
++            }
++            contentItem: Item {
++                RowLayout {
++                    id: identityRow
++                    anchors.centerIn: parent
++                    spacing: 8
++                    Kirigami.Icon {
++                        implicitWidth: 18
++                        implicitHeight: 18
++                        source: "user-identity"
++                        color: root.softTextColor
++                        isMask: true
++                    }
+                     QQC2.Label {
+-                        color: Kirigami.Theme.disabledTextColor
+-                        text: i18n("Authenticating as %1", identitiesCombo.currentText)
+-                        wrapMode: Text.Wrap
++                        text: identitiesCombo.currentText
++                        color: root.textColor
++                        font.pixelSize: 14
+                     }
+-
+-                    Kirigami.LinkButton {
+-                        id: switchButton
+-                        text: i18n("Switch…")
+-                        visible: identitiesCombo.count > 1
+-                        onClicked: {
+-                            identitiesCombo.popup.parent = switchButton;
+-                            identitiesCombo.popup.open();
+-                        }
++                    Kirigami.Icon {
++                        visible: switchButton.enabled
++                        implicitWidth: 18
++                        implicitHeight: 18
++                        source: "arrow-down"
++                        color: root.softTextColor
++                        isMask: true
+                     }
+                 }
++            }
++            Accessible.name: i18n("Authenticating as %1", identitiesCombo.currentText)
++        }
+ 
+-                Kirigami.InlineMessage {
+-                    id: inlineMessage
+-                    Layout.fillWidth: true
+-                    showCloseButton: true
+-                    visible: text.length !== 0
+-                }
++        Kirigami.PasswordField {
++            id: passwordField
++            Layout.fillWidth: true
++            Layout.topMargin: 24
++            Layout.leftMargin: 24
++            Layout.rightMargin: 24
++            onAccepted: root.accept()
++            placeholderText: i18n("Password…")
++        }
+ 
+-                Kirigami.PasswordField {
+-                    id: passwordField
+-                    Layout.fillWidth: true
+-                    onAccepted: root.accept()
+-                    placeholderText: i18n("Password…")
+-                }
++        // What went wrong, or what the agent asks for.
++        RowLayout {
++            Layout.fillWidth: true
++            Layout.topMargin: 8
++            Layout.leftMargin: 28
++            Layout.rightMargin: 24
++            spacing: 6
++            visible: root.inlineMessageText.length > 0
++            Kirigami.Icon {
++                implicitWidth: 16
++                implicitHeight: 16
++                source: root.inlineMessageType === Kirigami.MessageType.Error ? "dialog-error" : "dialog-information"
++                color: root.inlineMessageType === Kirigami.MessageType.Error ? root.errorColor : root.softTextColor
++                isMask: true
++            }
++            QQC2.Label {
++                Layout.fillWidth: true
++                text: root.inlineMessageText
++                color: root.inlineMessageType === Kirigami.MessageType.Error ? root.errorColor : root.softTextColor
++                font.pixelSize: 12
++                wrapMode: Text.Wrap
++            }
++        }
+ 
+-                RowLayout {
+-                    id: passwordRow
++        // The action behind the prompt, on request.
++        ColumnLayout {
++            Layout.fillWidth: true
++            Layout.topMargin: 16
++            Layout.leftMargin: 24
++            Layout.rightMargin: 24
++            spacing: 2
++            visible: details.checked
++            Repeater {
++                model: [
++                    [i18n("Action:"), root.descriptionString],
++                    [i18n("ID:"), root.descriptionActionId],
++                    [i18n("Vendor:"), root.descriptionVendorName]
++                ]
++                delegate: QQC2.Label {
++                    required property var modelData
+                     Layout.fillWidth: true
+-
+-                    QQC2.Button {
+-                        id: details
+-                        text: i18n("Details")
+-                        icon.name: "documentinfo"
+-                        checkable: true
+-                        checked: false
+-                    }
+-
+-                    Item {
+-                        Layout.fillWidth: true
+-                    }
+-
+-                    // TODO: I'm not using a DialogButtonBox right now since there is weird extra padding right on the component, is there a way to fix that?
+-                    QQC2.Button {
+-                        text: i18n("OK")
+-                        icon.name: "dialog-ok"
+-                        onClicked: root.accept()
+-                    }
+-
+-                    QQC2.Button {
+-                        text: i18n("Cancel")
+-                        icon.name: "dialog-cancel"
+-                        onClicked: root.reject()
+-                    }
++                    visible: modelData[1].length > 0
++                    text: modelData[0] + " " + modelData[1]
++                    color: root.softTextColor
++                    font.pixelSize: 12
++                    wrapMode: Text.WrapAnywhere
+                 }
+             }
+         }
+ 
+-        Kirigami.FormLayout {
+-            visible: details.checked
+-            Layout.bottomMargin: Kirigami.Units.largeSpacing
+-            QQC2.Label {
+-                Kirigami.FormData.label: i18n("Action:")
+-                text: descriptionString
++        RowLayout {
++            id: passwordRow
++            Layout.fillWidth: true
++            Layout.topMargin: 24
++            Layout.leftMargin: 12
++            Layout.rightMargin: 24
++            Layout.bottomMargin: 24
++            spacing: 8
++
++            QQC2.Button {
++                id: details
++                flat: true
++                text: i18n("Details")
++                checkable: true
++                checked: false
+             }
+-            QQC2.Label {
+-                Kirigami.FormData.label: i18n("ID:")
+-                text: descriptionActionId
++
++            Item {
++                Layout.fillWidth: true
++            }
++
++            QQC2.Button {
++                flat: true
++                text: i18n("Cancel")
++                onClicked: root.reject()
+             }
+-            Kirigami.UrlButton {
+-                Kirigami.FormData.label: i18n("Vendor:")
+-                text: descriptionVendorName
+-                url: descriptionVendorUrl
++
++            QQC2.Button {
++                highlighted: true
++                text: i18n("OK")
++                enabled: passwordField.enabled
++                onClicked: root.accept()
+             }
+         }
+     }

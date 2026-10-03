@@ -1,0 +1,466 @@
+#!/usr/bin/env python3
+"""usage: gen-cursor-theme OUTPUT_DIRECTORY
+"""
+
+from __future__ import annotations
+
+import json
+import math
+import os
+import pathlib
+import shutil
+import struct
+import subprocess
+import sys
+import tempfile
+import zlib
+
+import kernora_design as design
+import m3color
+import material_shapes
+
+CANVAS = 32
+NOMINAL = 24
+SIZES = [24, 30, 36, 48, 60, 72]
+
+_seed = m3color.Hct.from_hex(design.SEED)
+
+
+def _tone(chroma: float, tone: float) -> str:
+    return m3color.hex_from_rgb(m3color.rgb_from_hct(_seed.hue, chroma, tone))
+
+
+INK = _tone(6, 10)
+PAPER = "#ffffff"
+ACCENT = _tone(60, 45)
+LOADER = design.SEED
+CONTAINER = _tone(40, 92)
+
+DEFS = """<defs>
+<filter id="shadow" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="0.75"/>
+</filter>
+</defs>"""
+
+
+def svg(body: str) -> str:
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{CANVAS}" height="{CANVAS}" '
+            f'viewBox="0 0 {CANVAS} {CANVAS}">{DEFS}{body}</svg>\n')
+
+
+def glyph(parts: list[str], transform: str = "", outline: float = 2.4) -> str:
+    t = f' transform="{transform}"' if transform else ""
+    shadow = "".join(p.replace("/>", f' fill="#000" stroke="#000" stroke-width="{outline}" stroke-linejoin="round"/>') for p in parts)
+    white = "".join(p.replace("/>", f' fill="{PAPER}" stroke="{PAPER}" stroke-width="{outline}" stroke-linejoin="round" stroke-linecap="round"/>') for p in parts)
+    ink = "".join(p.replace("/>", f' fill="{INK}" stroke="{INK}" stroke-width="0.5" stroke-linejoin="round"/>') for p in parts)
+    return (f'<g{t}><g opacity="0.32" filter="url(#shadow)" transform="translate(0 0.8)">{shadow}</g>'
+            f'{white}{ink}</g>')
+
+
+def strokes(lines: list[str], width: float = 2.0, transform: str = "", outline: float = 2.2) -> str:
+    t = f' transform="{transform}"' if transform else ""
+    shadow = "".join(f'<path d="{d}" fill="none" stroke="#000" stroke-width="{width + outline}" stroke-linecap="round" stroke-linejoin="round"/>' for d in lines)
+    white = "".join(f'<path d="{d}" fill="none" stroke="{PAPER}" stroke-width="{width + outline}" stroke-linecap="round" stroke-linejoin="round"/>' for d in lines)
+    ink = "".join(f'<path d="{d}" fill="none" stroke="{INK}" stroke-width="{width}" stroke-linecap="round" stroke-linejoin="round"/>' for d in lines)
+    return (f'<g{t}><g opacity="0.32" filter="url(#shadow)" transform="translate(0 0.8)">{shadow}</g>'
+            f'{white}{ink}</g>')
+
+
+def path(d: str) -> str:
+    return f'<path d="{d}"/>'
+
+
+def rect(x: float, y: float, w: float, h: float, r: float, rotate: float = 0, cx: float = 0, cy: float = 0) -> str:
+    rot = f' transform="rotate({rotate} {cx} {cy})"' if rotate else ""
+    return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{r}"{rot}/>'
+
+
+def circle(cx: float, cy: float, r: float) -> str:
+    return f'<circle cx="{cx}" cy="{cy}" r="{r}"/>'
+
+
+ARROW = "M4.5 4 L4.5 21 L8.9 17.1 L11.8 23.5 L14.9 22.1 L12.1 15.9 L18 15.8 Z"
+
+
+def arrow() -> str:
+    return glyph([path(ARROW)])
+
+
+def badge(cx: float, cy: float, inner: str, fill: str = ACCENT, r: float = 5.6) -> str:
+    return (f'<g opacity="0.32" filter="url(#shadow)" transform="translate(0 0.8)"><circle cx="{cx}" cy="{cy}" r="{r + 1.1}" fill="#000"/></g>'
+            f'<circle cx="{cx}" cy="{cy}" r="{r + 1.1}" fill="{PAPER}"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{fill}"/>{inner}')
+
+
+def white_lines(lines: list[str], width: float = 1.5) -> str:
+    return "".join(f'<path d="{d}" fill="none" stroke="{PAPER}" stroke-width="{width}" stroke-linecap="round" stroke-linejoin="round"/>' for d in lines)
+
+
+def pointing_hand() -> str:
+    return glyph([
+        rect(10.3, 3.6, 3.4, 12.5, 1.7),
+        rect(13.3, 10.6, 3.2, 5.5, 1.6),
+        rect(16.1, 11.4, 3.1, 5.4, 1.55),
+        rect(18.8, 12.4, 2.9, 5.2, 1.45),
+        rect(9.4, 12.6, 12.3, 12.2, 4.6),
+        rect(5.6, 13.6, 3.3, 8.2, 1.65, -32, 7.2, 17.7),
+    ])
+
+
+def open_hand() -> str:
+    return glyph([
+        rect(9.6, 6.6, 3.0, 10.4, 1.5),
+        rect(12.6, 4.6, 3.1, 11.6, 1.55),
+        rect(15.7, 5.4, 3.0, 10.8, 1.5),
+        rect(18.6, 7.4, 2.9, 9.4, 1.45),
+        rect(9.4, 13.0, 12.1, 12.0, 4.6),
+        rect(5.4, 12.6, 3.2, 8.6, 1.6, -38, 7.0, 16.9),
+    ])
+
+
+def closed_hand() -> str:
+    return glyph([
+        rect(9.6, 10.6, 3.0, 5.4, 1.5),
+        rect(12.6, 9.6, 3.1, 5.6, 1.55),
+        rect(15.7, 9.9, 3.0, 5.4, 1.5),
+        rect(18.6, 10.8, 2.9, 5.0, 1.45),
+        rect(9.4, 13.0, 12.1, 11.6, 4.6),
+        rect(6.4, 14.6, 3.2, 6.4, 1.6, -50, 8.0, 17.8),
+    ])
+
+
+def text_beam(vertical: bool = True) -> str:
+    lines = ["M12.8 5.5 Q16 5.5 16 8.2 L16 23.8 Q16 26.5 12.8 26.5",
+             "M19.2 5.5 Q16 5.5 16 8.2 M19.2 26.5 Q16 26.5 16 23.8"]
+    return strokes(lines, 1.7, "" if vertical else "rotate(90 16 16)")
+
+
+def crosshair() -> str:
+    return strokes(["M16 4.5 L16 12.5", "M16 19.5 L16 27.5", "M4.5 16 L12.5 16", "M19.5 16 L27.5 16"], 1.8) + \
+        glyph([circle(16, 16, 1.2)], outline=1.6)
+
+
+def double_arrow(angle: float, bar: bool = False) -> str:
+    parts = [
+        path("M3.6 16 L9.6 10.4 L9.6 21.6 Z"),
+        path("M28.4 16 L22.4 10.4 L22.4 21.6 Z"),
+        rect(8.6, 14.9, 14.8, 2.2, 1.1),
+    ]
+    if bar:
+        parts.append(rect(14.9, 7.5, 2.2, 17, 1.1))
+    return glyph(parts, f"rotate({angle} 16 16)")
+
+
+def single_arrow(angle: float) -> str:
+    return glyph([path("M27.5 16 L20.6 9.2 L20.6 22.8 Z"), rect(5, 14.8, 17, 2.4, 1.2)], f"rotate({angle} 16 16)")
+
+
+def fleur() -> str:
+    heads = []
+    for a in (0, 90, 180, 270):
+        heads.append(f'<path d="M28.4 16 L23.4 11.4 L23.4 20.6 Z" transform="rotate({a} 16 16)"/>')
+    return glyph(heads + [rect(7.2, 14.9, 17.6, 2.2, 1.1), rect(14.9, 7.2, 2.2, 17.6, 1.1)])
+
+
+def not_allowed(cx: float = 16, cy: float = 16, r: float = 9.0) -> str:
+    return strokes([f"M{cx} {cy - r} A{r} {r} 0 1 1 {cx - 0.01} {cy - r}",
+                    f"M{cx - r * 0.68} {cy - r * 0.68} L{cx + r * 0.68} {cy + r * 0.68}"], 2.6)
+
+
+def cell() -> str:
+    return glyph([path("M13.2 5 H18.8 V13.2 H27 V18.8 H18.8 V27 H13.2 V18.8 H5 V13.2 H13.2 Z")], outline=2.0)
+
+
+def pencil() -> str:
+    return glyph([rect(10.5, 3.2, 5.6, 18, 1.4, 45, 13.3, 12.2),
+                  path("M4 28 L5.6 21.6 L10.4 26.4 Z")])
+
+
+def pipette() -> str:
+    return glyph([rect(14.6, 2.6, 6.2, 9, 3.1, 45, 17.7, 7.1),
+                  rect(11.8, 7.6, 3.2, 14.5, 1.6, 45, 13.4, 14.8),
+                  path("M4 28 L5.5 23.4 L8.6 26.5 Z")])
+
+
+def magnifier(plus: bool) -> str:
+    lines = ["M13.5 4.5 A9 9 0 1 1 13.49 4.5", "M20 20 L27 27"]
+    sign = ["M9.5 13.5 L17.5 13.5"] + (["M13.5 9.5 L13.5 17.5"] if plus else [])
+    return strokes(lines, 2.4) + strokes(sign, 1.8)
+
+
+def x_cursor() -> str:
+    return strokes(["M8 8 L24 24", "M24 8 L8 24"], 3.0)
+
+
+LOADER_SHAPES = ["softBurst", "cookie9", "pill", "sunny", "cookie4"]
+FRAMES_PER_SHAPE = 8
+FRAME_DELAY = 36
+RAYS = 120
+
+
+def _radii(name: str) -> list[float]:
+    cubics = material_shapes.normalized(material_shapes.shape_definitions()[name])
+    points = []
+    for c in cubics:
+        for i in range(24):
+            p = material_shapes._point_on(c, i / 24)
+            points.append((p.x - 0.5, p.y - 0.5))
+    radii = []
+    for k in range(RAYS):
+        a = 2 * math.pi * k / RAYS
+        dx, dy = math.cos(a), math.sin(a)
+        best = 0.0
+        for i in range(len(points)):
+            (x1, y1), (x2, y2) = points[i], points[(i + 1) % len(points)]
+            ex, ey = x2 - x1, y2 - y1
+            den = dx * ey - dy * ex
+            if abs(den) < 1e-12:
+                continue
+            t = (x1 * ey - y1 * ex) / den
+            u = (x1 * dy - y1 * dx) / den
+            if t > 0 and -1e-9 <= u <= 1 + 1e-9:
+                best = max(best, t)
+        radii.append(best)
+    return radii
+
+
+def _ease(u: float) -> float:
+    return u * u * u * (u * (u * 6 - 15) + 10)
+
+
+def loader_frames(cx: float, cy: float, container: float, size: float) -> list[str]:
+    shapes = [_radii(n) for n in LOADER_SHAPES]
+    total = len(shapes) * FRAMES_PER_SHAPE
+    frames = []
+    for f in range(total):
+        k, step = divmod(f, FRAMES_PER_SHAPE)
+        u = _ease(step / FRAMES_PER_SHAPE)
+        a, b = shapes[k], shapes[(k + 1) % len(shapes)]
+        radii = [ra + (rb - ra) * u for ra, rb in zip(a, b)]
+        turn = 360 * f / total * 2 + 90 * (k + u)
+        pts = []
+        for i, r in enumerate(radii):
+            ang = 2 * math.pi * i / RAYS + math.radians(turn)
+            pts.append(f"{cx + math.cos(ang) * r * size:.2f},{cy + math.sin(ang) * r * size:.2f}")
+        shape = f'<polygon points="{" ".join(pts)}" fill="{LOADER}"/>'
+        frames.append(
+            f'<g opacity="0.32" filter="url(#shadow)" transform="translate(0 0.8)"><circle cx="{cx}" cy="{cy}" r="{container + 1.2}" fill="#000"/></g>'
+            f'<circle cx="{cx}" cy="{cy}" r="{container + 1.2}" fill="{PAPER}"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="{container}" fill="{CONTAINER}"/>{shape}')
+    return frames
+
+
+def designs() -> dict[str, tuple[list[str], tuple[float, float]]]:
+    plus = white_lines(["M23 20 L23 26", "M20 23 L26 23"])
+    link = white_lines(["M20.6 25.2 L25.2 20.6", "M21.4 20.6 L25.2 20.6 L25.2 24.4"])
+    menu = white_lines(["M20.4 21 L25.6 21", "M20.4 23 L25.6 23", "M20.4 25 L25.6 25"], 1.2)
+    question = white_lines(["M21.2 21.4 A1.9 1.9 0 1 1 23.6 23 Q23 23.4 23 24.2"], 1.4) + \
+        f'<circle cx="23" cy="26.1" r="0.75" fill="{PAPER}"/>'
+    still = lambda body: [svg(body)]  # noqa: E731
+    d: dict[str, tuple[list[str], tuple[float, float]]] = {
+        "default": (still(arrow()), (4.5, 4)),
+        "right_ptr": (still(glyph([path(ARROW)], "translate(32 0) scale(-1 1)")), (27.5, 4)),
+        "center_ptr": (still(single_arrow(-90)), (16, 4.5)),
+        "pointer": (still(pointing_hand()), (12, 3.8)),
+        "openhand": (still(open_hand()), (15, 15)),
+        "closedhand": (still(closed_hand()), (15, 16)),
+        "text": (still(text_beam()), (16, 16)),
+        "vertical-text": (still(text_beam(False)), (16, 16)),
+        "crosshair": (still(crosshair()), (16, 16)),
+        "cell": (still(cell()), (16, 16)),
+        "fleur": (still(fleur()), (16, 16)),
+        "size_hor": (still(double_arrow(0)), (16, 16)),
+        "size_ver": (still(double_arrow(90)), (16, 16)),
+        "size_fdiag": (still(double_arrow(45)), (16, 16)),
+        "size_bdiag": (still(double_arrow(-45)), (16, 16)),
+        "col-resize": (still(double_arrow(0, bar=True)), (16, 16)),
+        "row-resize": (still(double_arrow(90, bar=True)), (16, 16)),
+        "up-arrow": (still(single_arrow(-90)), (16, 4.5)),
+        "down-arrow": (still(single_arrow(90)), (16, 27.5)),
+        "left-arrow": (still(single_arrow(180)), (4.5, 16)),
+        "right-arrow": (still(single_arrow(0)), (27.5, 16)),
+        "not-allowed": (still(not_allowed()), (16, 16)),
+        "no-drop": (still(arrow() + not_allowed(23, 23, 4.6)), (4.5, 4)),
+        "dnd-no-drop": (still(closed_hand() + not_allowed(24, 24, 4.2)), (15, 16)),
+        "help": (still(arrow() + badge(23, 23.3, question)), (4.5, 4)),
+        "copy": (still(arrow() + badge(23, 23, plus)), (4.5, 4)),
+        "alias": (still(arrow() + badge(23, 23, link)), (4.5, 4)),
+        "context-menu": (still(arrow() + badge(23, 23, menu)), (4.5, 4)),
+        "dnd-move": (still(closed_hand()), (15, 16)),
+        "pencil": (still(pencil()), (4, 28)),
+        "draft": (still(pencil()), (4, 28)),
+        "color-picker": (still(pipette()), (4, 28)),
+        "zoom-in": (still(magnifier(True)), (13.5, 13.5)),
+        "zoom-out": (still(magnifier(False)), (13.5, 13.5)),
+        "x-cursor": (still(x_cursor()), (16, 16)),
+        "pirate": (still(x_cursor()), (16, 16)),
+        "wait": ([svg(f) for f in loader_frames(16, 16, 10.4, 13.6)], (16, 16)),
+        "progress": ([svg(arrow() + f) for f in loader_frames(22.6, 22.6, 6.0, 7.8)], (4.5, 4)),
+    }
+    return d
+
+
+ALIASES = {
+    "arrow": "default", "left_ptr": "default", "top_left_arrow": "default", "wayland-cursor": "default",
+    "size-bdiag": "default", "size-fdiag": "default", "size-hor": "default", "size-ver": "default",
+    "hand1": "pointer", "hand2": "pointer", "pointing_hand": "pointer",
+    "9d800788f1b08800ae810202380a0822": "pointer", "e29285e634086352946a0e7090d73106": "pointer",
+    "grab": "openhand", "grabbing": "closedhand", "move": "dnd-move", "dnd-none": "dnd-move",
+    "4498f0e0c1937ffe01fd06f973665830": "dnd-move", "9081237383d90e509aa00f00170e968f": "dnd-move",
+    "fcf21c00b30f7e3f83fe0dfd12e71cff": "dnd-move",
+    "ibeam": "text", "xterm": "text",
+    "cross": "crosshair", "tcross": "crosshair", "plus": "cell",
+    "size_all": "fleur", "all-scroll": "fleur",
+    "e-resize": "size_hor", "w-resize": "size_hor", "ew-resize": "size_hor", "h_double_arrow": "size_hor",
+    "sb_h_double_arrow": "size_hor", "left_side": "size_hor", "right_side": "size_hor",
+    "n-resize": "size_ver", "s-resize": "size_ver", "ns-resize": "size_ver", "v_double_arrow": "size_ver",
+    "sb_v_double_arrow": "size_ver", "top_side": "size_ver", "bottom_side": "size_ver",
+    "00008160000006810000408080010102": "size_ver",
+    "nw-resize": "size_fdiag", "se-resize": "size_fdiag", "nwse-resize": "size_fdiag",
+    "top_left_corner": "size_fdiag", "bottom_right_corner": "size_fdiag",
+    "ne-resize": "size_bdiag", "sw-resize": "size_bdiag", "nesw-resize": "size_bdiag",
+    "top_right_corner": "size_bdiag", "bottom_left_corner": "size_bdiag",
+    "split_h": "col-resize", "split_v": "row-resize",
+    "circle": "not-allowed", "crossed_circle": "not-allowed", "03b6e0fcb3499374a867c041f52298f0": "not-allowed",
+    "forbidden": "no-drop",
+    "left_ptr_help": "help", "question_arrow": "help", "whats_this": "help",
+    "5c6cd98b3f3ebcb1f9c7f1c204630408": "help", "d9ce0ab605698f320427677b458ad60b": "help",
+    "dnd-copy": "copy", "1081e37283d90000800003c07f3ef6bf": "copy", "6407b0e94181790501fd1e167b474872": "copy",
+    "b66166c04f8c3109214a4fbd64a50fc8": "copy",
+    "link": "alias", "dnd-link": "alias", "3085a0e285430894940527032f8b26df": "alias",
+    "640fb0e74195791501fd1ed57b41487f": "alias", "a2a266d0498c3104214a47bd64ab0fc8": "alias",
+    "watch": "wait",
+    "left_ptr_watch": "progress", "half-busy": "progress", "00000000000000020006000e7e9ffc3f": "progress",
+    "08e8e1c95fe2fc01f976f1e063a24ccd": "progress", "3ecb610c1bf2410f44200f48c40d3599": "progress",
+}
+
+
+def _read_png(data: bytes) -> tuple[int, int, bytes]:
+    assert data[:8] == b"\x89PNG\r\n\x1a\n"
+    pos, idat, width = 8, b"", 0
+    while pos < len(data):
+        length, kind = struct.unpack(">I4s", data[pos:pos + 8])
+        chunk = data[pos + 8:pos + 8 + length]
+        if kind == b"IHDR":
+            width, height, depth, colour, _, _, interlace = struct.unpack(">IIBBBBB", chunk)
+            if depth != 8 or colour != 6 or interlace:
+                raise ValueError("expected 8-bit RGBA, non-interlaced")
+        elif kind == b"IDAT":
+            idat += chunk
+        pos += 12 + length
+    raw = zlib.decompress(idat)
+    stride = width * 4
+    out = bytearray()
+    prev = bytearray(stride)
+    i = 0
+    for _ in range(height):
+        f = raw[i]
+        line = bytearray(raw[i + 1:i + 1 + stride])
+        i += 1 + stride
+        for x in range(stride):
+            a = line[x - 4] if x >= 4 else 0
+            b = prev[x]
+            c = prev[x - 4] if x >= 4 else 0
+            if f == 1:
+                line[x] = (line[x] + a) & 255
+            elif f == 2:
+                line[x] = (line[x] + b) & 255
+            elif f == 3:
+                line[x] = (line[x] + ((a + b) >> 1)) & 255
+            elif f == 4:
+                p = a + b - c
+                pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+                line[x] = (line[x] + (a if pa <= pb and pa <= pc else b if pb <= pc else c)) & 255
+        out += line
+        prev = line
+    return width, height, bytes(out)
+
+
+def _argb(rgba: bytes) -> bytes:
+    out = bytearray(len(rgba))
+    for i in range(0, len(rgba), 4):
+        r, g, b, a = rgba[i:i + 4]
+        out[i] = b * a // 255
+        out[i + 1] = g * a // 255
+        out[i + 2] = r * a // 255
+        out[i + 3] = a
+    return bytes(out)
+
+
+def write_xcursor(target: pathlib.Path, images: list[tuple[int, int, int, int, int, int, bytes]]) -> None:
+    header = 16
+    toc = 12 * len(images)
+    chunks = []
+    position = header + toc
+    entries = []
+    for nominal, w, h, xhot, yhot, delay, rgba in images:
+        chunk = struct.pack("<IIIIIIIII", 36, 0xFFFD0002, nominal, 1, w, h, xhot, yhot, delay) + _argb(rgba)
+        entries.append(struct.pack("<III", 0xFFFD0002, nominal, position))
+        chunks.append(chunk)
+        position += len(chunk)
+    with open(target, "wb") as f:
+        f.write(struct.pack("<4sIII", b"Xcur", header, 0x10000, len(images)))
+        f.write(b"".join(entries))
+        f.write(b"".join(chunks))
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 2:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    out = pathlib.Path(argv[1])
+    if out.exists():
+        shutil.rmtree(out)
+    (out / "cursors").mkdir(parents=True)
+    (out / "cursors_scalable").mkdir()
+    rsvg = shutil.which("rsvg-convert")
+    if not rsvg:
+        print("gen-cursor-theme: rsvg-convert is required", file=sys.stderr)
+        return 1
+
+    with tempfile.TemporaryDirectory() as tmp:
+        tmpdir = pathlib.Path(tmp)
+        for name, (frames, (hx, hy)) in designs().items():
+            scalable = out / "cursors_scalable" / name
+            scalable.mkdir()
+            metadata = []
+            images = []
+            animated = len(frames) > 1
+            for index, document in enumerate(frames):
+                filename = f"{name}-{index + 1:02d}.svg" if animated else f"{name}.svg"
+                (scalable / filename).write_text(document, encoding="utf-8")
+                entry = {"filename": filename, "hotspot_x": hx, "hotspot_y": hy, "nominal_size": NOMINAL}
+                if animated:
+                    entry = {"filename": filename, "delay": FRAME_DELAY, "hotspot_x": hx, "hotspot_y": hy, "nominal_size": NOMINAL}
+                metadata.append(entry)
+            (scalable / "metadata.json").write_text(json.dumps(metadata, indent=4) + "\n", encoding="utf-8")
+            for nominal in SIZES:
+                px = round(nominal * CANVAS / NOMINAL)
+                scale = px / CANVAS
+                for index in range(len(frames)):
+                    source = scalable / metadata[index]["filename"]
+                    png = tmpdir / f"{name}-{nominal}-{index}.png"
+                    subprocess.run([rsvg, "-w", str(px), "-h", str(px), "-o", str(png), str(source)], check=True)
+                    w, h, rgba = _read_png(png.read_bytes())
+                    images.append((nominal, w, h, min(w - 1, round(hx * scale)), min(h - 1, round(hy * scale)),
+                                   FRAME_DELAY if animated else 0, rgba))
+            write_xcursor(out / "cursors" / name, images)
+    for link, target in ALIASES.items():
+        os.symlink(target, out / "cursors" / link)
+        os.symlink(target, out / "cursors_scalable" / link)
+
+    (out / "index.theme").write_text(
+        "[Icon Theme]\n"
+        "Name=Kernora\n"
+        "Comment=Kernora's cursors: Material shapes, with Material 3 Expressive's loading indicator\n"
+        "Comment[ru]=Курсоры Kernora: формы Material и индикатор загрузки Material 3 Expressive\n"
+        "Inherits=breeze_cursors\n",
+        encoding="utf-8",
+    )
+    (out / "cursor.theme").write_text("[Icon Theme]\nInherits=kernora_cursors\n", encoding="utf-8")
+    print(f"cursor theme: {len(designs())} cursors, {len(ALIASES)} names linked, in {out}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

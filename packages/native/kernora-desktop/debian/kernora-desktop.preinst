@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+shell=/usr/share/plasma/shells/org.kde.plasma.desktop/contents
+notifications=/usr/share/plasma/plasmoids/org.kde.plasma.notifications/contents/ui
+tasks=/usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui
+folder=/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
+if [ "$1" = install ] || [ "$1" = upgrade ]; then
+    for file in "$shell/lockscreen/LockScreen.qml" "$shell/osd/Osd.qml" \
+            "$shell/configuration/AppletConfiguration.qml" \
+            "$shell/configuration/ConfigurationContainmentAppearance.qml" \
+            "$shell/configuration/ConfigurationContainmentActions.qml" \
+            "$shell/configuration/AboutPlugin.qml" "$shell/configuration/ConfigurationShortcuts.qml" \
+            "$folder/ConfigLocation.qml" "$folder/ConfigIcons.qml" "$folder/ConfigFilter.qml" \
+            "$notifications/main.qml" "$tasks/Badge.qml" "$tasks/ToolTipInstance.qml" \
+            /usr/share/kglobalaccel/org.kde.krunner.desktop \
+            /usr/share/kglobalaccel/org.kde.plasma.emojier.desktop \
+            /usr/share/plymouth/plymouthd.defaults; do
+        dpkg-divert --package kernora-desktop --add --rename \
+            --divert "$file.kde" "$file"
+    done
+fi

@@ -1,0 +1,116 @@
+#!/usr/bin/env python3
+"""usage: gen-translations PO_DIRECTORY OUTPUT_DIRECTORY
+"""
+
+from __future__ import annotations
+
+import ast
+import pathlib
+import struct
+import sys
+
+
+def parse(path: pathlib.Path) -> dict[bytes, bytes]:
+    messages: dict[bytes, bytes] = {}
+    entry: dict[str, list[str]] = {}
+    current: str | None = None
+
+    def flush() -> None:
+        if "msgid" not in entry:
+            return
+        msgid = "".join(entry["msgid"])
+        if "msgctxt" in entry:
+            msgid = "".join(entry["msgctxt"]) + "\x04" + msgid
+        if "msgid_plural" in entry:
+            key = msgid + "\x00" + "".join(entry["msgid_plural"])
+            forms = sorted(k for k in entry if k.startswith("msgstr["))
+            value = "\x00".join("".join(entry[k]) for k in forms)
+        else:
+            key = msgid
+            value = "".join(entry.get("msgstr", []))
+        if value.replace("\x00", ""):
+            messages[key.encode("utf-8")] = value.encode("utf-8")
+
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            if not line and entry:
+                flush()
+                entry = {}
+                current = None
+            continue
+        if line.startswith('"'):
+            if current is None:
+                raise SystemExit(f"{path}: continuation line without a keyword")
+            entry[current].append(ast.literal_eval(line))
+            continue
+        keyword, _, rest = line.partition(" ")
+        if keyword in ("msgctxt", "msgid") and any(k.startswith("msgstr") for k in entry):
+            flush()
+            entry = {}
+        current = keyword
+        entry[current] = [ast.literal_eval(rest.strip())]
+    flush()
+    return messages
+
+
+def write_mo(messages: dict[bytes, bytes], target: pathlib.Path) -> None:
+    keys = sorted(messages)
+    ids = b""
+    strs = b""
+    offsets = []
+    for key in keys:
+        offsets.append((len(ids), len(key), len(strs), len(messages[key])))
+        ids += key + b"\0"
+        strs += messages[key] + b"\0"
+
+    header_size = 7 * 4
+    table_size = len(keys) * 8
+    ids_start = header_size + 2 * table_size
+    strs_start = ids_start + len(ids)
+
+    key_table = []
+    value_table = []
+    for id_offset, id_length, str_offset, str_length in offsets:
+        key_table += [id_length, ids_start + id_offset]
+        value_table += [str_length, strs_start + str_offset]
+
+    output = struct.pack(
+        "Iiiiiii",
+        0x950412DE,
+        0,
+        len(keys),
+        header_size,
+        header_size + table_size,
+        0,
+        0,
+    )
+    output += struct.pack(f"{len(key_table)}i", *key_table)
+    output += struct.pack(f"{len(value_table)}i", *value_table)
+    output += ids + strs
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(output)
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 3:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    source = pathlib.Path(argv[1])
+    output = pathlib.Path(argv[2])
+    count = 0
+    for po in sorted(source.glob("*.po")):
+        domain, _, language = po.stem.rpartition(".")
+        messages = parse(po)
+        if b"" not in messages:
+            raise SystemExit(f"{po}: missing header entry")
+        write_mo(messages, output / language / "LC_MESSAGES" / f"{domain}.mo")
+        count += 1
+        print(f"translation: {domain} [{language}] {len(messages) - 1} messages")
+    if count == 0:
+        raise SystemExit(f"no catalogs in {source}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

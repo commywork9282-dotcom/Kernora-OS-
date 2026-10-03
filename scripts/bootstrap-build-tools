@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/apt-env.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/apt-env.sh"
+
+require_command apt-get
+require_command dpkg-deb
+require_command sha256sum
+configure_project_apt
+
+package_dir="$PROJECT_ROOT/_cache/bootstrap-packages"
+tool_root="$PROJECT_ROOT/_state/tools/mmdebstrap"
+tool="$tool_root/usr/bin/mmdebstrap"
+package_file="$package_dir/mmdebstrap_${MMDEBSTRAP_VERSION}_all.deb"
+
+if [[ ! -f "$package_file" ]]; then
+  mkdir -p "$package_dir"
+  (
+    cd "$package_dir"
+    apt-get "${APT_OPTIONS[@]}" download "mmdebstrap=$MMDEBSTRAP_VERSION"
+  )
+fi
+
+printf '%s  %s\n' "$MMDEBSTRAP_SHA256" "$package_file" \
+  | sha256sum --check --status \
+  || die "mmdebstrap package checksum mismatch"
+
+if [[ ! -x "$tool" ]]; then
+  mkdir -p "$tool_root"
+  dpkg-deb --extract "$package_file" "$tool_root"
+fi
+
+[[ "$($tool --version)" == "mmdebstrap 1.5.7" ]] \
+  || die "unexpected mmdebstrap version"
+printf 'build tool: %s\n' "$($tool --version)"
+

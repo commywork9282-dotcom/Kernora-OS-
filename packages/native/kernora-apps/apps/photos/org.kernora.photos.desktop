@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Photos
+Name[ru]=Фото
+GenericName=Image viewer
+GenericName[ru]=Просмотр изображений
+Icon=org.kernora.photos
+Exec=kernora-photos %U
+Categories=Qt;Graphics;Viewer;
+MimeType=image/png;image/jpeg;image/gif;image/webp;image/bmp;image/svg+xml;image/tiff;image/avif;
+Keywords=image;picture;photo;viewer;изображение;фото;картинка;
+StartupNotify=true

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Install Kernora
+Name[ru]=Установить Kernora
+GenericName=Install on disk
+GenericName[ru]=Установка на диск
+Comment=Install Kernora OS on this computer
+Comment[ru]=Установить Kernora OS на этот компьютер
+Icon=org.kernora.installer
+Exec=/usr/bin/kernora-installer
+Categories=Qt;System;
+Keywords=install;installer;disk;calamares;установить;установка;диск;
+StartupNotify=true
+StartupWMClass=calamares

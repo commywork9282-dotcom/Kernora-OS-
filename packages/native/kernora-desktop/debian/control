@@ -1,0 +1,61 @@
+Source: kernora-desktop
+Section: x11
+Priority: optional
+Maintainer: Kernora Developers <developers@kernora.invalid>
+Standards-Version: 4.7.4
+Build-Depends: debhelper-compat (= 13), fonts-roboto-unhinted, grub-common, librsvg2-bin, python3
+Rules-Requires-Root: no
+
+Package: kernora-desktop
+Architecture: all
+Depends:
+ ${misc:Depends},
+ fonts-roboto-unhinted,
+ kwin-common,
+ plasma-desktop,
+ plasma-workspace,
+ qml6-module-org-kde-desktop,
+ qml6-module-org-kde-kirigami,
+ qml6-module-qtquick-effects,
+ qml6-module-qtquick-layouts,
+ qml6-module-qtquick-shapes,
+ qml6-module-qtquick-templates,
+ qt-style-kvantum
+Recommends:
+ plymouth,
+ plymouth-label
+Description: Kernora OS desktop appearance and shell
+ This package carries the Kernora OS desktop: a complete Material 3 design
+ for Plasma, generated from one seed colour.
+ .
+  * the Kernora Dark and Light colour schemes and the Kernora Plasma theme,
+    drawn from the same Material 3 palette;
+  * the Kernora icon theme, drawn from Material Symbols Rounded;
+  * Kernora Launcher, an application menu with search, and Kernora Quick
+    Settings, the status area and the shade pulled up from the panel;
+  * Kernora Shapes, a live wallpaper of Material 3 Expressive shapes;
+  * the Kernora Kvantum theme, which gives every Qt widget -- menus,
+    buttons, fields, lists -- the same Material shapes and palette;
+  * a Qt Quick Controls style for System Settings and other QML applications,
+    and the Kernora window decoration;
+  * the splash and the look-and-feel package that lays out the floating
+    panel and selects all of the above.
+ .
+ It sets that look-and-feel as the system-wide default, so a freshly
+ created account starts with the Kernora desktop instead of the Plasma one.
+
+Package: kernora-calamares
+Architecture: all
+Depends:
+ ${misc:Depends},
+ calamares (>= 3.3.14-1kernora1),
+ kernora-desktop (= ${source:Version}),
+ pkexec,
+ polkitd
+Description: Kernora OS installer configuration
+ This package configures Calamares to install Kernora OS from the live image
+ onto a disk: the module sequence, the target clean-up of live-only settings
+ and the Kernora installer branding.
+ .
+ The installer removes this package while installing, which leaves Calamares
+ without a configuration on the installed system.

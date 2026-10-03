@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+cd "$(dirname "$0")/.."
+KEYWORDS="-ki18n:1 -ki18nc:1c,2 -ki18np:1,2 -ki18ncp:1c,2,3 -kki18n:1 -kki18nc:1c,2 -kki18np:1,2 -kki18ncp:1c,2,3 -kxi18n:1 -kxi18nc:1c,2"
+extract() {
+    domain=$1
+    shift
+    xgettext --from-code=UTF-8 -C --no-wrap --sort-by-file $KEYWORDS \
+        --package-name="$domain" --msgid-bugs-address=dev@kernora.invalid \
+        -o "po/$domain.pot" "$@" 2>/dev/null || true
+    [ -s "po/$domain.pot" ] || return 0
+    for language in po/*/; do
+        language=$(basename "$language")
+        po="po/$language/$domain.po"
+        if [ -f "$po" ]; then
+            msgmerge --quiet --no-wrap --update --backup=none "$po" "po/$domain.pot"
+        else
+            msginit --no-translator --no-wrap --locale="$language" -i "po/$domain.pot" -o "$po" >/dev/null 2>&1
+        fi
+    done
+}
+for app in apps/*/; do
+    name=$(basename "$app")
+    extract "kernora-$name" $(find "$app" -name '*.qml' -o -name '*.js' | sort) "src/apps/$name.cpp" src/apps/host.cpp
+done
+extract kernora-system $(find src/system -name '*.cpp' | sort)
+rm -f po/*.pot

@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""usage: gen-installer-icons SYMBOL_DIRECTORY OUTPUT_DIRECTORY
+"""
+
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+import kernora_design as design
+
+ICONS = {
+    "partition-erase-auto.svg": ("delete_sweep", "rose"),
+    "partition-manual.svg": ("tune", "blue"),
+    "partition-alongside.svg": ("vertical_split", "teal"),
+    "partition-replace-os.svg": ("swap_horiz", "amber"),
+    "boot-environment.svg": ("memory", "violet"),
+    "partition-table.svg": ("table_rows", "green"),
+    "partition-disk.svg": ("hard_drive", "blue"),
+    "partition-partition.svg": ("pie_chart", "teal"),
+}
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 3:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    symbols = pathlib.Path(argv[1])
+    output = pathlib.Path(argv[2])
+    output.mkdir(parents=True, exist_ok=True)
+    accents = {name: (container, content) for name, container, content in design.accents(True)}
+    for image, (symbol, accent) in ICONS.items():
+        drawing = (symbols / f"{symbol}_24px.svg").read_text(encoding="utf-8")
+        paths = re.findall(r'<path d="([^"]+)"', drawing)
+        if not paths:
+            print(f"gen-installer-icons: no path in {symbol}", file=sys.stderr)
+            return 1
+        container, content = accents[accent]
+        glyphs = "".join(f'<path d="{d}"/>' for d in paths)
+        (output / image).write_text(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">'
+            f'<circle cx="24" cy="24" r="24" fill="{container}"/>'
+            f'<g fill="{content}" transform="translate(12 12) scale(0.025) translate(0 960)">{glyphs}</g>'
+            "</svg>\n",
+            encoding="utf-8",
+        )
+    print(f"installer icons: {len(ICONS)} in {output}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

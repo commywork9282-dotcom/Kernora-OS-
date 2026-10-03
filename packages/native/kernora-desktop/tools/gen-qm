@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+"""usage: gen-qm INPUT.ts OUTPUT.qm
+"""
+
+from __future__ import annotations
+
+import pathlib
+import struct
+import sys
+import xml.etree.ElementTree as ET
+
+MAGIC = bytes([0x3C, 0xB8, 0x64, 0x18, 0xCA, 0xEF, 0x9C, 0x95,
+               0xCD, 0x21, 0x1C, 0xBF, 0x60, 0xA1, 0xBD, 0xDD])
+
+HASHES, MESSAGES, NUMERUS_RULES, LANGUAGE = 0x42, 0x69, 0x88, 0xA7
+TAG_END, TAG_TRANSLATION, TAG_SOURCE, TAG_CONTEXT, TAG_COMMENT = 1, 3, 6, 7, 8
+
+EQ, BETWEEN, NOT, MOD_10, MOD_100, AND, NEWRULE = 0x01, 0x04, 0x08, 0x10, 0x20, 0xFD, 0xFF
+RULES = {
+    "ru": bytes([MOD_10 | EQ, 1, AND, MOD_100 | NOT | EQ, 11, NEWRULE,
+                 MOD_10 | BETWEEN, 2, 4, AND, MOD_100 | NOT | BETWEEN, 10, 19]),
+    "uk": bytes([MOD_10 | EQ, 1, AND, MOD_100 | NOT | EQ, 11, NEWRULE,
+                 MOD_10 | BETWEEN, 2, 4, AND, MOD_100 | NOT | BETWEEN, 10, 19]),
+}
+
+
+def elf_hash(data: bytes) -> int:
+    h = 0
+    for byte in data:
+        h = ((h << 4) + byte) & 0xFFFFFFFF
+        g = h & 0xF0000000
+        if g:
+            h ^= g >> 24
+        h &= ~g & 0xFFFFFFFF
+    return h or 1
+
+
+def block(tag: int, payload: bytes) -> bytes:
+    return struct.pack(">BI", tag, len(payload)) + payload
+
+
+def field(tag: int, payload: bytes) -> bytes:
+    return struct.pack(">BI", tag, len(payload)) + payload
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 3:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    root = ET.parse(argv[1]).getroot()
+    language = (root.get("language") or "").split("_")[0]
+
+    messages = bytearray()
+    hashes: list[tuple[int, int]] = []
+    plural = False
+    for context in root.findall("context"):
+        name = context.findtext("name", "").encode()
+        for message in context.findall("message"):
+            translation = message.find("translation")
+            if translation is None or translation.get("type") in ("unfinished", "obsolete", "vanished"):
+                continue
+            forms = [form.text or "" for form in translation.findall("numerusform")]
+            if message.get("numerus") == "yes":
+                plural = True
+            else:
+                forms = [translation.text or ""]
+            if not all(forms):
+                continue
+            source = (message.findtext("source") or "").encode()
+            comment = (message.findtext("comment") or "").encode()
+            hashes.append((elf_hash(source + comment), len(messages)))
+            for form in forms:
+                messages += field(TAG_TRANSLATION, form.encode("utf-16-be"))
+            messages += field(TAG_SOURCE, source)
+            if comment:
+                messages += field(TAG_COMMENT, comment)
+            messages += field(TAG_CONTEXT, name)
+            messages += bytes([TAG_END])
+
+    if plural and language not in RULES:
+        print(f"gen-qm: no plural rules for {language!r}", file=sys.stderr)
+        return 1
+    out = bytearray(MAGIC)
+    out += block(HASHES, b"".join(struct.pack(">II", h, offset) for h, offset in sorted(hashes)))
+    out += block(MESSAGES, bytes(messages))
+    if plural:
+        out += block(NUMERUS_RULES, RULES[language])
+    if language:
+        out += block(LANGUAGE, language.encode())
+    output = pathlib.Path(argv[2])
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_bytes(bytes(out))
+    print(f"translation: {len(hashes)} messages: {output}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

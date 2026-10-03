@@ -1,0 +1,17 @@
+module org.kernora.desktop
+import org.kde.desktop auto
+BusyIndicator 1.0 BusyIndicator.qml
+Button 1.0 Button.qml
+CheckDelegate 1.0 CheckDelegate.qml
+ComboBox 1.0 ComboBox.qml
+Dialog 1.0 Dialog.qml
+ItemDelegate 1.0 ItemDelegate.qml
+Menu 1.0 Menu.qml
+MenuItem 1.0 MenuItem.qml
+MenuSeparator 1.0 MenuSeparator.qml
+Popup 1.0 Popup.qml
+RadioDelegate 1.0 RadioDelegate.qml
+Switch 1.0 Switch.qml
+SwitchDelegate 1.0 SwitchDelegate.qml
+ToolButton 1.0 ToolButton.qml
+ToolTip 1.0 ToolTip.qml

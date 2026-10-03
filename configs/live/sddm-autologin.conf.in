@@ -1,0 +1,4 @@
+[Autologin]
+User=@LIVE_USER@
+Session=@LIVE_SESSION@
+Relogin=false

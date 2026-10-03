@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""usage: gen-avatar LOGO.svg OUTPUT.svg
+"""
+
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+import kernora_design as design
+
+SIZE = 256
+MARK = 0.62
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 3:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    logo = pathlib.Path(argv[1]).read_text(encoding="utf-8")
+    view_box = re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', logo)
+    group = re.search(r"(<g\b.*</g>)", logo, re.S)
+    if not view_box or not group:
+        raise SystemExit(f"{argv[1]}: unexpected logo layout")
+    width = float(view_box.group(1))
+    ink = design.DARK["onPrimaryContainer"]
+    body = re.sub(r'fill="#[0-9a-fA-F]{6}"', f'fill="{ink}"', group.group(1), count=1)
+    scale = SIZE * MARK / width
+    offset = SIZE * (1 - MARK) / 2
+    svg = (
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{SIZE}" height="{SIZE}" viewBox="0 0 {SIZE} {SIZE}">\n'
+        f'  <circle cx="{SIZE / 2}" cy="{SIZE / 2}" r="{SIZE / 2}" fill="{design.DARK["primaryContainer"]}"/>\n'
+        f'  <g transform="translate({offset:.3f} {offset:.3f}) scale({scale:.6f})">\n{body}\n  </g>\n'
+        "</svg>\n"
+    )
+    pathlib.Path(argv[2]).write_text(svg, encoding="utf-8")
+    print(f"avatar: {argv[2]}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

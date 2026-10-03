@@ -1,0 +1,628 @@
+Description: Material 3 partition page for Kernora OS
+ The partition step is the one installer page Calamares draws with widgets
+ only. Kernora restyles it to match its Material 3 pages:
+  - the disk bars are flat segments with fully rounded ends and small inner
+    corners across a gap, without the 3D gradient; the selected segment
+    carries a ring in the text colour;
+  - the legend draws round colour dots and its text in the palette's text
+    colours (upstream draws black and grey, unreadable on a dark theme);
+  - partitions take colours from the Kernora palette, also in the size bar
+    of the partition dialogs (KPMcore's own palette colours by file system);
+  - the option rows (erase, manual, ...) can be drawn as cards by the
+    branding's stylesheet, which sees the chosen one by a "checked" property
+    and sets the colour of their warnings (upstream: red) as warningColor;
+  - an image in the branding's images/ directory replaces the built-in one
+    of the same name, so the page can use Material Symbols.
+Author: Kernora Developers <developers@kernora.invalid>
+Forwarded: not-needed
+Last-Update: 2026-09-27
+---
+diff --git a/src/libcalamaresui/utils/Gui.cpp b/src/libcalamaresui/utils/Gui.cpp
+index 57f67ae..1835d5a 100644
+--- a/src/libcalamaresui/utils/Gui.cpp
++++ b/src/libcalamaresui/utils/Gui.cpp
+@@ -10,9 +10,11 @@
+ 
+ #include "Gui.h"
+ 
++#include "Branding.h"
+ #include "ImageRegistry.h"
+ 
+ #include <QBrush>
++#include <QFileInfo>
+ #include <QFont>
+ #include <QFontMetrics>
+ #include <QLayout>
+@@ -28,6 +30,24 @@ namespace Calamares
+ static int s_defaultFontSize = 0;
+ static int s_defaultFontHeight = 0;
+ 
++// Kernora: an image of the same name in the branding's images/ directory
++// replaces the built-in one, so a distribution can draw its own icons.
++static QString
++image( const QString& name )
++{
++    const Branding* branding = Branding::instance();
++    if ( branding )
++    {
++        const QString branded
++            = branding->componentDirectory() + QStringLiteral( "/images/" ) + QFileInfo( name ).fileName();
++        if ( QFileInfo::exists( branded ) )
++        {
++            return branded;
++        }
++    }
++    return QStringLiteral( RESPATH ) + name;
++}
++
+ QPixmap
+ defaultPixmap( ImageType type, ImageMode mode, const QSize& size )
+ {
+@@ -37,83 +57,83 @@ defaultPixmap( ImageType type, ImageMode mode, const QSize& size )
+     switch ( type )
+     {
+     case Yes:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/yes.svgz", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/yes.svgz" ) ), size );
+         break;
+ 
+     case No:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/no.svgz", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/no.svgz" ) ), size );
+         break;
+ 
+     case Information:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/information.svgz", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/information.svgz" ) ), size );
+         break;
+ 
+     case Fail:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/fail.svgz", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/fail.svgz" ) ), size );
+         break;
+ 
+     case Bugs:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/bugs.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/bugs.svg" ) ), size );
+         break;
+ 
+     case Help:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/help.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/help.svg" ) ), size );
+         break;
+ 
+     case Release:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/release.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/release.svg" ) ), size );
+         break;
+ 
+     case Donate:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/donate.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/donate.svg" ) ), size );
+         break;
+ 
+     case PartitionDisk:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/partition-disk.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/partition-disk.svg" ) ), size );
+         break;
+ 
+     case PartitionPartition:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/partition-partition.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/partition-partition.svg" ) ), size );
+         break;
+ 
+     case PartitionAlongside:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/partition-alongside.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/partition-alongside.svg" ) ), size );
+         break;
+ 
+     case PartitionEraseAuto:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/partition-erase-auto.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/partition-erase-auto.svg" ) ), size );
+         break;
+ 
+     case PartitionManual:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/partition-manual.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/partition-manual.svg" ) ), size );
+         break;
+ 
+     case PartitionReplaceOs:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/partition-replace-os.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/partition-replace-os.svg" ) ), size );
+         break;
+ 
+     case PartitionTable:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/partition-table.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/partition-table.svg" ) ), size );
+         break;
+ 
+     case BootEnvironment:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/boot-environment.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/boot-environment.svg" ) ), size );
+         break;
+ 
+     case Squid:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/squid.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/squid.svg" ) ), size );
+         break;
+ 
+     case StatusOk:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/state-ok.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/state-ok.svg" ) ), size );
+         break;
+ 
+     case StatusWarning:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/state-warning.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/state-warning.svg" ) ), size );
+         break;
+ 
+     case StatusError:
+-        pixmap = ImageRegistry::instance()->pixmap( RESPATH "images/state-error.svg", size );
++        pixmap = ImageRegistry::instance()->pixmap( image( QStringLiteral( "images/state-error.svg" ) ), size );
+         break;
+     }
+ 
+diff --git a/src/libcalamaresui/widgets/PrettyRadioButton.cpp b/src/libcalamaresui/widgets/PrettyRadioButton.cpp
+index 404d9c6..12d0722 100644
+--- a/src/libcalamaresui/widgets/PrettyRadioButton.cpp
++++ b/src/libcalamaresui/widgets/PrettyRadioButton.cpp
+@@ -17,6 +17,7 @@
+ #include <QGridLayout>
+ #include <QHBoxLayout>
+ #include <QLabel>
++#include <QStyle>
+ 
+ namespace Calamares
+ {
+@@ -39,7 +40,13 @@ PrettyRadioButton::PrettyRadioButton( QWidget* parent )
+ 
+     m_mainLayout->addWidget( m_radio, 0, 0 );
+     m_mainLayout->addWidget( m_label, 0, 1 );
+-    m_mainLayout->setContentsMargins( 0, 0, 0, 0 );
++    // Kernora: a Material 3 card. The branding's stylesheet draws it
++    // (#prettyRadioButton) and tells the chosen one by its "checked" property.
++    setObjectName( QStringLiteral( "prettyRadioButton" ) );
++    setAttribute( Qt::WA_StyledBackground, true );
++    setProperty( "checked", false );
++    m_mainLayout->setContentsMargins( 16, 12, 16, 12 );
++    m_mainLayout->setHorizontalSpacing( 12 );
+ 
+     connect( m_label, &ClickableLabel::clicked, m_radio, &QRadioButton::click );
+     connect( m_radio, &QRadioButton::toggled, this, &PrettyRadioButton::toggleOptions );
+@@ -49,6 +56,26 @@ PrettyRadioButton::PrettyRadioButton( QWidget* parent )
+ void
+ PrettyRadioButton::setText( const QString& text )
+ {
++    m_text = text;
++    showText();
++}
++
++void
++PrettyRadioButton::setWarningColor( const QColor& color )
++{
++    m_warningColor = color;
++    showText();
++}
++
++void
++PrettyRadioButton::showText()
++{
++    QString text = m_text;
++    if ( m_warningColor.isValid() )
++    {
++        text.replace( QStringLiteral( "color=\"red\"" ),
++                      QStringLiteral( "color=\"%1\"" ).arg( m_warningColor.name() ) );
++    }
+     m_label->setText( text );
+ }
+ 
+@@ -125,6 +152,17 @@ PrettyRadioButton::toggleOptions( bool toggle )
+     {
+         m_optionsLayout->parentWidget()->setVisible( toggle );
+     }
++
++    // Kernora: restyle the card and its contents for the new state.
++    setProperty( "checked", toggle );
++    QList< QWidget* > widgets = findChildren< QWidget* >();
++    widgets.prepend( this );
++    for ( QWidget* widget : widgets )
++    {
++        widget->style()->unpolish( widget );
++        widget->style()->polish( widget );
++    }
++    update();
+ }
+ }  // namespace Widgets
+ }  // namespace Calamares
+diff --git a/src/libcalamaresui/widgets/PrettyRadioButton.h b/src/libcalamaresui/widgets/PrettyRadioButton.h
+index fd00911..177bf93 100644
+--- a/src/libcalamaresui/widgets/PrettyRadioButton.h
++++ b/src/libcalamaresui/widgets/PrettyRadioButton.h
+@@ -12,6 +12,7 @@
+ 
+ #include "DllMacro.h"
+ 
++#include <QColor>
+ #include <QRadioButton>
+ 
+ class QButtonGroup;
+@@ -38,6 +39,10 @@ class ClickableLabel;
+ class UIDLLEXPORT PrettyRadioButton : public QWidget
+ {
+     Q_OBJECT
++    /* Kernora: the colour of warnings in the text (upstream writes them
++     * <font color="red">), set by the branding's stylesheet through
++     * qproperty-warningColor. */
++    Q_PROPERTY( QColor warningColor READ warningColor WRITE setWarningColor )
+ public:
+     explicit PrettyRadioButton( QWidget* parent = nullptr );
+     ~PrettyRadioButton() override {}
+@@ -64,6 +69,9 @@ public:
+     /// @brief Add an options drop-down to this button.
+     void addOptionsComboBox( QComboBox* );
+ 
++    QColor warningColor() const { return m_warningColor; }
++    void setWarningColor( const QColor& color );
++
+ protected slots:
+     /// Options are hidden when the radio button is off
+     void toggleOptions( bool checked );
+@@ -73,6 +81,11 @@ protected:
+     QRadioButton* m_radio;
+     QGridLayout* m_mainLayout;
+     QHBoxLayout* m_optionsLayout;
++
++private:
++    void showText();
++    QString m_text;
++    QColor m_warningColor;
+ };
+ }  // namespace Widgets
+ }  // namespace Calamares
+diff --git a/src/modules/partition/core/ColorUtils.cpp b/src/modules/partition/core/ColorUtils.cpp
+index 6dc17be..8dfe59f 100644
+--- a/src/modules/partition/core/ColorUtils.cpp
++++ b/src/modules/partition/core/ColorUtils.cpp
+@@ -30,23 +30,25 @@ using Calamares::Partition::PartitionIterator;
+ 
+ static const int NUM_PARTITION_COLORS = 5;
+ static const int NUM_NEW_PARTITION_COLORS = 4;
+-//Let's try to use the Breeze palette
++// Kernora: Material 3 colours from the Kernora palette (tools/kernora_design.py
++// in kernora-desktop). Existing partitions take the accent families at tone 70,
++// harmonised with the ember seed; new partitions the ember roles themselves.
+ static const QColor PARTITION_COLORS[ NUM_PARTITION_COLORS ] = {
+-    "#2980b9",  //Dark Plasma Blue
+-    "#27ae60",  //Dark Icon Green
+-    "#c9ce3b",  //Dirty Yellow
+-    "#3daee9",  //Plasma Blue
+-    "#9b59b6",  //Purple
++    "#94a6fd",  // blue
++    "#3abfa1",  // teal
++    "#96b653",  // green
++    "#d195e8",  // violet
++    "#fb8c7d",  // rose
+ };
+ static const QColor NEW_PARTITION_COLORS[ NUM_NEW_PARTITION_COLORS ] = {
+-    "#c0392b",  //Dark Icon Red
+-    "#f39c1f",  //Dark Icon Yellow
+-    "#f1b7bc",  //Light Salmon
+-    "#fed999",  //Light Orange
++    "#ffb595",  // primary
++    "#eebe78",  // tertiary
++    "#e3c0a6",  // secondary
++    "#ea993d",  // amber
+ };
+-static QColor FREE_SPACE_COLOR = "#777777";
+-static QColor EXTENDED_COLOR = "#aaaaaa";
+-static QColor UNKNOWN_DISKLABEL_COLOR = "#4d4151";
++static QColor FREE_SPACE_COLOR = "#52433e";  // outline variant
++static QColor EXTENDED_COLOR = "#a08d86";  // outline
++static QColor UNKNOWN_DISKLABEL_COLOR = "#52433e";  // outline variant
+ 
+ static QMap< QString, QColor > s_partitionColorsCache;
+ 
+diff --git a/src/modules/partition/gui/PartitionBarsView.cpp b/src/modules/partition/gui/PartitionBarsView.cpp
+index ef748d2..4e467c2 100644
+--- a/src/modules/partition/gui/PartitionBarsView.cpp
++++ b/src/modules/partition/gui/PartitionBarsView.cpp
+@@ -21,22 +21,16 @@
+ #include <QGuiApplication>
+ #include <QMouseEvent>
+ #include <QPainter>
+-
+-static const int VIEW_HEIGHT = qMax( Calamares::defaultFontHeight() + 8,  // wins out with big fonts
+-                                     int( Calamares::defaultFontHeight() * 0.6 ) + 22 );  // wins out with small fonts
+-static constexpr int CORNER_RADIUS = 3;
++#include <QPainterPath>
++
++// Kernora: a taller bar of flat Material 3 segments.
++static const int VIEW_HEIGHT = qMax( Calamares::defaultFontHeight() + 16,  // wins out with big fonts
++                                     int( Calamares::defaultFontHeight() * 0.6 ) + 28 );  // wins out with small fonts
++// The gap between two neighbouring segments, and the radius of their inner corners.
++static constexpr qreal SEGMENT_GAP = 3;
++static constexpr qreal INNER_RADIUS = 4;
+ static const int EXTENDED_PARTITION_MARGIN = qMax( 4, VIEW_HEIGHT / 6 );
+ 
+-// The SELECTION_MARGIN is applied within a hardcoded 2px padding anyway, so
+-// we start from EXTENDED_PARTITION_MARGIN - 2 in all cases.
+-// Then we try to ensure the selection rectangle fits exactly between the extended
+-// rectangle and the outer frame (the "/ 2" part), unless that's not possible, and in
+-// that case we at least make sure we have a 1px gap between the selection rectangle
+-// and the extended partition box (the "- 2" part).
+-// At worst, on low DPI systems, this will mean in order:
+-// 1px outer rect, 1 px gap, 1px selection rect, 1px gap, 1px extended partition rect.
+-static const int SELECTION_MARGIN
+-    = qMin( ( EXTENDED_PARTITION_MARGIN - 2 ) / 2, ( EXTENDED_PARTITION_MARGIN - 2 ) - 2 );
+ 
+ PartitionBarsView::PartitionBarsView( QWidget* parent )
+     : QAbstractItemView( parent )
+@@ -94,91 +88,68 @@ PartitionBarsView::paintEvent( QPaintEvent* event )
+     painter.restore();
+ }
+ 
++// A rectangle whose left corners share one radius and right corners another.
++static QPainterPath
++segmentPath( const QRectF& r, qreal left, qreal right )
++{
++    left = qBound( 0.0, left, qMin( r.width(), r.height() ) / 2 );
++    right = qBound( 0.0, right, qMin( r.width(), r.height() ) / 2 );
++    QPainterPath path;
++    path.moveTo( r.left() + left, r.top() );
++    path.lineTo( r.right() - right, r.top() );
++    path.arcTo( QRectF( r.right() - 2 * right, r.top(), 2 * right, 2 * right ), 90, -90 );
++    path.lineTo( r.right(), r.bottom() - right );
++    path.arcTo( QRectF( r.right() - 2 * right, r.bottom() - 2 * right, 2 * right, 2 * right ), 0, -90 );
++    path.lineTo( r.left() + left, r.bottom() );
++    path.arcTo( QRectF( r.left(), r.bottom() - 2 * left, 2 * left, 2 * left ), 270, -90 );
++    path.lineTo( r.left(), r.top() + left );
++    path.arcTo( QRectF( r.left(), r.top(), 2 * left, 2 * left ), 180, -90 );
++    path.closeSubpath();
++    return path;
++}
++
++// Kernora: one flat segment of the bar. The ends of the bar are fully
++// rounded, neighbours meet with small corners across a gap; hovering lightens
++// a segment and the selected one carries a ring in the text colour.
+ void
+ PartitionBarsView::drawSection( QPainter* painter, const QRect& rect_, int x, int width, const QModelIndex& index )
+ {
+     QColor color
+         = index.isValid() ? index.data( Qt::DecorationRole ).value< QColor >() : ColorUtils::unknownDisklabelColor();
+-    bool isFreeSpace = index.isValid() ? index.data( PartitionModel::IsFreeSpaceRole ).toBool() : true;
+-
+-    QRect rect = rect_;
+-    const int y = rect.y();
+-    const int height = rect.height();
+-    const int radius = qMax( 1, CORNER_RADIUS - ( VIEW_HEIGHT - height ) / 2 );
+-    painter->setClipRect( x, y, width, height );
+-    painter->translate( 0.5, 0.5 );
+ 
+-    rect.adjust( 0, 0, -1, -1 );
+-
+-    if ( selectionMode() != QAbstractItemView::NoSelection &&  // no hover without selection
+-         m_hoveredIndex.isValid() && index == m_hoveredIndex )
++    const bool first = x <= rect_.x();
++    const bool last = x + width >= rect_.x() + rect_.width();
++    QRectF segment( x, rect_.y(), width, rect_.height() );
++    segment.adjust( first ? 0 : SEGMENT_GAP / 2, 0, last ? 0 : -SEGMENT_GAP / 2, 0 );
++    if ( segment.width() < 1 )
+     {
+-        if ( canBeSelected( index ) )
+-        {
+-            painter->setBrush( color.lighter( 115 ) );
+-        }
+-        else
+-        {
+-            painter->setBrush( color );
+-        }
+-    }
+-    else
+-    {
+-        painter->setBrush( color );
++        return;
+     }
++    const qreal outer = segment.height() / 2;
++    const qreal left = first ? outer : INNER_RADIUS;
++    const qreal right = last ? outer : INNER_RADIUS;
+ 
+-    QColor borderColor = color.darker();
+-
+-    painter->setPen( borderColor );
+-
+-    painter->drawRoundedRect( rect, radius, radius );
+-
+-    // Draw shade
+-    if ( !isFreeSpace )
++    if ( selectionMode() != QAbstractItemView::NoSelection &&  // no hover without selection
++         m_hoveredIndex.isValid() && index == m_hoveredIndex && canBeSelected( index ) )
+     {
+-        rect.adjust( 2, 2, -2, -2 );
++        color = color.lighter( 115 );
+     }
+ 
+-    QLinearGradient gradient( 0, 0, 0, height / 2 );
+-
+-    qreal c = isFreeSpace ? 0 : 1;
+-    gradient.setColorAt( 0, QColor::fromRgbF( c, c, c, 0.3 ) );
+-    gradient.setColorAt( 1, QColor::fromRgbF( c, c, c, 0 ) );
+-
++    painter->save();
+     painter->setPen( Qt::NoPen );
+-
+-    painter->setBrush( gradient );
+-    painter->drawRoundedRect( rect, radius, radius );
++    painter->setBrush( color );
++    painter->drawPath( segmentPath( segment, left, right ) );
+ 
+     if ( selectionMode() != QAbstractItemView::NoSelection && index.isValid() && selectionModel()
+          && !selectionModel()->selectedIndexes().isEmpty() && selectionModel()->selectedIndexes().first() == index )
+     {
+-        painter->setPen( QPen( borderColor, 1 ) );
+-        QColor highlightColor = QPalette().highlight().color();
+-        highlightColor = highlightColor.lighter( 500 );
+-        highlightColor.setAlpha( 120 );
+-        painter->setBrush( highlightColor );
+-
+-        QRect selectionRect = rect;
+-        selectionRect.setX( x + 1 );
+-        selectionRect.setWidth( width - 3 );  //account for the previous rect.adjust
+-
+-        if ( rect.x() > selectionRect.x() )  //hack for first item
+-        {
+-            selectionRect.adjust( rect.x() - selectionRect.x(), 0, 0, 0 );
+-        }
+-
+-        if ( rect.right() < selectionRect.right() )  //hack for last item
+-        {
+-            selectionRect.adjust( 0, 0, -( selectionRect.right() - rect.right() ), 0 );
+-        }
+-
+-        selectionRect.adjust( SELECTION_MARGIN, SELECTION_MARGIN, -SELECTION_MARGIN, -SELECTION_MARGIN );
+-
+-        painter->drawRoundedRect( selectionRect, radius - 1, radius - 1 );
++        const qreal inset = 3;
++        painter->setPen( QPen( palette().color( QPalette::WindowText ), 2 ) );
++        painter->setBrush( Qt::NoBrush );
++        painter->drawPath(
++            segmentPath( segment.adjusted( inset, inset, -inset, -inset ), left - inset, right - inset ) );
+     }
+-
+-    painter->translate( -0.5, -0.5 );
++    painter->restore();
+ }
+ 
+ void
+diff --git a/src/modules/partition/gui/PartitionLabelsView.cpp b/src/modules/partition/gui/PartitionLabelsView.cpp
+index e338da2..f6997eb 100644
+--- a/src/modules/partition/gui/PartitionLabelsView.cpp
++++ b/src/modules/partition/gui/PartitionLabelsView.cpp
+@@ -31,7 +31,8 @@ using namespace Calamares::Units;
+ static const int LAYOUT_MARGIN = 4;
+ static const int LABEL_PARTITION_SQUARE_MARGIN = qMax( Calamares::defaultFontHeight() - 2, 18 );
+ static const int LABELS_MARGIN = LABEL_PARTITION_SQUARE_MARGIN;
+-static const int CORNER_RADIUS = 2;
++// Kernora: the rounding of the hover highlight behind a label.
++static const int CORNER_RADIUS = 8;
+ 
+ static QStringList
+ buildUnknownDisklabelTexts( Device* dev )
+@@ -93,29 +94,27 @@ PartitionLabelsView::labelsRect() const
+     return rect().adjusted( 0, LAYOUT_MARGIN, 0, 0 );
+ }
+ 
++// Kernora: the colour of a partition as a round Material 3 dot.
+ static void
+ drawPartitionSquare( QPainter* painter, const QRect& rect, const QBrush& brush )
+ {
+-    painter->fillRect( rect.adjusted( 1, 1, -1, -1 ), brush );
++    painter->save();
+     painter->setRenderHint( QPainter::Antialiasing, true );
+-    painter->setPen( QPalette().shadow().color() );
+-    painter->translate( .5, .5 );
+-    painter->drawRoundedRect( rect.adjusted( 0, 0, -1, -1 ), CORNER_RADIUS, CORNER_RADIUS );
+-    painter->translate( -.5, -.5 );
++    painter->setPen( Qt::NoPen );
++    painter->setBrush( brush );
++    painter->drawEllipse( QRectF( rect ).adjusted( 1, 1, -1, -1 ) );
++    painter->restore();
+ }
+ 
++// Kernora: the selected partition's dot gets a ring in the text colour.
+ static void
+-drawSelectionSquare( QPainter* painter, const QRect& rect, const QBrush& brush )
++drawSelectionSquare( QPainter* painter, const QRect& rect, const QColor& ring )
+ {
+     painter->save();
+-    painter->setPen( QPen( brush.color().darker(), 1 ) );
+-    QColor highlightColor = QPalette().highlight().color();
+-    highlightColor = highlightColor.lighter( 500 );
+-    highlightColor.setAlpha( 120 );
+-    painter->setBrush( highlightColor );
+-    painter->translate( .5, .5 );
+-    painter->drawRoundedRect( rect.adjusted( 0, 0, -1, -1 ), CORNER_RADIUS, CORNER_RADIUS );
+-    painter->translate( -.5, -.5 );
++    painter->setRenderHint( QPainter::Antialiasing, true );
++    painter->setPen( QPen( ring, 2 ) );
++    painter->setBrush( Qt::NoBrush );
++    painter->drawEllipse( QRectF( rect ).adjusted( -1, -1, 1, 1 ) );
+     painter->restore();
+ }
+ 
+@@ -269,7 +268,9 @@ PartitionLabelsView::drawLabels( QPainter* painter, const QRect& rect, const QMo
+             labelRect.adjust( 0, -LAYOUT_MARGIN, 0, -2 * LAYOUT_MARGIN );
+             painter->translate( 0.5, 0.5 );
+             QRect hoverRect = labelRect.adjusted( 0, 0, -1, -1 );
+-            painter->setBrush( QPalette().window().color().lighter( 102 ) );
++            QColor hover = palette().color( QPalette::WindowText );
++            hover.setAlphaF( 0.08 );  // Material 3 hover state layer
++            painter->setBrush( hover );
+             painter->setPen( Qt::NoPen );
+             painter->drawRoundedRect( hoverRect, CORNER_RADIUS, CORNER_RADIUS );
+ 
+@@ -360,7 +361,9 @@ PartitionLabelsView::drawLabel( QPainter* painter,
+                                 const QPoint& pos,
+                                 bool selected )
+ {
+-    painter->setPen( Qt::black );
++    // Kernora: the name in the text colour, the size and file system in the
++    // secondary text colour, instead of black and grey on any background.
++    painter->setPen( palette().color( QPalette::WindowText ) );
+     int vertOffset = 0;
+     int width = 0;
+     for ( const QString& textLine : text )
+@@ -369,7 +372,7 @@ PartitionLabelsView::drawLabel( QPainter* painter,
+         painter->drawText(
+             pos.x() + LABEL_PARTITION_SQUARE_MARGIN, pos.y() + vertOffset + textSize.height() / 2, textLine );
+         vertOffset += textSize.height();
+-        painter->setPen( Qt::gray );
++        painter->setPen( palette().color( QPalette::PlaceholderText ) );
+         width = qMax( width, textSize.width() );
+     }
+ 
+@@ -379,10 +382,8 @@ PartitionLabelsView::drawLabel( QPainter* painter,
+ 
+     if ( selected )
+     {
+-        drawSelectionSquare( painter, partitionSquareRect.adjusted( 2, 2, -2, -2 ), color );
++        drawSelectionSquare( painter, partitionSquareRect, palette().color( QPalette::WindowText ) );
+     }
+-
+-    painter->setPen( Qt::black );
+ }
+ 
+ QModelIndex
+diff --git a/src/modules/partition/gui/PartitionSizeController.cpp b/src/modules/partition/gui/PartitionSizeController.cpp
+index c21ebd1..a34b1ec 100644
+--- a/src/modules/partition/gui/PartitionSizeController.cpp
++++ b/src/modules/partition/gui/PartitionSizeController.cpp
+@@ -20,7 +20,9 @@
+ 
+ // KPMcore
+ #include <kpmcore/core/device.h>
++#include <kpmcore/fs/filesystem.h>
+ #include <kpmcore/gui/partresizerwidget.h>
++#include <kpmcore/gui/partwidget.h>
+ 
+ // stdc++
+ #include <limits>
+@@ -77,6 +79,19 @@ PartitionSizeController::setPartResizerWidget( PartResizerWidget* widget, bool f
+     pal.setColor( QPalette::Base, ColorUtils::freeSpaceColor() );
+     pal.setColor( QPalette::Button, m_partitionColor );
+     m_partResizerWidget->setPalette( pal );
++    // Kernora: the partition in the colour it has in the disk bars, whatever
++    // its file system (KPMcore colours by file system, from its own palette).
++    // Its caption takes an ink of the same hue, as Material puts "on" colours
++    // on their containers.
++    if ( auto* partWidget = m_partResizerWidget->findChild< PartWidget* >() )
++    {
++        partWidget->setFileSystemColorCode( std::vector< QColor >( FileSystem::__lastType, m_partitionColor ) );
++        QPalette partPalette = partWidget->palette();
++        partPalette.setColor( QPalette::WindowText,
++                              m_partitionColor.lightnessF() > 0.5 ? m_partitionColor.darker( 400 )
++                                                                  : m_partitionColor.lighter( 300 ) );
++        partWidget->setPalette( partPalette );
++    }
+     connectWidgets();
+ 
+     if ( !format )

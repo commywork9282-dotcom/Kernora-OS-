@@ -1,0 +1,7 @@
+base-files
+debian-archive-keyring
+debian-installer
+debootstrap
+tasksel
+calamares
+polkit-kde-agent-1

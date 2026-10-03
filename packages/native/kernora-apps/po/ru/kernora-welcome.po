@@ -1,0 +1,198 @@
+# Russian translations for kernora-welcome package.
+# Copyright (C) 2026 THE kernora-welcome'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-welcome package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-welcome\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-09-25 20:40-0700\n"
+"PO-Revision-Date: 2026-09-25 20:40-0700\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: apps/welcome/qml/Main.qml:28
+msgid "Welcome"
+msgstr "Добро пожаловать"
+
+#: apps/welcome/qml/Main.qml:94
+msgid "Back"
+msgstr "Назад"
+
+#: apps/welcome/qml/Main.qml:94
+msgid "Skip"
+msgstr "Пропустить"
+
+#: apps/welcome/qml/Main.qml:115
+msgid "Next"
+msgstr "Далее"
+
+#: apps/welcome/qml/Main.qml:115
+msgid "Start using Kernora"
+msgstr "Начать работу"
+
+#: apps/welcome/qml/Main.qml:216
+msgid "Welcome to %1"
+msgstr "Добро пожаловать в %1"
+
+#: apps/welcome/qml/Main.qml:225
+msgid "You are trying Kernora from the installation medium. Look around, then install it when you are ready."
+msgstr "Вы запустили Kernora с установочного носителя. Осмотритесь, а когда будете готовы, установите систему."
+
+#: apps/welcome/qml/Main.qml:226
+msgid "Let's make it yours. It takes a minute."
+msgstr "Настроим систему под вас. Это займёт минуту."
+
+#: apps/welcome/qml/Main.qml:232
+msgid "Install Kernora"
+msgstr "Установить Kernora"
+
+#: apps/welcome/qml/Main.qml:245
+msgid "Light or dark"
+msgstr "Светлая или тёмная"
+
+#: apps/welcome/qml/Main.qml:246
+msgid "Choose how Kernora looks. You can change it any time in Settings."
+msgstr "Выберите оформление Kernora. Его можно изменить в любой момент в «Настройках»."
+
+#: apps/welcome/qml/Main.qml:255
+msgid "Light"
+msgstr "Светлая"
+
+#: apps/welcome/qml/Main.qml:256
+msgid "Dark"
+msgstr "Тёмная"
+
+#: apps/welcome/qml/Main.qml:280
+msgid "Pick a wallpaper"
+msgstr "Выберите обои"
+
+#: apps/welcome/qml/Main.qml:281
+msgid "Kernora Shapes moves slowly and pauses behind your windows. Or choose a picture."
+msgstr "«Фигуры Kernora» медленно движутся и замирают за развёрнутыми окнами. Или выберите изображение."
+
+#: apps/welcome/qml/Main.qml:294
+msgid "Kernora Shapes"
+msgstr "Фигуры Kernora"
+
+#: apps/welcome/qml/Main.qml:325
+msgid "Your apps"
+msgstr "Ваши приложения"
+
+#: apps/welcome/qml/Main.qml:326
+msgid "Everything you need is here. Open the launcher with the Meta key to find more."
+msgstr "Всё необходимое уже здесь. Остальное можно найти в меню запуска по клавише Meta."
+
+#: apps/welcome/qml/Main.qml:337
+msgid "Web browser"
+msgstr "Браузер"
+
+#: apps/welcome/qml/Main.qml:338
+msgid "Files"
+msgstr "Файлы"
+
+#: apps/welcome/qml/Main.qml:339
+msgid "Photos"
+msgstr "Фото"
+
+#: apps/welcome/qml/Main.qml:340
+msgid "Media Player"
+msgstr "Медиаплеер"
+
+#: apps/welcome/qml/Main.qml:341
+msgid "Text Editor"
+msgstr "Текстовый редактор"
+
+#: apps/welcome/qml/Main.qml:342
+msgid "Calculator"
+msgstr "Калькулятор"
+
+#: apps/welcome/qml/Main.qml:343
+msgid "Screenshot"
+msgstr "Снимок экрана"
+
+#: apps/welcome/qml/Main.qml:344
+msgid "Terminal"
+msgstr "Терминал"
+
+#: apps/welcome/qml/Main.qml:345
+msgid "Settings"
+msgstr "Настройки"
+
+#: apps/welcome/qml/Main.qml:387
+msgid "You're all set"
+msgstr "Всё готово"
+
+#: apps/welcome/qml/Main.qml:388
+msgid "A few things worth knowing:"
+msgstr "Несколько полезных советов:"
+
+#: apps/welcome/qml/Main.qml:397
+msgid "Meta opens the launcher"
+msgstr "Meta открывает меню запуска"
+
+#: apps/welcome/qml/Main.qml:398
+msgid "Start typing to find apps, files and settings"
+msgstr "Начните печатать, чтобы найти приложения, файлы и настройки"
+
+#: apps/welcome/qml/Main.qml:405
+msgid "Quick settings are on the right of the panel"
+msgstr "Быстрые настройки — справа на панели"
+
+#: apps/welcome/qml/Main.qml:406
+msgid "Wi-Fi, sound, brightness, Do Not Disturb and more"
+msgstr "Wi-Fi, звук, яркость, «Не беспокоить» и другое"
+
+#: apps/welcome/qml/Main.qml:413
+msgid "Print takes a screenshot"
+msgstr "Print делает снимок экрана"
+
+#: apps/welcome/qml/Main.qml:414
+msgid "Choose an area, the screen or a window"
+msgstr "Область, весь экран или окно"
+
+#: apps/welcome/qml/Main.qml:421
+msgid "Settings has everything else"
+msgstr "Всё остальное — в «Настройках»"
+
+#: src/apps/host.cpp:64
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:72
+msgid "Files or pages to open."
+msgstr "Файлы или страницы для открытия."
+
+#: src/apps/welcome.cpp:8
+msgctxt "@title application name"
+msgid "Welcome"
+msgstr "Добро пожаловать"
+
+msgid "Pick a style"
+msgstr "Выберите стиль"
+
+msgid "Three generations of Material, in the Kernora colours. You can change it any time in Settings."
+msgstr "Три поколения Material в цветах Kernora. Стиль можно сменить в любой момент в настройках."
+
+#: apps/welcome/qml/Main.qml
+msgid "2021 · Material You"
+msgstr "2021 · Material You"
+
+#: apps/welcome/qml/Main.qml
+msgid "2018 · Material Theming"
+msgstr "2018 · Material Theming"
+
+#: apps/welcome/qml/Main.qml
+msgid "2014 · paper and ink"
+msgstr "2014 · бумага и чернила"
+
+#: apps/welcome/qml/Main.qml
+msgid "Kernora's wallpapers are alive: they move slowly and rest behind your windows."
+msgstr "Обои Kernora живые: они медленно движутся и замирают за вашими окнами."

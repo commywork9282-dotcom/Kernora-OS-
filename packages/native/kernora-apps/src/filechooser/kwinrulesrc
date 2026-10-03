@@ -1,0 +1,16 @@
+[General]
+count=1
+rules=org.kernora.filechooser
+
+[org.kernora.filechooser]
+Description=Kernora file chooser
+wmclass=org.kernora.filechooser
+wmclassmatch=1
+skiptaskbar=true
+skiptaskbarrule=2
+skippager=true
+skippagerrule=2
+above=true
+aboverule=2
+placement=5
+placementrule=2

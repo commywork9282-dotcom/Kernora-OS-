@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in apt-get awk bash curl dpkg-source gpg sed sha256sum; do
+  require_command "$dependency"
+done
+
+available_kib=$(df -Pk "$PROJECT_ROOT" | awk 'NR == 2 {print $4}')
+minimum_kib=$((2 * 1024 * 1024))
+(( available_kib >= minimum_kib )) || die "at least 2 GiB free space is required for Stage 0"
+
+printf 'host check: OK (%s GiB available)\n' "$((available_kib / 1024 / 1024))"
+

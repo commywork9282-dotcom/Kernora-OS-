@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+"""usage: gen-color-schemes OUTPUT_DIRECTORY
+"""
+
+from __future__ import annotations
+
+import pathlib
+import sys
+
+import kde_colors
+import kernora_design as design
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 2:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+
+    output = pathlib.Path(argv[1])
+    output.mkdir(parents=True, exist_ok=True)
+    for dark in (True, False):
+        filename = f"{design.scheme_id(dark)}.colors"
+        (output / filename).write_text(kde_colors.render(dark), encoding="utf-8")
+        print(f"colour scheme: {output / filename}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/apt-env.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/apt-env.sh"
+
+for dependency in apt-get dpkg-deb install sha256sum; do
+  require_command "$dependency"
+done
+configure_project_apt
+
+package_dir="$PROJECT_ROOT/_cache/bootstrap-packages"
+tool_root="$PROJECT_ROOT/_state/tools/mtools"
+tool="$tool_root/usr/bin/mformat"
+package_file="$package_dir/mtools_${MTOOLS_VERSION}_${BASE_ARCH}.deb"
+
+if [[ ! -f "$package_file" ]]; then
+  mkdir -p "$package_dir"
+  (
+    cd "$package_dir"
+    apt-get "${APT_OPTIONS[@]}" download "mtools=$MTOOLS_VERSION"
+  )
+fi
+
+printf '%s  %s\n' "$MTOOLS_SHA256" "$package_file" \
+  | sha256sum --check --status \
+  || die "mtools package checksum mismatch"
+
+if [[ ! -x "$tool" ]]; then
+  mkdir -p "$tool_root"
+  dpkg-deb --extract "$package_file" "$tool_root"
+fi
+
+[[ -x "$tool_root/usr/bin/mcopy" ]] || die "mcopy was not extracted"
+"$tool" -V 2>&1 | grep -Fq '4.0.48' || die "unexpected mtools version"
+printf 'ISO tool: mtools %s\n' "$MTOOLS_VERSION"

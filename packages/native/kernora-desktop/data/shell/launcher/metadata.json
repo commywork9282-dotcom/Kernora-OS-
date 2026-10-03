@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Application Launchers",
+        "Description": "Material 3 application launcher with search",
+        "Description[ru]": "Меню приложений в стиле Material 3 с поиском",
+        "Icon": "start-here-kde",
+        "Id": "org.kernora.launcher",
+        "License": "GPL-2.0+",
+        "Name": "Kernora Launcher",
+        "Name[ru]": "Меню приложений Kernora"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.launchermenu"
+    ]
+}

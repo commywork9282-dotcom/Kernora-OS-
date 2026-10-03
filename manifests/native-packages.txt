@@ -1,0 +1,3 @@
+kernora-base      1.0       Kernora base-system metapackage
+kernora-desktop   1.4       Kernora Material 3 shell, themes and installer configuration
+kernora-apps      1.0       Kernora applications: Settings, Files, Text Editor, Photos, Media Player, Calculator, Screenshot, Welcome

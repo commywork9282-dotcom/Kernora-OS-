@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in awk chmod gpg install mktemp mv; do
+  require_command "$dependency"
+done
+load_project_config
+
+key_root="$PROJECT_ROOT/_state/keys"
+gnupg_home="$PROJECT_ROOT/_state/gnupg/development-archive"
+fingerprint_file="$key_root/development-archive.fingerprint"
+public_key="$key_root/development-archive.gpg"
+key_uid="$DIST_NAME Development Archive <archive@kernora.invalid>"
+
+mkdir -p "$key_root" "$gnupg_home"
+chmod 0700 "$gnupg_home"
+
+fingerprint=$(gpg --homedir "$gnupg_home" --batch --with-colons \
+  --list-secret-keys 2>/dev/null \
+  | awk -F: '$1 == "sec" { primary = 1; next }
+      primary && $1 == "fpr" { print $10; exit }')
+
+if [[ -z "$fingerprint" ]]; then
+  parameters=$(mktemp "$key_root/.development-key.XXXXXX")
+  trap 'rm -f -- "$parameters"' EXIT
+  {
+    printf '%s\n' 'Key-Type: eddsa'
+    printf '%s\n' 'Key-Curve: ed25519'
+    printf '%s\n' 'Key-Usage: sign'
+    printf 'Name-Real: %s Development Archive\n' "$DIST_NAME"
+    printf '%s\n' 'Name-Email: archive@kernora.invalid'
+    printf '%s\n' 'Expire-Date: 1y'
+    printf '%s\n' '%no-protection'
+    printf '%s\n' '%commit'
+  } > "$parameters"
+  chmod 0600 "$parameters"
+
+  gpg --homedir "$gnupg_home" --batch --generate-key "$parameters"
+  fingerprint=$(gpg --homedir "$gnupg_home" --batch --with-colons \
+    --list-secret-keys "$key_uid" \
+    | awk -F: '$1 == "fpr" { print $10; exit }')
+fi
+
+[[ "$fingerprint" =~ ^[0-9A-F]{40}$ ]] \
+  || die "could not determine the development archive key fingerprint"
+
+temporary_public_key=$(mktemp "$key_root/.development-archive.XXXXXX")
+gpg --homedir "$gnupg_home" --batch --export-options export-minimal \
+  --export "$fingerprint" > "$temporary_public_key"
+[[ -s "$temporary_public_key" ]] || die "development public key export is empty"
+chmod 0644 "$temporary_public_key"
+mv -- "$temporary_public_key" "$public_key"
+printf '%s\n' "$fingerprint" > "$fingerprint_file"
+chmod 0644 "$fingerprint_file"
+
+printf 'development archive key: %s\n' "$fingerprint"
+printf 'development key UID: %s\n' "$key_uid"
+printf 'warning: this local one-year key is not a Kernora release key\n'

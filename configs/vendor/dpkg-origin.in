@@ -1,0 +1,5 @@
+Vendor: @DIST_NAME@
+Vendor-URL: @DIST_HOME_URL@
+Bugs: @DIST_BUG_URL@
+Parent: Debian
+

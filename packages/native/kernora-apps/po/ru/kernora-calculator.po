@@ -1,0 +1,80 @@
+# Russian translations for kernora-calculator package.
+# Copyright (C) 2026 THE kernora-calculator'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-calculator package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-calculator\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-09-25 20:40-0700\n"
+"PO-Revision-Date: 2026-09-25 20:40-0700\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: apps/calculator/qml/Main.qml:29
+msgid "Calculator"
+msgstr "Калькулятор"
+
+#: apps/calculator/qml/Main.qml:112
+msgid "Not a number"
+msgstr "Не число"
+
+#: apps/calculator/qml/Main.qml:120
+msgid "Can't calculate this"
+msgstr "Не удаётся вычислить"
+
+#: apps/calculator/qml/Main.qml:127
+msgid "Copied"
+msgstr "Скопировано"
+
+#: apps/calculator/qml/Main.qml:189 apps/calculator/qml/Main.qml:258
+msgid "History"
+msgstr "История"
+
+#: apps/calculator/qml/Main.qml:195
+msgid "DEG"
+msgstr "ГРАД"
+
+#: apps/calculator/qml/Main.qml:195
+msgid "RAD"
+msgstr "РАД"
+
+#: apps/calculator/qml/Main.qml:201
+msgid "Copy the result"
+msgstr "Копировать результат"
+
+#: apps/calculator/qml/Main.qml:207
+msgid "Delete"
+msgstr "Удалить"
+
+#: apps/calculator/qml/Main.qml:257
+msgid "Back"
+msgstr "Назад"
+
+#: apps/calculator/qml/Main.qml:259
+msgid "Clear"
+msgstr "Очистить"
+
+#: apps/calculator/qml/Main.qml:286
+msgid "Results appear here"
+msgstr "Здесь появятся результаты"
+
+#: src/apps/calculator.cpp:8
+msgctxt "@title application name"
+msgid "Calculator"
+msgstr "Калькулятор"
+
+#: src/apps/host.cpp:64
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:72
+msgid "Files or pages to open."
+msgstr "Файлы или страницы для открытия."

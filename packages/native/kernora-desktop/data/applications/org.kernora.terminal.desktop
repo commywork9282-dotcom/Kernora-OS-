@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Application
+Name=Terminal
+Name[ru]=Терминал
+GenericName=Command line
+GenericName[ru]=Командная строка
+Comment=Run commands
+Comment[ru]=Выполнение команд
+Icon=org.kernora.terminal
+Exec=alacritty --class org.kernora.terminal
+TryExec=alacritty
+Categories=System;TerminalEmulator;
+Keywords=terminal;shell;console;command;терминал;консоль;командная строка;
+StartupNotify=true
+StartupWMClass=org.kernora.terminal
+Actions=New;
+
+[Desktop Action New]
+Name=New window
+Name[ru]=Новое окно
+Exec=alacritty --class org.kernora.terminal

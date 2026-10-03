@@ -1,0 +1,8 @@
+// SPDX-FileCopyrightText: 2026 Kernora Developers
+// SPDX-License-Identifier: GPL-3.0-or-later
+polkit.addRule(function (action, subject) {
+    if (action.id == "org.kernora.installer" && subject.user == "live"
+            && subject.local && subject.active) {
+        return polkit.Result.YES;
+    }
+});

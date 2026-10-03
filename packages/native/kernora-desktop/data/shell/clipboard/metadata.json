@@ -1,0 +1,19 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Utilities",
+        "Description": "The clipboard history as a Material 3 sheet, opened with Meta+V",
+        "Description[ru]": "История буфера обмена в виде карточки Material 3, открывается по Meta+V",
+        "Icon": "edit-paste",
+        "Id": "org.kernora.clipboard",
+        "License": "GPL-2.0+",
+        "Name": "Kernora Clipboard",
+        "Name[ru]": "Буфер обмена Kernora"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

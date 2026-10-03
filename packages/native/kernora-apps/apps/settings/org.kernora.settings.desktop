@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Settings
+Name[ru]=Настройки
+GenericName=System settings
+GenericName[ru]=Параметры системы
+Icon=org.kernora.settings
+Exec=kernora-settings %u
+Categories=Qt;Settings;System;
+Keywords=system;preferences;configure;wifi;bluetooth;display;sound;wallpaper;параметры;настройки;
+StartupNotify=true

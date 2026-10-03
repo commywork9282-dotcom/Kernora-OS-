@@ -1,0 +1,393 @@
+# Russian translations for kernora-files package.
+# Copyright (C) 2026 THE kernora-files'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-files package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-files\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-09-25 20:40-0700\n"
+"PO-Revision-Date: 2026-09-25 20:40-0700\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: apps/files/qml/Main.qml:39 apps/files/qml/PathBar.qml:56
+msgid "Computer"
+msgstr "Компьютер"
+
+#: apps/files/qml/Main.qml:39 apps/files/qml/Main.qml:690
+#: apps/files/qml/PathBar.qml:52
+msgid "Home"
+msgstr "Домашняя папка"
+
+#: apps/files/qml/Main.qml:39 apps/files/qml/Main.qml:694
+#: apps/files/qml/PathBar.qml:46
+msgid "Trash"
+msgstr "Корзина"
+
+#: apps/files/qml/Main.qml:227 apps/files/qml/Main.qml:648
+msgid "Restore"
+msgstr "Восстановить"
+
+#: apps/files/qml/Main.qml:227
+msgid "Restore the file to open it."
+msgstr "Чтобы открыть файл, восстановите его."
+
+#: apps/files/qml/Main.qml:250
+msgid "%1 item will be moved"
+msgid_plural "%1 items will be moved"
+msgstr[0] "%1 объект будет перемещён"
+msgstr[1] "%1 объекта будут перемещены"
+msgstr[2] "%1 объектов будут перемещены"
+
+#: apps/files/qml/Main.qml:251
+msgid "%1 item copied"
+msgid_plural "%1 items copied"
+msgstr[0] "Скопирован %1 объект"
+msgstr[1] "Скопировано %1 объекта"
+msgstr[2] "Скопировано %1 объектов"
+
+#: apps/files/qml/Main.qml:277
+msgid "%1 item moved to the trash"
+msgid_plural "%1 items moved to the trash"
+msgstr[0] "%1 объект перемещён в корзину"
+msgstr[1] "%1 объекта перемещены в корзину"
+msgstr[2] "%1 объектов перемещены в корзину"
+
+#: apps/files/qml/Main.qml:295
+msgid "Restored"
+msgstr "Восстановлено"
+
+#: apps/files/qml/Main.qml:374
+msgid "Back"
+msgstr "Назад"
+
+#: apps/files/qml/Main.qml:375
+msgid "Forward"
+msgstr "Вперёд"
+
+#: apps/files/qml/Main.qml:376
+msgid "Up"
+msgstr "Вверх"
+
+#: apps/files/qml/Main.qml:390
+msgid "Find in this folder"
+msgstr "Найти в этой папке"
+
+#: apps/files/qml/Main.qml:403
+msgid "Show as grid"
+msgstr "Показать сеткой"
+
+#: apps/files/qml/Main.qml:403
+msgid "Show as list"
+msgstr "Показать списком"
+
+#: apps/files/qml/Main.qml:409
+msgid "More"
+msgstr "Ещё"
+
+#: apps/files/qml/Main.qml:438
+msgid "Files in the trash can be restored until the trash is emptied."
+msgstr "Файлы из корзины можно восстановить, пока корзина не очищена."
+
+#: apps/files/qml/Main.qml:439 apps/files/qml/Main.qml:666
+msgid "Empty the trash"
+msgstr "Очистить корзину"
+
+#: apps/files/qml/Main.qml:454
+msgid "Find in “%1”"
+msgstr "Найти в «%1»"
+
+#: apps/files/qml/Main.qml:543 apps/files/qml/Main.qml:544
+#: apps/files/qml/Main.qml:801
+msgid "%1 item"
+msgid_plural "%1 items"
+msgstr[0] "%1 объект"
+msgstr[1] "%1 объекта"
+msgstr[2] "%1 объектов"
+
+#: apps/files/qml/Main.qml:543
+msgid "%1 selected"
+msgid_plural "%1 selected"
+msgstr[0] "Выбран %1"
+msgstr[1] "Выбрано %1"
+msgstr[2] "Выбрано %1"
+
+#: apps/files/qml/Main.qml:553
+msgid "Nothing found"
+msgstr "Ничего не найдено"
+
+#: apps/files/qml/Main.qml:553
+msgid "The trash is empty"
+msgstr "Корзина пуста"
+
+#: apps/files/qml/Main.qml:553
+msgid "This folder is empty"
+msgstr "Папка пуста"
+
+#: apps/files/qml/Main.qml:554
+msgid "No names contain “%1”."
+msgstr "Нет имён, содержащих «%1»."
+
+#: apps/files/qml/Main.qml:579 apps/files/qml/Main.qml:656
+#: apps/files/qml/Main.qml:672 apps/files/qml/Main.qml:704
+#: apps/files/qml/Main.qml:708
+msgid "New folder"
+msgstr "Новая папка"
+
+#: apps/files/qml/Main.qml:602
+msgid "Open"
+msgstr "Открыть"
+
+#: apps/files/qml/Main.qml:605
+msgid "Open with"
+msgstr "Открыть с помощью"
+
+#: apps/files/qml/Main.qml:620
+msgid "Cut"
+msgstr "Вырезать"
+
+#: apps/files/qml/Main.qml:621
+msgid "Copy"
+msgstr "Копировать"
+
+#: apps/files/qml/Main.qml:622 apps/files/qml/Main.qml:729
+#: apps/files/qml/Main.qml:730
+msgid "Rename"
+msgstr "Переименовать"
+
+#: apps/files/qml/Main.qml:623
+msgid "Compress to ZIP"
+msgstr "Сжать в ZIP"
+
+#: apps/files/qml/Main.qml:625
+msgid "Extract here"
+msgstr "Распаковать сюда"
+
+#: apps/files/qml/Main.qml:631
+msgid "Set as wallpaper"
+msgstr "Сделать обоями"
+
+#: apps/files/qml/Main.qml:636
+msgid "Wallpaper changed"
+msgstr "Обои изменены"
+
+#: apps/files/qml/Main.qml:640
+msgid "Move to trash"
+msgstr "В корзину"
+
+#: apps/files/qml/Main.qml:641 apps/files/qml/Main.qml:649
+msgid "Delete forever"
+msgstr "Удалить навсегда"
+
+#: apps/files/qml/Main.qml:643 apps/files/qml/Main.qml:651
+#: apps/files/qml/Main.qml:667
+msgid "Properties"
+msgstr "Свойства"
+
+#: apps/files/qml/Main.qml:658 apps/files/qml/Main.qml:673
+msgid "Paste"
+msgstr "Вставить"
+
+#: apps/files/qml/Main.qml:663
+msgid "Select all"
+msgstr "Выделить всё"
+
+#: apps/files/qml/Main.qml:665 apps/files/qml/Main.qml:696
+msgid "Open terminal here"
+msgstr "Открыть терминал здесь"
+
+#: apps/files/qml/Main.qml:676
+msgid "Sort by"
+msgstr "Сортировка"
+
+#: apps/files/qml/Main.qml:677 apps/files/qml/Main.qml:716
+msgid "Name"
+msgstr "Имя"
+
+#: apps/files/qml/Main.qml:678
+msgid "Date modified"
+msgstr "Дата изменения"
+
+#: apps/files/qml/Main.qml:679 apps/files/qml/Main.qml:814
+msgid "Size"
+msgstr "Размер"
+
+#: apps/files/qml/Main.qml:680 apps/files/qml/Main.qml:812
+msgid "Type"
+msgstr "Тип"
+
+#: apps/files/qml/Main.qml:682
+msgid "Reverse order"
+msgstr "В обратном порядке"
+
+#: apps/files/qml/Main.qml:684
+msgid "Show hidden files"
+msgstr "Показывать скрытые файлы"
+
+#: apps/files/qml/Main.qml:687
+msgid "Places"
+msgstr "Места"
+
+#: apps/files/qml/Main.qml:691
+msgid "Documents"
+msgstr "Документы"
+
+#: apps/files/qml/Main.qml:692
+msgid "Downloads"
+msgstr "Загрузки"
+
+#: apps/files/qml/Main.qml:693
+msgid "Pictures"
+msgstr "Изображения"
+
+#: apps/files/qml/Main.qml:705
+msgid "Create"
+msgstr "Создать"
+
+#: apps/files/qml/Main.qml:744
+msgid "New name"
+msgstr "Новое имя"
+
+#: apps/files/qml/Main.qml:745
+msgid "A name cannot contain “/”."
+msgstr "Имя не может содержать «/»."
+
+#: apps/files/qml/Main.qml:758
+msgid "Delete %1 item forever?"
+msgid_plural "Delete %1 items forever?"
+msgstr[0] "Удалить %1 объект навсегда?"
+msgstr[1] "Удалить %1 объекта навсегда?"
+msgstr[2] "Удалить %1 объектов навсегда?"
+
+#: apps/files/qml/Main.qml:759
+msgid "This cannot be undone."
+msgstr "Это действие нельзя отменить."
+
+#: apps/files/qml/Main.qml:760
+msgid "Delete"
+msgstr "Удалить"
+
+#: apps/files/qml/Main.qml:772
+msgid "Extract “%1”?"
+msgstr "Распаковать «%1»?"
+
+#: apps/files/qml/Main.qml:773
+msgid "The contents go into a new folder next to the archive."
+msgstr "Содержимое окажется в новой папке рядом с архивом."
+
+#: apps/files/qml/Main.qml:774
+msgid "Extract"
+msgstr "Распаковать"
+
+#: apps/files/qml/Main.qml:787
+msgid "Empty the trash?"
+msgstr "Очистить корзину?"
+
+#: apps/files/qml/Main.qml:788
+msgid "Everything in the trash is deleted forever."
+msgstr "Всё содержимое корзины будет удалено навсегда."
+
+#: apps/files/qml/Main.qml:789
+msgid "Empty"
+msgstr "Очистить"
+
+#: apps/files/qml/Main.qml:803
+msgid "Close"
+msgstr "Закрыть"
+
+#: apps/files/qml/Main.qml:813
+msgid "Folder"
+msgstr "Папка"
+
+#: apps/files/qml/Main.qml:816
+msgid "Location"
+msgstr "Расположение"
+
+#: apps/files/qml/Main.qml:818
+msgid "Modified"
+msgstr "Изменён"
+
+#: apps/files/qml/Main.qml:820
+msgid "From"
+msgstr "Откуда"
+
+#: apps/files/qml/PathBar.qml:153
+msgid "There is no folder “%1”."
+msgstr "Папки «%1» не существует."
+
+#: apps/files/qml/Sidebar.qml:79
+msgid "Devices"
+msgstr "Устройства"
+
+#: apps/files/qml/Sidebar.qml:108
+msgid "Eject"
+msgstr "Извлечь"
+
+#: src/apps/files.cpp:8
+msgctxt "@title application name"
+msgid "Files"
+msgstr "Файлы"
+
+#: src/apps/host.cpp:64
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:72
+msgid "Files or pages to open."
+msgstr "Файлы или страницы для открытия."
+
+#: apps/filechooser/qml/Chooser.qml
+msgid "Save As"
+msgstr "Сохранить как"
+
+#: apps/filechooser/qml/Chooser.qml
+msgid "Choose a Folder"
+msgstr "Выбор папки"
+
+#: apps/filechooser/qml/Chooser.qml
+msgid "Open Files"
+msgstr "Открыть файлы"
+
+#: apps/filechooser/qml/Chooser.qml
+msgid "Open a File"
+msgstr "Открыть файл"
+
+#: apps/filechooser/qml/Chooser.qml
+msgid "Save"
+msgstr "Сохранить"
+
+#: apps/filechooser/qml/Chooser.qml
+msgid "Choose"
+msgstr "Выбрать"
+
+#: apps/filechooser/qml/Chooser.qml
+msgid "No suitable files here"
+msgstr "Здесь нет подходящих файлов"
+
+#: apps/filechooser/qml/Chooser.qml
+msgid "Cancel"
+msgstr "Отмена"
+
+#: apps/filechooser/qml/Chooser.qml
+msgid "Replace “%1”?"
+msgstr "Заменить «%1»?"
+
+#: apps/filechooser/qml/Chooser.qml
+msgid "A file with this name already exists in this folder. Saving replaces its contents."
+msgstr "В этой папке уже есть файл с таким именем. При сохранении его содержимое будет заменено."
+
+#: apps/filechooser/qml/Chooser.qml
+msgid "Replace"
+msgstr "Заменить"
+
+#: apps/filechooser/qml/Chooser.qml
+msgid "No folders here"
+msgstr "Здесь нет папок"

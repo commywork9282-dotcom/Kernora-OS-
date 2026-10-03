@@ -1,0 +1,19 @@
+Source: kernora-base
+Section: metapackages
+Maintainer: Kernora Developers <developers@kernora.invalid>
+Standards-Version: 4.7.4
+Build-Depends: debhelper-compat (= 13)
+Rules-Requires-Root: no
+
+Package: kernora-base
+Architecture: all
+Depends:
+ ${misc:Depends},
+ base-files (= 13.8+deb13u6+kernora1)
+Description: Kernora OS base-system metapackage
+ This package depends on the Kernora-specific packages required by every
+ Kernora OS installation.
+ .
+ It contains no programs or configuration files. Removing it does not remove
+ its dependencies, but may prevent future base-system additions from being
+ installed automatically.

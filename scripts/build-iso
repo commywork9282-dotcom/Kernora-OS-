@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in date env find grub-mkrescue install mksquashfs mktemp mv \
+  sha256sum sort tar touch xorriso xz; do
+  require_command "$dependency"
+done
+load_project_config
+load_upstream_config
+
+"$PROJECT_ROOT/scripts/bootstrap-iso-tools"
+
+snapshot_iso="${SNAPSHOT_TIMESTAMP:0:4}-${SNAPSHOT_TIMESTAMP:4:2}-${SNAPSHOT_TIMESTAMP:6:2}"
+snapshot_iso+=" ${SNAPSHOT_TIMESTAMP:9:2}:${SNAPSHOT_TIMESTAMP:11:2}:${SNAPSHOT_TIMESTAMP:13:2} UTC"
+source_date_epoch=$(date --utc --date="$snapshot_iso" +%s)
+export SOURCE_DATE_EPOCH=$source_date_epoch
+iso_date="${SNAPSHOT_TIMESTAMP:0:8}${SNAPSHOT_TIMESTAMP:9:6}00"
+
+rootfs_dir="$PROJECT_ROOT/out/rootfs"
+rootfs_name="kernora-${DIST_VERSION}-${DIST_CODENAME}-live-${BASE_ARCH}.tar.xz"
+rootfs_tar="$rootfs_dir/$rootfs_name"
+rootfs_checksum="$rootfs_tar.sha256"
+[[ -s "$rootfs_tar" && -s "$rootfs_checksum" ]] \
+  || die "live rootfs is missing; run make live-rootfs"
+(
+  cd "$rootfs_dir"
+  sha256sum --check --status "$rootfs_name.sha256"
+) || die "live rootfs checksum mismatch"
+
+temporary_root=$(mktemp -d "$PROJECT_ROOT/_build/.iso.XXXXXX")
+iso_tree="$temporary_root/tree"
+kernel_tree="$temporary_root/kernel"
+mkdir -p "$iso_tree/live" "$iso_tree/boot/grub" "$iso_tree/.disk" "$kernel_tree"
+trap 'find "$temporary_root" -depth -delete' EXIT
+
+mapfile -t kernel_members < <(
+  tar -tJf "$rootfs_tar" | grep -E '^\./boot/vmlinuz-[^/]+$' | sort
+)
+mapfile -t initrd_members < <(
+  tar -tJf "$rootfs_tar" | grep -E '^\./boot/initrd\.img-[^/]+$' | sort
+)
+(( ${#kernel_members[@]} == 1 )) || die "expected one kernel in live rootfs"
+(( ${#initrd_members[@]} == 1 )) || die "expected one initramfs in live rootfs"
+tar --extract --no-same-owner --directory="$kernel_tree" --file="$rootfs_tar" \
+  "${kernel_members[0]}" "${initrd_members[0]}"
+install -m 0644 "$kernel_tree/${kernel_members[0]#./}" "$iso_tree/live/vmlinuz"
+install -m 0644 "$kernel_tree/${initrd_members[0]#./}" "$iso_tree/live/initrd.img"
+
+xz --decompress --stdout "$rootfs_tar" \
+  | env -u SOURCE_DATE_EPOCH \
+      mksquashfs - "$iso_tree/live/filesystem.squashfs" \
+      -tar -noappend -comp xz -b 1M -no-progress \
+      -repro-time "$source_date_epoch"
+
+install -m 0644 "$PROJECT_ROOT/configs/live/grub.cfg" \
+  "$iso_tree/boot/grub/grub.cfg"
+theme_member=./usr/share/grub/themes/kernora
+tar --extract --no-same-owner --directory="$kernel_tree" --file="$rootfs_tar" \
+  "$theme_member"
+[[ -s "$kernel_tree/$theme_member/theme.txt" ]] \
+  || die "the live rootfs has no Kernora GRUB theme"
+mkdir -p "$iso_tree/boot/grub/themes"
+cp -R "$kernel_tree/$theme_member" "$iso_tree/boot/grub/themes/kernora"
+chmod -R u=rwX,go=rX "$iso_tree/boot/grub/themes/kernora"
+printf '%s\n' "Kernora OS ${DIST_VERSION} (${DIST_CODENAME}) amd64 live" \
+  > "$iso_tree/.disk/info"
+printf '%s\n' "$SNAPSHOT_TIMESTAMP" > "$iso_tree/.disk/snapshot"
+install -m 0644 \
+  "$rootfs_dir/kernora-${DIST_VERSION}-${DIST_CODENAME}-live-${BASE_ARCH}.packages" \
+  "$iso_tree/live/filesystem.packages"
+find "$iso_tree" -exec touch --date="@$source_date_epoch" {} +
+
+output_dir="$PROJECT_ROOT/out/iso"
+iso_name="kernora-${DIST_VERSION}-${DIST_CODENAME}-live-${BASE_ARCH}.iso"
+iso="$output_dir/$iso_name"
+temporary_iso="$output_dir/.$iso_name.tmp"
+mkdir -p "$output_dir"
+PATH="$PROJECT_ROOT/_state/tools/mtools/usr/bin:$PATH" \
+  grub-mkrescue \
+    --compress=xz \
+    --output="$temporary_iso" \
+    "$iso_tree" \
+    -- \
+    -volid KERNORA_1_EMBER \
+    -volume_date uuid "$iso_date" \
+    -volume_date all_file_dates "$iso_date"
+mv -- "$temporary_iso" "$iso"
+(
+  cd "$output_dir"
+  sha256sum "$iso_name" > "$iso_name.sha256"
+)
+
+"$PROJECT_ROOT/tests/test-iso.sh" "$iso"
+printf 'Kernora ISO: %s\n' "$iso"
+printf 'ISO checksum: %s.sha256\n' "$iso"

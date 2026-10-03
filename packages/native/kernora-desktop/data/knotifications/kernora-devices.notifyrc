@@ -1,0 +1,14 @@
+[Global]
+IconName=org.kernora.files
+Name=Files
+Name[ru]=Файлы
+Comment=Removable storage
+Comment[ru]=Съёмные накопители
+DesktopEntry=org.kernora.files
+
+[Event/storageAdded]
+Name=Storage device connected
+Name[ru]=Подключён накопитель
+Comment=A USB drive or memory card was plugged in
+Comment[ru]=Подключена флешка или карта памяти
+Action=Popup

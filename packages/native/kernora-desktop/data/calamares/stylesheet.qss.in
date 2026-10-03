@@ -1,0 +1,70 @@
+/*
+    SPDX-FileCopyrightText: 2026 Kernora Developers
+    SPDX-License-Identifier: GPL-3.0-or-later
+*/
+
+#prettyRadioButton {
+    background-color: @surfaceContainer@;
+    border-radius: 20px;
+    qproperty-warningColor: @error@;
+}
+
+#prettyRadioButton[checked="true"] {
+    background-color: @secondaryContainer@;
+}
+
+#prettyRadioButton QLabel {
+    background: transparent;
+    color: @onSurface@;
+}
+
+#prettyRadioButton[checked="true"] QLabel {
+    color: @onSecondaryContainer@;
+}
+
+BootInfoWidget QLabel,
+DeviceInfoWidget QLabel {
+    background: transparent;
+    color: @onSurfaceVariant@;
+}
+
+ChoicePage QLabel {
+    background: transparent;
+}
+
+ChoicePage QScrollArea,
+ChoicePage QScrollArea > QWidget > QWidget {
+    background: transparent;
+    border: none;
+}
+
+#partitionTreeView {
+    background-color: @surfaceContainer@;
+    alternate-background-color: @surfaceContainer@;
+    border: none;
+    border-radius: 16px;
+    padding: 6px;
+}
+
+#CreatePartitionTableDialog #label {
+    min-height: 40px;
+}
+
+#m_listFlags {
+    background-color: @surfaceContainer@;
+    alternate-background-color: @surfaceContainer@;
+    border: none;
+    border-radius: 16px;
+    padding: 6px;
+}
+
+QMessageBox QLabel#qt_msgboxex_icon_label {
+    max-width: 0px;
+    max-height: 0px;
+    margin: 0px;
+    padding: 0px;
+}
+
+QMessageBox QLabel#qt_msgbox_label {
+    color: @onSurface@;
+}

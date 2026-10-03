@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/apt-env.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/apt-env.sh"
+
+require_command apt-get
+require_command sha256sum
+configure_project_apt
+
+[[ -e "$APT_STATE/lists/lock" ]] || die "APT source index is missing; run scripts/update-upstream-index"
+
+source_dir="$PROJECT_ROOT/_cache/upstream-sources"
+manifest="$PROJECT_ROOT/manifests/source-packages.txt"
+mkdir -p "$source_dir"
+
+packages=()
+while read -r package_name remainder; do
+  [[ -n "${package_name:-}" ]] || continue
+  [[ "$package_name" == \#* ]] && continue
+  [[ -z "${remainder:-}" ]] || die "invalid source manifest line for $package_name"
+  [[ "$package_name" =~ ^[a-z0-9][a-z0-9+.-]*$ ]] || die "invalid source package name: $package_name"
+  packages+=("$package_name")
+done < "$manifest"
+
+(( ${#packages[@]} > 0 )) || die "source package manifest is empty"
+
+for package_name in "${packages[@]}"; do
+  printf 'fetching source: %s\n' "$package_name"
+  (
+    cd "$source_dir"
+    apt-get "${APT_OPTIONS[@]}" --download-only source "$package_name"
+  )
+done
+
+printf 'Downloaded source artifacts:\n'
+(
+  cd "$PROJECT_ROOT"
+  find _cache/upstream-sources -maxdepth 1 -type f -print0 \
+    | sort -z \
+    | xargs -0 -r sha256sum
+)
+

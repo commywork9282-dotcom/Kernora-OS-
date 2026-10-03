@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in cp dpkg-parsechangelog dpkg-source find install mv; do
+  require_command "$dependency"
+done
+
+package_root="$PROJECT_ROOT/packages/native/kernora-base"
+output_dir="$PROJECT_ROOT/_build/source-packages"
+mkdir -p "$output_dir"
+
+"$PROJECT_ROOT/tests/test-kernora-base-source.sh"
+package_version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
+SOURCE_DATE_EPOCH=$(dpkg-parsechangelog \
+  -l"$package_root/debian/changelog" -S Timestamp)
+export SOURCE_DATE_EPOCH
+temporary_root=$(mktemp -d "$PROJECT_ROOT/_build/.kernora-base-source.XXXXXX")
+trap 'find "$temporary_root" -depth -delete' EXIT
+working_tree="$temporary_root/kernora-base-$package_version"
+mkdir -p "$working_tree"
+cp -a "$package_root/." "$working_tree/"
+
+(
+  cd "$working_tree"
+  dpkg-source --build .
+)
+
+for artifact in "$temporary_root"/kernora-base_"$package_version".*; do
+  [[ -f "$artifact" ]] || continue
+  install -m 0644 "$artifact" "$output_dir/"
+done
+
+dsc="$output_dir/kernora-base_${package_version}.dsc"
+tarball="$output_dir/kernora-base_${package_version}.tar.xz"
+[[ -s "$dsc" && -s "$tarball" ]] \
+  || die "kernora-base source artifacts were not produced"
+printf 'source package: %s\nsource tarball: %s\n' "$dsc" "$tarball"

@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/Wallpaper",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "",
+        "Description": "Material 3 shapes that drift, turn and pass over one another",
+        "Description[ru]": "Фигуры Material 3, которые плывут, вращаются и перекрывают друг друга",
+        "Icon": "preferences-desktop-wallpaper",
+        "Id": "org.kernora.shapes",
+        "License": "GPL-2.0+",
+        "Name": "Kernora Shapes",
+        "Name[ru]": "Фигуры Kernora"
+    },
+    "X-KDE-ParentApp": "org.kde.plasmashell",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

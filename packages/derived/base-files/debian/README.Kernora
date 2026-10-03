@@ -1,0 +1,16 @@
+Kernora base-files fork
+=======================
+
+Upstream source package: base-files 13.8+deb13u6
+Upstream suite: Debian 13 (trixie)
+Snapshot: 20260901T000000Z
+Upstream DSC SHA-256:
+8e2254627410ebf9424cea290166f717e5ff1fa02758679fd9273e5f41b606c6
+
+This fork owns the Kernora operating-system identity and dpkg vendor origin.
+The Debian origin file and /etc/debian_version are retained to describe the
+upstream base accurately.
+
+The development maintainer address uses the reserved .invalid domain. Replace
+it with a working project address before changing the changelog distribution
+from UNRELEASED to ember.

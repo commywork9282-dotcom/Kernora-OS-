@@ -1,0 +1,226 @@
+kernora-desktop (1.4) UNRELEASED; urgency=medium
+
+  * Install the Material 3 components as QML modules for the Kernora
+    applications: org.kernora.m3 (tokens, text, icons, sliders, state
+    layers) and org.kernora.ui (list rows, groups, pages, dialogs, fields,
+    search, navigation, snackbars).
+  * Light variants of the Plasma theme and the window decoration, so light
+    or dark switches the whole system; both palettes in the QML tokens.
+  * Material text is drawn with Qt's own rendering: native rendering
+    spaced glyphs unevenly under Material's letter spacing.
+  * App icons for the Kernora applications, the Terminal and the
+    installer, drawn like the Settings icon; new Material Symbols for the
+    applications.
+  * Terminal: Alacritty under the Kernora name, with light and dark colours
+    from the design tokens, as the desktop's terminal; its window is titled
+    after the prompt ("user@host: ~") rather than "Alacritty".
+  * KDE's System Settings, Alacritty and Calamares entries are hidden in
+    favour of the Kernora ones.
+  * Default account picture: the mark on a tonal circle.
+  * Kernora login screen for SDDM: Kernora Shapes behind a large clock and
+    a Material 3 account card, in English and Russian.
+  * Installer: Material 3 steps, buttons and pages (welcome, location,
+    keyboard, account, summary, finish), a slideshow over Kernora Shapes,
+    and the kernora-installer launcher, which starts Calamares with the
+    Kernora look in the session's language.
+  * Installer keyboard: a Material 3 keyboard that shows what every key
+    types in the chosen layout and variant (from XKB, by
+    tools/gen-keyboard-maps) and lights up while typing; layout, variant,
+    model and switch as dropdown fields, named in the installer's language
+    (xkeyboard-config's translations), also on the summary.
+  * Installer: cities sorted by their translated names; Russian for the
+    messages Calamares leaves untranslated (tools/gen-qm); the live
+    language service is removed from the installed system.
+  * Installer partition page in Material 3 with Kernora's Calamares: option
+    cards, partition list and dialogs styled by the branding's stylesheet.qss
+    (tools/gen-installer-style), Material Symbols for its icons
+    (tools/gen-installer-icons); kernora-calamares depends on calamares
+    (>= 3.3.14-1kernora1).
+  * Push buttons without icons (ShowIconsOnPushButtons=false), as Material
+    buttons carry text only.
+  * Kernora lock screen: Kernora Shapes behind a large clock, the account
+    card with its password pill and the power actions, as on the login
+    screen. It replaces Plasma's (diverted) and unlocks through the same
+    kscreenlocker authenticator.
+  * Kernora on-screen display: volume and brightness as a thick Material 3
+    slider with the icon riding on the fill, messages as a pill; replaces
+    Plasma's (diverted).
+  * Kernora power menu for log out, restart and shut down: large Material 3
+    tiles on a card, the automatic action counting down.
+  * Alt+Tab shows Kernora window cards (a KWin window switcher): the app's
+    icon and title over a rounded thumbnail, the chosen card ringed.
+  * The web browser is LibreWolf, in the Kernora colours: a generated light
+    and dark theme (tools/gen-browser-theme) that LibreWolf installs into
+    new profiles as a distribution add-on, made the default by kernora.js
+    in /usr/share/librewolf/browser/defaults/preferences (read after the
+    browser's own defaults), which also has files picked in Kernora's
+    chooser through the desktop portal. LibreWolf's own policies (uBlock
+    Origin, no telemetry) are left as they are.
+  * /etc/xdg/mimeapps.list: LibreWolf opens web pages and PDFs, Photos
+    pictures, the Text Editor JSON and XML (LibreWolf claims those too).
+  * Kernora notifications: popups laid out like Android's (the app's
+    badge, "App · time", title, text, the picture beside it, tonal action
+    buttons, M3 progress for file jobs) and a history of connected cards
+    with Do not disturb and "Clear all"; the panel bell badges unread
+    notifications and rings with the jobs' progress. Plasma's applet keeps
+    its C++ plugin; its QML entry point is diverted.
+  * Notification job details show how much is copied again (Plasma's
+    QML failed on an undeclared variable).
+  * Quick settings: Android's media card for whatever plays (any MPRIS
+    player) -- the artwork behind a scrim, a play button that squares off
+    while playing, and a seek bar that flows as a wave.
+  * Quick settings: a Dark Theme tile, which switches the whole system the
+    way Settings does (org.kernora.system's Appearance), and a Screenshot
+    tile, which starts the Screenshot app once the shade is gone. On a
+    short screen (a 768px laptop, the media card showing) the shade's
+    content scrolls inside it instead of running past its edge; the handle
+    strip at the top still closes it with a swipe.
+  * Lock screen: the playing media's controls at the bottom centre, usable
+    without unlocking.
+  * Push buttons carry their text alone, in QML (the Kernora Qt Quick
+    Controls style) and in widget dialogs (Kvantum's iconless_pushbutton)
+    alike; icon-only buttons keep their icon.
+  * Task manager: application counts as Material badges (error-coloured
+    pills), and window previews and album art in the tooltips on rounded
+    tiles without drop shadows (Badge.qml and ToolTipInstance.qml
+    diverted).
+  * Alt+Space opens the Kernora launcher and its search; KRunner's own
+    window keeps Alt+F2 (its kglobalaccel service file is diverted).
+  * Kernora boot splash (tools/gen-plymouth-theme): the mark on the dark
+    surface and Material 3's loading indicator, the expressive shapes
+    turning into one another; a passphrase prompt in a pill. Plymouth's
+    defaults are diverted to it, and /etc/default/grub.d/kernora.cfg adds
+    "splash" to the installed system's kernel command line.
+  * The splash hands over to the login screen without a text console in
+    between: Plymouth quits keeping its last frame (a plymouth-quit.service
+    drop-in), and the console cursor is off.
+  * Kernora boot menu (tools/gen-grub-theme): the mark over the entries as
+    rounded Material cards, the chosen one on the secondary container, in
+    Roboto (GRUB fonts made at build time with grub-mkfont, Cyrillic
+    included). The ISO carries it, and grub.d/kernora.cfg sets it with the
+    graphical terminal for an installed system.
+  * Styles: Material Design 1, 2 and 3. tools/kernora_design.py defines all
+    three generations from the one seed, and the QML tokens carry them all,
+    following ~/.config/kernorarc at run time:
+    - their palettes: grey paper with a vivid accent; white and #121212;
+      tonal;
+    - their corners per kind of component, and their shadows;
+    - their buttons: capitals and raised in the older two, pills in
+      Material 3;
+    - their switches, sliders and quick settings: Lollipop's bare icons,
+      Android 9's round toggles, Material 3's tiles.
+    The colour schemes, Plasma theme, Kvantum and window frames are
+    generated for each (KernoraMD2Dark, kernora-md2, ...). The shell, the
+    Qt Quick style and the shared components follow, with Material 3's own
+    expressive details kept.
+  * Kernora clipboard (org.kernora.clipboard): Meta+V opens the clipboard
+    history as a Material 3 sheet above the panel, with search, text,
+    links, pictures and files as connected cards, "Remove" and "Clear
+    all". It loads Plasma's Klipper, which nothing in the panel started
+    before; Klipper's own popup leaves Meta+V to it (a kglobalshortcutsrc
+    for new accounts), and the history keeps pictures (/etc/xdg/klipperrc).
+  * The sheet's second tab is emoji, as on a phone keyboard: Meta+. opens
+    it (Plasma's emoji selector's shortcut file is diverted), with
+    category tabs, recently used ones, search by English and Russian names
+    and keywords, and Noto Color Emoji. The emoji and their names are
+    generated from Unicode's and CLDR's data (tools/gen-emoji-data).
+  * A USB drive or memory card plugged in brings a notification from Files
+    ("USB drive connected", with "Open"), which mounts it and opens it in
+    Files; Kernora's panel has no device notifier to pop up instead
+    (quick settings' DeviceSource.qml on Plasma's device model,
+    kernora-devices.notifyrc).
+  * Plasma theme: the focus and hover rings of fields and buttons sit on the
+    control (Plasma lays them out by their margins, which drew KRunner's
+    focus ring 16px around its field), and pill fields and buttons are half
+    as round as they are tall, so no seam runs through their middle.
+  * Material Symbols for the OSD's switches (Wi-Fi, touchpad, on-screen
+    keyboard, mobile data, sleep blocked), for the display switch (Meta+P:
+    one screen, the other, mirrored, extended left or right), and for
+    reply, send and clear; links as Material's link symbol.
+  * Login screen without SDDM's on-screen keyboard, which covered the
+    account card.
+  * New panels and launchers pin Files and Settings instead of KDE's
+    System Settings.
+  * The settings window of the desktop and of every applet in Kernora's
+    layout: sections as a navigation list, the current one on a rounded
+    pane under its headline, Material buttons. The desktop's pages are
+    Material groups -- wallpaper and desktop kind as choices, the folder
+    view's Location, Icons and Filter, Mouse Actions with a dialog that
+    catches the new click, an applet's shortcut, and About. Plasma's files
+    are diverted; what they save is unchanged. Buttons at the end of a
+    list row take their own clicks (they went to the row). Plasma's
+    picture and slideshow pages get room for their grid of pictures.
+  * Material Symbols: create_new_folder for folder-new.
+  * Live wallpapers of Material shapes at play, next to Kernora Shapes and
+    in its flat Material 3 tones: Tower (a stack of shapes rocks, tumbles
+    down and hops back together, simulated on the shapes' outlines),
+    Rhythm (a ring of shapes in a pendulum wave -- spirals, stars and back
+    to a circle -- over a blob that morphs with it) and Marble Run (shape
+    marbles roll down ramps, ring the posts and ride a lift back up); each
+    with a tonal palette from gen-wallpaper-assets, which also gives the
+    shapes' convex hulls. Picture
+    wallpapers are gone: Kernora Ember is removed and Breeze's picture is
+    kept out by a dpkg path-exclude.
+  * Kernora cursors (kernora_cursors, tools/gen-cursor-theme): Material
+    glyphs with ember badges; wait and progress animate Material 3
+    Expressive's morphing loading indicator. Xcursor and KWin's scalable
+    SVGs; the default in Plasma, SDDM and x-cursor-theme.
+  * No bouncing icon while programs start (/etc/xdg/klaunchrc): the busy
+    cursor is the only launch feedback.
+  * org.kernora.ui: StyleCard removed; the style is chosen from a list.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 25 Sep 2026 12:00:00 -0700
+
+kernora-desktop (1.3) UNRELEASED; urgency=medium
+
+  * Kernora Shapes: a live wallpaper of Material 3 Expressive shapes --
+    cookies, flowers, suns -- turning on rounded orbits, passing over one
+    another in turns and shifting colour on a seamless loop; it pauses
+    behind maximised windows and when animations are off.
+  * Kernora Kvantum theme for every Qt widget: rounded menus and submenus
+    with an inset tonal hover, pill buttons, filled fields, Material
+    check boxes, radio buttons, sliders, tabs and lists.
+  * Kernora Qt Quick Controls style for System Settings and QML
+    applications: Material buttons, switches, menus, list rows, tooltips,
+    dialogs and progress, over KDE's desktop style.
+  * Kernora window decoration: rounded title bar with Material Symbols
+    buttons and a soft shadow.
+  * Material Symbols for every System Settings module and a themed
+    application icon for System Settings.
+  * Application selections use the primary container; the colour schemes
+    no longer carry an accent colour KDE would blend into them.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 24 Sep 2026 12:00:00 -0700
+
+kernora-desktop (1.2) UNRELEASED; urgency=medium
+
+  * Material 3 design system generated from one seed colour: an HCT colour
+    engine, KDE colour schemes, QML design tokens and system defaults.
+  * Kernora Plasma theme: floating pill panel, popups, tooltips, task
+    buttons, lists and sliders drawn from the Material tokens.
+  * Kernora icon theme drawn from vendored Material Symbols Rounded.
+  * Kernora Launcher: application menu with search, pinned apps and session
+    actions.
+  * Kernora Quick Settings: status area and a quick settings shade that is
+    pulled up from the panel and follows the pointer, with Material sliders
+    and toggle tiles.
+  * New default layout: one floating panel with centred tasks.
+  * Russian translations of the shell.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 22 Sep 2026 12:00:00 -0700
+
+kernora-desktop (1.1) UNRELEASED; urgency=medium
+
+  * Keep the Plasma shell and System Settings without standalone KDE apps.
+  * Hide launchers for utilities bundled into required Plasma packages.
+  * Remove absent KDE applications from default favorites and panel launchers.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 10 Sep 2026 12:00:00 -0700
+
+kernora-desktop (1.0) UNRELEASED; urgency=medium
+
+  * Initial Kernora OS desktop appearance package.
+  * Ship the distribution wallpaper and the org.kernora.desktop look-and-feel.
+  * Add the Calamares installer configuration and Kernora branding.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 01 Sep 2026 21:00:00 -0700

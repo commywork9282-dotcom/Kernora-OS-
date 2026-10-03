@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in awk dpkg-source dpkg-parsechangelog install; do
+  require_command "$dependency"
+done
+
+name=${1:-}
+[[ "$name" =~ ^[a-z0-9][a-z0-9+.-]*$ ]] || die "usage: build-derived-source NAME"
+package_root="$PROJECT_ROOT/packages/derived/$name"
+[[ -d "$package_root" ]] || die "no derived package: $name"
+upstream_dir="$PROJECT_ROOT/_cache/upstream-sources"
+output_dir="$PROJECT_ROOT/_build/source-packages"
+
+upstream_version=$(awk -v name="$name" '$1 == name { print $2 }' "$PROJECT_ROOT/manifests/derived-packages.txt")
+[[ -n "$upstream_version" ]] || die "manifests/derived-packages.txt does not list $name"
+package_version=$(dpkg-parsechangelog -l"$package_root/changelog" -S Version)
+upstream_file_version=${upstream_version#*:}
+package_file_version=${package_version#*:}
+upstream_dsc="$upstream_dir/${name}_${upstream_file_version}.dsc"
+[[ -s "$upstream_dsc" ]] || die "$name upstream source is missing; run make sources"
+
+SOURCE_DATE_EPOCH=$(dpkg-parsechangelog -l"$package_root/changelog" -S Timestamp)
+export SOURCE_DATE_EPOCH
+
+mkdir -p "$PROJECT_ROOT/_build" "$output_dir"
+temporary_root=$(mktemp -d "$PROJECT_ROOT/_build/.$name-source.XXXXXX")
+trap 'find "$temporary_root" -depth -delete' EXIT
+
+(
+  cd "$temporary_root"
+  dpkg-source --no-copy --skip-patches --extract "$upstream_dsc" tree >/dev/null
+)
+mapfile -t originals < <(awk '/^Files:/ { files = 1; next } /^[^ ]/ { files = 0 } files { print $3 }' "$upstream_dsc" \
+  | grep -E '\.orig(-[a-z0-9-]+)?\.tar\.[a-z0-9]+(\.asc)?$')
+(( ${#originals[@]} > 0 )) || die "no upstream tarball in $upstream_dsc"
+for original in "${originals[@]}"; do
+  install -m 0644 "$upstream_dir/$original" "$temporary_root/$original"
+done
+tree="$temporary_root/tree"
+
+mkdir -p "$tree/debian/patches"
+while read -r patch; do
+  [[ -n "$patch" && "$patch" != \#* ]] || continue
+  install -m 0644 "$package_root/patches/$patch" "$tree/debian/patches/$patch"
+  printf '%s\n' "$patch" >> "$tree/debian/patches/series"
+done < "$package_root/patches/series"
+
+{
+  cat "$package_root/changelog"
+  printf '\n'
+  cat "$tree/debian/changelog"
+} > "$temporary_root/changelog"
+install -m 0644 "$temporary_root/changelog" "$tree/debian/changelog"
+
+(
+  cd "$temporary_root"
+  dpkg-source --build tree
+)
+
+for artifact in \
+  "$temporary_root/${name}_${package_file_version}.dsc" \
+  "$temporary_root/${name}_${package_file_version}.debian.tar.xz"; do
+  [[ -s "$artifact" ]] || die "source package artifact was not produced: $artifact"
+  install -m 0644 "$artifact" "$output_dir/"
+done
+for original in "${originals[@]}"; do
+  install -m 0644 "$upstream_dir/$original" "$output_dir/$original"
+done
+
+"$PROJECT_ROOT/tests/test-derived-source.sh" "$name"
+printf 'source package: %s/%s_%s.dsc\n' "$output_dir" "$name" "$package_file_version"

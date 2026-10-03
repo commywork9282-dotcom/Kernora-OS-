@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Screenshot
+Name[ru]=Снимок экрана
+GenericName=Screen capture
+GenericName[ru]=Снимок экрана
+Icon=org.kernora.screenshot
+Exec=/usr/bin/kernora-screenshot
+Categories=Qt;Utility;Graphics;
+Keywords=screenshot;capture;print;снимок;скриншот;экран;
+StartupNotify=true
+X-KDE-DBUS-Restricted-Interfaces=org.kde.KWin.ScreenShot2
+X-KDE-Shortcuts=Print

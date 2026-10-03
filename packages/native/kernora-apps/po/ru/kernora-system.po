@@ -1,0 +1,217 @@
+# Russian translations for kernora-system package.
+# Copyright (C) 2026 THE kernora-system'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-system package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-system\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-09-25 20:40-0700\n"
+"PO-Revision-Date: 2026-09-25 20:40-0700\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/system/accounts.cpp:93
+msgid "The account service is not available."
+msgstr "Служба учётных записей недоступна."
+
+#: src/system/accounts.cpp:125
+msgid "This picture could not be read."
+msgstr "Не удалось прочитать изображение."
+
+#: src/system/accounts.cpp:134
+msgid "The picture could not be saved."
+msgstr "Не удалось сохранить изображение."
+
+#: src/system/accounts.cpp:162 src/system/accounts.cpp:168
+msgid "The password could not be prepared."
+msgstr "Не удалось подготовить пароль."
+
+#: src/system/defaultapps.cpp:28
+msgid "Web browser"
+msgstr "Браузер"
+
+#: src/system/defaultapps.cpp:29
+msgid "Files"
+msgstr "Файлы"
+
+#: src/system/defaultapps.cpp:30
+msgid "Terminal"
+msgstr "Терминал"
+
+#: src/system/defaultapps.cpp:31
+msgid "Text"
+msgstr "Текст"
+
+#: src/system/defaultapps.cpp:32
+msgid "Pictures"
+msgstr "Изображения"
+
+#: src/system/defaultapps.cpp:33
+msgid "Video"
+msgstr "Видео"
+
+#: src/system/defaultapps.cpp:34
+msgid "Music"
+msgstr "Музыка"
+
+#: src/system/defaultapps.cpp:35
+msgid "Documents"
+msgstr "Документы"
+
+#: src/system/defaultapps.cpp:36
+msgid "Email"
+msgstr "Почта"
+
+#: src/system/displays.cpp:119
+msgid "Built-in display"
+msgstr "Встроенный экран"
+
+#: src/system/files.cpp:94
+msgid "This file is not a text file."
+msgstr "Это не текстовый файл."
+
+#: src/system/files.cpp:129 src/system/files.cpp:215
+msgid "A name cannot be empty or contain “/”."
+msgstr "Имя не может быть пустым или содержать «/»."
+
+#: src/system/files.cpp:188
+msgid "Where these files came from is not known."
+msgstr "Неизвестно, откуда были удалены эти файлы."
+
+#: src/system/files.cpp:220
+msgid "“%1” already exists."
+msgstr "«%1» уже существует."
+
+#: src/system/files.cpp:224
+msgid "The folder could not be created."
+msgstr "Не удалось создать папку."
+
+#: src/system/files.cpp:274
+msgctxt "name of an archive of several files"
+msgid "Archive"
+msgstr "Архив"
+
+#: src/system/licenses.cpp:59
+msgid "The operating system kernel"
+msgstr "Ядро операционной системы"
+
+#: src/system/licenses.cpp:60
+msgid "The distribution Kernora OS is based on"
+msgstr "Дистрибутив, на котором основана Kernora OS"
+
+#: src/system/licenses.cpp:61
+msgid "The desktop technology under the Kernora shell"
+msgstr "Технология рабочего стола под оболочкой Kernora"
+
+#: src/system/licenses.cpp:62
+msgid "The window manager and compositor"
+msgstr "Оконный менеджер и композитор"
+
+#: src/system/licenses.cpp:63
+msgid "Libraries used by the desktop and the applications"
+msgstr "Библиотеки рабочего стола и приложений"
+
+#: src/system/licenses.cpp:64
+msgid "The application framework"
+msgstr "Фреймворк приложений"
+
+#: src/system/licenses.cpp:65
+msgid "Icons by Google, Apache License 2.0"
+msgstr "Значки Google, лицензия Apache 2.0"
+
+#: src/system/licenses.cpp:66
+msgid "The system typeface by Google"
+msgstr "Системный шрифт от Google"
+
+#: src/system/licenses.cpp:67
+msgid "The engine that draws application widgets"
+msgstr "Движок отрисовки элементов приложений"
+
+#: src/system/licenses.cpp:68
+msgid "The web browser, built from Firefox"
+msgstr "Веб-браузер на основе Firefox"
+
+#: src/system/licenses.cpp:69
+msgid "The system installer"
+msgstr "Установщик системы"
+
+#: src/system/licenses.cpp:70
+msgid "The system and service manager"
+msgstr "Менеджер системы и служб"
+
+#: src/system/licenses.cpp:71
+msgid "Network connections"
+msgstr "Сетевые подключения"
+
+#: src/system/licenses.cpp:72
+msgid "Sound and screen sharing"
+msgstr "Звук и трансляция экрана"
+
+#: src/system/licenses.cpp:73
+msgid "Graphics drivers"
+msgstr "Графические драйверы"
+
+#: src/system/licenses.cpp:74
+msgid "The terminal"
+msgstr "Терминал"
+
+#: src/system/screenshot.cpp:104
+msgid "The screenshot could not be started."
+msgstr "Не удалось начать снимок экрана."
+
+#: src/system/screenshot.cpp:129
+msgid "The screenshot came back empty."
+msgstr "Снимок экрана оказался пустым."
+
+#: src/system/screenshot.cpp:221
+msgctxt "folder name for screenshots"
+msgid "Screenshots"
+msgstr "Снимки экрана"
+
+#: src/system/screenshot.cpp:224 src/system/screenshot.cpp:226
+msgctxt "file name prefix"
+msgid "Screenshot"
+msgstr "Снимок"
+
+#: src/system/updates.cpp:46
+msgid "Downloading…"
+msgstr "Загрузка…"
+
+#: src/system/updates.cpp:49
+msgid "Installing…"
+msgstr "Установка…"
+
+#: src/system/updates.cpp:53 src/system/updates.cpp:95
+msgid "Checking for updates…"
+msgstr "Проверка обновлений…"
+
+#: src/system/updates.cpp:55
+msgid "Waiting for authorisation…"
+msgstr "Ожидание разрешения…"
+
+#: src/system/updates.cpp:58
+msgid "Waiting for another installation to finish…"
+msgstr "Ожидание завершения другой установки…"
+
+#: src/system/updates.cpp:60
+msgid "Finishing…"
+msgstr "Завершение…"
+
+#: src/system/updates.cpp:62
+msgid "Working…"
+msgstr "Выполняется…"
+
+#: src/system/updates.cpp:104
+msgid "The update sources could not be reached."
+msgstr "Не удалось связаться с источниками обновлений."
+
+#: src/system/updates.cpp:157
+msgid "The updates could not be installed."
+msgstr "Не удалось установить обновления."

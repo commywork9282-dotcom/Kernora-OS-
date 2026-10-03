@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in awk curl gpg gpgv sha256sum; do
+  require_command "$dependency"
+done
+load_upstream_config
+load_librewolf_config
+
+trust_dir="$PROJECT_ROOT/_state/trust"
+keyring="$trust_dir/librewolf-archive-keyring.gpg"
+fingerprint_manifest="$PROJECT_ROOT/keys/librewolf-fingerprint.txt"
+cache_dir="$PROJECT_ROOT/_cache/librewolf"
+package="$cache_dir/librewolf_${LIBREWOLF_VERSION}_${BASE_ARCH}.deb"
+mkdir -p "$trust_dir" "$cache_dir"
+
+temporary_dir=$(mktemp -d "$cache_dir/.fetch.XXXXXX")
+trap 'rm -rf -- "$temporary_dir"' EXIT
+export GNUPGHOME="$temporary_dir/gnupg"
+mkdir -m 0700 "$GNUPGHOME"
+
+download() {
+  curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+    --output "$2" "$1"
+}
+
+read -r key_file expected_fingerprint < <(
+  awk 'NF && $1 !~ /^#/ { print $1, $2; exit }' "$fingerprint_manifest"
+)
+if [[ ! -s "$keyring" ]]; then
+  armored_key="$temporary_dir/$key_file"
+  download "$LIBREWOLF_REPOSITORY/$key_file" "$armored_key"
+  actual_fingerprint=$(gpg --batch --quiet --show-keys --with-colons "$armored_key" \
+    | awk -F: '$1 == "fpr" { print $10; exit }')
+  [[ "$actual_fingerprint" == "$expected_fingerprint" ]] \
+    || die "fingerprint mismatch for the LibreWolf repository key"
+  gpg --batch --quiet --yes --dearmor --output "$temporary_dir/keyring.gpg" "$armored_key"
+  mv -- "$temporary_dir/keyring.gpg" "$keyring"
+  chmod 0644 "$keyring"
+fi
+actual_fingerprint=$(gpg --batch --quiet --show-keys --with-colons "$keyring" \
+  | awk -F: '$1 == "fpr" { print $10; exit }')
+[[ "$actual_fingerprint" == "$expected_fingerprint" ]] \
+  || die "the cached LibreWolf keyring is not the pinned key"
+
+if [[ ! -s "$package" ]]; then
+  index="dists/$LIBREWOLF_SUITE"
+  download "$LIBREWOLF_REPOSITORY/$index/InRelease" "$temporary_dir/InRelease"
+  gpgv --keyring "$keyring" "$temporary_dir/InRelease" 2>/dev/null \
+    || die "the LibreWolf repository index is not signed by the pinned key"
+
+  packages_entry="main/binary-$BASE_ARCH/Packages"
+  packages_sha256=$(awk -v entry="$packages_entry" '
+    /^SHA256:/ { section = 1; next }
+    /^[^ ]/ { section = 0 }
+    section && $3 == entry { print $1; exit }' "$temporary_dir/InRelease")
+  [[ -n "$packages_sha256" ]] || die "InRelease lists no $packages_entry"
+  download "$LIBREWOLF_REPOSITORY/$index/$packages_entry" "$temporary_dir/Packages"
+  printf '%s  %s\n' "$packages_sha256" "$temporary_dir/Packages" \
+    | sha256sum --check --status \
+    || die "the LibreWolf Packages index does not match InRelease"
+
+  listed_sha256=$(awk -v version="$LIBREWOLF_VERSION" '
+    /^Package: / { name = $2 }
+    /^Version: / { current = $2 }
+    /^SHA256: / && name == "librewolf" && current == version { print $2; exit }
+  ' "$temporary_dir/Packages")
+  [[ "$listed_sha256" == "$LIBREWOLF_SHA256" ]] \
+    || die "librewolf $LIBREWOLF_VERSION is not in the repository with the pinned checksum"
+
+  download "$LIBREWOLF_REPOSITORY/$LIBREWOLF_FILENAME" "$temporary_dir/package.deb"
+  mv -- "$temporary_dir/package.deb" "$package"
+fi
+printf '%s  %s\n' "$LIBREWOLF_SHA256" "$package" \
+  | sha256sum --check --status \
+  || die "LibreWolf package checksum mismatch"
+
+printf 'LibreWolf: %s\n' "$package"

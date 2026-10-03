@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in chroot cp dpkg-parsechangelog find install tar unshare; do
+  require_command "$dependency"
+done
+load_upstream_config
+
+"$PROJECT_ROOT/scripts/build-base-files-source"
+"$PROJECT_ROOT/scripts/create-build-rootfs"
+
+package_root="$PROJECT_ROOT/packages/derived/base-files"
+package_version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
+SOURCE_DATE_EPOCH=$(dpkg-parsechangelog \
+  -l"$package_root/debian/changelog" -S Timestamp)
+export SOURCE_DATE_EPOCH
+source_dir="$PROJECT_ROOT/_build/source-packages"
+output_dir="$PROJECT_ROOT/_build/binary-packages"
+cache_file="$PROJECT_ROOT/_cache/chroots/trixie-amd64-buildd.tar.xz"
+dsc_name="base-files_${package_version}.dsc"
+tar_name="base-files_${package_version}.tar.xz"
+
+temporary_root=$(mktemp -d /tmp/kernora-package-build.XXXXXX)
+chmod 0777 "$temporary_root"
+rootfs="$temporary_root/rootfs"
+cached_rootfs="$temporary_root/build-rootfs.tar.xz"
+input_dir="$temporary_root/input"
+mkdir -p "$input_dir"
+install -m 0644 "$cache_file" "$cached_rootfs"
+install -m 0644 "$source_dir/$dsc_name" "$input_dir/$dsc_name"
+install -m 0644 "$source_dir/$tar_name" "$input_dir/$tar_name"
+
+cleanup() {
+  set +e
+  if [[ -e "$rootfs" ]]; then
+    unshare --map-auto --setuid 0 --setgid 0 \
+      find "$rootfs" -depth -delete
+  fi
+  find "$temporary_root" -depth -delete
+}
+trap cleanup EXIT
+
+unshare --map-auto --setuid 0 --setgid 0 sh -c '
+  mkdir -p "$1"
+  tar -xJf "$2" -C "$1"
+  mkdir -p "$1/build"
+  cp "$3" "$4" "$1/build/"
+' kernora-extract "$rootfs" "$cached_rootfs" \
+  "$input_dir/$dsc_name" "$input_dir/$tar_name"
+
+unshare \
+  --map-auto \
+  --setuid 0 \
+  --setgid 0 \
+  --mount \
+  --pid \
+  --net \
+  --fork \
+  --mount-proc="$rootfs/proc" \
+  chroot "$rootfs" /bin/bash -lc '
+    set -Eeuo pipefail
+    cd /build
+    dpkg-source --extract "$1" source
+    cd source
+    dpkg-buildpackage --build=binary --no-sign
+  ' kernora-build "$dsc_name"
+
+mkdir -p "$output_dir"
+for artifact in \
+  "$rootfs/build/base-files_${package_version}_${BASE_ARCH}.deb" \
+  "$rootfs/build/base-files_${package_version}_${BASE_ARCH}.buildinfo" \
+  "$rootfs/build/base-files_${package_version}_${BASE_ARCH}.changes"; do
+  [[ -s "$artifact" ]] || die "missing build artifact: $artifact"
+  install -m 0644 "$artifact" "$output_dir/"
+done
+
+"$PROJECT_ROOT/tests/test-base-files-binary.sh"
+printf 'binary package: %s/base-files_%s_%s.deb\n' \
+  "$output_dir" "$package_version" "$BASE_ARCH"

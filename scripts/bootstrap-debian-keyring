@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+require_command curl
+require_command gpg
+
+trust_dir="$PROJECT_ROOT/_state/trust"
+keyring="$trust_dir/debian-trixie-archive-keyring.gpg"
+fingerprint_manifest="$PROJECT_ROOT/keys/debian-trixie-fingerprints.txt"
+mkdir -p "$trust_dir"
+
+temporary_dir=$(mktemp -d "$trust_dir/.bootstrap.XXXXXX")
+trap 'rm -rf -- "$temporary_dir"' EXIT
+export GNUPGHOME="$temporary_dir/gnupg"
+mkdir -m 0700 "$GNUPGHOME"
+
+key_files=()
+while read -r key_file expected_fingerprint; do
+  [[ -n "${key_file:-}" ]] || continue
+  [[ "$key_file" == \#* ]] && continue
+
+  armored_key="$temporary_dir/$key_file"
+  binary_key="$armored_key.gpg"
+  curl --fail --location --proto '=https' --tlsv1.2 \
+    --output "$armored_key" "https://ftp-master.debian.org/keys/$key_file"
+
+  actual_fingerprint=$(gpg --batch --show-keys --with-colons "$armored_key" \
+    | awk -F: '$1 == "fpr" {print $10; exit}')
+  [[ "$actual_fingerprint" == "$expected_fingerprint" ]] \
+    || die "fingerprint mismatch for $key_file"
+
+  gpg --batch --yes --dearmor --output "$binary_key" "$armored_key"
+  key_files+=("$binary_key")
+done < "$fingerprint_manifest"
+
+(( ${#key_files[@]} == 3 )) || die "expected exactly three Debian 13 archive keys"
+
+temporary_keyring="$temporary_dir/debian-trixie-archive-keyring.gpg"
+for key_file in "${key_files[@]}"; do
+  dd if="$key_file" of="$temporary_keyring" oflag=append conv=notrunc status=none
+done
+mv -- "$temporary_keyring" "$keyring"
+chmod 0644 "$keyring"
+
+printf 'Debian 13 archive keyring: %s\n' "$keyring"

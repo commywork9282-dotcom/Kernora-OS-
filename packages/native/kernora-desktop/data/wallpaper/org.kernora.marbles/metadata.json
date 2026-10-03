@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/Wallpaper",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "",
+        "Description": "Marbles of Material shapes roll down a zigzag of ramps, ring the posts and ride the lift back up",
+        "Description[ru]": "Шарики-фигуры катятся по зигзагу горок, звенят о столбики и едут на лифте обратно наверх",
+        "Icon": "preferences-desktop-wallpaper",
+        "Id": "org.kernora.marbles",
+        "License": "GPL-2.0+",
+        "Name": "Marble Run",
+        "Name[ru]": "Горка"
+    },
+    "X-KDE-ParentApp": "org.kde.plasmashell",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Emoji Selector
+Exec=plasma-emojier
+NoDisplay=true

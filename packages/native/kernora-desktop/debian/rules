@@ -1,0 +1,111 @@
+#!/usr/bin/make -f
+
+export PYTHONDONTWRITEBYTECODE = 1
+
+ICON_SIZES = 16 22 24 32 48 64 128 256
+LOGO = data/icons/kernora-logo.svg
+ROBOTO = /usr/share/fonts/truetype/roboto/unhinted/RobotoTTF
+
+START_ICON = start-here-kde-symbolic
+START_ALIASES = start-here-kde start-here start-here-symbolic
+
+THEME_APPS = generated/icon-theme/scalable/apps
+
+TOOLS = tools
+SYMBOLS = data/symbols
+APPLETS = launcher:org.kernora.launcher shade:org.kernora.quicksettings clipboard:org.kernora.clipboard
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	set -e; for size in $(ICON_SIZES); do \
+	  install -d generated/hicolor/$${size}x$${size}/apps; \
+	  rsvg-convert --width=$$size --height=$$size \
+	    --output=generated/hicolor/$${size}x$${size}/apps/kernora-logo.png \
+	    $(LOGO); \
+	done
+	install -d generated/branding generated/skel generated/splash
+	rsvg-convert --width=160 --height=160 \
+	  --output=generated/branding/kernora-logo.png $(LOGO)
+	python3 $(TOOLS)/gen-qm data/calamares/lang/calamares-kernora_ru.ts \
+	  generated/branding/lang/calamares-kernora_ru.qm
+	python3 $(TOOLS)/gen-installer-icons $(SYMBOLS) generated/branding/images
+	python3 $(TOOLS)/gen-installer-style data/calamares/stylesheet.qss.in \
+	  generated/branding/stylesheet.qss
+	python3 $(TOOLS)/gen-avatar $(LOGO) generated/skel/face.svg
+	rsvg-convert --width=256 --height=256 \
+	  --output=generated/skel/.face generated/skel/face.svg
+	rm generated/skel/face.svg
+	rsvg-convert --width=512 --height=512 \
+	  --output=generated/splash/kernora.png $(LOGO)
+	python3 $(TOOLS)/fetch-symbols --check
+	python3 $(TOOLS)/gen-icon-theme $(SYMBOLS) generated/icon-theme
+	python3 $(TOOLS)/gen-cursor-theme generated/kernora_cursors
+	sed \
+	  -e 's|<g transform=|<style type="text/css" id="current-color-scheme">.ColorScheme-Text{color:#eff0f1;}</style>\n  <g class="ColorScheme-Text" transform=|' \
+	  -e 's|fill="#eff0f1"|fill="currentColor"|' \
+	  $(LOGO) > $(THEME_APPS)/$(START_ICON).svg
+	set -e; for name in $(START_ALIASES); do \
+	  cp $(THEME_APPS)/$(START_ICON).svg $(THEME_APPS)/$$name.svg; \
+	done
+	python3 $(TOOLS)/gen-color-schemes generated/color-schemes
+	python3 $(TOOLS)/gen-plasma-theme $(SYMBOLS) generated/desktoptheme/kernora
+	set -e; for generation in md1 md2; do \
+	  KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-color-schemes generated/color-schemes; \
+	  KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-plasma-theme $(SYMBOLS) generated/desktoptheme/kernora-$$generation; \
+	done
+	python3 $(TOOLS)/gen-kdeglobals generated/xdg/kdeglobals
+	set -e; for entry in $(APPLETS); do \
+	  source=$${entry%%:*}; id=$${entry#*:}; \
+	  target=generated/plasmoids/$$id; \
+	  install -d $$target; \
+	  cp -a data/shell/$$source/. $$target/; \
+	  cp -a data/shell/m3 $$target/contents/ui/m3; \
+	  python3 $(TOOLS)/gen-qml-tokens $$target/contents/ui/m3/M3.qml; \
+	done
+	install -d generated/wallpapers
+	cp -a data/wallpaper/org.kernora.shapes generated/wallpapers/
+	python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.shapes/contents/ui
+	for theme in tower rhythm marbles; do \
+	  cp -a data/wallpaper/org.kernora.$$theme generated/wallpapers/; \
+	  python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.$$theme/contents/ui $$theme; \
+	done
+	set -e; for generation in md1 md2 md3; do \
+	  KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-kvantum-theme generated/kvantum; \
+	  KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-aurorae-theme generated/aurorae; \
+	done
+	install -d generated/style/org/kernora
+	cp -a data/style/org.kernora.desktop generated/style/org/kernora/desktop
+	cp -a data/shell/m3 generated/style/org/kernora/desktop/impl
+	python3 $(TOOLS)/gen-qml-tokens generated/style/org/kernora/desktop/impl/M3.qml
+	cp -a data/shell/m3 generated/style/org/kernora/m3
+	sed -i '1i module org.kernora.m3' generated/style/org/kernora/m3/qmldir
+	python3 $(TOOLS)/gen-qml-tokens generated/style/org/kernora/m3/M3.qml
+	cp -a data/ui generated/style/org/kernora/ui
+	python3 $(TOOLS)/gen-translations data/shell/po generated/locale
+	python3 $(TOOLS)/gen-terminal-theme generated/terminal
+	python3 $(TOOLS)/gen-browser-theme generated/librewolf/theme@kernora.os.xpi
+	python3 $(TOOLS)/gen-plymouth-theme $(LOGO) $(SYMBOLS) generated/plymouth/kernora
+	set -e; for image in generated/plymouth/kernora/*.svg; do \
+	  rsvg-convert --output=$${image%.svg}.png $$image; \
+	  rm $$image; \
+	done
+	python3 $(TOOLS)/gen-grub-theme $(LOGO) generated/grub/kernora
+	set -e; for image in generated/grub/kernora/*.svg; do \
+	  rsvg-convert --output=$${image%.svg}.png $$image; \
+	  rm $$image; \
+	done
+	set -e; for face in Regular:16 Medium:16 Regular:24; do \
+	  weight=$${face%%:*}; size=$${face#*:}; \
+	  grub-mkfont --size=$$size --name="Roboto $$weight" \
+	    --range=0x20-0x7E,0xA0-0x17F,0x400-0x45F,0x2010-0x2027,0x2190-0x2193 \
+	    --output=generated/grub/kernora/roboto-$$(echo $$weight | tr A-Z a-z)-$$size.pf2 \
+	    $(ROBOTO)/Roboto-$$weight.ttf; \
+	done
+	install -d generated/sddm
+	cp -a data/sddm-theme/kernora generated/sddm/kernora
+	python3 $(TOOLS)/gen-greeter-palette $(SYMBOLS) generated/sddm/kernora
+
+override_dh_auto_clean:
+	rm -rf generated $(TOOLS)/__pycache__
