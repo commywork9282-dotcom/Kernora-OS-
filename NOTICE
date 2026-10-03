@@ -1,0 +1,30 @@
+Kernora OS
+Copyright (C) 2026 Kernora Developers
+
+Kernora OS is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, version 3. The full text is in LICENSE.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+Each file's own licence is stated in its header (SPDX-License-Identifier).
+Kernora's own files are under GPL-2.0-or-later, which allows them to be
+distributed with the rest under GPL-3.0. The repository also contains work by
+others, under their licences:
+
+  * Files adapted from KDE Plasma (for example the notification popups in
+    packages/native/kernora-desktop/data/notifications/) keep their KDE
+    authors and licences, as their headers state.
+  * packages/derived/ holds Kernora's changes to Debian packages (base-files,
+    Calamares, polkit-kde-agent-1); each stays under its upstream licence.
+  * packages/native/kernora-desktop/data/symbols/ holds Material Symbols by
+    Google, under the Apache License 2.0 (see the LICENSE file there).
+  * packages/native/kernora-desktop/tools/material_shapes.py is a port of
+    AndroidX graphics-shapes and the Material 3 shapes, under the Apache
+    License 2.0.
+
+The ISO images are built from Debian and other packages, each under its own
+licence: the installed system lists them in /usr/share/doc/*/copyright and in
+Settings > About > Legal.
