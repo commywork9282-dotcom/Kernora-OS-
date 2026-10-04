@@ -215,3 +215,19 @@ msgstr "Не удалось связаться с источниками обн�
 #: src/system/updates.cpp:157
 msgid "The updates could not be installed."
 msgstr "Не удалось установить обновления."
+
+#: src/system/locales.cpp:175
+msgid "Metric: metres, kilograms, °C"
+msgstr "Метрическая: метры, килограммы, °C"
+
+#: src/system/locales.cpp:175
+msgid "Imperial: feet, pounds, °F"
+msgstr "Имперская: футы, фунты, °F"
+
+#: src/system/locales.cpp:182
+msgid "Letter"
+msgstr "Letter"
+
+#: src/system/locales.cpp:182
+msgid "A4"
+msgstr "A4"

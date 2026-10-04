@@ -208,8 +208,9 @@ SettingsPage {
                 page.notify(i18n("The setting could not be changed."));
             }
         });
-        device[name] = value;
-        devices = devices.slice();
+        const updated = Object.assign({}, device);
+        updated[name] = value;
+        devices = devices.map(x => x.sysName === device.sysName ? updated : x);
     }
 
     Repeater {
@@ -300,11 +301,12 @@ SettingsPage {
             onClicked: Process.openModule("kcm_keys")
         }
         ListItem {
-            title: i18n("Touchpad gestures and advanced options")
+            title: i18n("Touchpad and mouse options")
+            subtitle: i18n("Scrolling, tapping, right click, acceleration")
             icon: "input-touchpad"
             iconStyle: "plain"
             chevron: true
-            onClicked: Process.openModule("kcm_touchpad")
+            onClicked: page.open("PointerOptionsPage.qml", {})
         }
         ListItem {
             title: i18n("Advanced keyboard options")
@@ -312,7 +314,7 @@ SettingsPage {
             icon: "configure"
             iconStyle: "plain"
             chevron: true
-            onClicked: Process.openModule("kcm_keyboard")
+            onClicked: page.open("KeyboardOptionsPage.qml", {})
         }
     }
 }

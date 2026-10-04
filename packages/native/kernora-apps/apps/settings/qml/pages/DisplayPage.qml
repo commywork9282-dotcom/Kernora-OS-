@@ -245,7 +245,7 @@ SettingsPage {
             readonly property real outputScale: model.scale
             readonly property int outputRotation: model.rotation
 
-            title: displays.count > 1 ? label : i18n("Screen")
+            title: displays.count > 1 ? i18n("%1. %2", index + 1, label) : i18n("Screen")
 
             ListItem {
                 title: i18n("Use this screen")
@@ -322,11 +322,11 @@ SettingsPage {
     Group {
         ListItem {
             title: i18n("Arrange screens and more")
-            subtitle: i18n("Position of several screens, overscan, colour profiles")
+            subtitle: i18n("Position of several screens, mirroring, colour")
             icon: "preferences-desktop-display-randr"
             iconStyle: "plain"
             chevron: true
-            onClicked: Process.openModule("kcm_kscreen")
+            onClicked: page.open("DisplayArrangementPage.qml", {})
         }
     }
 

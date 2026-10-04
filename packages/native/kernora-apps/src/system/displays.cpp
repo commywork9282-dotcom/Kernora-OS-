@@ -13,6 +13,7 @@
 #include <KLocalizedString>
 
 #include <algorithm>
+#include <climits>
 #include <cmath>
 
 Displays::Displays(QObject *parent)
@@ -78,6 +79,14 @@ QHash<int, QByteArray> Displays::roleNames() const
         {ScaleRole, "scale"},
         {RotationRole, "rotation"},
         {PreferredResolutionRole, "preferredResolution"},
+        {GeometryRole, "geometry"},
+        {MirrorSourceRole, "mirrorSource"},
+        {CapabilitiesRole, "capabilities"},
+        {OverscanRole, "overscan"},
+        {VrrRole, "vrr"},
+        {RgbRangeRole, "rgbRange"},
+        {HdrRole, "hdr"},
+        {ColorProfileRole, "colorProfile"},
     };
 }
 
@@ -181,8 +190,176 @@ QVariant Displays::data(const QModelIndex &index, int role) const
         const auto preferred = out->preferredMode();
         return preferred ? sizeLabel(preferred->size()) : QString();
     }
+    case GeometryRole: {
+        const QRect geometry = logicalGeometry(out);
+        return QVariantMap{{QStringLiteral("x"), geometry.x()},
+                           {QStringLiteral("y"), geometry.y()},
+                           {QStringLiteral("width"), geometry.width()},
+                           {QStringLiteral("height"), geometry.height()}};
+    }
+    case MirrorSourceRole:
+        return m_ids.indexOf(mirrorSourceId(out));
+    case CapabilitiesRole: {
+        const auto capabilities = out->capabilities();
+        return QVariantMap{{QStringLiteral("overscan"), capabilities.testFlag(KScreen::Output::Capability::Overscan)},
+                           {QStringLiteral("vrr"), capabilities.testFlag(KScreen::Output::Capability::Vrr)},
+                           {QStringLiteral("rgbRange"), capabilities.testFlag(KScreen::Output::Capability::RgbRange)},
+                           {QStringLiteral("hdr"), capabilities.testFlag(KScreen::Output::Capability::HighDynamicRange)},
+                           {QStringLiteral("colorProfile"), capabilities.testFlag(KScreen::Output::Capability::IccProfile)}};
+    }
+    case OverscanRole:
+        return int(out->overscan());
+    case VrrRole:
+        return int(out->vrrPolicy());
+    case RgbRangeRole:
+        return int(out->rgbRange());
+    case HdrRole:
+        return out->isHdrEnabled();
+    case ColorProfileRole:
+        return out->iccProfilePath();
     }
     return {};
+}
+
+QRect Displays::logicalGeometry(const KScreen::OutputPtr &out) const
+{
+    QSizeF size = out->explicitLogicalSize();
+    if (!size.isValid() || size.isEmpty()) {
+        const auto mode = out->currentMode();
+        QSizeF modeSize = mode ? QSizeF(mode->size()) : QSizeF();
+        if (out->rotation() == KScreen::Output::Left || out->rotation() == KScreen::Output::Right) {
+            modeSize.transpose();
+        }
+        size = modeSize / (out->scale() > 0 ? out->scale() : 1.0);
+    }
+    return QRect(out->pos(), size.toSize());
+}
+
+int Displays::mirrorSourceId(const KScreen::OutputPtr &out) const
+{
+    if (out->replicationSource() != 0) {
+        return out->replicationSource();
+    }
+    if (!out->isEnabled()) {
+        return 0;
+    }
+    for (int id : std::as_const(m_ids)) {
+        const auto other = m_config->output(id);
+        if (other->id() == out->id() || !other->isEnabled() || other->pos() != out->pos() || other->replicationSource() != 0) {
+            continue;
+        }
+        const bool otherFirst = other->priority() < out->priority() || (other->priority() == out->priority() && other->id() < out->id());
+        if (otherFirst) {
+            return other->id();
+        }
+    }
+    return 0;
+}
+
+void Displays::normalizePositions()
+{
+    int left = INT_MAX;
+    int top = INT_MAX;
+    for (int id : std::as_const(m_ids)) {
+        const auto out = m_config->output(id);
+        if (out->isEnabled() && mirrorSourceId(out) == 0) {
+            left = std::min(left, out->pos().x());
+            top = std::min(top, out->pos().y());
+        }
+    }
+    if (left == INT_MAX) {
+        return;
+    }
+    for (int id : std::as_const(m_ids)) {
+        const auto out = m_config->output(id);
+        out->setPos(out->pos() - QPoint(left, top));
+    }
+}
+
+void Displays::setPosition(int row, int x, int y)
+{
+    auto out = output(row);
+    if (!out) {
+        return;
+    }
+    QList<KScreen::OutputPtr> mirrors;
+    for (int id : std::as_const(m_ids)) {
+        const auto mirror = m_config->output(id);
+        if (mirrorSourceId(mirror) == out->id()) {
+            mirrors.append(mirror);
+        }
+    }
+    out->setPos(QPoint(x, y));
+    for (const auto &mirror : std::as_const(mirrors)) {
+        mirror->setPos(out->pos());
+    }
+    normalizePositions();
+    apply();
+}
+
+void Displays::setMirror(int row, int sourceRow)
+{
+    auto out = output(row);
+    if (!out) {
+        return;
+    }
+    const auto source = output(sourceRow);
+    if (source && source->id() != out->id()) {
+        out->setReplicationSource(source->id());
+        out->setPos(source->pos());
+    } else {
+        out->setReplicationSource(0);
+        int right = 0;
+        for (int id : std::as_const(m_ids)) {
+            const auto other = m_config->output(id);
+            if (other->id() != out->id() && other->isEnabled() && mirrorSourceId(other) == 0) {
+                right = std::max(right, logicalGeometry(other).right() + 1);
+            }
+        }
+        out->setPos(QPoint(right, 0));
+    }
+    normalizePositions();
+    apply();
+}
+
+void Displays::setOverscan(int row, int percent)
+{
+    if (auto out = output(row)) {
+        out->setOverscan(uint32_t(std::clamp(percent, 0, 100)));
+        apply();
+    }
+}
+
+void Displays::setVrr(int row, int policy)
+{
+    if (auto out = output(row)) {
+        out->setVrrPolicy(static_cast<KScreen::Output::VrrPolicy>(std::clamp(policy, 0, 2)));
+        apply();
+    }
+}
+
+void Displays::setRgbRange(int row, int range)
+{
+    if (auto out = output(row)) {
+        out->setRgbRange(static_cast<KScreen::Output::RgbRange>(std::clamp(range, 0, 2)));
+        apply();
+    }
+}
+
+void Displays::setHdr(int row, bool enabled)
+{
+    if (auto out = output(row)) {
+        out->setHdrEnabled(enabled);
+        apply();
+    }
+}
+
+void Displays::setColorProfile(int row, const QString &path)
+{
+    if (auto out = output(row)) {
+        out->setIccProfilePath(path);
+        apply();
+    }
 }
 
 KScreen::ModePtr Displays::bestMode(const KScreen::OutputPtr &out, const QSize &size, double refresh) const
@@ -230,6 +407,7 @@ void Displays::revert()
         current->setRotation(saved->rotation());
         current->setPos(saved->pos());
         current->setPriority(saved->priority());
+        current->setReplicationSource(saved->replicationSource());
     }
     m_saved.reset();
     apply();

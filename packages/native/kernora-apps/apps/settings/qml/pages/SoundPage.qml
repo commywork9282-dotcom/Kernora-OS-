@@ -224,7 +224,7 @@ SettingsPage {
             icon: "configure"
             iconStyle: "plain"
             chevron: true
-            onClicked: Process.openModule("kcm_pulseaudio")
+            onClicked: page.open("SoundDevicesPage.qml", {})
         }
     }
 }

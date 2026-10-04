@@ -93,7 +93,7 @@ SettingsPage {
             icon: "configure"
             iconStyle: "plain"
             chevron: true
-            onClicked: Process.openModule("kcm_regionandlang")
+            onClicked: page.open("FormatsPage.qml", {})
         }
     }
 }

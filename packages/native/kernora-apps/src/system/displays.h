@@ -31,6 +31,14 @@ public:
         ScaleRole,
         RotationRole,
         PreferredResolutionRole,
+        GeometryRole,
+        MirrorSourceRole,
+        CapabilitiesRole,
+        OverscanRole,
+        VrrRole,
+        RgbRangeRole,
+        HdrRole,
+        ColorProfileRole,
     };
     Q_ENUM(Roles)
 
@@ -51,6 +59,13 @@ public:
     Q_INVOKABLE void setRotation(int row, int degrees);
     Q_INVOKABLE void setEnabled(int row, bool enabled);
     Q_INVOKABLE void setPrimary(int row);
+    Q_INVOKABLE void setPosition(int row, int x, int y);
+    Q_INVOKABLE void setMirror(int row, int sourceRow);
+    Q_INVOKABLE void setOverscan(int row, int percent);
+    Q_INVOKABLE void setVrr(int row, int policy);
+    Q_INVOKABLE void setRgbRange(int row, int range);
+    Q_INVOKABLE void setHdr(int row, bool enabled);
+    Q_INVOKABLE void setColorProfile(int row, const QString &path);
 
 Q_SIGNALS:
     void readyChanged();
@@ -62,6 +77,9 @@ private:
     void apply();
     KScreen::OutputPtr output(int row) const;
     KScreen::ModePtr bestMode(const KScreen::OutputPtr &output, const QSize &size, double refresh) const;
+    QRect logicalGeometry(const KScreen::OutputPtr &output) const;
+    int mirrorSourceId(const KScreen::OutputPtr &output) const;
+    void normalizePositions();
 
     KScreen::ConfigPtr m_config;
     KScreen::ConfigPtr m_saved;

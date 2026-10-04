@@ -40,6 +40,12 @@ QString Locales::language() const
             language = QStringLiteral("en_US");
         }
     }
+    const auto translated = [](const QString &code) {
+        return QFile::exists(QStringLiteral("/usr/share/locale/%1/LC_MESSAGES/plasmashell.mo").arg(code));
+    };
+    if (language != QLatin1String("en_US") && !translated(language) && translated(language.section(QLatin1Char('_'), 0, 0))) {
+        language = language.section(QLatin1Char('_'), 0, 0);
+    }
     return language;
 }
 
@@ -138,6 +144,73 @@ QVariantMap Locales::formatSamples(const QString &name) const
             {QStringLiteral("time"), locale.toString(now.time(), QLocale::ShortFormat)},
             {QStringLiteral("number"), locale.toString(1234567.89, 'f', 2)},
             {QStringLiteral("currency"), locale.toCurrencyString(1234.5)}};
+}
+
+static const QStringList formatCategories = {
+    QStringLiteral("LC_NUMERIC"),
+    QStringLiteral("LC_TIME"),
+    QStringLiteral("LC_MONETARY"),
+    QStringLiteral("LC_MEASUREMENT"),
+    QStringLiteral("LC_PAPER"),
+};
+
+QVariantMap Locales::formats() const
+{
+    const KConfigGroup formats(localeConfig(), QStringLiteral("Formats"));
+    QVariantMap map;
+    for (const QString &category : formatCategories) {
+        map.insert(category, formats.readEntry(category, QString()).section(QLatin1Char('.'), 0, 0));
+    }
+    return map;
+}
+
+QString Locales::formatSample(const QString &category, const QString &name) const
+{
+    const QLocale locale(name);
+    if (category == QLatin1String("LC_NUMERIC")) {
+        return locale.toString(1234567.89, 'f', 2);
+    }
+    if (category == QLatin1String("LC_TIME")) {
+        const QDateTime now = QDateTime::currentDateTime();
+        return locale.toString(now.date(), QLocale::ShortFormat) + QStringLiteral(", ") + locale.toString(now.time(), QLocale::ShortFormat);
+    }
+    if (category == QLatin1String("LC_MONETARY")) {
+        return locale.toCurrencyString(1234.5);
+    }
+    if (category == QLatin1String("LC_MEASUREMENT")) {
+        return locale.measurementSystem() == QLocale::MetricSystem ? i18n("Metric: metres, kilograms, °C") : i18n("Imperial: feet, pounds, °F");
+    }
+    if (category == QLatin1String("LC_PAPER")) {
+        static const QStringList letter = {QStringLiteral("BZ"), QStringLiteral("CA"), QStringLiteral("CL"), QStringLiteral("CO"),
+                                           QStringLiteral("CR"), QStringLiteral("GT"), QStringLiteral("MX"), QStringLiteral("NI"),
+                                           QStringLiteral("PA"), QStringLiteral("PH"), QStringLiteral("PR"), QStringLiteral("SV"),
+                                           QStringLiteral("US"), QStringLiteral("VE")};
+        return letter.contains(name.section(QLatin1Char('_'), 1, 1).left(2)) ? i18n("Letter") : i18n("A4");
+    }
+    return {};
+}
+
+void Locales::setFormat(const QString &category, const QString &locale)
+{
+    if (!formatCategories.contains(category)) {
+        return;
+    }
+    const auto write = [this, category, locale]() {
+        KConfigGroup formats(localeConfig(), QStringLiteral("Formats"));
+        if (locale.isEmpty()) {
+            formats.deleteEntry(category, KConfig::Notify);
+        } else {
+            formats.writeEntry(category, QString(locale + QStringLiteral(".UTF-8")), KConfig::Notify);
+        }
+        localeConfig()->sync();
+        Q_EMIT changed();
+        Q_EMIT needsRelogin();
+    };
+    if (locale.isEmpty()) {
+        write();
+    } else {
+        ensureGenerated(locale, write);
+    }
 }
 
 QStringList Locales::generatedLocales()
@@ -375,6 +448,140 @@ void Locales::setLayoutSwitchOption(const QString &option)
     group.writeEntry("ResetOldOptions", true);
     config->sync();
     reloadKeyboard();
+    Q_EMIT keyboardChanged();
+}
+
+void Locales::readKeyboardRules() const
+{
+    if (!m_modelCache.isEmpty()) {
+        return;
+    }
+    QFile file(QStringLiteral("/usr/share/X11/xkb/rules/evdev.xml"));
+    if (!file.open(QIODevice::ReadOnly)) {
+        return;
+    }
+    QXmlStreamReader xml(&file);
+    QStringList path;
+    QString name;
+    QString groupName;
+    QVariantMap group;
+    QVariantList options;
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isStartElement()) {
+            path.append(xml.name().toString());
+            if (xml.name() == QLatin1String("group")) {
+                group = {{QStringLiteral("multiple"), xml.attributes().value(QStringLiteral("allowMultipleSelection")) == QLatin1String("true")}};
+                options.clear();
+            }
+        } else if (xml.isEndElement()) {
+            if (xml.name() == QLatin1String("group")) {
+                group.insert(QStringLiteral("options"), options);
+                if (group.value(QStringLiteral("id")).toString() != QLatin1String("grp")) {
+                    m_optionGroupCache.append(group);
+                }
+            }
+            path.removeLast();
+        } else if (xml.isCharacters() && !xml.isWhitespace() && path.size() >= 2 && path.at(path.size() - 2) == QLatin1String("configItem")) {
+            const QString element = path.last();
+            const QString text = xml.text().toString();
+            const QString owner = path.size() >= 3 ? path.at(path.size() - 3) : QString();
+            if (element == QLatin1String("name")) {
+                name = text;
+            } else if (element == QLatin1String("description")) {
+                const QString label = i18nd("xkeyboard-config", text.toUtf8().constData());
+                if (owner == QLatin1String("model")) {
+                    m_modelCache.append(QVariantMap{{QStringLiteral("id"), name}, {QStringLiteral("name"), label}});
+                } else if (owner == QLatin1String("group")) {
+                    group.insert(QStringLiteral("id"), name);
+                    group.insert(QStringLiteral("name"), label);
+                } else if (owner == QLatin1String("option")) {
+                    options.append(QVariantMap{{QStringLiteral("id"), name}, {QStringLiteral("name"), label}});
+                }
+            }
+        }
+    }
+    QCollator collator;
+    const auto byName = [&collator](const QVariant &a, const QVariant &b) {
+        return collator.compare(a.toMap().value(QStringLiteral("name")).toString(), b.toMap().value(QStringLiteral("name")).toString()) < 0;
+    };
+    std::sort(m_modelCache.begin(), m_modelCache.end(), byName);
+    std::sort(m_optionGroupCache.begin(), m_optionGroupCache.end(), byName);
+}
+
+QVariantList Locales::keyboardModels() const
+{
+    readKeyboardRules();
+    return m_modelCache;
+}
+
+QVariantList Locales::keyboardOptionGroups() const
+{
+    readKeyboardRules();
+    return m_optionGroupCache;
+}
+
+QString Locales::keyboardModel() const
+{
+    const KConfigGroup group(KSharedConfig::openConfig(QStringLiteral("kxkbrc")), QStringLiteral("Layout"));
+    return group.readEntry("Model", QStringLiteral("pc104"));
+}
+
+void Locales::setKeyboardModel(const QString &model)
+{
+    auto config = KSharedConfig::openConfig(QStringLiteral("kxkbrc"));
+    KConfigGroup group(config, QStringLiteral("Layout"));
+    group.writeEntry("Model", model);
+    config->sync();
+    reloadKeyboard();
+    Q_EMIT keyboardChanged();
+}
+
+QStringList Locales::keyboardOptions() const
+{
+    const KConfigGroup group(KSharedConfig::openConfig(QStringLiteral("kxkbrc")), QStringLiteral("Layout"));
+    return group.readEntry("Options", QString()).split(QLatin1Char(','), Qt::SkipEmptyParts);
+}
+
+void Locales::writeKeyboardOptions(const QStringList &options)
+{
+    auto config = KSharedConfig::openConfig(QStringLiteral("kxkbrc"));
+    KConfigGroup group(config, QStringLiteral("Layout"));
+    group.writeEntry("Options", options.join(QLatin1Char(',')));
+    group.writeEntry("ResetOldOptions", true);
+    config->sync();
+    reloadKeyboard();
+    Q_EMIT keyboardChanged();
+}
+
+void Locales::setKeyboardOption(const QString &option, bool on)
+{
+    QStringList options = keyboardOptions();
+    options.removeAll(option);
+    if (on) {
+        options.append(option);
+    }
+    writeKeyboardOptions(options);
+}
+
+void Locales::setKeyboardGroupChoice(const QString &groupId, const QString &option)
+{
+    readKeyboardRules();
+    QStringList members;
+    for (const QVariant &entry : std::as_const(m_optionGroupCache)) {
+        const QVariantMap group = entry.toMap();
+        if (group.value(QStringLiteral("id")).toString() == groupId) {
+            for (const QVariant &item : group.value(QStringLiteral("options")).toList()) {
+                members.append(item.toMap().value(QStringLiteral("id")).toString());
+            }
+        }
+    }
+    QStringList options = keyboardOptions();
+    options.erase(std::remove_if(options.begin(), options.end(), [&members](const QString &o) { return members.contains(o); }), options.end());
+    if (!option.isEmpty()) {
+        options.append(option);
+    }
+    writeKeyboardOptions(options);
 }
 
 void Locales::reloadKeyboard()

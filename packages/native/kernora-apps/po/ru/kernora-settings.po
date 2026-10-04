@@ -1447,9 +1447,6 @@ msgstr "Книжная, перевёрнутая"
 msgid "Arrange screens and more"
 msgstr "Расположение экранов и другое"
 
-#: apps/settings/qml/pages/DisplayPage.qml:339
-msgid "Position of several screens, overscan, colour profiles"
-msgstr "Расположение нескольких экранов, выход за края, цветовые профили"
 
 #: apps/settings/qml/pages/DisplayPage.qml:353
 msgid "Keep these display settings?"
@@ -1587,9 +1584,6 @@ msgstr "Для левой руки"
 msgid "Scrolling speed"
 msgstr "Скорость прокрутки"
 
-#: apps/settings/qml/pages/InputPage.qml:314
-msgid "Touchpad gestures and advanced options"
-msgstr "Жесты тачпада и дополнительные параметры"
 
 #: apps/settings/qml/pages/InputPage.qml:321
 msgid "Advanced keyboard options"
@@ -2067,9 +2061,6 @@ msgstr "При закрытии крышки"
 msgid "Advanced power settings"
 msgstr "Дополнительные настройки питания"
 
-#: apps/settings/qml/pages/PowerPage.qml:241
-msgid "Low battery, charge limits, other devices"
-msgstr "Низкий заряд, пределы зарядки, другие устройства"
 
 #: apps/settings/qml/pages/PrivacyPage.qml:44
 msgid "Lock the screen automatically"
@@ -2392,3 +2383,516 @@ msgstr "2018 · Material Theming"
 #: apps/settings/qml/pages/AppearancePage.qml
 msgid "2014 · paper and ink"
 msgstr "2014 · бумага и чернила"
+
+#: apps/settings/qml/components/Catalog.qml:50 apps/settings/qml/pages/SoundDevicesPage.qml:19
+msgid "Sound devices"
+msgstr "Звуковые устройства"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:24 apps/settings/qml/pages/SoundDevicesPage.qml:101
+msgid "In use"
+msgstr "Используется"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:118
+msgid "Outputs"
+msgstr "Выходы"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:137
+msgid "Inputs"
+msgstr "Входы"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:156
+msgid "Sound cards"
+msgstr "Звуковые карты"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:158
+msgid "A profile decides which outputs and inputs a card offers, for example stereo, surround or HDMI."
+msgstr "Профиль определяет, какие выходы и входы есть у карты: например, стерео, объёмный звук или HDMI."
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:100 apps/settings/qml/pages/SoundDevicesPage.qml:168
+msgid "Profile"
+msgstr "Профиль"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:107 apps/settings/qml/pages/SoundDevicesPage.qml:172
+msgid "Not available"
+msgstr "Недоступен"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:199
+msgid "Allow volume above 100%"
+msgstr "Громкость выше 100%"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:200
+msgid "Up to 150%, which can distort the sound"
+msgstr "До 150%, звук может искажаться"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:208
+msgid "Volume step"
+msgstr "Шаг громкости"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:50
+msgid "Play sound through this device"
+msgstr "Выводить звук на это устройство"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:50
+msgid "Record sound from this device"
+msgstr "Записывать звук с этого устройства"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:87
+msgid "Connector"
+msgstr "Разъём"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:94
+msgid "Nothing plugged in"
+msgstr "Ничего не подключено"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:115
+msgid "Channels"
+msgstr "Каналы"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:117
+msgid "Turn one side down to move the sound towards the other."
+msgstr "Убавьте одну сторону, чтобы сместить звук в другую."
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:137
+msgid "Test speakers"
+msgstr "Проверка динамиков"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:139
+msgid "Click a speaker to play a short sound from it."
+msgstr "Нажмите на динамик, чтобы он издал короткий звук."
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:149
+msgid "Playing"
+msgstr "Звучит"
+
+#: apps/settings/qml/components/Catalog.qml:50
+msgid "profile connector balance channels surround hdmi test speakers"
+msgstr "профиль разъём баланс каналы объёмный hdmi проверка динамики колонки"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:48
+msgid "Left"
+msgstr "Левый"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:48
+msgid "Right"
+msgstr "Правый"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:51
+msgid "Mono"
+msgstr "Моно"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:52
+msgid "Front left"
+msgstr "Передний левый"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:53
+msgid "Front right"
+msgstr "Передний правый"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:54
+msgid "Front centre"
+msgstr "Передний центральный"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:55
+msgid "Rear left"
+msgstr "Задний левый"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:56
+msgid "Rear right"
+msgstr "Задний правый"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:57
+msgid "Rear centre"
+msgstr "Задний центральный"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:58
+msgid "Side left"
+msgstr "Боковой левый"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:59
+msgid "Side right"
+msgstr "Боковой правый"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:60
+msgid "Subwoofer"
+msgstr "Сабвуфер"
+
+#: apps/settings/qml/pages/FormatsPage.qml:19
+msgid "Each format follows the region unless you choose another one"
+msgstr "Каждый формат берётся из региона, если не выбрать другой"
+
+#: apps/settings/qml/pages/FormatsPage.qml:26
+msgid "Date and time"
+msgstr "Дата и время"
+
+#: apps/settings/qml/pages/FormatsPage.qml:28
+msgid "Units of measurement"
+msgstr "Единицы измерения"
+
+#: apps/settings/qml/pages/FormatsPage.qml:29
+msgid "Paper size"
+msgstr "Размер бумаги"
+
+#: apps/settings/qml/pages/FormatsPage.qml:68 apps/settings/qml/pages/FormatsPage.qml:72
+msgid "As in the region"
+msgstr "Как в регионе"
+
+#: apps/settings/qml/components/Catalog.qml:81
+msgid "numbers currency money measurement units paper size metric imperial date format"
+msgstr "числа валюта деньги единицы измерения бумага размер метрическая имперская формат даты"
+
+#: apps/settings/qml/components/Catalog.qml:69 apps/settings/qml/pages/KeyboardOptionsPage.qml:22
+msgid "Compose key"
+msgstr "Клавиша Compose"
+
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:24
+msgid "Key for extra characters"
+msgstr "Клавиша для дополнительных символов"
+
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:25
+msgid "Alt and Meta keys"
+msgstr "Клавиши Alt и Meta"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:43
+msgid "Try your keys here"
+msgstr "Проверьте клавиши здесь"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:48
+msgid "Keyboard model"
+msgstr "Модель клавиатуры"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:58
+msgid "Special keys"
+msgstr "Особые клавиши"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:82
+msgid "All options"
+msgstr "Все параметры"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:103
+msgid "Turn off all options"
+msgstr "Выключить все параметры"
+
+#: apps/settings/qml/pages/KeyboardOptionGroupPage.qml:20
+msgid "Several can be on at once"
+msgstr "Можно включить несколько"
+
+#: apps/settings/qml/pages/KeyboardOptionGroupPage.qml:20
+msgid "Only one can be on"
+msgstr "Можно включить только один"
+
+#: apps/settings/qml/components/Catalog.qml:69
+msgid "special characters accents caps lock alt meta keyboard model xkb options"
+msgstr "особые символы акценты caps lock alt meta модель клавиатуры параметры xkb"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:83
+msgid "One option is on."
+msgid_plural "%1 options are on."
+msgstr[0] "Включён %1 параметр."
+msgstr[1] "Включено %1 параметра."
+msgstr[2] "Включено %1 параметров."
+
+#: apps/settings/qml/components/Catalog.qml:70 apps/settings/qml/pages/InputPage.qml:303 apps/settings/qml/pages/PointerOptionsPage.qml:17
+msgid "Touchpad and mouse options"
+msgstr "Параметры тачпада и мыши"
+
+#: apps/settings/qml/pages/InputPage.qml:304
+msgid "Scrolling, tapping, right click, acceleration"
+msgstr "Прокрутка, касания, правый щелчок, ускорение"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:91
+msgid "No mouse or touchpad"
+msgstr "Нет мыши и тачпада"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:92
+msgid "Connect a mouse or a touchpad to set it up."
+msgstr "Подключите мышь или тачпад, чтобы настроить их."
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:107
+msgid "Use the touchpad"
+msgstr "Использовать тачпад"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:116
+msgid "Turn off while a mouse is connected"
+msgstr "Выключать, пока подключена мышь"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:125
+msgid "Pointer acceleration"
+msgstr "Ускорение указателя"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:126
+msgid "Faster movements take the pointer further"
+msgstr "Чем быстрее движение, тем дальше уходит указатель"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:135
+msgid "Scrolling"
+msgstr "Прокрутка"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:140
+msgid "With two fingers"
+msgstr "Двумя пальцами"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:141
+msgid "Along the right edge"
+msgstr "Вдоль правого края"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:148
+msgid "Scroll while holding a button"
+msgstr "Прокрутка с зажатой кнопкой"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:149
+msgid "Hold the middle button and move the mouse"
+msgstr "Удерживайте среднюю кнопку и двигайте мышь"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:158 apps/settings/qml/pages/PointerOptionsPage.qml:195
+msgid "Right click"
+msgstr "Правый щелчок"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:163
+msgid "Press the bottom right corner"
+msgstr "Нажатие в правом нижнем углу"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:164
+msgid "Press with two fingers"
+msgstr "Нажатие двумя пальцами"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:170
+msgid "Tap and drag"
+msgstr "Перетаскивание касанием"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:171
+msgid "Tap, then touch again and move to drag"
+msgstr "Коснитесь, затем коснитесь снова и ведите, чтобы перетащить"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:180
+msgid "Drag lock"
+msgstr "Фиксация перетаскивания"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:181
+msgid "Lifting the finger for a moment does not drop what you drag"
+msgstr "Если ненадолго поднять палец, перетаскивание не прервётся"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:190
+msgid "Two-finger tap"
+msgstr "Касание двумя пальцами"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:195
+msgid "Three fingers: middle click"
+msgstr "Тремя пальцами: средний щелчок"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:196
+msgid "Middle click"
+msgstr "Средний щелчок"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:196
+msgid "Three fingers: right click"
+msgstr "Тремя пальцами: правый щелчок"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:202
+msgid "Middle click with both buttons"
+msgstr "Средний щелчок двумя кнопками"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:203
+msgid "Press the left and right buttons together"
+msgstr "Нажмите левую и правую кнопки одновременно"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:212
+msgid "Restore defaults"
+msgstr "Вернуть по умолчанию"
+
+#: apps/settings/qml/components/Catalog.qml:70
+msgid "two finger scrolling edge tap and drag drag lock right click acceleration middle click"
+msgstr "прокрутка двумя пальцами край перетаскивание касанием фиксация правый щелчок ускорение средний щелчок"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:138 apps/settings/qml/pages/PowerPage.qml:121
+msgid "Low battery"
+msgstr "Низкий заряд"
+
+#: apps/settings/qml/pages/PowerPage.qml:231
+msgid "Low battery, other devices, sleep"
+msgstr "Низкий заряд, другие устройства, сон"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:73
+msgid "Warn about low battery at"
+msgstr "Предупреждать о низком заряде при"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:84
+msgid "Critical battery level"
+msgstr "Критический заряд"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:95
+msgid "At the critical level"
+msgstr "При критическом заряде"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:99
+msgid "Hibernate"
+msgstr "Гибернация"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:99
+msgid "Save everything to disk and turn off"
+msgstr "Сохранить всё на диск и выключиться"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:113
+msgid "Other devices"
+msgstr "Другие устройства"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:114
+msgid "Wireless mice, keyboards, headphones and other devices with their own battery."
+msgstr "Беспроводные мыши, клавиатуры, наушники и другие устройства со своей батареей."
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:117
+msgid "Warn about their low battery at"
+msgstr "Предупреждать о низком заряде при"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:130
+msgid "Power mode for each state"
+msgstr "Режим питания в разных состояниях"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:132
+msgid "The power mode switches by itself when the computer changes between these states."
+msgstr "Режим питания меняется сам, когда компьютер переходит из одного состояния в другое."
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:165
+msgid "How to sleep"
+msgstr "Как засыпать"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:170
+msgid "Keeps working in memory, wakes up at once"
+msgstr "Всё остаётся в памяти, пробуждение мгновенное"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:171
+msgid "Hybrid sleep"
+msgstr "Гибридный сон"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:171
+msgid "Also saves to disk in case the power runs out"
+msgstr "Ещё и сохраняет всё на диск на случай, если питание пропадёт"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:172
+msgid "Sleep, then hibernate"
+msgstr "Сон, затем гибернация"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:172
+msgid "Hibernates after some time asleep"
+msgstr "Через некоторое время сна переходит в гибернацию"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:183
+msgid "Pause media before sleep"
+msgstr "Ставить медиа на паузу перед сном"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:184
+msgid "Music and videos stop when the computer goes to sleep"
+msgstr "Музыка и видео останавливаются, когда компьютер засыпает"
+
+#: apps/settings/qml/components/Catalog.qml:63
+msgid "low battery critical level hibernate wireless mouse keyboard battery hybrid sleep pause media"
+msgstr "низкий заряд критический гибернация беспроводная мышь клавиатура батарея гибридный сон пауза медиа"
+
+#: apps/settings/qml/pages/DisplayPage.qml:325
+msgid "Position of several screens, mirroring, colour"
+msgstr "Расположение нескольких экранов, зеркалирование, цвет"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:99
+msgid "Nothing more to set up"
+msgstr "Больше нечего настраивать"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:100
+msgid "Connect another screen to arrange them, or use Display & brightness for this one."
+msgstr "Подключите ещё один экран, чтобы расставить их, а этот настраивается в разделе «Экран и яркость»."
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:202
+msgid "Drag a screen to where it stands on your desk. Screens snap to each other's edges."
+msgstr "Перетащите экран туда, где он стоит на столе. Экраны прилипают друг к другу краями."
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:206
+msgid "Mirroring"
+msgstr "Зеркалирование"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:216
+msgid "What %1 shows"
+msgstr "Что показывает %1"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:217
+msgid "Its own picture"
+msgstr "Своё изображение"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:219
+msgid "The same as %1"
+msgstr "То же, что %1"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:239
+msgid "Adaptive sync"
+msgstr "Адаптивная синхронизация"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:244
+msgid "In full-screen games and videos"
+msgstr "В полноэкранных играх и видео"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:245
+msgid "Always"
+msgstr "Всегда"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:252
+msgid "Colour range"
+msgstr "Цветовой диапазон"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:257 apps/settings/qml/pages/DisplayPage.qml:137
+msgid "Automatic"
+msgstr "Автоматически"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:258
+msgid "Full"
+msgstr "Полный"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:258
+msgid "For computer monitors"
+msgstr "Для компьютерных мониторов"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:259
+msgid "Limited"
+msgstr "Ограниченный"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:259
+msgid "For TVs that show grey instead of black"
+msgstr "Для телевизоров, у которых чёрный выглядит серым"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:265
+msgid "HDR"
+msgstr "HDR"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:266
+msgid "Brighter highlights in apps and videos that support it"
+msgstr "Более яркие блики в приложениях и видео, которые это поддерживают"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:275
+msgid "Overscan"
+msgstr "Выход за края (overscan)"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:291
+msgid "Colour profile"
+msgstr "Цветовой профиль"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:292
+msgid "None"
+msgstr "Нет"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:301
+msgid "Choose a colour profile"
+msgstr "Выберите цветовой профиль"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:302
+msgid "Colour profiles (*.icc *.icm)"
+msgstr "Цветовые профили (*.icc *.icm)"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:307
+msgid "Remove the colour profile"
+msgstr "Убрать цветовой профиль"
+
+#: apps/settings/qml/components/Catalog.qml:46
+msgid "multiple monitors position mirror duplicate adaptive sync vrr freesync hdr overscan colour profile icc rgb range"
+msgstr "несколько мониторов расположение зеркало дублировать адаптивная синхронизация vrr freesync hdr overscan цветовой профиль icc rgb диапазон"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:36 apps/settings/qml/pages/DisplayPage.qml:248
+msgid "%1. %2"
+msgstr "%1. %2"

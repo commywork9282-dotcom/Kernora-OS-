@@ -62,6 +62,25 @@ The KDE applications in the
 (`configs/live/excluded-packages.txt`); System Settings stays installed for
 the modules it carries, behind the diverted command.
 
+## Advanced settings
+
+The "advanced" rows in Settings open Kernora pages, not KDE's modules:
+
+| Row | Page | What it changes |
+| --- | --- | --- |
+| Sound > Advanced sound settings | `SoundDevicesPage`, `SoundDevicePage` | Card profiles, each output's and input's connector, volume per channel, speaker test, notification sound volume, volume above 100% and the volume step (`plasmaparc`). It uses Plasma's `org.kde.plasma.private.volume`, as the main page does. |
+| Language & region > Detailed formats | `FormatsPage` | `LC_NUMERIC`, `LC_TIME`, `LC_MONETARY`, `LC_MEASUREMENT` and `LC_PAPER` in `plasma-localerc`, each "as in the region" or its own region; a missing locale is generated first. |
+| Keyboard > Advanced keyboard options | `KeyboardOptionsPage`, `KeyboardOptionGroupPage` | The keyboard model and every XKB option from `evdev.xml` (kxkbrc `Model`, `Options`), with the Compose key, Caps Lock, the third-level key and Alt/Meta up front. |
+| Keyboard, mouse & touchpad > Touchpad and mouse options | `PointerOptionsPage` | KWin's input device properties: scrolling method, right click method, tap and drag, drag lock, two-finger tap, middle click, acceleration profile, turning the touchpad off while a mouse is connected, and defaults. |
+| Battery & power > Advanced power settings | `PowerAdvancedPage` | Low and critical battery levels and the critical action, the warning level of wireless devices, the power mode for each state, the sleep mode and pausing media (`powerdevilrc`). The main page also has the low battery profile. |
+| Display & brightness > Arrange screens and more | `DisplayArrangementPage` | Dragging screens into place (they snap to each other's edges), mirroring, and per screen adaptive sync, colour range, HDR, overscan and the ICC profile where the screen supports them. |
+
+KWin 6.3 has no mirroring of its own: like KDE's module, Kernora puts the
+mirror at the same position as its source, and finds mirrors that way.
+
+Keyboard shortcuts, file types, the network connection editor, managing
+accounts, more accessibility options and fonts still open KDE's modules.
+
 ## File chooser
 
 Programs ask for files through the desktop portal, and the portal hands

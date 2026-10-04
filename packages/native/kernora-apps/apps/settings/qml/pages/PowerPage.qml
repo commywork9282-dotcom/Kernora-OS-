@@ -117,18 +117,19 @@ SettingsPage {
         visible: page.hasBattery
         options: [
             { value: "AC", label: i18n("Plugged in"), icon: "battery-ac-adapter" },
-            { value: "Battery", label: i18n("On battery"), icon: "battery-full" }
+            { value: "Battery", label: i18n("On battery"), icon: "battery-full" },
+            { value: "LowBattery", label: i18n("Low battery"), icon: "battery-low" }
         ]
         currentValue: page.profile
         onSelected: value => page.profile = value
     }
 
     ConfigEntry { id: dimOn; file: "powerdevilrc"; group: page.profile + "/Display"; key: "DimDisplayWhenIdle"; defaultValue: true }
-    ConfigEntry { id: dimAfter; file: "powerdevilrc"; group: page.profile + "/Display"; key: "DimDisplayIdleTimeoutSec"; defaultValue: page.profile === "AC" ? 300 : 120 }
+    ConfigEntry { id: dimAfter; file: "powerdevilrc"; group: page.profile + "/Display"; key: "DimDisplayIdleTimeoutSec"; defaultValue: page.profile === "AC" ? 300 : (page.profile === "Battery" ? 120 : 60) }
     ConfigEntry { id: offOn; file: "powerdevilrc"; group: page.profile + "/Display"; key: "TurnOffDisplayWhenIdle"; defaultValue: true }
-    ConfigEntry { id: offAfter; file: "powerdevilrc"; group: page.profile + "/Display"; key: "TurnOffDisplayIdleTimeoutSec"; defaultValue: page.profile === "AC" ? 600 : 300 }
+    ConfigEntry { id: offAfter; file: "powerdevilrc"; group: page.profile + "/Display"; key: "TurnOffDisplayIdleTimeoutSec"; defaultValue: page.profile === "AC" ? 600 : (page.profile === "Battery" ? 300 : 120) }
     ConfigEntry { id: sleepAction; file: "powerdevilrc"; group: page.profile + "/SuspendAndShutdown"; key: "AutoSuspendAction"; defaultValue: 1 }
-    ConfigEntry { id: sleepAfter; file: "powerdevilrc"; group: page.profile + "/SuspendAndShutdown"; key: "AutoSuspendIdleTimeoutSec"; defaultValue: page.profile === "AC" ? 900 : 600 }
+    ConfigEntry { id: sleepAfter; file: "powerdevilrc"; group: page.profile + "/SuspendAndShutdown"; key: "AutoSuspendIdleTimeoutSec"; defaultValue: page.profile === "AC" ? 900 : (page.profile === "Battery" ? 600 : 300) }
     ConfigEntry { id: powerButton; file: "powerdevilrc"; group: page.profile + "/SuspendAndShutdown"; key: "PowerButtonAction"; defaultValue: 16 }
     ConfigEntry { id: lidAction; file: "powerdevilrc"; group: page.profile + "/SuspendAndShutdown"; key: "LidAction"; defaultValue: 1 }
 
@@ -227,11 +228,11 @@ SettingsPage {
     Group {
         ListItem {
             title: i18n("Advanced power settings")
-            subtitle: i18n("Low battery, charge limits, other devices")
+            subtitle: i18n("Low battery, other devices, sleep")
             icon: "configure"
             iconStyle: "plain"
             chevron: true
-            onClicked: Process.openModule("kcm_powerdevilprofilesconfig")
+            onClicked: page.open("PowerAdvancedPage.qml", {})
         }
     }
 }
