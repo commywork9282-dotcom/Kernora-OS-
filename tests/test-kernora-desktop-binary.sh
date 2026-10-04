@@ -290,8 +290,20 @@ for path in \
   usr/share/plasma/look-and-feel/org.kernora.desktop/contents/logout/timer.js \
   usr/share/kwin/tabbox/org.kernora.switcher/metadata.json \
   usr/share/kwin/tabbox/org.kernora.switcher/contents/ui/main.qml \
+  usr/share/themes/Kernora/gtk-3.0/gtk.css \
+  usr/share/themes/Kernora/gtk-3.0/gtk-dark.css \
+  usr/share/themes/Kernora/gtk-4.0/gtk.css \
+  usr/share/themes/KernoraMD1/gtk-3.0/gtk.css \
+  usr/share/themes/KernoraMD2/gtk-3.0/gtk.css \
+  usr/share/glib-2.0/schemas/90_kernora.gschema.override \
+  usr/share/kconf_update/kernora-gtk-theme.upd \
+  usr/share/kconf_update/kernora-gtk-theme.sh \
+  etc/skel/.config/gtk-3.0/settings.ini \
   usr/share/librewolf/distribution/extensions/theme@kernora.os.xpi \
   usr/share/librewolf/browser/defaults/preferences/kernora.js \
+  usr/share/kernora/librewolf/userChrome.css \
+  usr/share/kconf_update/kernora-librewolf-chrome.upd \
+  usr/share/kconf_update/kernora-librewolf-chrome.sh \
   etc/xdg/mimeapps.list; do
   [[ -e "$temporary_root/desktop/$path" ]] \
     || fail "desktop package is missing $path"

@@ -1,3 +1,23 @@
+kernora-desktop (1.4.1) UNRELEASED; urgency=medium
+
+  * GTK applications in Material 3: the Kernora GTK themes (Kernora,
+    KernoraMD1, KernoraMD2, tools/gen-gtk-theme) keep Breeze GTK's
+    structure and the Kernora colours and give buttons, fields, check boxes,
+    radio buttons, switches, sliders, menus and tooltips the Material shapes
+    and roles, so their dialogs no longer look like KDE's.
+  * The theme is the default: GSettings' gtk-theme and the settings.ini of
+    new accounts name it, and a kconf_update script moves existing accounts
+    off Breeze once, leaving any other theme a user chose.
+  * LibreWolf's own dialogs in Material 3: the browser draws them itself and
+    takes only colours from GTK, so tools/gen-browser-theme also writes a
+    userChrome.css with tonal and filled pill buttons for them, and
+    kernora.js lets LibreWolf load it. A kconf_update script links it into
+    the account's LibreWolf profiles once, leaving a user's own
+    userChrome.css alone, and prepares the profile of a new account, so the
+    first start has it too.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 03 Oct 2026 19:00:00 -0700
+
 kernora-desktop (1.4) UNRELEASED; urgency=medium
 
   * Install the Material 3 components as QML modules for the Kernora

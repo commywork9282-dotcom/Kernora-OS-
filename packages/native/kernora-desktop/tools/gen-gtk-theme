@@ -1,0 +1,340 @@
+#!/usr/bin/env python3
+"""usage: gen-gtk-theme OUTPUT_DIRECTORY
+"""
+
+from __future__ import annotations
+
+import pathlib
+import sys
+
+import kernora_design as design
+import m3color
+
+THEME = "Kernora" + design.GENERATION_SUFFIX[design.GENERATION]
+
+
+def radius(kind: str) -> str:
+    value = design.corner(kind)
+    return "9999px" if value == design.FULL else f"{value}px"
+
+
+def mix(roles: dict[str, str], base: str, layer: str, amount: float) -> str:
+    a = m3color.rgb_from_hex(roles[base])
+    b = m3color.rgb_from_hex(roles[layer])
+    return m3color.hex_from_rgb(tuple(round(a[i] + (b[i] - a[i]) * amount) for i in range(3)))
+
+
+def alpha(roles: dict[str, str], role: str, amount: float) -> str:
+    r, g, b = m3color.rgb_from_hex(roles[role])
+    return f"rgba({r}, {g}, {b}, {amount})"
+
+
+def stylesheet(dark: bool, gtk4: bool) -> str:
+    r = design.DARK if dark else design.LIGHT
+    base = "gtk-dark.css" if dark else "gtk.css"
+    button, field, menu, tooltip = radius("button"), radius("field"), radius("menu"), radius("tooltip")
+    check = "2px" if design.GENERATION == "md3" else radius("button")
+    outline_radius = "" if gtk4 else f"\n  -gtk-outline-radius: {button};"
+    tonal_hover = mix(r, "secondaryContainer", "onSecondaryContainer", 0.08)
+    tonal_pressed = mix(r, "secondaryContainer", "onSecondaryContainer", 0.14)
+    primary_hover = mix(r, "primary", "onPrimary", 0.08)
+    primary_pressed = mix(r, "primary", "onPrimary", 0.14)
+    return f"""@import url("../../Breeze/gtk-{'4' if gtk4 else '3'}.0/{base}");
+
+button {{
+  min-height: 24px;
+  min-width: 16px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: {button};
+  background-image: none;
+  background-color: {r["secondaryContainer"]};
+  color: {r["onSecondaryContainer"]};
+  box-shadow: none;
+  outline-color: {r["primary"]};
+  outline-width: 2px;
+  outline-offset: 1px;{outline_radius}
+}}
+
+button:hover {{
+  background-color: {tonal_hover};
+}}
+
+button:active {{
+  background-color: {tonal_pressed};
+}}
+
+button:checked {{
+  background-color: {r["primary"]};
+  color: {r["onPrimary"]};
+}}
+
+button:disabled {{
+  background-color: {alpha(r, "onSurface", 0.12)};
+  color: {alpha(r, "onSurface", 0.38)};
+}}
+
+button label, button image {{
+  color: inherit;
+}}
+
+button.text-button {{
+  min-width: 40px;
+  padding: 6px 24px;
+}}
+
+button.default, button.suggested-action {{
+  background-color: {r["primary"]};
+  color: {r["onPrimary"]};
+}}
+
+button.default:hover, button.suggested-action:hover {{
+  background-color: {primary_hover};
+}}
+
+button.default:active, button.suggested-action:active {{
+  background-color: {primary_pressed};
+}}
+
+button.destructive-action {{
+  background-color: {r["error"]};
+  color: {r["onError"]};
+}}
+
+button.flat, button.image-button.flat, toolbar button, headerbar button, .titlebar button {{
+  background-color: transparent;
+  color: {r["onSurfaceVariant"]};
+}}
+
+button.flat:hover, toolbar button:hover, headerbar button:hover, .titlebar button:hover {{
+  background-color: {alpha(r, "onSurface", 0.08)};
+}}
+
+button.flat:active, toolbar button:active, headerbar button:active, .titlebar button:active {{
+  background-color: {alpha(r, "onSurface", 0.12)};
+}}
+
+combobox button, combobox box button {{
+  border-radius: {field};
+  padding: 6px 14px;
+}}
+
+entry {{
+  min-height: 24px;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: {field};
+  background-image: none;
+  background-color: {r["surfaceContainerHighest"]};
+  color: {r["onSurface"]};
+  caret-color: {r["primary"]};
+  box-shadow: none;
+}}
+
+entry:focus, entry:focus-within {{
+  border-color: {r["primary"]};
+  box-shadow: inset 0 0 0 1px {r["primary"]};
+}}
+
+entry:disabled {{
+  background-color: {alpha(r, "onSurface", 0.04)};
+  color: {alpha(r, "onSurface", 0.38)};
+}}
+
+entry selection, label selection, textview text selection {{
+  background-color: {r["primaryContainer"]};
+  color: {r["onPrimaryContainer"]};
+}}
+
+check, radio {{
+  min-width: 14px;
+  min-height: 14px;
+  margin: 0 6px 0 0;
+  border: 2px solid {r["onSurfaceVariant"]};
+  background-image: none;
+  background-color: transparent;
+  box-shadow: none;
+}}
+
+check {{
+  border-radius: {check};
+}}
+
+radio {{
+  border-radius: 9999px;
+}}
+
+check:checked, check:indeterminate {{
+  border-color: {r["primary"]};
+  background-color: {r["primary"]};
+  color: {r["onPrimary"]};
+}}
+
+radio:checked {{
+  border-color: {r["primary"]};
+  background-color: transparent;
+  color: {r["primary"]};
+}}
+
+check:disabled, radio:disabled {{
+  border-color: {alpha(r, "onSurface", 0.38)};
+}}
+
+switch {{
+  min-width: 48px;
+  min-height: 28px;
+  padding: 0;
+  border: 2px solid {r["outline"]};
+  border-radius: 9999px;
+  background-image: none;
+  background-color: {r["surfaceContainerHighest"]};
+  box-shadow: none;
+  color: transparent;
+}}
+
+switch:checked {{
+  border-color: {r["primary"]};
+  background-color: {r["primary"]};
+}}
+
+switch slider {{
+  min-width: 16px;
+  min-height: 16px;
+  margin: 6px;
+  border: none;
+  border-radius: 9999px;
+  background-image: none;
+  background-color: {r["outline"]};
+  box-shadow: none;
+}}
+
+switch:checked slider {{
+  margin: 2px;
+  min-width: 24px;
+  min-height: 24px;
+  background-color: {r["onPrimary"]};
+}}
+
+scale trough {{
+  min-height: 4px;
+  border: none;
+  border-radius: 9999px;
+  background-image: none;
+  background-color: {r["secondaryContainer"]};
+}}
+
+scale highlight {{
+  border: none;
+  border-radius: 9999px;
+  background-image: none;
+  background-color: {r["primary"]};
+}}
+
+scale slider {{
+  min-width: 20px;
+  min-height: 20px;
+  margin: -8px;
+  border: none;
+  border-radius: 9999px;
+  background-image: none;
+  background-color: {r["primary"]};
+  box-shadow: none;
+}}
+
+progressbar trough {{
+  min-height: 4px;
+  border: none;
+  border-radius: 9999px;
+  background-color: {r["secondaryContainer"]};
+}}
+
+progressbar progress {{
+  min-height: 4px;
+  border: none;
+  border-radius: 9999px;
+  background-image: none;
+  background-color: {r["primary"]};
+}}
+
+menu, .menu, .context-menu {{
+  padding: 6px 0;
+  border: none;
+  border-radius: {menu};
+  background-color: {r["surfaceContainer"]};
+}}
+
+menuitem {{
+  min-height: 24px;
+  padding: 6px 16px;
+  color: {r["onSurface"]};
+}}
+
+menuitem:hover {{
+  background-color: {alpha(r, "onSurface", 0.08)};
+  color: {r["onSurface"]};
+}}
+
+popover, popover.background, popover > contents {{
+  border-radius: {menu};
+  background-color: {r["surfaceContainer"]};
+  color: {r["onSurface"]};
+}}
+
+modelbutton {{
+  min-height: 24px;
+  padding: 6px 12px;
+  border-radius: {radius("listItem") if design.GENERATION != "md3" else "8px"};
+}}
+
+modelbutton:hover {{
+  background-color: {alpha(r, "onSurface", 0.08)};
+}}
+
+tooltip, tooltip.background {{
+  border: none;
+  border-radius: {tooltip};
+  background-color: {r["inverseSurface"]};
+  color: {r["inverseOnSurface"]};
+}}
+
+tooltip label {{
+  color: {r["inverseOnSurface"]};
+}}
+
+scrollbar slider {{
+  border-radius: 9999px;
+}}
+
+"""
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 2:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    output = pathlib.Path(argv[1]) / THEME
+    for gtk4 in (False, True):
+        folder = output / ("gtk-4.0" if gtk4 else "gtk-3.0")
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "gtk.css").write_text(stylesheet(False, gtk4), encoding="utf-8")
+        (folder / "gtk-dark.css").write_text(stylesheet(True, gtk4), encoding="utf-8")
+    (output / "index.theme").write_text(
+        "[Desktop Entry]\n"
+        "Type=X-GNOME-Metatheme\n"
+        f"Name={THEME}\n"
+        f"Comment=Kernora {design.GENERATION_TITLE[design.GENERATION]} for GTK applications\n"
+        "Encoding=UTF-8\n"
+        "\n"
+        "[X-GNOME-Metatheme]\n"
+        f"GtkTheme={THEME}\n",
+        encoding="utf-8",
+    )
+    gtk2 = output / "gtk-2.0"
+    if not gtk2.exists() and not gtk2.is_symlink():
+        gtk2.symlink_to("../Breeze/gtk-2.0")
+    print(f"gtk theme: {output}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

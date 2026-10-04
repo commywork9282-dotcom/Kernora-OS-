@@ -1,0 +1,4 @@
+Version=6
+
+Id=kernora_librewolf_chrome
+Script=kernora-librewolf-chrome.sh,sh

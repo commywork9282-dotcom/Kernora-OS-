@@ -10,6 +10,7 @@ Package: kernora-desktop
 Architecture: all
 Depends:
  ${misc:Depends},
+ breeze-gtk-theme,
  fonts-roboto-unhinted,
  kwin-common,
  plasma-desktop,

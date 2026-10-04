@@ -1,3 +1,10 @@
+kernora-apps (1.1.1) UNRELEASED; urgency=medium
+
+  * Changing the style between Material Design 1, 2 and 3 switches the GTK
+    theme too, through the GTK settings service.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 03 Oct 2026 19:00:00 -0700
+
 kernora-apps (1.1) UNRELEASED; urgency=medium
 
   * Settings > Updates asks for the password to install updates: its

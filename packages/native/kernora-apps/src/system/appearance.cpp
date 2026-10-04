@@ -104,6 +104,13 @@ void Appearance::apply(const QString &requested, bool enable, const QJSValue &ca
     kvantumGeneral.writeEntry("theme", QString(QStringLiteral("Kernora") + upper));
     kvantum.sync();
 
+    if (generationChanges) {
+        QDBusMessage gtk = QDBusMessage::createMethodCall(QStringLiteral("org.kde.GtkConfig"), QStringLiteral("/GtkConfig"),
+                                                          QStringLiteral("org.kde.GtkConfig"), QStringLiteral("setGtkTheme"));
+        gtk.setArguments({QString(QStringLiteral("Kernora") + upper)});
+        QDBusConnection::sessionBus().send(gtk);
+    }
+
     auto globals = KSharedConfig::openConfig(QStringLiteral("kdeglobals"));
     KConfigGroup kde(globals, QStringLiteral("KDE"));
     if (generationChanges) {

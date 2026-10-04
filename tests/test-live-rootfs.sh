@@ -91,8 +91,8 @@ done
   || fail "sddm is not installed"
 
 # The Kernora Material 3 shell and what it is set in.
-[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4" ]] \
-  || fail "kernora-desktop 1.4 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.1" ]] \
+  || fail "kernora-desktop 1.4.1 is not installed"
 for applet in org.kernora.launcher org.kernora.quicksettings; do
   [[ -s "/usr/share/plasma/plasmoids/$applet/contents/ui/main.qml" ]] \
     || fail "Kernora shell applet is missing: $applet"
@@ -151,8 +151,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1" ]] \
-  || fail "kernora-apps 1.1 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.1" ]] \
+  || fail "kernora-apps 1.1.1 is not installed"
 for app in settings files editor photos player calculator screenshot welcome; do
   [[ -x "/usr/bin/kernora-$app" ]] || fail "Kernora application is missing: $app"
   [[ -s "/usr/share/kernora/$app/Main.qml" ]] || fail "interface of kernora-$app is missing"
@@ -216,6 +216,14 @@ grep -Fxq 'URIs: https://repo.librewolf.net' /etc/apt/sources.list.d/librewolf.s
 grep -Fxq 'x-scheme-handler/https=librewolf.desktop;' /etc/xdg/mimeapps.list \
   || fail "LibreWolf is not the default browser"
 [[ -s /usr/share/kernora/copyright/librewolf ]] || fail "LibreWolf has no copyright summary for About > Legal"
+[[ -s /usr/share/kernora/librewolf/userChrome.css && -s /usr/share/kconf_update/kernora-librewolf-chrome.sh ]] \
+  || fail "LibreWolf's dialogs have no Kernora style"
+[[ -s /usr/share/themes/Kernora/gtk-3.0/gtk.css && -s /usr/share/themes/Breeze/gtk-3.0/gtk.css ]] \
+  || fail "the Kernora GTK theme or Breeze GTK under it is missing"
+[[ "$(gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null)" == "'Kernora'" ]] \
+  || fail "GTK applications do not default to the Kernora theme"
+grep -Fxq 'gtk-theme-name=Kernora' "/home/$LIVE_USER/.config/gtk-3.0/settings.ini" \
+  || fail "the live account does not start with the Kernora GTK theme"
 [[ "$(dpkg-query -W -f='${Status}' kernora-archive)" == 'install ok installed' ]] \
   || fail "kernora-archive is not installed"
 [[ ! -e /etc/apt/sources.list ]] || fail "the build's sources.list leaked into the image"

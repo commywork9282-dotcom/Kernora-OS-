@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.1" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -75,7 +75,7 @@ tools_root="$package_root/tools"
 for tool in gen-color-schemes gen-icon-theme gen-kdeglobals gen-plasma-theme \
   gen-qml-tokens gen-translations fetch-symbols gen-wallpaper-assets \
   gen-kvantum-theme gen-aurorae-theme gen-avatar gen-terminal-theme gen-greeter-palette \
-  gen-keyboard-maps gen-qm gen-installer-icons gen-installer-style gen-browser-theme gen-plymouth-theme gen-grub-theme gen-emoji-data; do
+  gen-keyboard-maps gen-qm gen-installer-icons gen-installer-style gen-browser-theme gen-gtk-theme gen-plymouth-theme gen-grub-theme gen-emoji-data; do
   [[ -x "$tools_root/$tool" ]] || fail "design-system tool missing: $tool"
 done
 grep -Fxq 'pref("extensions.activeThemeID", "theme@kernora.os");' "$package_root/data/librewolf/kernora.js" \
@@ -87,6 +87,52 @@ for default in 'x-scheme-handler/https=librewolf.desktop;' 'text/html=librewolf.
   'image/png=org.kernora.photos.desktop;' 'application/json=org.kernora.editor.desktop;'; do
   grep -Fxq "$default" "$mimeapps" || fail "mimeapps.list lacks $default"
 done
+grep -Fxq "gtk-theme='Kernora'" "$package_root/data/gtk/90_kernora.gschema.override" \
+  || fail "GTK applications do not default to the Kernora theme"
+for version in 3.0 4.0; do
+  grep -Fxq 'gtk-theme-name=Kernora' "$package_root/data/skel-config/gtk-$version/settings.ini" \
+    || fail "new accounts do not start with the Kernora GTK $version theme"
+done
+sh -n "$package_root/data/kconf_update/kernora-gtk-theme.sh" || fail "the GTK theme migration does not parse"
+gtk_themes=$(mktemp -d)
+for generation in md1 md2 md3; do
+  KERNORA_GENERATION=$generation python3 "$tools_root/gen-gtk-theme" "$gtk_themes" >/dev/null \
+    || fail "gen-gtk-theme fails for $generation"
+done
+for theme in Kernora KernoraMD1 KernoraMD2; do
+  for file in gtk-3.0/gtk.css gtk-3.0/gtk-dark.css gtk-4.0/gtk.css gtk-4.0/gtk-dark.css; do
+    grep -q '@import url("../../Breeze/' "$gtk_themes/$theme/$file" || fail "$theme/$file does not build on Breeze"
+  done
+done
+rm -rf "$gtk_themes"
+grep -Fxq 'pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);' "$package_root/data/librewolf/kernora.js" \
+  || fail "LibreWolf does not load the Kernora dialog style"
+link_script="$package_root/data/kconf_update/kernora-librewolf-chrome.sh"
+sh -n "$link_script" || fail "the LibreWolf dialog style script does not parse"
+browser=$(mktemp -d)
+python3 "$tools_root/gen-browser-theme" "$browser/theme.xpi" "$browser/userChrome.css" >/dev/null \
+  || fail "gen-browser-theme fails"
+grep -Fq 'button[dlgtype][default] {' "$browser/userChrome.css" \
+  || fail "the LibreWolf dialog style does not fill the default button"
+sed "s|^sheet=.*|sheet=$browser/userChrome.css|" "$link_script" > "$browser/link.sh"
+HOME="$browser/new" XDG_CONFIG_HOME="$browser/new/.config" sh "$browser/link.sh"
+new_root="$browser/new/.config/librewolf/librewolf"
+[[ "$(readlink "$new_root/kernora.default-default/chrome/userChrome.css")" == "$browser/userChrome.css" ]] \
+  || fail "a new account's LibreWolf profile does not get the Kernora dialog style"
+grep -Fxq '[Install6C4726F70D182CF7]' "$new_root/profiles.ini" \
+  && grep -Fxq 'Default=kernora.default-default' "$new_root/installs.ini" \
+  || fail "LibreWolf would not use the prepared profile"
+own_root="$browser/own/.config/librewolf/librewolf"
+mkdir -p "$own_root/mine.default/chrome" "$own_root/plain.default"
+printf '[Profile0]\nIsRelative=1\nPath=mine.default\n\n[Profile1]\nIsRelative=1\nPath=plain.default\n' > "$own_root/profiles.ini"
+printf 'own\n' > "$own_root/mine.default/chrome/userChrome.css"
+HOME="$browser/own" XDG_CONFIG_HOME="$browser/own/.config" sh "$browser/link.sh"
+[[ "$(<"$own_root/mine.default/chrome/userChrome.css")" == own ]] \
+  || fail "the Kernora dialog style replaced a user's own userChrome.css"
+[[ "$(readlink "$own_root/plain.default/chrome/userChrome.css")" == "$browser/userChrome.css" ]] \
+  || fail "an existing LibreWolf profile does not get the Kernora dialog style"
+[[ ! -e "$own_root/kernora.default-default" ]] || fail "a profile was added next to existing ones"
+rm -rf "$browser"
 if grep -rIl 'firefox-esr' "$package_root/data" >/dev/null; then
   fail "the desktop still refers to Firefox: $(grep -rIl 'firefox-esr' "$package_root/data" | head -1)"
 fi

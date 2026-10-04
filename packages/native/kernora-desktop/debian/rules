@@ -74,6 +74,7 @@ override_dh_auto_build:
 	set -e; for generation in md1 md2 md3; do \
 	  KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-kvantum-theme generated/kvantum; \
 	  KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-aurorae-theme generated/aurorae; \
+	  KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-gtk-theme generated/gtk-themes; \
 	done
 	install -d generated/style/org/kernora
 	cp -a data/style/org.kernora.desktop generated/style/org/kernora/desktop
@@ -85,7 +86,7 @@ override_dh_auto_build:
 	cp -a data/ui generated/style/org/kernora/ui
 	python3 $(TOOLS)/gen-translations data/shell/po generated/locale
 	python3 $(TOOLS)/gen-terminal-theme generated/terminal
-	python3 $(TOOLS)/gen-browser-theme generated/librewolf/theme@kernora.os.xpi
+	python3 $(TOOLS)/gen-browser-theme generated/librewolf/theme@kernora.os.xpi generated/librewolf/userChrome.css
 	python3 $(TOOLS)/gen-plymouth-theme $(LOGO) $(SYMBOLS) generated/plymouth/kernora
 	set -e; for image in generated/plymouth/kernora/*.svg; do \
 	  rsvg-convert --output=$${image%.svg}.png $$image; \

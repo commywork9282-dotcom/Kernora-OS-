@@ -1,0 +1,4 @@
+Version=6
+
+Id=kernora_gtk_theme
+Script=kernora-gtk-theme.sh,sh

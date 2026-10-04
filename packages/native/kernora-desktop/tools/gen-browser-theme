@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""usage: gen-browser-theme OUTPUT.xpi
+"""usage: gen-browser-theme OUTPUT.xpi USERCHROME.css
 """
 
 from __future__ import annotations
@@ -10,6 +10,7 @@ import sys
 import zipfile
 
 import kernora_design as design
+import m3color
 
 THEME_ID = "theme@kernora.os"
 
@@ -55,8 +56,86 @@ def colours(roles: dict[str, str]) -> dict[str, str]:
     }
 
 
+def mix(roles: dict[str, str], base: str, layer: str, amount: float) -> str:
+    a = m3color.rgb_from_hex(roles[base])
+    b = m3color.rgb_from_hex(roles[layer])
+    return m3color.hex_from_rgb(tuple(round(a[i] + (b[i] - a[i]) * amount) for i in range(3)))
+
+
+def alpha(roles: dict[str, str], role: str, amount: float) -> str:
+    r, g, b = m3color.rgb_from_hex(roles[role])
+    return f"rgba({r}, {g}, {b}, {amount})"
+
+
+def button_colours(r: dict[str, str]) -> str:
+    return f"""button[dlgtype] {{
+    background-color: {r["secondaryContainer"]} !important;
+    color: {r["onSecondaryContainer"]} !important;
+    outline-color: {r["primary"]} !important;
+  }}
+
+  button[dlgtype]:hover {{
+    background-color: {mix(r, "secondaryContainer", "onSecondaryContainer", 0.08)} !important;
+  }}
+
+  button[dlgtype]:hover:active {{
+    background-color: {mix(r, "secondaryContainer", "onSecondaryContainer", 0.12)} !important;
+  }}
+
+  button[dlgtype][default] {{
+    background-color: {r["primary"]} !important;
+    color: {r["onPrimary"]} !important;
+  }}
+
+  button[dlgtype][default]:hover {{
+    background-color: {mix(r, "primary", "onPrimary", 0.08)} !important;
+  }}
+
+  button[dlgtype][default]:hover:active {{
+    background-color: {mix(r, "primary", "onPrimary", 0.12)} !important;
+  }}
+
+  button[dlgtype][disabled] {{
+    background-color: {alpha(r, "onSurface", 0.12)} !important;
+    color: {alpha(r, "onSurface", 0.38)} !important;
+  }}"""
+
+
+def chrome_stylesheet() -> str:
+    corner = design.corner("button", "md3")
+    radius = "9999px" if corner == design.FULL else f"{corner}px"
+    return f"""@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+button[dlgtype] {{
+  appearance: none !important;
+  min-width: 64px !important;
+  min-height: 40px !important;
+  margin: 12px 0 0 !important;
+  margin-inline-start: 8px !important;
+  padding: 0 24px !important;
+  border: none !important;
+  border-radius: {radius} !important;
+  font-weight: 500 !important;
+  outline-offset: 2px !important;
+}}
+
+button[dlgtype]:focus-visible {{
+  outline-style: solid !important;
+  outline-width: 2px !important;
+}}
+
+@media (prefers-color-scheme: light) {{
+  {button_colours(design.LIGHT)}
+}}
+
+@media (prefers-color-scheme: dark) {{
+  {button_colours(design.DARK)}
+}}
+"""
+
+
 def main(argv: list[str]) -> int:
-    if len(argv) != 2:
+    if len(argv) != 3:
         print(__doc__.strip(), file=sys.stderr)
         return 2
     manifest = {
@@ -75,7 +154,10 @@ def main(argv: list[str]) -> int:
     info.external_attr = 0o644 << 16
     with zipfile.ZipFile(output, "w") as archive:
         archive.writestr(info, json.dumps(manifest, indent=2, sort_keys=True) + "\n")
-    print(f"browser theme: {output}")
+    stylesheet = pathlib.Path(argv[2])
+    stylesheet.parent.mkdir(parents=True, exist_ok=True)
+    stylesheet.write_text(chrome_stylesheet(), encoding="utf-8")
+    print(f"browser theme: {output}, {stylesheet}")
     return 0
 
 

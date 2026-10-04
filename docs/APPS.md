@@ -41,6 +41,16 @@ into new profiles. `kernora.js` in `/usr/share/librewolf/browser/defaults/prefer
 makes it the default and allows it unsigned: that directory is read after the
 browser's built-in defaults, which `defaults/pref` and `distribution.ini`
 are not early or late enough to override for the add-on manager.
+LibreWolf draws its own dialogs, such as its language prompt, with only the
+colours from GTK. `gen-browser-theme` therefore also writes a `userChrome.css`
+(`/usr/share/kernora/librewolf`) that makes their buttons Material pills,
+tonal and the default one filled, and `kernora.js` lets LibreWolf load
+`userChrome.css` files. `kconf_update/kernora-librewolf-chrome.sh` links the
+file into each LibreWolf profile of the account once, and leaves a profile
+that has its own. For a new account it also writes the profile list LibreWolf
+would create on its first start (`profiles.ini`, `installs.ini`, with the
+install hash of `/usr/share/librewolf`), so even that first start has the
+style.
 LibreWolf's own policies (uBlock Origin, no telemetry) are untouched, since a
 policies file of ours in `/etc/librewolf/policies` would replace them rather
 than add to them.

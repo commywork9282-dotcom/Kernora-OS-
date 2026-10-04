@@ -22,6 +22,7 @@ tools/m3color.py           HCT / CAM16 -> Material 3 tonal palettes and roles
         +-- gen-qml-tokens      M3.qml, the singleton the shell's QML reads
         +-- gen-wallpaper-assets  Material shapes and colour tracks of the live wallpaper
         +-- gen-kvantum-theme   Kvantum theme "Kernora" for every Qt widget
+        +-- gen-gtk-theme       GTK theme "Kernora" for GTK applications
         +-- gen-aurorae-theme   window decoration "kernora"
         +-- gen-translations    .po -> .mo
 ```
@@ -73,8 +74,8 @@ differences and easing curves.
   `M3.tileStyle` and `M3.slabGap`. Material 3 keeps its own expressive
   details: shape morphs on press, the thick slider, the switch with a
   checkmark.
-* **Generated themes.** The colour schemes, the Plasma theme, Kvantum and
-  the window frames are written once per generation, with
+* **Generated themes.** The colour schemes, the Plasma theme, Kvantum, GTK
+  and the window frames are written once per generation, with
   `KERNORA_GENERATION` naming it. Material 3 keeps the names Kernora always
   used (`KernoraDark`, `kernora`, `Kernora`). The older generations add
   theirs: `KernoraMD2Dark`, `kernora-md2`, `KernoraMD2`, `kernora-md2-light`.
@@ -83,6 +84,8 @@ differences and easing curves.
   * it writes kernorarc;
   * it points Kvantum at the generation's theme and passes through the other
     widget style, so running applications load the new theme;
+  * it asks the GTK settings service (`org.kde.GtkConfig.setGtkTheme`) for the
+    generation's GTK theme;
   * it sets the window frames;
   * it floats the panel, or not for Material Design 1;
   * it applies the Plasma theme, then the colour scheme.
@@ -420,7 +423,7 @@ theme in the package build chroot, unpacked under `/tmp/kernora-desktop-dev`.
 
 ## Applications
 
-The same tokens reach applications through three stock mechanisms, so no KDE
+The same tokens reach applications through four stock mechanisms, so no KDE
 package is patched:
 
 * **Widgets** — `gen-kvantum-theme` writes the Kvantum theme `Kernora`
@@ -442,6 +445,21 @@ package is patched:
   copy it. Kirigami finds its platform plugin by style name, so the package
   links `org.kernora.desktop.so` to KDE's `org.kde.desktop.so`. The style was
   written against KDE Frameworks 6.13; the live image test pins that.
+* **GTK** — `gen-gtk-theme` writes the GTK 3 and GTK 4 themes `Kernora`,
+  `KernoraMD1` and `KernoraMD2`, each a light `gtk.css` and a dark
+  `gtk-dark.css`. They import Breeze GTK, whose colours Plasma's GTK settings
+  service already sets from the Kernora colour scheme
+  (`~/.config/gtk-3.0/colors.css`). On top of it they give buttons (tonal pills,
+  the default one filled with primary), fields, check boxes, radio buttons,
+  switches, sliders, progress bars, menus, popovers and tooltips the
+  Material shapes and roles. Without it, GTK applications kept Breeze's KDE
+  shapes. LibreWolf takes only the colours from GTK and draws its own
+  dialogs; see the browser in [APPS.md](APPS.md).
+  * The default: GSettings' `org.gnome.desktop.interface gtk-theme` is
+    `Kernora` (`90_kernora.gschema.override`), which GTK reads under Wayland,
+    and the `settings.ini` of new accounts names it.
+  * `kconf_update/kernora-gtk-theme.sh` moves an existing account off Breeze
+    once, to the theme of its style, and leaves any other choice alone.
 * **Window decoration** — `gen-aurorae-theme` writes the Aurorae theme
   `kernora`: a 38px title bar on the application header's surface with 12px
   top corners, circular Material Symbols buttons (the close button on the
