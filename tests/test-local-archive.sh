@@ -65,6 +65,9 @@ grep -Fxq 'Package: base-files' "$sources" || fail "base-files source is not ind
 grep -Fxq "Version: $package_version" "$sources" || fail "wrong source version"
 grep -Fxq 'Package: kernora-base' "$sources" \
   || fail "kernora-base source is not indexed"
+grep -Fxq 'Package: kernora-archive' "$packages" || fail "kernora-archive is not indexed"
+grep -Fxq 'Package: kernora-archive' "$sources" \
+  || fail "kernora-archive source is not indexed"
 calamares_version=$(dpkg-parsechangelog \
   -l"$project_root/packages/derived/calamares/changelog" -S Version)
 grep -Fxq "Version: $calamares_version" "$packages" \
@@ -113,7 +116,7 @@ apt-cache "${apt_options[@]}" show kernora-base \
   || fail "APT cannot read kernora-base from the archive"
 grep -Fxq "Version: $meta_version" "$temporary_root/kernora-base.txt" \
   || fail "APT selected the wrong kernora-base version"
-grep -Fxq "Depends: base-files (= $package_version)" \
+grep -Fxq "Depends: base-files (= $package_version), kernora-archive (>= 1.0)" \
   "$temporary_root/kernora-base.txt" \
   || fail "APT sees the wrong Kernora identity dependency"
 

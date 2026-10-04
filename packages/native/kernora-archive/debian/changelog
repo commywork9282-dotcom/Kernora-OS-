@@ -1,0 +1,11 @@
+kernora-archive (1.0) UNRELEASED; urgency=medium
+
+  * The Debian archive and its security updates, from the live mirrors
+    rather than the build's snapshot.
+  * The Kernora package archive, signed with the Kernora OS Archive Signing
+    Key (76EEFBDB0D370DF1061745C38AD51AE6FA0EF01C), preferred over Debian for
+    the packages Kernora builds.
+  * Daily automatic security updates from Debian, kernel included, and from
+    LibreWolf, with unattended-upgrades; not in the live session.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 03 Oct 2026 13:30:00 -0700

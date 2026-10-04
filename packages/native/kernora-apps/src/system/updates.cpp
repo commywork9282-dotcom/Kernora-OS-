@@ -5,6 +5,7 @@
 
 #include <QDateTime>
 #include <QFileInfo>
+#include <QLocale>
 
 #include <KLocalizedString>
 
@@ -17,6 +18,8 @@ using PackageKit::Transaction;
 Updates::Updates(QObject *parent)
     : QObject(parent)
 {
+    Daemon::global()->setHints({QStringLiteral("interactive=true"),
+                                QStringLiteral("locale=%1.UTF-8").arg(QLocale::system().name())});
 }
 
 bool Updates::available() const

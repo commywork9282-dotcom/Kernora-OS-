@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in awk cp date find git gpg gpgv md5sum mktemp sha256sum stat; do
+  require_command "$dependency"
+done
+load_project_config
+load_upstream_config
+
+archive="$PROJECT_ROOT/out/archive"
+gnupg_home="$PROJECT_ROOT/_state/gnupg/archive"
+public_key="$PROJECT_ROOT/packages/native/kernora-archive/keyrings/kernora-archive-keyring.asc"
+checkout="$PROJECT_ROOT/_state/publish/kernora-updates"
+suite="dists/$DIST_CODENAME"
+
+[[ -s "$archive/$suite/InRelease" ]] || die "the package archive is missing; run make local-archive"
+[[ "$DIST_ARCHIVE_KEY_FINGERPRINT" =~ ^[0-9A-F]{40}$ ]] || die "DIST_ARCHIVE_KEY_FINGERPRINT is not set"
+gpg --homedir "$gnupg_home" --batch --list-secret-keys "$DIST_ARCHIVE_KEY_FINGERPRINT" >/dev/null 2>&1 \
+  || die "the archive signing key is not on this machine (_state/gnupg/archive)"
+
+staging=$(mktemp -d "$PROJECT_ROOT/_build/.publish.XXXXXX")
+trap 'rm -rf -- "$staging"' EXIT
+
+cp -a "$archive/pool" "$staging/pool"
+for index in "main/binary-$BASE_ARCH/Packages" "main/binary-$BASE_ARCH/Packages.gz" \
+  main/source/Sources main/source/Sources.gz; do
+  install -D -m 0644 "$archive/$suite/$index" "$staging/$suite/$index"
+done
+
+release="$staging/$suite/Release"
+{
+  printf 'Origin: %s\n' "$DIST_NAME"
+  printf 'Label: %s\n' "$DIST_NAME"
+  printf 'Suite: %s\n' "$DIST_CODENAME"
+  printf 'Codename: %s\n' "$DIST_CODENAME"
+  printf 'Version: %s\n' "$DIST_VERSION"
+  printf 'Date: %s\n' "$(date --utc --rfc-email)"
+  printf 'Architectures: %s\n' "$BASE_ARCH"
+  printf '%s\n' 'Components: main'
+  printf 'Description: %s package archive\n' "$DIST_NAME"
+  for algorithm in MD5Sum SHA256; do
+    printf '%s:\n' "$algorithm"
+    while IFS= read -r index; do
+      if [[ $algorithm == MD5Sum ]]; then
+        sum=$(md5sum "$index" | awk '{ print $1 }')
+      else
+        sum=$(sha256sum "$index" | awk '{ print $1 }')
+      fi
+      printf ' %s %16s %s\n' "$sum" "$(stat --format='%s' "$index")" "${index#"$staging/$suite/"}"
+    done < <(find "$staging/$suite/main" -type f | sort)
+  done
+} > "$release"
+
+sign() {
+  gpg --homedir "$gnupg_home" --batch --yes --local-user "$DIST_ARCHIVE_KEY_FINGERPRINT" \
+    --digest-algo SHA256 "$@"
+}
+sign --armor --detach-sign --output "$release.gpg" "$release"
+sign --clearsign --output "$staging/$suite/InRelease" "$release"
+
+verify_home=$(mktemp -d "$staging/.verify.XXXXXX")
+chmod 0700 "$verify_home"
+gpg --batch --quiet --homedir "$verify_home" --dearmor < "$public_key" > "$verify_home/keyring.gpg"
+gpgv --keyring "$verify_home/keyring.gpg" "$staging/$suite/InRelease" 2>/dev/null \
+  || die "the published index does not verify with the shipped key"
+rm -rf -- "$verify_home"
+
+install -m 0644 "$public_key" "$staging/kernora-archive-keyring.asc"
+touch "$staging/.nojekyll"
+cat > "$staging/index.html" <<HTML
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>$DIST_NAME packages</title>
+<body style="font-family: sans-serif; max-width: 40em; margin: 3em auto; line-height: 1.5">
+<h1>$DIST_NAME packages</h1>
+<p>This is the APT archive of $DIST_NAME. Installed systems take their Kernora
+updates from here on their own; nothing here needs to be downloaded by hand.</p>
+<p>Signing key: <a href="kernora-archive-keyring.asc">kernora-archive-keyring.asc</a><br>
+Fingerprint: <code>$DIST_ARCHIVE_KEY_FINGERPRINT</code></p>
+</body>
+</html>
+HTML
+
+if [[ ! -d "$checkout/.git" ]]; then
+  mkdir -p "$(dirname -- "$checkout")"
+  git clone --quiet "$DIST_UPDATES_REPOSITORY" "$checkout" 2>/dev/null \
+    || { mkdir -p "$checkout"; git -C "$checkout" init --quiet --initial-branch=main; \
+         git -C "$checkout" remote add origin "$DIST_UPDATES_REPOSITORY"; }
+fi
+git -C "$checkout" config user.name "$(git -C "$PROJECT_ROOT" config user.name)"
+git -C "$checkout" config user.email "$(git -C "$PROJECT_ROOT" config user.email)"
+
+git -C "$checkout" checkout --quiet --orphan publish
+git -C "$checkout" rm -r --quiet --cached . >/dev/null 2>&1 || true
+find "$checkout" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf -- {} +
+cp -a "$staging/." "$checkout/"
+git -C "$checkout" add --all
+git -C "$checkout" commit --quiet -m "Kernora OS packages for $DIST_CODENAME, $(date --utc +%Y-%m-%d)"
+git -C "$checkout" branch --quiet -M main
+git -C "$checkout" push --quiet --force origin main
+
+printf 'published: %s (%s)\n' "$DIST_UPDATES_URL" \
+  "$(git -C "$checkout" rev-parse --short HEAD)"

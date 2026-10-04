@@ -1,3 +1,10 @@
+kernora-base (1.1) UNRELEASED; urgency=medium
+
+  * Depend on kernora-archive: the Debian and Kernora package archives and
+    automatic security updates.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 03 Oct 2026 13:30:00 -0700
+
 kernora-base (1.0) UNRELEASED; urgency=medium
 
   * Initial native metapackage for Kernora OS 1 (Ember).

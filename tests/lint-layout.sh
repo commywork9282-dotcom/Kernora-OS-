@@ -25,6 +25,9 @@ required_paths=(
   packages/derived/base-files/etc/os-release
   packages/native/kernora-base/debian/control
   packages/native/kernora-base/debian/changelog
+  packages/native/kernora-archive/debian/control
+  packages/native/kernora-archive/debian/changelog
+  packages/native/kernora-archive/keyrings/kernora-archive-keyring.asc
   packages/native/kernora-desktop/debian/control
   packages/native/kernora-desktop/debian/changelog
   packages/native/kernora-apps/debian/control
@@ -54,6 +57,10 @@ required_paths=(
   scripts/build-base-files-binary
   scripts/build-kernora-base-source
   scripts/build-kernora-base-binary
+  scripts/build-kernora-archive-source
+  scripts/build-kernora-archive-binary
+  scripts/create-archive-key
+  scripts/publish-updates
   scripts/build-kernora-desktop-source
   scripts/build-kernora-desktop-binary
   scripts/create-development-archive-key
@@ -67,6 +74,8 @@ required_paths=(
   tests/test-base-files-binary.sh
   tests/test-kernora-base-source.sh
   tests/test-kernora-base-binary.sh
+  tests/test-kernora-archive-source.sh
+  tests/test-kernora-archive-binary.sh
   tests/test-kernora-desktop-source.sh
   tests/test-kernora-desktop-binary.sh
   tests/test-local-archive.sh

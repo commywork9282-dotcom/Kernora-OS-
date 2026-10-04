@@ -26,7 +26,7 @@ done
 [[ "$(dpkg-deb --field "$deb" Section)" == "metapackages" ]] \
   || fail "wrong package section"
 depends=$(dpkg-deb --field "$deb" Depends)
-[[ "$depends" == "base-files (= 13.8+deb13u6+kernora1)" ]] \
+[[ "$depends" == "base-files (= 13.8+deb13u6+kernora1), kernora-archive (>= 1.0)" ]] \
   || fail "wrong binary dependency: $depends"
 essential=$(dpkg-deb --field "$deb" Essential)
 [[ "$essential" == "no" || -z "$essential" ]] \

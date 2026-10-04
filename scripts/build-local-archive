@@ -17,6 +17,8 @@ package_root="$PROJECT_ROOT/packages/derived/base-files"
 package_version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 meta_root="$PROJECT_ROOT/packages/native/kernora-base"
 meta_version=$(dpkg-parsechangelog -l"$meta_root/debian/changelog" -S Version)
+archive_package_version=$(dpkg-parsechangelog \
+  -l"$PROJECT_ROOT/packages/native/kernora-archive/debian/changelog" -S Version)
 desktop_root="$PROJECT_ROOT/packages/native/kernora-desktop"
 desktop_version=$(dpkg-parsechangelog \
   -l"$desktop_root/debian/changelog" -S Version)
@@ -41,6 +43,7 @@ temporary_root=$(mktemp -d "$PROJECT_ROOT/_build/.local-archive.XXXXXX")
 archive_root="$temporary_root/archive"
 pool="$archive_root/pool/main/b/base-files"
 meta_pool="$archive_root/pool/main/k/kernora-base"
+archive_package_pool="$archive_root/pool/main/k/kernora-archive"
 desktop_pool="$archive_root/pool/main/k/kernora-desktop"
 apps_pool="$archive_root/pool/main/k/kernora-apps"
 calamares_pool="$archive_root/pool/main/c/calamares"
@@ -54,7 +57,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-mkdir -p "$pool" "$meta_pool" "$desktop_pool" "$apps_pool" "$calamares_pool" \
+mkdir -p "$pool" "$meta_pool" "$archive_package_pool" "$desktop_pool" "$apps_pool" "$calamares_pool" \
   "$binary_index" "$source_index"
 for artifact in \
   "$source_dir/base-files_${package_version}.dsc" \
@@ -69,6 +72,13 @@ for artifact in \
   "$binary_dir/kernora-base_${meta_version}_all.deb"; do
   [[ -s "$artifact" ]] || die "missing archive input: $artifact"
   install -m 0644 "$artifact" "$meta_pool/"
+done
+for artifact in \
+  "$source_dir/kernora-archive_${archive_package_version}.dsc" \
+  "$source_dir/kernora-archive_${archive_package_version}.tar.xz" \
+  "$binary_dir/kernora-archive_${archive_package_version}_all.deb"; do
+  [[ -s "$artifact" ]] || die "missing archive input: $artifact"
+  install -m 0644 "$artifact" "$archive_package_pool/"
 done
 for artifact in \
   "$source_dir/kernora-desktop_${desktop_version}.dsc" \

@@ -28,6 +28,10 @@ release key yet.
   gets updates from there.
 - Calamares as the installer, restyled to match.
 - English and Russian. The live session language is chosen in the boot menu.
+- Updates: Debian security updates, the kernel's among them, and LibreWolf
+  updates install by themselves once a day. Debian point releases and
+  Kernora's own packages, which come from the Kernora package archive, are
+  offered in Settings > Updates. See [docs/UPDATES.md](docs/UPDATES.md).
 
 KDE's standalone apps (Dolphin, Konsole, Kate, Discover, Spectacle and others)
 are left out; the list is in `configs/live/excluded-packages.txt`.
@@ -71,15 +75,16 @@ To try changes to the shell or the apps without rebuilding the ISO,
 ## Layout
 
 - `packages/native/`: Kernora's own packages (`kernora-base`,
-  `kernora-desktop`, `kernora-apps`).
+  `kernora-archive`, `kernora-desktop`, `kernora-apps`).
 - `packages/derived/`: changes to Debian's `base-files`, Calamares and
   `polkit-kde-agent-1`.
 - `configs/`: the upstream pins, the live image and the system identity.
 - `scripts/`: build steps. `tests/`: checks for every package and image.
 - `docs/`: how it all works. Start with
   [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), then
-  [docs/DESKTOP.md](docs/DESKTOP.md) for the shell and design system and
-  [docs/APPS.md](docs/APPS.md) for the apps.
+  [docs/DESKTOP.md](docs/DESKTOP.md) for the shell and design system,
+  [docs/APPS.md](docs/APPS.md) for the apps and
+  [docs/UPDATES.md](docs/UPDATES.md) for updates and publishing them.
 
 ## License
 

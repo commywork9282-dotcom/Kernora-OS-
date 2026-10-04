@@ -1,3 +1,12 @@
+kernora-apps (1.1) UNRELEASED; urgency=medium
+
+  * Settings > Updates asks for the password to install updates: its
+    PackageKit transactions are interactive, so the authentication dialog
+    appears instead of the update failing with "Failed to obtain
+    authentication". Package descriptions come in the system language.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 03 Oct 2026 14:20:00 -0700
+
 kernora-apps (1.0) UNRELEASED; urgency=medium
 
   * Initial release: the everyday applications of Kernora OS in its

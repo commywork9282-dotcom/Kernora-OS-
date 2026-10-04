@@ -43,7 +43,7 @@ fail() {
 }
 
 grep -Fxq 'ID=kernora' /usr/lib/os-release || fail "wrong OS identity"
-[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.0" ]] \
+[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.1" ]] \
   || fail "kernora-base is not installed"
 [[ "$(dpkg-query -W -f='${Version}' linux-image-amd64)" == "6.12.107-1" ]] \
   || fail "wrong kernel metapackage version"
@@ -151,8 +151,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.0" ]] \
-  || fail "kernora-apps 1.0 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1" ]] \
+  || fail "kernora-apps 1.1 is not installed"
 for app in settings files editor photos player calculator screenshot welcome; do
   [[ -x "/usr/bin/kernora-$app" ]] || fail "Kernora application is missing: $app"
   [[ -s "/usr/share/kernora/$app/Main.qml" ]] || fail "interface of kernora-$app is missing"
@@ -216,6 +216,25 @@ grep -Fxq 'URIs: https://repo.librewolf.net' /etc/apt/sources.list.d/librewolf.s
 grep -Fxq 'x-scheme-handler/https=librewolf.desktop;' /etc/xdg/mimeapps.list \
   || fail "LibreWolf is not the default browser"
 [[ -s /usr/share/kernora/copyright/librewolf ]] || fail "LibreWolf has no copyright summary for About > Legal"
+[[ "$(dpkg-query -W -f='${Status}' kernora-archive)" == 'install ok installed' ]] \
+  || fail "kernora-archive is not installed"
+[[ ! -e /etc/apt/sources.list ]] || fail "the build's sources.list leaked into the image"
+[[ ! -e /usr/share/kernora/archive ]] || fail "the build archive leaked into the image"
+if grep -rq 'snapshot.debian.org\|file:/usr/share/kernora' /etc/apt/sources.list.d; then
+  fail "the image still points APT at the build's sources"
+fi
+grep -Fxq 'Suites: trixie-security' /etc/apt/sources.list.d/debian.sources \
+  || fail "the image takes no Debian security updates"
+grep -Fxq 'Signed-By: /usr/share/keyrings/kernora-archive-keyring.asc' /etc/apt/sources.list.d/kernora.sources \
+  || fail "the image takes no Kernora updates"
+[[ -s /usr/share/keyrings/debian-archive-keyring.pgp ]] || fail "the Debian archive keyring is missing"
+[[ "$(dpkg-query -W -f='${Status}' unattended-upgrades)" == 'install ok installed' ]] \
+  || fail "unattended-upgrades is not installed"
+apt_config=$(apt-config dump)
+grep -Fq 'origin=Debian,codename=trixie-security,label=Debian-Security' <<<"$apt_config" \
+  || fail "APT does not see the automatic security updates"
+grep -Fxq 'APT::Periodic::Unattended-Upgrade "1";' <<<"$apt_config" \
+  || fail "automatic updates are not enabled"
 command -v pkexec >/dev/null || fail "pkexec is missing; the installer cannot start"
 [[ "$(dpkg-query -W -f='${Version}' polkit-kde-agent-1)" == *kernora* ]] \
   || fail "the authentication agent is not Kernora's Material 3 build"

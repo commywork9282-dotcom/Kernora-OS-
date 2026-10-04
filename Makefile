@@ -2,11 +2,12 @@ SHELL := /bin/bash
 
 .PHONY: check keyring index signer-keyring sources unpack verify \
 	build-tools build-rootfs base-files-source base-files-binary \
-	kernora-base-source kernora-base-binary kernora-desktop-source \
+	kernora-base-source kernora-base-binary kernora-archive-source \
+	kernora-archive-binary kernora-desktop-source \
 	kernora-desktop-binary kernora-apps-source kernora-apps-binary \
 	calamares-source calamares-binary \
 	polkit-kde-agent-1-source polkit-kde-agent-1-binary \
-	development-archive-key local-archive \
+	development-archive-key archive-key local-archive publish \
 	minimal-rootfs iso-tools librewolf live-rootfs iso iso-smoke
 
 check:
@@ -32,6 +33,7 @@ verify:
 	./tests/lint-layout.sh
 	./tests/test-base-files-identity.sh
 	./tests/test-kernora-base-source.sh
+	./tests/test-kernora-archive-source.sh
 	./tests/test-kernora-desktop-source.sh
 	./scripts/verify-sources
 
@@ -52,6 +54,12 @@ kernora-base-source: verify
 
 kernora-base-binary: verify build-rootfs
 	./scripts/build-kernora-base-binary
+
+kernora-archive-source: verify
+	./scripts/build-kernora-archive-source
+
+kernora-archive-binary: verify build-rootfs
+	./scripts/build-kernora-archive-binary
 
 kernora-desktop-source: verify
 	./scripts/build-kernora-desktop-source
@@ -80,7 +88,7 @@ polkit-kde-agent-1-binary: verify build-rootfs
 development-archive-key:
 	./scripts/create-development-archive-key
 
-local-archive: base-files-binary kernora-base-binary kernora-desktop-binary \
+local-archive: base-files-binary kernora-base-binary kernora-archive-binary kernora-desktop-binary \
 		kernora-apps-binary calamares-binary polkit-kde-agent-1-binary \
 		development-archive-key
 	./scripts/build-local-archive
@@ -93,6 +101,12 @@ iso-tools: signer-keyring
 
 librewolf:
 	./scripts/fetch-librewolf
+
+archive-key:
+	./scripts/create-archive-key
+
+publish: local-archive
+	./scripts/publish-updates
 
 live-rootfs: local-archive librewolf
 	./scripts/build-live-rootfs

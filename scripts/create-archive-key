@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in awk chmod gpg mktemp mv sed; do
+  require_command "$dependency"
+done
+load_project_config
+
+gnupg_home="$PROJECT_ROOT/_state/gnupg/archive"
+public_key="$PROJECT_ROOT/packages/native/kernora-archive/keyrings/kernora-archive-keyring.asc"
+project_env="$PROJECT_ROOT/configs/project.env"
+backup="$HOME/kernora-archive-key-secret.asc"
+key_name="$DIST_NAME Archive Signing Key"
+
+mkdir -p "$gnupg_home" "$(dirname -- "$public_key")"
+chmod 0700 "$gnupg_home"
+
+secret_fingerprint() {
+  gpg --homedir "$gnupg_home" --batch --with-colons --list-secret-keys 2>/dev/null \
+    | awk -F: '$1 == "sec" { primary = 1; next } primary && $1 == "fpr" { print $10; exit }'
+}
+
+fingerprint=$(secret_fingerprint)
+created=0
+if [[ -z "$fingerprint" ]]; then
+  parameters=$(mktemp "$gnupg_home/.parameters.XXXXXX")
+  trap 'rm -f -- "$parameters"' EXIT
+  printf '%s\n' \
+    'Key-Type: eddsa' \
+    'Key-Curve: ed25519' \
+    'Key-Usage: sign' \
+    "Name-Real: $key_name" \
+    'Expire-Date: 3y' \
+    '%no-protection' \
+    '%commit' > "$parameters"
+  chmod 0600 "$parameters"
+  gpg --homedir "$gnupg_home" --batch --quiet --generate-key "$parameters"
+  fingerprint=$(secret_fingerprint)
+  created=1
+fi
+[[ "$fingerprint" =~ ^[0-9A-F]{40}$ ]] || die "could not determine the archive key fingerprint"
+
+temporary=$(mktemp "$(dirname -- "$public_key")/.keyring.XXXXXX")
+gpg --homedir "$gnupg_home" --batch --armor --export-options export-minimal \
+  --export "$fingerprint" > "$temporary"
+[[ -s "$temporary" ]] || die "the archive public key export is empty"
+chmod 0644 "$temporary"
+mv -- "$temporary" "$public_key"
+
+sed -i "s/^DIST_ARCHIVE_KEY_FINGERPRINT=.*/DIST_ARCHIVE_KEY_FINGERPRINT=$fingerprint/" "$project_env"
+
+if (( created )); then
+  umask 077
+  gpg --homedir "$gnupg_home" --batch --armor --export-secret-keys "$fingerprint" > "$backup"
+  chmod 0600 "$backup"
+  printf 'secret key backup: %s\n' "$backup"
+fi
+printf 'archive key: %s\n' "$fingerprint"
+printf 'public key: %s\n' "$public_key"

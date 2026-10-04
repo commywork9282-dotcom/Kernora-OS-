@@ -1,0 +1,4 @@
+Unattended-Upgrade::Origins-Pattern {
+        "origin=Debian,codename=trixie-security,label=Debian-Security";
+        "site=repo.librewolf.net";
+};

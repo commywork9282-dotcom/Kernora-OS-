@@ -133,7 +133,7 @@ not be promoted as one.
 ## Minimal rootfs
 
 `make minimal-rootfs` uses `mmdebstrap --variant=minbase` in rootless `unshare`
-mode. The explicit package manifest installs `kernora-base=1.0`, whose exact
+mode. The explicit package manifest installs `kernora-base=1.1`, whose exact
 dependency selects the Kernora `base-files` fork. The resulting filesystem is
 tested inside a rootless chroot for OS identity, dpkg vendor, package versions,
 APT trust scoping and access to the embedded development archive.

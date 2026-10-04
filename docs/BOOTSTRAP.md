@@ -149,7 +149,7 @@ make minimal-rootfs
 
 This target depends on `make local-archive`, then runs rootless `mmdebstrap` in
 `minbase` mode. `configs/rootfs/minimal-packages.txt` currently requests the
-versioned package `kernora-base=1.0`; its dependency pulls in the exact Kernora
+versioned package `kernora-base=1.1`; its dependency pulls in the exact Kernora
 `base-files` build.
 
 Before packaging, a rootless chroot test checks the Kernora OS identity, dpkg

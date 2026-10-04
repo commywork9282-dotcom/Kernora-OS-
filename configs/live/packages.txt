@@ -1,4 +1,4 @@
-kernora-base=1.0
+kernora-base=1.1
 linux-image-amd64=6.12.107-1
 live-boot=1:20250815~deb13u1
 systemd-sysv=257.13-1~deb13u1
@@ -24,7 +24,7 @@ libpam-fprintd
 
 kernora-desktop=1.4
 kernora-calamares=1.4
-kernora-apps=1.0
+kernora-apps=1.1
 polkit-kde-agent-1=4:6.3.6-1kernora1
 plymouth
 plymouth-label

@@ -1,0 +1,22 @@
+Source: kernora-archive
+Section: admin
+Priority: optional
+Maintainer: Kernora Developers <developers@kernora.invalid>
+Standards-Version: 4.7.4
+Build-Depends: debhelper-compat (= 13)
+Rules-Requires-Root: no
+
+Package: kernora-archive
+Architecture: all
+Depends:
+ ${misc:Depends},
+ debian-archive-keyring,
+ unattended-upgrades
+Description: Kernora OS package archives and updates
+ Sets up APT for Kernora OS: the Debian archive with its security updates,
+ the Kernora package archive and its signing key, and a preference for
+ Kernora's own builds over Debian packages of the same name.
+ .
+ Security updates from Debian, kernel updates among them, and LibreWolf
+ updates are installed automatically once a day. Other updates are offered
+ in Settings > Updates. Nothing is updated in the live session.
