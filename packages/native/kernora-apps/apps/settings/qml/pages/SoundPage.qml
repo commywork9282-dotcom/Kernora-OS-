@@ -206,9 +206,72 @@ SettingsPage {
         defaultValue: true
     }
 
+    ConfigEntry {
+        id: soundTheme
+        file: "kdeglobals"
+        group: "Sounds"
+        key: "Theme"
+        defaultValue: "kernora"
+        notify: true
+    }
+
+    ConfigEntry {
+        id: loginSound
+        file: "plasma_workspace.notifyrc"
+        group: "Event\\/startkde"
+        key: "Action"
+        defaultValue: ""
+    }
+
+    readonly property var soundThemes: [
+        { value: "kernora", label: i18n("Kernora"), demo: "/usr/share/sounds/kernora/stereo/theme-demo.wav" },
+        { value: "ocean", label: i18n("Ocean"), description: i18n("The KDE sounds"), demo: "/usr/share/sounds/ocean/stereo/theme-demo.oga" }
+    ]
+
+    function playDemo(theme: string): void {
+        const entry = soundThemes.find(t => t.value === theme);
+        if (entry) {
+            Process.startDetached("pw-play", [entry.demo]);
+        }
+    }
+
     Group {
         title: i18n("System sounds")
 
+        ChoiceItem {
+            title: i18n("Sounds")
+            icon: "preferences-desktop-sound"
+            iconStyle: "plain"
+            dialogTitle: i18n("System sounds")
+            options: page.soundThemes
+            currentValue: String(soundTheme.value)
+            onSelected: value => {
+                soundTheme.value = value;
+                page.playDemo(value);
+            }
+            trailing: Component {
+                IconButton {
+                    iconName: "media-playback-start"
+                    text: i18n("Listen")
+                    onClicked: page.playDemo(String(soundTheme.value))
+                }
+            }
+        }
+        ListItem {
+            title: i18n("Sound at login")
+            subtitle: i18n("A short chime when the desktop is ready")
+            icon: "user-identity"
+            iconStyle: "plain"
+            checkable: true
+            checked: String(loginSound.value).split("|").includes("Sound")
+            onToggled: on => {
+                const actions = String(loginSound.value).split("|").filter(a => a.length > 0 && a !== "Sound");
+                if (on) {
+                    actions.push("Sound");
+                }
+                loginSound.value = actions.join("|");
+            }
+        }
         ListItem {
             title: i18n("Volume change sound")
             subtitle: i18n("Play a short sound when the volume changes")

@@ -1,0 +1,295 @@
+#!/usr/bin/env python3
+"""usage: gen-sound-theme OUTPUT_DIRECTORY
+"""
+
+from __future__ import annotations
+
+import math
+import os
+import pathlib
+import random
+import struct
+import sys
+import wave
+
+RATE = 48000
+THEME = "kernora"
+
+A4 = 440.0
+NOTES = {"C": -9, "D": -7, "E": -5, "F": -4, "F#": -3, "G": -2, "A": 0, "B": 2}
+
+
+def note(name: str) -> float:
+    pitch, octave = name[:-1], int(name[-1])
+    return A4 * 2 ** ((NOTES[pitch] + 12 * (octave - 4)) / 12)
+
+
+GLASS = ((1.0, 1.0, 1.0), (2.0, 0.22, 0.55), (3.0, 0.07, 0.32), (4.2, 0.045, 0.16))
+WARM = ((1.0, 1.0, 1.0), (2.0, 0.12, 0.5), (3.0, 0.03, 0.3))
+PURE = ((1.0, 1.0, 1.0),)
+
+
+def silence(seconds: float) -> list[float]:
+    return [0.0] * int(seconds * RATE)
+
+
+def tone(freq: float, decay: float, timbre=GLASS, attack: float = 0.004, shimmer: float = 0.0) -> list[float]:
+    length = int(min(decay * 6.0, 3.0) * RATE)
+    out = [0.0] * length
+    voices = [(freq, 1.0)] + ([(freq * 1.0025, shimmer)] if shimmer > 0 else [])
+    attack_samples = max(1, int(attack * RATE))
+    for base, level in voices:
+        for ratio, amplitude, decay_ratio in timbre:
+            f = base * ratio
+            if f > RATE / 2.4:
+                continue
+            step = 2 * math.pi * f / RATE
+            fall = math.exp(-1.0 / (decay * decay_ratio * RATE))
+            gain = amplitude * level
+            for i in range(length):
+                out[i] += gain * math.sin(step * i)
+                gain *= fall
+    for i in range(min(attack_samples, length)):
+        out[i] *= 0.5 - 0.5 * math.cos(math.pi * i / attack_samples)
+    return out
+
+
+def mix(into: list[float], sound: list[float], at: float, level: float = 1.0) -> list[float]:
+    start = int(at * RATE)
+    if len(into) < start + len(sound):
+        into.extend([0.0] * (start + len(sound) - len(into)))
+    for i, value in enumerate(sound):
+        into[start + i] += value * level
+    return into
+
+
+def sequence(steps, decay: float, timbre=GLASS, shimmer: float = 0.0) -> list[float]:
+    out: list[float] = []
+    for at, name, level in steps:
+        mix(out, tone(note(name), decay, timbre, shimmer=shimmer), at, level)
+    return out
+
+
+def noise(seconds: float, seed: int) -> list[float]:
+    generator = random.Random(seed)
+    return [generator.uniform(-1.0, 1.0) for _ in range(int(seconds * RATE))]
+
+
+def bandpass(samples: list[float], centre, q: float) -> list[float]:
+    low = band = 0.0
+    out = []
+    damping = 1.0 / q
+    for i, value in enumerate(samples):
+        f = 2 * math.sin(math.pi * min(centre(i / RATE), RATE / 6) / RATE)
+        high = value - low - damping * band
+        band += f * high
+        low += f * band
+        out.append(band)
+    return out
+
+
+def lowpass(samples: list[float], cutoff: float, passes: int = 2) -> list[float]:
+    coefficient = 1 - math.exp(-2 * math.pi * cutoff / RATE)
+    out = samples
+    for _ in range(passes):
+        state = 0.0
+        filtered = []
+        for value in out:
+            state += coefficient * (value - state)
+            filtered.append(state)
+        out = filtered
+    return out
+
+
+def envelope(samples: list[float], rise: float, fall: float) -> list[float]:
+    out = []
+    rise_samples = max(1, int(rise * RATE))
+    for i, value in enumerate(samples):
+        t = i / RATE
+        gain = min(1.0, i / rise_samples) * math.exp(-max(0.0, t - rise) / fall)
+        out.append(value * gain)
+    return out
+
+
+def reverb(samples: list[float], wet: float, size: float = 1.0, tail: float = 0.9) -> list[float]:
+    if wet <= 0:
+        return samples
+    dry = samples + [0.0] * int(tail * RATE)
+    combs = [0.0297, 0.0371, 0.0411, 0.0437]
+    rt60 = 0.55 * size
+    total = [0.0] * len(dry)
+    for delay_seconds in combs:
+        delay = int(delay_seconds * size * RATE)
+        feedback = 10 ** (-3 * delay_seconds * size / rt60)
+        line = [0.0] * delay
+        damp = 0.0
+        position = 0
+        for i, value in enumerate(dry):
+            out = line[position]
+            damp = out * 0.6 + damp * 0.4
+            line[position] = value + damp * feedback
+            position = (position + 1) % delay
+            total[i] += out * 0.25
+    for delay_seconds, gain in ((0.005, 0.7), (0.0017, 0.7)):
+        delay = int(delay_seconds * RATE)
+        line = [0.0] * delay
+        position = 0
+        for i, value in enumerate(total):
+            buffered = line[position]
+            out = -gain * value + buffered
+            line[position] = value + gain * out
+            position = (position + 1) % delay
+            total[i] = out
+    return [d * (1 - wet) + w * wet for d, w in zip(dry, total)]
+
+
+def finish(samples: list[float], peak_db: float) -> list[float]:
+    peak = max(abs(v) for v in samples) or 1.0
+    scale = 10 ** (peak_db / 20) / peak
+    out = [v * scale for v in samples]
+    threshold = 10 ** ((peak_db - 45) / 20)
+    end = len(out)
+    while end > 0 and abs(out[end - 1]) < threshold:
+        end -= 1
+    out = out[: end + int(0.01 * RATE)]
+    fade = min(len(out), int(0.03 * RATE))
+    for i in range(fade):
+        out[len(out) - fade + i] *= 0.5 + 0.5 * math.cos(math.pi * i / fade)
+    return out
+
+
+def chime(steps, decay, peak_db=-6.0, timbre=GLASS, wet=0.2, size=1.0, shimmer=0.0) -> list[float]:
+    return finish(reverb(sequence(steps, decay, timbre, shimmer), wet, size), peak_db)
+
+
+def login() -> list[float]:
+    steps = [(0.0, "D5", 0.85), (0.09, "A5", 0.75), (0.18, "D6", 0.7), (0.27, "F#6", 0.55), (0.27, "D5", 0.25)]
+    return chime(steps, 0.55, -5.0, wet=0.3, size=1.4, shimmer=0.35)
+
+
+def logout() -> list[float]:
+    steps = [(0.0, "F#6", 0.5), (0.11, "D6", 0.6), (0.22, "A5", 0.65), (0.33, "D5", 0.7)]
+    return chime(steps, 0.45, -7.0, wet=0.3, size=1.3, shimmer=0.3)
+
+
+def volume_change() -> list[float]:
+    return finish(tone(note("D6"), 0.035, PURE, attack=0.002), -14.0)
+
+
+def whoosh() -> list[float]:
+    sweep = lowpass(bandpass(noise(0.26, 7), lambda t: 2400 * math.exp(-t * 7.0) + 450, 3.5), 2400)
+    out = envelope(sweep, 0.05, 0.07)
+    mix(out, tone(note("A4"), 0.09, WARM), 0.17, 0.5)
+    mix(out, tone(note("D4"), 0.11, WARM), 0.25, 0.55)
+    return finish(reverb(out, 0.15, 0.8, 0.4), -8.0)
+
+
+def shutter() -> list[float]:
+    out: list[float] = []
+    for at, seed in ((0.0, 11), (0.075, 12)):
+        click = envelope(lowpass(bandpass(noise(0.05, seed), lambda t: 2400, 3.0), 3500), 0.001, 0.008)
+        mix(out, click, at)
+        mix(out, tone(2093.0, 0.018, PURE, attack=0.001), at, 0.35)
+    return finish(reverb(out, 0.12, 0.6, 0.25), -7.0)
+
+
+SOUNDS = {
+    "desktop-login": login,
+    "desktop-logout": logout,
+    "service-login": lambda: chime([(0.0, "A5", 0.8), (0.08, "D6", 0.7)], 0.2),
+    "service-logout": lambda: chime([(0.0, "D6", 0.7), (0.08, "A5", 0.7)], 0.2),
+    "message-new-instant": lambda: chime([(0.0, "A5", 0.8), (0.075, "E6", 0.75)], 0.19),
+    "message": lambda: chime([(0.0, "E6", 0.8)], 0.19),
+    "dialog-information": lambda: chime([(0.0, "D6", 0.8)], 0.2, -7.0),
+    "dialog-question": lambda: chime([(0.0, "A5", 0.8), (0.1, "B5", 0.75)], 0.19, -7.0),
+    "dialog-warning": lambda: chime([(0.0, "B5", 0.8), (0.14, "B5", 0.7)], 0.15, -6.5),
+    "dialog-warning-auth": lambda: chime([(0.0, "F#5", 0.75), (0.08, "D6", 0.7)], 0.2, -7.0),
+    "dialog-error": lambda: chime([(0.0, "F#5", 0.85), (0.12, "D5", 0.8)], 0.17, -6.0, WARM),
+    "dialog-error-serious": lambda: chime([(0.0, "B4", 0.85), (0.13, "F#4", 0.8), (0.26, "D4", 0.75)], 0.19, -5.5, WARM),
+    "bell": lambda: chime([(0.0, "A5", 0.8)], 0.1, -8.0, wet=0.12),
+    "audio-volume-change": volume_change,
+    "device-added": lambda: chime([(0.0, "D5", 0.8), (0.08, "A5", 0.75)], 0.15),
+    "device-removed": lambda: chime([(0.0, "A5", 0.75), (0.08, "D5", 0.8)], 0.15),
+    "power-plug": lambda: chime([(0.0, "D5", 0.8), (0.06, "F#5", 0.75), (0.12, "A5", 0.7)], 0.15),
+    "power-unplug": lambda: chime([(0.0, "A5", 0.7), (0.06, "F#5", 0.75), (0.12, "D5", 0.8)], 0.15),
+    "battery-caution": lambda: chime([(0.0, "F#5", 0.8), (0.15, "D5", 0.8)], 0.2, -6.0, WARM),
+    "battery-low": lambda: chime([(0.0, "F#5", 0.8), (0.13, "D5", 0.8), (0.26, "A4", 0.8)], 0.2, -5.5, WARM),
+    "battery-full": lambda: chime([(0.0, "D5", 0.7), (0.07, "F#5", 0.7), (0.14, "A5", 0.7), (0.21, "D6", 0.65)], 0.17),
+    "trash-empty": whoosh,
+    "camera-shutter": shutter,
+    "complete": lambda: chime([(0.0, "D6", 0.75), (0.06, "F#6", 0.7), (0.12, "A6", 0.6)], 0.15),
+    "outcome-failure": lambda: chime([(0.0, "A5", 0.8), (0.11, "F5", 0.8)], 0.15, -6.5, WARM),
+    "completion-rotation": lambda: chime([(0.0, "E6", 0.7)], 0.06, -10.0, wet=0.08),
+    "network-connectivity-established": lambda: chime([(0.0, "A5", 0.75), (0.08, "D6", 0.75)], 0.17, -8.0),
+    "network-connectivity-lost": lambda: chime([(0.0, "D6", 0.7), (0.08, "A5", 0.75)], 0.17, -8.0),
+    "window-attention": lambda: chime([(0.0, "E6", 0.7), (0.12, "E6", 0.6)], 0.11, -8.0),
+    "audio-channel-front-left": lambda: chime([(0.0, "D6", 0.8), (0.12, "A6", 0.6)], 0.2, -6.0, wet=0.1),
+    "alarm-clock-elapsed": lambda: chime([(t, n, 0.8) for start in (0.0, 0.7, 1.4) for t, n in ((start, "A5"), (start + 0.12, "D6"))], 0.17),
+}
+
+ALIASES = {
+    "theme-demo": "desktop-login",
+    "message-new-email": "message-new-instant",
+    "dialog-error-critical": "dialog-error-serious",
+    "suspend-error": "dialog-error",
+    "bell-window-system": "bell",
+    "screen-capture": "camera-shutter",
+    "outcome-success": "complete",
+    "completion-success": "complete",
+    "completion-partial": "completion-rotation",
+    "completion-fail": "outcome-failure",
+    "audio-test-signal": "audio-channel-front-left",
+    "audio-channel-front-right": "audio-channel-front-left",
+    "audio-channel-front-center": "audio-channel-front-left",
+    "audio-channel-rear-left": "audio-channel-front-left",
+    "audio-channel-rear-right": "audio-channel-front-left",
+    "audio-channel-rear-center": "audio-channel-front-left",
+    "audio-channel-side-left": "audio-channel-front-left",
+    "audio-channel-side-right": "audio-channel-front-left",
+    "audio-channel-lfe": "audio-channel-front-left",
+    "audio-channel-mono": "audio-channel-front-left",
+}
+
+
+def write_wav(path: pathlib.Path, samples: list[float]) -> None:
+    with wave.open(str(path), "wb") as out:
+        out.setnchannels(1)
+        out.setsampwidth(2)
+        out.setframerate(RATE)
+        out.writeframes(b"".join(struct.pack("<h", max(-32767, min(32767, round(v * 32767)))) for v in samples))
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) not in (2, 3):
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    root = pathlib.Path(argv[1]) / THEME
+    stereo = root / "stereo"
+    stereo.mkdir(parents=True, exist_ok=True)
+    only = set(argv[2].split(",")) if len(argv) == 3 else None
+    for name, render in SOUNDS.items():
+        if only is None or name in only:
+            write_wav(stereo / f"{name}.wav", render())
+    for alias, target in ALIASES.items():
+        link = stereo / f"{alias}.wav"
+        if link.is_symlink() or link.exists():
+            link.unlink()
+        os.symlink(f"{target}.wav", link)
+    (root / "index.theme").write_text(
+        "[Sound Theme]\n"
+        "Name=Kernora\n"
+        "Comment=Kernora sounds\n"
+        "Inherits=freedesktop\n"
+        "Directories=stereo\n"
+        "Example=theme-demo\n"
+        "\n"
+        "[stereo]\n"
+        "OutputProfile=stereo\n",
+        encoding="utf-8",
+    )
+    print(f"sound theme: {root} ({len(SOUNDS)} sounds, {len(ALIASES)} aliases)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

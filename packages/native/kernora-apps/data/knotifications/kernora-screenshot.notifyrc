@@ -1,0 +1,15 @@
+[Global]
+IconName=org.kernora.screenshot
+Name=Screenshot
+Name[ru]=Снимок экрана
+Comment=Kernora Screenshot
+Comment[ru]=Снимок экрана Kernora
+DesktopEntry=org.kernora.screenshot
+
+[Event/captured]
+Name=Screenshot taken
+Name[ru]=Снимок сделан
+Comment=A shutter sound when the screen is captured
+Comment[ru]=Звук затвора, когда сделан снимок экрана
+Action=Sound
+Sound=camera-shutter

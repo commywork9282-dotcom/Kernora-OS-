@@ -1,3 +1,13 @@
+kernora-apps (1.1.3) UNRELEASED; urgency=medium
+
+  * Settings > Sound: choose the Kernora or KDE sounds and listen to them,
+    and turn the login chime on or off.
+  * Files and Settings play the trash sound when the trash is emptied, and
+    Screenshot plays a shutter sound (kernora-screenshot.notifyrc).
+  * Settings can address configuration groups whose names contain a slash.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 05 Oct 2026 08:00:00 -0700
+
 kernora-apps (1.1.2) UNRELEASED; urgency=medium
 
   * Settings has its own pages for the advanced sound, format, keyboard,

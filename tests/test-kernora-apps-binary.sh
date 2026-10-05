@@ -20,7 +20,7 @@ trap 'find "$temporary_root" -depth -delete' EXIT
 dpkg-deb --extract "$deb" "$temporary_root"
 
 qml=usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/system
-for path in "$qml/qmldir" "$qml/libkernorasystem.so"; do
+for path in "$qml/qmldir" "$qml/libkernorasystem.so" usr/share/knotifications6/kernora-screenshot.notifyrc; do
   [[ -s "$temporary_root/$path" ]] || fail "missing $path"
 done
 for app in settings files welcome editor photos player calculator screenshot; do

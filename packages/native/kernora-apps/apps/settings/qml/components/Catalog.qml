@@ -49,6 +49,7 @@ QtObject {
             [i18n("Microphone"), "sound", "", i18n("input record mic")],
             [i18n("App volume"), "sound", "", i18n("mixer applications streams")],
             [i18n("Sound devices"), "sound", "SoundDevicesPage.qml", i18n("profile connector balance channels surround hdmi test speakers")],
+            [i18n("System sounds"), "sound", "", i18n("sound theme kernora ocean login chime alerts notification sounds")],
             [i18n("Do Not Disturb"), "notifications", "", i18n("quiet silence focus")],
             [i18n("Notification history"), "notifications", "", i18n("popups list")],
             [i18n("Dark theme"), "appearance", "", i18n("light dark mode colour scheme night")],

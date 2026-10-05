@@ -39,6 +39,7 @@ Depends:
  powerdevil,
  qml6-module-org-kde-bluezqt,
  qml6-module-org-kde-kirigami,
+ qml6-module-org-kde-notifications,
  qml6-module-org-kde-syntaxhighlighting,
  qml6-module-qt-labs-folderlistmodel,
  qml6-module-qtmultimedia,

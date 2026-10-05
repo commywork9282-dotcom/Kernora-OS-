@@ -391,3 +391,7 @@ msgstr "Заменить"
 #: apps/filechooser/qml/Chooser.qml
 msgid "No folders here"
 msgstr "Здесь нет папок"
+
+#: apps/files/qml/Main.qml:773
+msgid "Trash emptied"
+msgstr "Корзина очищена"

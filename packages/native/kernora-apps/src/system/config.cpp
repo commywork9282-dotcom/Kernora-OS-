@@ -17,7 +17,24 @@ KSharedConfig::Ptr Config::open(const QString &file)
 
 KConfigGroup Config::group(const KSharedConfig::Ptr &config, const QString &path)
 {
-    const QStringList parts = path.split(QLatin1Char('/'), Qt::SkipEmptyParts);
+    QStringList parts;
+    QString part;
+    for (int i = 0; i < path.size(); ++i) {
+        if (path.at(i) == QLatin1Char('\\') && i + 1 < path.size() && path.at(i + 1) == QLatin1Char('/')) {
+            part.append(QLatin1Char('/'));
+            ++i;
+        } else if (path.at(i) == QLatin1Char('/')) {
+            if (!part.isEmpty()) {
+                parts.append(part);
+            }
+            part.clear();
+        } else {
+            part.append(path.at(i));
+        }
+    }
+    if (!part.isEmpty()) {
+        parts.append(part);
+    }
     if (parts.isEmpty()) {
         return config->group(QString());
     }

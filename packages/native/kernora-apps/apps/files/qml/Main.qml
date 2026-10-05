@@ -12,6 +12,7 @@ import Qt.labs.folderlistmodel
 import org.kernora.m3
 import org.kernora.ui
 import org.kernora.system
+import org.kde.notification
 import "kinds.js" as Kinds
 
 AppWindow {
@@ -757,7 +758,20 @@ AppWindow {
         text: i18n("Everything in the trash is deleted forever.")
         acceptText: i18n("Empty")
         destructive: true
-        onAccepted: Files.emptyTrash((ok, message) => app.report(ok, message))
+        onAccepted: Files.emptyTrash((ok, message) => {
+            if (ok) {
+                trashEmptied.sendEvent();
+            }
+            app.report(ok, message);
+        })
+    }
+
+    Notification {
+        id: trashEmptied
+        componentName: "plasma_workspace"
+        eventId: "Trash: emptied"
+        title: i18n("Trash emptied")
+        iconName: "user-trash"
     }
 
     Dialog {

@@ -304,6 +304,13 @@ for path in \
   usr/share/kernora/librewolf/userChrome.css \
   usr/share/kconf_update/kernora-librewolf-chrome.upd \
   usr/share/kconf_update/kernora-librewolf-chrome.sh \
+  usr/share/sounds/kernora/index.theme \
+  usr/share/sounds/kernora/stereo/desktop-login.wav \
+  usr/share/sounds/kernora/stereo/dialog-information.wav \
+  usr/share/sounds/kernora/stereo/bell-window-system.wav \
+  usr/share/kconf_update/kernora-sound-theme.upd \
+  usr/share/kconf_update/kernora-sound-theme.sh \
+  etc/xdg/plasma_workspace.notifyrc \
   etc/xdg/mimeapps.list; do
   [[ -e "$temporary_root/desktop/$path" ]] \
     || fail "desktop package is missing $path"

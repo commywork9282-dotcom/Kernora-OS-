@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.1" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.2" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -75,7 +75,7 @@ tools_root="$package_root/tools"
 for tool in gen-color-schemes gen-icon-theme gen-kdeglobals gen-plasma-theme \
   gen-qml-tokens gen-translations fetch-symbols gen-wallpaper-assets \
   gen-kvantum-theme gen-aurorae-theme gen-avatar gen-terminal-theme gen-greeter-palette \
-  gen-keyboard-maps gen-qm gen-installer-icons gen-installer-style gen-browser-theme gen-gtk-theme gen-plymouth-theme gen-grub-theme gen-emoji-data; do
+  gen-keyboard-maps gen-qm gen-installer-icons gen-installer-style gen-browser-theme gen-gtk-theme gen-sound-theme gen-plymouth-theme gen-grub-theme gen-emoji-data; do
   [[ -x "$tools_root/$tool" ]] || fail "design-system tool missing: $tool"
 done
 grep -Fxq 'pref("extensions.activeThemeID", "theme@kernora.os");' "$package_root/data/librewolf/kernora.js" \
@@ -133,6 +133,17 @@ HOME="$browser/own" XDG_CONFIG_HOME="$browser/own/.config" sh "$browser/link.sh"
   || fail "an existing LibreWolf profile does not get the Kernora dialog style"
 [[ ! -e "$own_root/kernora.default-default" ]] || fail "a profile was added next to existing ones"
 rm -rf "$browser"
+grep -Fxq "theme-name='kernora'" "$package_root/data/gtk/90_kernora.gschema.override" \
+  || fail "GTK applications do not default to the Kernora sounds"
+grep -Fxq 'gtk-sound-theme-name=kernora' "$package_root/data/skel-config/gtk-3.0/settings.ini" \
+  || fail "new accounts do not start with the Kernora sounds"
+sh -n "$package_root/data/kconf_update/kernora-sound-theme.sh" || fail "the sound theme migration does not parse"
+sounds=$(mktemp -d)
+python3 "$tools_root/gen-sound-theme" "$sounds" desktop-login,bell >/dev/null || fail "gen-sound-theme fails"
+grep -Fxq 'Inherits=freedesktop' "$sounds/kernora/index.theme" || fail "the sound theme does not fall back to freedesktop"
+[[ "$(head -c 4 "$sounds/kernora/stereo/desktop-login.wav")" == RIFF ]] || fail "the login sound is not a WAV file"
+[[ "$(readlink "$sounds/kernora/stereo/bell-window-system.wav")" == bell.wav ]] || fail "the window bell does not use the bell sound"
+rm -rf "$sounds"
 if grep -rIl 'firefox-esr' "$package_root/data" >/dev/null; then
   fail "the desktop still refers to Firefox: $(grep -rIl 'firefox-esr' "$package_root/data" | head -1)"
 fi

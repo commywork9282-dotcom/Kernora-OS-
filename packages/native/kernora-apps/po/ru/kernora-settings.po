@@ -2896,3 +2896,44 @@ msgstr "несколько мониторов расположение зерк�
 #: apps/settings/qml/pages/DisplayArrangementPage.qml:36 apps/settings/qml/pages/DisplayPage.qml:248
 msgid "%1. %2"
 msgstr "%1. %2"
+
+#: apps/settings/qml/pages/SoundPage.qml:242
+msgid "Sounds"
+msgstr "Звуки"
+
+#: apps/settings/qml/pages/SoundPage.qml:227
+msgid "Kernora"
+msgstr "Kernora"
+
+#: apps/settings/qml/pages/SoundPage.qml:228
+msgid "Ocean"
+msgstr "Ocean"
+
+#: apps/settings/qml/pages/SoundPage.qml:228
+msgid "The KDE sounds"
+msgstr "Звуки KDE"
+
+#: apps/settings/qml/pages/SoundPage.qml:255
+msgid "Listen"
+msgstr "Послушать"
+
+#: apps/settings/qml/pages/SoundPage.qml:261
+msgid "Sound at login"
+msgstr "Звук при входе"
+
+#: apps/settings/qml/pages/SoundPage.qml:262
+msgid "A short chime when the desktop is ready"
+msgstr "Короткая мелодия, когда рабочий стол готов"
+
+#: apps/settings/qml/pages/StoragePage.qml:131
+msgid "Trash emptied"
+msgstr "Корзина очищена"
+
+#: apps/settings/qml/components/Catalog.qml:52
+msgid "sound theme kernora ocean login chime alerts notification sounds"
+msgstr "звуковая тема kernora ocean вход мелодия сигналы звуки уведомлений"
+
+#: apps/settings/qml/pages/StoragePage.qml:88
+msgctxt "the trash has nothing in it"
+msgid "Empty"
+msgstr "Пусто"

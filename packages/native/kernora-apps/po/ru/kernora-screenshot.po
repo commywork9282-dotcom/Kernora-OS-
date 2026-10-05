@@ -94,3 +94,7 @@ msgstr "Файлы или страницы для открытия."
 msgctxt "@title application name"
 msgid "Screenshot"
 msgstr "Снимок экрана"
+
+#: apps/screenshot/qml/Main.qml:377
+msgid "Screenshot taken"
+msgstr "Снимок сделан"

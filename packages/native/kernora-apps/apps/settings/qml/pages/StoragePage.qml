@@ -11,6 +11,7 @@ import QtQuick.Controls as QQC2
 import org.kernora.m3
 import org.kernora.ui
 import org.kernora.system
+import org.kde.notification
 import "../components"
 
 SettingsPage {
@@ -84,7 +85,7 @@ SettingsPage {
 
         ListItem {
             title: i18n("Trash")
-            subtitle: page.trash > 0 ? i18n("Takes %1", SystemInfo.formatBytes(page.trash)) : i18n("Empty")
+            subtitle: page.trash > 0 ? i18n("Takes %1", SystemInfo.formatBytes(page.trash)) : i18nc("the trash has nothing in it", "Empty")
             icon: page.trash > 0 ? "user-trash-full" : "user-trash"
             accent: 1
             trailing: Component {
@@ -115,9 +116,19 @@ SettingsPage {
         onAccepted: Files.emptyTrash((ok, message) => {
             page.trash = Files.trashSize();
             page.volumes = SystemInfo.storage();
-            if (!ok) {
+            if (ok) {
+                trashEmptied.sendEvent();
+            } else {
                 page.notify(message);
             }
         })
+    }
+
+    Notification {
+        id: trashEmptied
+        componentName: "plasma_workspace"
+        eventId: "Trash: emptied"
+        title: i18n("Trash emptied")
+        iconName: "user-trash"
     }
 }

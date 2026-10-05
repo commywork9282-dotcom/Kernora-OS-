@@ -65,6 +65,10 @@ data/librewolf/kernora.js usr/share/librewolf/browser/defaults/preferences
 generated/librewolf/userChrome.css usr/share/kernora/librewolf
 data/kconf_update/kernora-librewolf-chrome.upd usr/share/kconf_update
 data/kconf_update/kernora-librewolf-chrome.sh usr/share/kconf_update
+generated/sounds/kernora usr/share/sounds
+data/kconf_update/kernora-sound-theme.upd usr/share/kconf_update
+data/kconf_update/kernora-sound-theme.sh usr/share/kconf_update
+data/xdg-notifyrc/plasma_workspace.notifyrc etc/xdg
 data/xdg-mimeapps/mimeapps.list etc/xdg
 data/notifications/main.qml usr/share/plasma/plasmoids/org.kde.plasma.notifications/contents/ui
 data/notifications/kernora usr/share/plasma/plasmoids/org.kde.plasma.notifications/contents/ui

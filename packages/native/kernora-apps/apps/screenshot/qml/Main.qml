@@ -12,6 +12,7 @@ import QtQuick.Window
 import org.kernora.m3
 import org.kernora.ui
 import org.kernora.system
+import org.kde.notification
 
 AppWindow {
     id: app
@@ -64,6 +65,7 @@ AppWindow {
             return;
         }
         Screenshot.copyToClipboard(saved);
+        shutterSound.sendEvent();
         failure.text = "";
         app.show();
         app.raise();
@@ -366,5 +368,13 @@ AppWindow {
                 }
             }
         }
+    }
+
+    Notification {
+        id: shutterSound
+        componentName: "kernora-screenshot"
+        eventId: "captured"
+        title: i18n("Screenshot taken")
+        iconName: "org.kernora.screenshot"
     }
 }

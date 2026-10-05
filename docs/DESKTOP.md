@@ -23,6 +23,7 @@ tools/m3color.py           HCT / CAM16 -> Material 3 tonal palettes and roles
         +-- gen-wallpaper-assets  Material shapes and colour tracks of the live wallpaper
         +-- gen-kvantum-theme   Kvantum theme "Kernora" for every Qt widget
         +-- gen-gtk-theme       GTK theme "Kernora" for GTK applications
+        +-- gen-sound-theme     sound theme "kernora", synthesised at build time
         +-- gen-aurorae-theme   window decoration "kernora"
         +-- gen-translations    .po -> .mo
 ```
@@ -424,7 +425,7 @@ theme in the package build chroot, unpacked under `/tmp/kernora-desktop-dev`.
 ## Applications
 
 The same tokens reach applications through four stock mechanisms, so no KDE
-package is patched:
+package is patched (sounds, below, are a fifth):
 
 * **Widgets** — `gen-kvantum-theme` writes the Kvantum theme `Kernora`
   (`kvantum-dark` is the default widget style; `kvantum` is its light
@@ -460,6 +461,24 @@ package is patched:
     and the `settings.ini` of new accounts names it.
   * `kconf_update/kernora-gtk-theme.sh` moves an existing account off Breeze
     once, to the theme of its style, and leaves any other choice alone.
+* **Sounds** — `gen-sound-theme` synthesises the freedesktop sound theme
+  `kernora` (`/usr/share/sounds/kernora`) when the package is built, in pure
+  Python, as 48 kHz mono WAV: libcanberra plays WAV, and the build chroot has
+  no Vorbis encoder. Every sound is made of soft glass or mallet tones (a sine
+  with a few decaying partials, a 4 ms attack and a small reverb) on the
+  notes of D major pentatonic, so any two sounds agree. Errors and low
+  battery use a darker timbre and fall; plugging in, devices and success
+  rise; the login is a four-note chord. Trash and shutter are filtered noise.
+  Aliases (`bell-window-system`, `dialog-error-critical`, the
+  `audio-channel-*` of the speaker test…) are symlinks, and anything else
+  comes from `freedesktop`.
+  * The default: `[Sounds] Theme=kernora` in `/etc/xdg/kdeglobals`, which
+    KNotification and the volume feedback read, plus GSettings and the GTK
+    `settings.ini` of new accounts. `kconf_update/kernora-sound-theme.sh`
+    moves an account off Ocean once.
+  * The login chime is on: `/etc/xdg/plasma_workspace.notifyrc` sets
+    `[Event/startkde] Action=Sound`. Settings > Sound turns it off and
+    switches back to the KDE sounds.
 * **Window decoration** — `gen-aurorae-theme` writes the Aurorae theme
   `kernora`: a 38px title bar on the application header's surface with 12px
   top corners, circular Material Symbols buttons (the close button on the
