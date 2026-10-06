@@ -479,6 +479,14 @@ package is patched (sounds, below, are a fifth):
   * The login chime is on: `/etc/xdg/plasma_workspace.notifyrc` sets
     `[Event/startkde] Action=Sound`. Settings > Sound turns it off and
     switches back to the KDE sounds.
+* **Crashes** — KDE's crash reporter (DrKonqi, which plasma-workspace depends
+  on) is not shown. systemd-coredump hands a crash to the user's
+  `drkonqi-coredump-launcher@.service`, and a drop-in in
+  `/usr/lib/systemd/user/drkonqi-coredump-launcher@.service.d/` replaces its
+  command with `/usr/libexec/kernora-crash-notifier`. It reads the journal
+  entry from the socket, looks up the app's launcher entry and sends a short
+  notification ("Settings closed unexpectedly"); processes without a visible
+  entry, plasmashell among them, are left alone.
 * **Window decoration** — `gen-aurorae-theme` writes the Aurorae theme
   `kernora`: a 38px title bar on the application header's surface with 12px
   top corners, circular Material Symbols buttons (the close button on the

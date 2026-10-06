@@ -229,6 +229,38 @@ void Files::move(const QList<QUrl> &urls, const QUrl &destination, const QJSValu
     });
 }
 
+QList<QUrl> Files::conflicts(const QList<QUrl> &urls, const QUrl &destination) const
+{
+    QList<QUrl> found;
+    for (const QUrl &url : urls) {
+        QUrl target = destination.adjusted(QUrl::StripTrailingSlash);
+        target.setPath(target.path() + QLatin1Char('/') + url.fileName());
+        if (exists(target)) {
+            found.append(url);
+        }
+    }
+    return found;
+}
+
+void Files::transfer(const QList<QUrl> &urls, const QUrl &destination, bool move, const QString &onConflict, const QJSValue &callback)
+{
+    if (urls.isEmpty()) {
+        report(callback, true, QString());
+        return;
+    }
+    const KIO::JobFlags flags = onConflict == QLatin1String("replace") ? KIO::Overwrite : KIO::DefaultFlags;
+    KIO::CopyJob *job = move ? KIO::move(urls, destination, flags) : KIO::copy(urls, destination, flags);
+    job->setUiDelegate(nullptr);
+    if (onConflict == QLatin1String("rename")) {
+        job->setAutoRename(true);
+    } else if (onConflict == QLatin1String("replace")) {
+        job->setWriteIntoExistingDirectories(true);
+    }
+    connect(job, &KJob::result, this, [this, callback](KJob *job) {
+        report(callback, job->error() == 0, job->errorString());
+    });
+}
+
 qint64 Files::trashSize() const
 {
     const QString trash = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QStringLiteral("/Trash/files");

@@ -81,6 +81,11 @@ mirror at the same position as its source, and finds mirrors that way.
 Keyboard shortcuts, file types, the network connection editor, managing
 accounts, more accessibility options and fonts still open KDE's modules.
 
+Files copies and moves without KIO's own dialogs: it looks for name
+conflicts first (`Files.conflicts`) and asks in a Kernora dialog whether to
+replace, keep both or skip, then runs the job without a UI delegate
+(`Files.transfer`). Pasting into the same folder makes a numbered copy.
+
 ## File chooser
 
 Programs ask for files through the desktop portal, and the portal hands

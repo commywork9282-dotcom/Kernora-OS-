@@ -127,6 +127,7 @@ trap cleanup EXIT
   --customize-hook="upload $live_config/autologin.conf /etc/systemd/system/getty@tty1.service.d/autologin.conf" \
   --customize-hook="upload $live_config/kernora-boot-ready.service /etc/systemd/system/kernora-boot-ready.service" \
   --customize-hook="upload $live_config/kscreenlockerrc /etc/xdg/kscreenlockerrc" \
+  --customize-hook="upload $live_config/kwalletrc /etc/xdg/kwalletrc" \
   --customize-hook='ln -s ../kernora-boot-ready.service "$1/etc/systemd/system/multi-user.target.wants/kernora-boot-ready.service"' \
   --customize-hook='mkdir -p "$1/etc/sddm.conf.d"' \
   --customize-hook='printf "en_US.UTF-8 UTF-8\nru_RU.UTF-8 UTF-8\n" > "$1/etc/locale.gen"' \

@@ -48,6 +48,7 @@ required_paths=(
   scripts/preview-desktop
   configs/live/apt-preferences
   configs/live/kscreenlockerrc
+  configs/live/kwalletrc
   scripts/fetch-sources
   scripts/bootstrap-debian-signer-keyring
   scripts/bootstrap-build-tools

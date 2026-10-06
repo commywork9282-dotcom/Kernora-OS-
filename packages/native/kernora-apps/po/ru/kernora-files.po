@@ -395,3 +395,42 @@ msgstr "Здесь нет папок"
 #: apps/files/qml/Main.qml:773
 msgid "Trash emptied"
 msgstr "Корзина очищена"
+
+#: apps/files/qml/Main.qml:794
+msgid "“%1” is already here"
+msgstr "«%1» уже есть в этой папке"
+
+#: apps/files/qml/Main.qml:796
+msgid "Choose what to do with the files that have the same names."
+msgstr "Выберите, что сделать с файлами с одинаковыми именами."
+
+#: apps/files/qml/Main.qml:802
+msgid "The files here are overwritten"
+msgstr "Файлы в этой папке будут перезаписаны"
+
+#: apps/files/qml/Main.qml:809
+msgid "Keep both"
+msgstr "Оставить оба"
+
+#: apps/files/qml/Main.qml:810
+msgid "The new files get a number in their name"
+msgstr "К имени новых файлов добавится номер"
+
+#: apps/files/qml/Main.qml:817
+msgid "Skip"
+msgstr "Пропустить"
+
+#: apps/files/qml/Main.qml:818
+msgid "Only the other files are copied"
+msgstr "Будут скопированы только остальные файлы"
+
+#: apps/files/qml/Main.qml:818
+msgid "Nothing is copied"
+msgstr "Ничего не будет скопировано"
+
+#: apps/files/qml/Main.qml:795
+msgid "%1 item is already here"
+msgid_plural "%1 items are already here"
+msgstr[0] "%1 объект уже есть в этой папке"
+msgstr[1] "%1 объекта уже есть в этой папке"
+msgstr[2] "%1 объектов уже есть в этой папке"

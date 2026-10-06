@@ -27,3 +27,4 @@ kcalc
 ark
 okular
 plasma-welcome
+plasma-browser-integration

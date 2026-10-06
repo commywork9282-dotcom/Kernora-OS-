@@ -241,12 +241,43 @@ AppWindow {
         if (clipboard.urls.length === 0 || inTrash) {
             return;
         }
-        if (clipboard.cut) {
-            Files.move(clipboard.urls, folder, (ok, message) => app.report(ok, message));
+        const urls = clipboard.urls;
+        const cut = clipboard.cut;
+        if (cut) {
             clipboard = { urls: [], cut: false };
-        } else {
-            Files.copy(clipboard.urls, folder, (ok, message) => app.report(ok, message));
         }
+        const here = String(folder).replace(/\/$/, "");
+        const sameFolder = urls.filter(u => String(u).replace(/\/[^\/]*\/?$/, "") === here);
+        const clashes = Files.conflicts(urls, folder).filter(u => !sameFolder.some(s => String(s) === String(u)));
+        if (sameFolder.length > 0) {
+            if (cut) {
+                app.report(true, "");
+            } else {
+                Files.transfer(sameFolder, folder, false, "rename", (ok, message) => app.report(ok, message));
+            }
+        }
+        const others = urls.filter(u => !sameFolder.some(s => String(s) === String(u)));
+        if (others.length === 0) {
+            return;
+        }
+        if (clashes.length === 0) {
+            Files.transfer(others, folder, cut, "", (ok, message) => app.report(ok, message));
+            return;
+        }
+        conflictDialog.urls = others;
+        conflictDialog.clashes = clashes;
+        conflictDialog.cut = cut;
+        conflictDialog.target = folder;
+        conflictDialog.open();
+    }
+
+    function resolveConflict(choice: string): void {
+        const urls = conflictDialog.urls;
+        const clashes = conflictDialog.clashes.map(u => String(u));
+        conflictDialog.close();
+        const list = choice === "skip" ? urls.filter(u => !clashes.includes(String(u))) : urls;
+        Files.transfer(list, conflictDialog.target, conflictDialog.cut, choice === "skip" ? "" : choice,
+                       (ok, message) => app.report(ok, message));
     }
     function trash(): void {
         const urls = selectedUrls();
@@ -749,6 +780,46 @@ AppWindow {
                 app.report(ok, message);
             }
         })
+    }
+
+    Dialog {
+        id: conflictDialog
+
+        property var urls: []
+        property var clashes: []
+        property bool cut: false
+        property url target
+
+        icon: "edit-copy"
+        title: clashes.length === 1 ? i18n("“%1” is already here", decodeURIComponent(String(clashes[0]).replace(/^.*\//, "")))
+                                    : i18np("%1 item is already here", "%1 items are already here", clashes.length)
+        text: i18n("Choose what to do with the files that have the same names.")
+        showAccept: false
+
+        ListItem {
+            Layout.fillWidth: true
+            title: i18n("Replace")
+            subtitle: i18n("The files here are overwritten")
+            icon: "kernora-install-replace"
+            iconStyle: "plain"
+            onClicked: app.resolveConflict("replace")
+        }
+        ListItem {
+            Layout.fillWidth: true
+            title: i18n("Keep both")
+            subtitle: i18n("The new files get a number in their name")
+            icon: "edit-copy"
+            iconStyle: "plain"
+            onClicked: app.resolveConflict("rename")
+        }
+        ListItem {
+            Layout.fillWidth: true
+            title: i18n("Skip")
+            subtitle: conflictDialog.urls.length > conflictDialog.clashes.length ? i18n("Only the other files are copied") : i18n("Nothing is copied")
+            icon: "media-skip-forward"
+            iconStyle: "plain"
+            onClicked: app.resolveConflict("skip")
+        }
     }
 
     Dialog {

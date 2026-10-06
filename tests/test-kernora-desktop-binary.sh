@@ -311,6 +311,8 @@ for path in \
   usr/share/kconf_update/kernora-sound-theme.upd \
   usr/share/kconf_update/kernora-sound-theme.sh \
   etc/xdg/plasma_workspace.notifyrc \
+  usr/libexec/kernora-crash-notifier \
+  usr/lib/systemd/user/drkonqi-coredump-launcher@.service.d/drkonqi-coredump-launcher-kernora.conf \
   etc/xdg/mimeapps.list; do
   [[ -e "$temporary_root/desktop/$path" ]] \
     || fail "desktop package is missing $path"

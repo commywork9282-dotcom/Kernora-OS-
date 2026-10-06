@@ -36,6 +36,9 @@ public:
     Q_INVOKABLE QVariantMap trashInfo(const QUrl &url) const;
     Q_INVOKABLE void createFolder(const QUrl &parent, const QString &name, const QJSValue &callback = QJSValue());
     Q_INVOKABLE void move(const QList<QUrl> &urls, const QUrl &destination, const QJSValue &callback = QJSValue());
+    Q_INVOKABLE QList<QUrl> conflicts(const QList<QUrl> &urls, const QUrl &destination) const;
+    Q_INVOKABLE void transfer(const QList<QUrl> &urls, const QUrl &destination, bool move, const QString &onConflict,
+                              const QJSValue &callback = QJSValue());
     Q_INVOKABLE qint64 trashSize() const;
     Q_INVOKABLE void emptyTrash(const QJSValue &callback = QJSValue());
 

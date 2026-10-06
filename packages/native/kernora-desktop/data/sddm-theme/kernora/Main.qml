@@ -339,7 +339,7 @@ Rectangle {
             model: sessionModel
             delegate: QtObject {
                 required property string name
-                readonly property string label: name
+                readonly property string label: name.replace("Plasma (Wayland)", "Kernora").replace(/\bPlasma\b/, "Kernora")
             }
         }
         Chip {
