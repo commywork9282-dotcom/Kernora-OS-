@@ -51,6 +51,13 @@ for path in \
 done
 
 xorriso -osirrox on -indev "$iso" \
+  -extract /boot/grub/grub.cfg "$temporary_root/grub.cfg" \
+  > "$temporary_root/extract-grub.txt" 2>&1
+awk '/usr\/share\/kernora\/settings\/Main.qml/ && !found { found = NR } /^menuentry "Kernora OS · Русский"/ { live = NR }
+     END { exit !(found && live && found < live) }' "$temporary_root/grub.cfg" \
+  || fail "the ISO menu does not start an installed Kernora before the live session"
+
+xorriso -osirrox on -indev "$iso" \
   -extract /live/filesystem.squashfs "$temporary_root/filesystem.squashfs" \
   > "$temporary_root/extract.txt" 2>&1
 unsquashfs -cat "$temporary_root/filesystem.squashfs" usr/lib/os-release \

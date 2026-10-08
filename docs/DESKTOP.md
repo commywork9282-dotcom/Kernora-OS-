@@ -323,6 +323,13 @@ the package and live-image tests.
   `grub-mkfont`. Plymouth's defaults are diverted.
   `/etc/default/grub.d/kernora.cfg` adds `splash` and the theme for an
   installed system; the ISO build copies the theme onto the medium.
+  The medium's menu (`configs/live/grub.cfg`) looks for an installed
+  Kernora on the computer's disks (`/usr/share/kernora/settings/Main.qml`
+  next to `/boot/grub/grub.cfg`). When it finds one, its first and default
+  entry is "Kernora OS · Установленная система", which hands over to that
+  system's own GRUB menu. A computer or VM that still boots from the medium
+  after the installation therefore starts the installed system, not the live
+  session.
 
 ## Live wallpaper (`org.kernora.shapes`)
 
