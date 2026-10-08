@@ -3221,3 +3221,12 @@ msgstr "Без сочетания"
 #: apps/settings/qml/components/Catalog.qml:74
 msgid "hotkeys key bindings global shortcut meta"
 msgstr "горячие клавиши сочетания комбинации meta"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:28
+msgid "Terminal"
+msgstr "Терминал"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:59
+msgctxt "start the app"
+msgid "Open"
+msgstr "Открыть"

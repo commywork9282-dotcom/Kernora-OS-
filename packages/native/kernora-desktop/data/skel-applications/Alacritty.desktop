@@ -1,5 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=Alacritty
+Name=Terminal
+Name[ru]=Терминал
+Icon=org.kernora.terminal
 Exec=alacritty
 NoDisplay=true

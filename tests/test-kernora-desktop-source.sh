@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.3" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.4" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -138,6 +138,7 @@ grep -Fxq "theme-name='kernora'" "$package_root/data/gtk/90_kernora.gschema.over
 grep -Fxq 'gtk-sound-theme-name=kernora' "$package_root/data/skel-config/gtk-3.0/settings.ini" \
   || fail "new accounts do not start with the Kernora sounds"
 sh -n "$package_root/data/kconf_update/kernora-sound-theme.sh" || fail "the sound theme migration does not parse"
+sh -n "$package_root/data/kconf_update/kernora-terminal-entry.sh" || fail "the terminal entry migration does not parse"
 sounds=$(mktemp -d)
 python3 "$tools_root/gen-sound-theme" "$sounds" desktop-login,bell >/dev/null || fail "gen-sound-theme fails"
 grep -Fxq 'Inherits=freedesktop' "$sounds/kernora/index.theme" || fail "the sound theme does not fall back to freedesktop"
@@ -274,6 +275,9 @@ done
 source "$project_root/configs/live/live-user.env"
 grep -Fxq "username: $LIVE_USER" "$data_root/calamares/modules/removeuser.conf" \
   || fail "installer does not remove the live account defined for the image"
+grep -Fq 'getent group autologin | cut -d: -f4 | grep -q . || rm -f /etc/xdg/kwalletrc' \
+  "$data_root/calamares/modules/shellprocess.conf" \
+  || fail "an installed system with automatic login would ask to set up a wallet"
 
 logo="$data_root/icons/kernora-logo.svg"
 [[ -s "$logo" ]] || fail "logo master is missing"

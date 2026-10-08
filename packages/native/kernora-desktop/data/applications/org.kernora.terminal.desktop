@@ -13,6 +13,7 @@ Categories=System;TerminalEmulator;
 Keywords=terminal;shell;console;command;терминал;консоль;командная строка;
 StartupNotify=true
 StartupWMClass=org.kernora.terminal
+X-KDE-Shortcuts=Ctrl+Alt+T
 Actions=New;
 
 [Desktop Action New]

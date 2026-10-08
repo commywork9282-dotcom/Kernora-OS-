@@ -68,6 +68,8 @@ data/kconf_update/kernora-librewolf-chrome.sh usr/share/kconf_update
 generated/sounds/kernora usr/share/sounds
 data/kconf_update/kernora-sound-theme.upd usr/share/kconf_update
 data/kconf_update/kernora-sound-theme.sh usr/share/kconf_update
+data/kconf_update/kernora-terminal-entry.upd usr/share/kconf_update
+data/kconf_update/kernora-terminal-entry.sh usr/share/kconf_update
 data/xdg-notifyrc/plasma_workspace.notifyrc etc/xdg
 data/crash/kernora-crash-notifier usr/libexec
 data/crash/drkonqi-coredump-launcher-kernora.conf usr/lib/systemd/user/drkonqi-coredump-launcher@.service.d

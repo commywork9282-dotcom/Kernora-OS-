@@ -24,18 +24,19 @@ SettingsPage {
     readonly property var groups: [
         { id: "kwin", title: i18n("Windows and desktops") },
         { id: "plasmashell", title: i18n("Desktop and panel") },
-        { id: "org_kernora_screenshot_desktop", title: i18n("Screenshot") },
+        { id: "org.kernora.screenshot.desktop", title: i18n("Screenshot") },
+        { id: "org.kernora.terminal.desktop", title: i18n("Terminal") },
         { id: "mediacontrol", title: i18n("Media") },
         { id: "kmix", title: i18n("Volume") },
         { id: "KDE_Keyboard_Layout_Switcher", title: i18n("Keyboard layout") },
         { id: "org_kde_powerdevil", title: i18n("Power") },
-        { id: "org_kde_kscreen_desktop", title: i18n("Screens") },
+        { id: "org.kde.kscreen.desktop", title: i18n("Screens") },
         { id: "kcm_touchpad", title: i18n("Touchpad") },
         { id: "kaccess", title: i18n("Accessibility") },
-        { id: "org_kde_plasma_emojier_desktop", title: i18n("Emoji") },
+        { id: "org.kde.plasma.emojier.desktop", title: i18n("Emoji") },
         { id: "ksmserver", title: i18n("Session") }
     ]
-    readonly property var hidden: ["ActivityManager", "org_kde_krunner_desktop", "systemsettings_desktop"]
+    readonly property var hidden: ["ActivityManager", "org.kde.krunner.desktop", "systemsettings.desktop"]
 
     function groupTitle(component: string, friendly: string): string {
         const group = groups.find(g => g.id === component);
@@ -55,7 +56,8 @@ SettingsPage {
                     if (ok2) {
                         for (const info of infos) {
                             if (!page.hidden.includes(info[2]) && String(info[1]).length > 0) {
-                                found.push({ component: info[2], componentName: info[3], name: info[0], title: info[1],
+                                found.push({ component: info[2], componentName: info[3], name: info[0],
+                                             title: info[0] === "_launch" ? i18nc("start the app", "Open") : info[1],
                                              keys: info[6], defaults: info[7] });
                             }
                         }
@@ -187,7 +189,7 @@ SettingsPage {
         }
 
         icon: "preferences-desktop-keyboard-shortcut"
-        title: action.title || ""
+        title: action.name === "_launch" ? page.groupTitle(action.component, action.componentName) : (action.title || "")
         text: key !== 0 ? "" : i18n("Press the new shortcut, or Esc to cancel.")
         acceptText: i18n("Set")
         acceptEnabled: key !== 0

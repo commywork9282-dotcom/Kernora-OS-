@@ -1,3 +1,15 @@
+kernora-desktop (1.4.4) UNRELEASED; urgency=medium
+
+  * The installer keeps the wallet off on systems that log in
+    automatically: without a password at login the wallet cannot be
+    unlocked, and saving a Wi-Fi password would open KDE's wallet setup.
+  * Ctrl+Alt+T opens the terminal, as it did with Konsole.
+  * A terminal started as plain alacritty shows the Kernora terminal icon
+    and name instead of the Wayland logo; kernora-terminal-entry updates
+    the entry in existing accounts.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 08:00:00 -0700
+
 kernora-desktop (1.4.3) UNRELEASED; urgency=medium
 
   * The greeter names the sessions Kernora and Kernora (X11) instead of

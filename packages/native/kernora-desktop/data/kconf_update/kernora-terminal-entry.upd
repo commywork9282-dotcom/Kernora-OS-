@@ -1,0 +1,4 @@
+Version=6
+
+Id=kernora_terminal_entry
+Script=kernora-terminal-entry.sh,sh

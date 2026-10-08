@@ -310,6 +310,8 @@ for path in \
   usr/share/sounds/kernora/stereo/bell-window-system.wav \
   usr/share/kconf_update/kernora-sound-theme.upd \
   usr/share/kconf_update/kernora-sound-theme.sh \
+  usr/share/kconf_update/kernora-terminal-entry.upd \
+  usr/share/kconf_update/kernora-terminal-entry.sh \
   etc/xdg/plasma_workspace.notifyrc \
   usr/libexec/kernora-crash-notifier \
   usr/lib/systemd/user/drkonqi-coredump-launcher@.service.d/drkonqi-coredump-launcher-kernora.conf \
@@ -328,6 +330,12 @@ grep -Fxq 'X-KDE-Shortcuts=Alt+F2,Search' "$temporary_root/desktop/usr/share/kgl
 grep -Fq 'launcher.globalShortcut = "Alt+Space"' \
   "$temporary_root/desktop/usr/share/plasma/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
   || fail "the Kernora launcher does not open with Alt+Space"
+grep -Fxq 'X-KDE-Shortcuts=Ctrl+Alt+T' "$temporary_root/desktop/usr/share/applications/org.kernora.terminal.desktop" \
+  || fail "Ctrl+Alt+T does not open the terminal"
+[[ "$(readlink "$temporary_root/desktop/usr/share/kglobalaccel/org.kernora.terminal.desktop")" == */applications/org.kernora.terminal.desktop ]] \
+  || fail "kglobalaccel does not see the terminal's launch shortcut"
+grep -Fxq 'Icon=org.kernora.terminal' "$temporary_root/desktop/etc/skel/.local/share/applications/Alacritty.desktop" \
+  || fail "a terminal started without its class shows the Wayland icon"
 grep -Fq 'clipboard.globalShortcut = "Meta+V"' \
   "$temporary_root/desktop/usr/share/plasma/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
   || fail "the Kernora clipboard does not open with Meta+V"
