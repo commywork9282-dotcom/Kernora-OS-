@@ -1,3 +1,12 @@
+kernora-desktop (1.4.6) UNRELEASED; urgency=high
+
+  * Ensure the installed root directory belongs to root before finishing
+    installation, including when installing from an affected older ISO.
+  * Fully release Plymouth and start SDDM after plymouth-quit. This fixes
+    Xorg hanging on QXL guests during the handover from the boot splash.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 13:40:00 -0700
+
 kernora-desktop (1.4.4) UNRELEASED; urgency=medium
 
   * The installer keeps the wallet off on systems that log in

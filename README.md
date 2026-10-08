@@ -12,6 +12,10 @@ The project is in early development. Test builds are published under
 Releases. Packages are signed with a development key for now; there is no
 release key yet.
 
+If an older image leaves an installed system at a black screen, see
+[boot recovery](docs/BOOT-RECOVERY.md). The current image and package updates
+repair the root directory ownership that caused this failure.
+
 ## What's in the image
 
 - Debian 13.6 from a fixed snapshot (2026-09-01), Linux 6.12, KDE Plasma 6.3.

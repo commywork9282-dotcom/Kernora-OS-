@@ -83,3 +83,4 @@ data/plymouth/plymouthd.defaults usr/share/plymouth
 data/grub/kernora.cfg etc/default/grub.d
 generated/grub/kernora usr/share/grub/themes
 data/plymouth/plymouth-quit-kernora.conf usr/lib/systemd/system/plymouth-quit.service.d
+data/plymouth/sddm-plymouth.conf usr/lib/systemd/system/sddm.service.d

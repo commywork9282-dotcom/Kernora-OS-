@@ -60,6 +60,14 @@ awk '/usr\/share\/kernora\/settings\/Main.qml/ && !found { found = NR } /^menuen
 xorriso -osirrox on -indev "$iso" \
   -extract /live/filesystem.squashfs "$temporary_root/filesystem.squashfs" \
   > "$temporary_root/extract.txt" 2>&1
+# Inspect the root inode too: mksquashfs -tar used to assign the builder's
+# uid/gid to it, even though all archived system directories belonged to root.
+unsquashfs -lln "$temporary_root/filesystem.squashfs" \
+  > "$temporary_root/inodes.txt"
+awk '$NF == "squashfs-root" { found = 1; if ($1 != "drwxr-xr-x" || $2 != "0/0") exit 1 }
+     END { if (!found) exit 1 }' "$temporary_root/inodes.txt" \
+  || fail "SquashFS root must be root:root with mode 0755"
+
 unsquashfs -cat "$temporary_root/filesystem.squashfs" usr/lib/os-release \
   > "$temporary_root/os-release"
 grep -Fxq 'ID=kernora' "$temporary_root/os-release" \

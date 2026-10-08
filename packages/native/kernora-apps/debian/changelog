@@ -1,3 +1,9 @@
+kernora-apps (1.1.10) UNRELEASED; urgency=high
+
+  * Announce the installed-system boot fix in What's new.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 13:40:00 -0700
+
 kernora-apps (1.1.8) UNRELEASED; urgency=medium
 
   * What's new: after an update, the next login opens Welcome as

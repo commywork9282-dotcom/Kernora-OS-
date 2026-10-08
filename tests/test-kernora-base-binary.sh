@@ -41,4 +41,9 @@ if find "$temporary_root/root" -type f \
   fail "metapackage contains a file outside its documentation directory"
 fi
 
+dpkg-deb --control "$deb" "$temporary_root/control"
+[[ -x "$temporary_root/control/postinst" ]] || fail "root ownership migration is missing"
+grep -Fq 'chown 0:0 /' "$temporary_root/control/postinst" \
+  || fail "upgrade does not repair root ownership"
+
 printf 'kernora-base binary test: OK\n'

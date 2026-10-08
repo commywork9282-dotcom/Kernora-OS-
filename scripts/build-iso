@@ -52,7 +52,9 @@ install -m 0644 "$kernel_tree/${initrd_members[0]#./}" "$iso_tree/live/initrd.im
 xz --decompress --stdout "$rootfs_tar" \
   | env -u SOURCE_DATE_EPOCH \
       mksquashfs - "$iso_tree/live/filesystem.squashfs" \
-      -tar -noappend -comp xz -b 1M -no-progress \
+      -tar -numeric-owner -default-uid 0 -default-gid 0 \
+      -root-uid 0 -root-gid 0 -root-mode 0755 \
+      -noappend -comp xz -b 1M -no-progress \
       -repro-time "$source_date_epoch"
 
 install -m 0644 "$PROJECT_ROOT/configs/live/grub.cfg" \

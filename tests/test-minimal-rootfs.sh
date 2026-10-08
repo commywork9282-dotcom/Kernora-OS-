@@ -34,7 +34,7 @@ grep -Fxq 'Parent: Debian' /etc/dpkg/origins/kernora \
 
 [[ "$(dpkg-query -W -f='${Version}' base-files)" \
   == "13.8+deb13u6+kernora1" ]] || fail "wrong base-files version"
-[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.1" ]] \
+[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.2" ]] \
   || fail "kernora-base is not installed"
 
 grep -Fq 'signed-by=/usr/share/keyrings/kernora-development-archive-keyring.gpg' \

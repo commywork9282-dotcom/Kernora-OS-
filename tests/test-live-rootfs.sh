@@ -43,7 +43,7 @@ fail() {
 }
 
 grep -Fxq 'ID=kernora' /usr/lib/os-release || fail "wrong OS identity"
-[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.1" ]] \
+[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.2" ]] \
   || fail "kernora-base is not installed"
 [[ "$(dpkg-query -W -f='${Version}' linux-image-amd64)" == "6.12.107-1" ]] \
   || fail "wrong kernel metapackage version"
@@ -91,8 +91,8 @@ done
   || fail "sddm is not installed"
 
 # The Kernora Material 3 shell and what it is set in.
-[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.4" ]] \
-  || fail "kernora-desktop 1.4.4 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.6" ]] \
+  || fail "kernora-desktop 1.4.6 is not installed"
 for applet in org.kernora.launcher org.kernora.quicksettings; do
   [[ -s "/usr/share/plasma/plasmoids/$applet/contents/ui/main.qml" ]] \
     || fail "Kernora shell applet is missing: $applet"
@@ -151,8 +151,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.8" ]] \
-  || fail "kernora-apps 1.1.8 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.10" ]] \
+  || fail "kernora-apps 1.1.10 is not installed"
 for app in settings files editor photos player calculator screenshot welcome; do
   [[ -x "/usr/bin/kernora-$app" ]] || fail "Kernora application is missing: $app"
   [[ -s "/usr/share/kernora/$app/Main.qml" ]] || fail "interface of kernora-$app is missing"
@@ -345,6 +345,23 @@ PYTHON_TEST
 [[ "$(getent shadow "${LIVE_USER:?}" | cut -d: -f3)" \
   == "${LIVE_USER_LASTDAY:?}" ]] \
   || fail "live account is not aged to the snapshot day"
+
+grep -Fxq 'After=plymouth-quit.service' \
+  /usr/lib/systemd/system/sddm.service.d/sddm-plymouth.conf \
+  || fail "SDDM does not wait for the boot display to be released"
+grep -Fxq 'ExecStart=-/usr/bin/plymouth quit' \
+  /usr/lib/systemd/system/plymouth-quit.service.d/plymouth-quit-kernora.conf \
+  || fail "Plymouth would retain the splash when Xorg takes over"
+
+# Simulate the root inode copied from an affected ISO, then exercise the
+# actual packaged upgrade migration. Account ownership must remain intact.
+live_owner=$(stat -c '%u:%g' "/home/$LIVE_USER")
+chown 1000:1000 /
+/var/lib/dpkg/info/kernora-base.postinst configure
+[[ "$(stat -c '%u:%g:%a' /)" == '0:0:755' ]] \
+  || fail "kernora-base upgrade does not repair the root inode"
+[[ "$(stat -c '%u:%g' "/home/$LIVE_USER")" == "$live_owner" ]] \
+  || fail "root ownership migration changed the live account owner"
 
 printf 'inside live rootfs: OK\n'
 ROOTFS_TEST

@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-08-3",
+    "items": [
+      {
+        "icon": "system-reboot",
+        "title": {
+          "en": "Installed system boot fixed",
+          "ru": "Исправлена загрузка установленной системы"
+        },
+        "text": {
+          "en": "Fixed root directory ownership that could leave a newly installed system at a black screen. Restart after updating to restore the login screen. New installation images include the fix.",
+          "ru": "Исправлен владелец корневого каталога: из-за ошибки после установки мог появляться чёрный экран. После обновления перезагрузитесь, чтобы восстановить экран входа. Новые установочные образы уже содержат исправление."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-08",
     "items": [
       {

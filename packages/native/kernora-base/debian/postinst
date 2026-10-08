@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = configure ]; then
+    # Old ISO builds gave the SquashFS root the build user's ownership.
+    # systemd-tmpfiles then refuses to create /run/systemd/seats and friends.
+    # Repair only the root inode; home directories retain their own owners.
+    chown 0:0 /
+    chmod 0755 /
+fi
+
+#DEBHELPER#

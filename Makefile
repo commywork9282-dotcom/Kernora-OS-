@@ -31,6 +31,7 @@ unpack:
 
 verify:
 	./tests/lint-layout.sh
+	./tests/test-squashfs-root.sh
 	./tests/test-base-files-identity.sh
 	./tests/test-kernora-base-source.sh
 	./tests/test-kernora-archive-source.sh

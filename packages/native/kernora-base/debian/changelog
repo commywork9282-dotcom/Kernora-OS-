@@ -1,3 +1,11 @@
+kernora-base (1.2) UNRELEASED; urgency=high
+
+  * Repair the root directory ownership on upgrade from affected live ISOs.
+    A non-root owner prevented systemd-tmpfiles and the login screen from
+    starting correctly after installation.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 13:40:00 -0700
+
 kernora-base (1.1) UNRELEASED; urgency=medium
 
   * Depend on kernora-archive: the Debian and Kernora package archives and
