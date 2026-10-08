@@ -122,7 +122,7 @@ SettingsPage {
             icon: "system-users"
             iconStyle: "plain"
             chevron: true
-            onClicked: Process.openModule("kcm_users")
+            onClicked: page.open("AccountsPage.qml", {})
         }
     }
 

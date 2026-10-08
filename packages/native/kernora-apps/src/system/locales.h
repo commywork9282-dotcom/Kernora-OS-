@@ -52,6 +52,7 @@ public:
     Q_INVOKABLE QVariantList keyboardOptionGroups() const;
     Q_INVOKABLE void setKeyboardOption(const QString &option, bool on);
     Q_INVOKABLE void setKeyboardGroupChoice(const QString &group, const QString &option);
+    Q_INVOKABLE QString shortcutText(const QVariantList &keys) const;
 
 Q_SIGNALS:
     void changed();

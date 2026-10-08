@@ -7,6 +7,7 @@
 #include <QDBusMessage>
 #include <QDir>
 #include <QFile>
+#include <QFontDatabase>
 #include <QJSEngine>
 #include <QProcess>
 #include <QSaveFile>
@@ -180,4 +181,23 @@ void Appearance::runStep(const std::shared_ptr<Switch> &state, int index)
         }
     });
     process->start(state->steps.at(index).first, {state->steps.at(index).second});
+}
+
+QStringList Appearance::fontFamilies(bool monospace) const
+{
+    QStringList list;
+    for (const QString &family : QFontDatabase::families()) {
+        if (family.startsWith(QLatin1Char('.')) || QFontDatabase::isPrivateFamily(family)) {
+            continue;
+        }
+        if (monospace && !QFontDatabase::isFixedPitch(family)) {
+            continue;
+        }
+        if (!QFontDatabase::writingSystems(family).contains(QFontDatabase::Latin) || family.contains(QLatin1String("Emoji"))) {
+            continue;
+        }
+        list.append(family);
+    }
+    list.removeDuplicates();
+    return list;
 }

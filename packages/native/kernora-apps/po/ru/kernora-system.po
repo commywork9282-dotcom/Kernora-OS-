@@ -231,3 +231,15 @@ msgstr "Letter"
 #: src/system/locales.cpp:182
 msgid "A4"
 msgstr "A4"
+
+#: src/system/accounts.cpp:136
+msgid "Enter a user name."
+msgstr "Введите имя пользователя."
+
+#: src/system/accounts.cpp:139
+msgid "Use small Latin letters, digits, “-” and “_”, starting with a letter."
+msgstr "Используйте строчные латинские буквы, цифры, «-» и «_», первой должна быть буква."
+
+#: src/system/accounts.cpp:142
+msgid "This user name is taken."
+msgstr "Это имя пользователя уже занято."

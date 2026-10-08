@@ -55,6 +55,13 @@ static QVariant typed(const QString &type, const QVariant &value)
     if (type == QLatin1String("as")) {
         return value.toStringList();
     }
+    if (type == QLatin1String("ai")) {
+        QList<int> numbers;
+        for (const QVariant &item : value.toList()) {
+            numbers.append(item.toInt());
+        }
+        return QVariant::fromValue(numbers);
+    }
     if (type == QLatin1String("ao")) {
         QList<QDBusObjectPath> paths;
         for (const QVariant &item : value.toList()) {

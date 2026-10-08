@@ -30,6 +30,7 @@ public:
     Q_INVOKABLE void setDark(bool dark, const QJSValue &callback = QJSValue());
     Q_INVOKABLE void setGeneration(const QString &generation, const QJSValue &callback = QJSValue());
     Q_INVOKABLE void apply(const QString &generation, bool dark, const QJSValue &callback = QJSValue());
+    Q_INVOKABLE QStringList fontFamilies(bool monospace) const;
 
 Q_SIGNALS:
     void darkChanged();

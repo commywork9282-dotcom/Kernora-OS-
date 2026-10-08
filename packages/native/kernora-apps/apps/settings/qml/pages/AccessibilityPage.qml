@@ -36,7 +36,8 @@ SettingsPage {
         return isNaN(size) ? 10.5 : size;
     }
     function fontString(size: real, weight: int): string {
-        return "Roboto," + size + ",-1,5," + weight + ",0,0,0,0,0,0,0,0,0,0,1";
+        const family = String(fontEntry.value).split(",")[0] || "Roboto";
+        return family + "," + size + ",-1,5," + weight + ",0,0,0,0,0,0,0,0,0,0,1";
     }
     function setFontSize(size: real): void {
         const small = size - 1.5;
@@ -225,7 +226,7 @@ SettingsPage {
             icon: "configure"
             iconStyle: "plain"
             chevron: true
-            onClicked: Process.openModule("kcm_access")
+            onClicked: page.open("AccessibilityMorePage.qml", {})
         }
     }
 }

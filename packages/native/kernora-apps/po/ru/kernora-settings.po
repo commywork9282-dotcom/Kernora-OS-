@@ -2937,3 +2937,287 @@ msgstr "звуковая тема kernora ocean вход мелодия сигн
 msgctxt "the trash has nothing in it"
 msgid "Empty"
 msgstr "Пусто"
+
+#: apps/settings/qml/pages/AccountsPage.qml:19
+msgid "Accounts"
+msgstr "Аккаунты"
+
+#: apps/settings/qml/pages/AccountsPage.qml:20
+msgid "People who use this computer"
+msgstr "Люди, которые пользуются этим компьютером"
+
+#: apps/settings/qml/pages/AccountsPage.qml:28
+msgid "The account “%1” was added."
+msgstr "Аккаунт «%1» добавлен."
+
+#: apps/settings/qml/pages/AccountsPage.qml:54
+msgid "(you)"
+msgstr "(вы)"
+
+#: apps/settings/qml/pages/AccountsPage.qml:55 apps/settings/qml/pages/AccountsPage.qml:151 apps/settings/qml/pages/UserPage.qml:61
+msgid "Administrator"
+msgstr "Администратор"
+
+#: apps/settings/qml/pages/AccountsPage.qml:55
+msgid "Standard account"
+msgstr "Обычный аккаунт"
+
+#: apps/settings/qml/pages/AccountsPage.qml:68 apps/settings/qml/pages/AccountsPage.qml:96
+msgid "Add an account"
+msgstr "Добавить аккаунт"
+
+#: apps/settings/qml/pages/AccountsPage.qml:84
+msgid "Only an administrator can add accounts."
+msgstr "Добавлять аккаунты может только администратор."
+
+#: apps/settings/qml/pages/AccountsPage.qml:97
+msgid "Add"
+msgstr "Добавить"
+
+#: apps/settings/qml/pages/AccountsPage.qml:124
+msgid "User name"
+msgstr "Имя пользователя"
+
+#: apps/settings/qml/pages/AccountsPage.qml:125
+msgid "Used to log in; small Latin letters and digits"
+msgstr "Для входа в систему; строчные латинские буквы и цифры"
+
+#: apps/settings/qml/pages/AccountsPage.qml:144
+msgid "Repeat the password"
+msgstr "Повторите пароль"
+
+#: apps/settings/qml/pages/AccountsPage.qml:152 apps/settings/qml/pages/UserPage.qml:62
+msgid "Can install software and change settings for everyone"
+msgstr "Может устанавливать программы и менять настройки для всех"
+
+#: apps/settings/qml/pages/UserPage.qml:35
+msgid "The password was changed."
+msgstr "Пароль изменён."
+
+#: apps/settings/qml/pages/UserPage.qml:71
+msgid "Set a new password"
+msgstr "Задать новый пароль"
+
+#: apps/settings/qml/pages/UserPage.qml:72
+msgid "When the password is forgotten"
+msgstr "Если пароль забыт"
+
+#: apps/settings/qml/pages/UserPage.qml:83
+msgid "Delete the account"
+msgstr "Удалить аккаунт"
+
+#: apps/settings/qml/pages/UserPage.qml:99
+msgid "New password for %1"
+msgstr "Новый пароль для %1"
+
+#: apps/settings/qml/pages/UserPage.qml:100
+msgid "Use at least 8 characters."
+msgstr "Не меньше 8 символов."
+
+#: apps/settings/qml/pages/UserPage.qml:130
+msgid "Delete %1?"
+msgstr "Удалить %1?"
+
+#: apps/settings/qml/pages/UserPage.qml:131
+msgid "The account can no longer log in."
+msgstr "Под этим аккаунтом больше нельзя будет войти."
+
+#: apps/settings/qml/pages/UserPage.qml:132
+msgid "Delete"
+msgstr "Удалить"
+
+#: apps/settings/qml/pages/UserPage.qml:140
+msgid "Delete their files too"
+msgstr "Удалить и их файлы"
+
+#: apps/settings/qml/pages/UserPage.qml:141
+msgid "Documents, pictures and everything else in the home folder"
+msgstr "Документы, изображения и всё остальное в домашней папке"
+
+#: apps/settings/qml/pages/FontsPage.qml:87
+msgid "The quick brown fox jumps over the lazy dog"
+msgstr "Съешь же ещё этих мягких французских булок"
+
+#: apps/settings/qml/pages/FontsPage.qml:95
+msgid "Menus, buttons and the text in apps use this typeface."
+msgstr "Этим шрифтом написаны меню, кнопки и текст в приложениях."
+
+#: apps/settings/qml/pages/FontsPage.qml:113
+msgid "Interface"
+msgstr "Интерфейс"
+
+#: apps/settings/qml/pages/FontsPage.qml:116 apps/settings/qml/pages/FontsPage.qml:138
+msgid "Typeface"
+msgstr "Шрифт"
+
+#: apps/settings/qml/pages/FontsPage.qml:125 apps/settings/qml/pages/FontsPage.qml:147
+msgid "Size"
+msgstr "Размер"
+
+#: apps/settings/qml/pages/FontsPage.qml:128 apps/settings/qml/pages/FontsPage.qml:150
+msgid "%1 pt"
+msgstr "%1 пт"
+
+#: apps/settings/qml/pages/FontsPage.qml:135
+msgid "Code and terminals"
+msgstr "Код и терминал"
+
+#: apps/settings/qml/pages/FontsPage.qml:158
+msgid "Restore the Kernora fonts"
+msgstr "Вернуть шрифты Kernora"
+
+#: apps/settings/qml/components/Catalog.qml:58
+msgid "typeface font family monospace code terminal"
+msgstr "шрифт гарнитура моноширинный код терминал"
+
+#: apps/settings/qml/components/Catalog.qml:85
+msgid "users people add account administrator delete user"
+msgstr "пользователи люди добавить учётная запись администратор удалить"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:52
+msgid "Lock a key pressed twice"
+msgstr "Фиксировать клавишу двойным нажатием"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:53
+msgid "Press Shift twice and it stays on until you press it again"
+msgstr "Нажмите Shift дважды, и он останется включённым до следующего нажатия"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:61
+msgid "Turn off when two keys are pressed together"
+msgstr "Выключать, если нажаты две клавиши сразу"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:69
+msgid "Sound when a modifier key is used"
+msgstr "Звук при нажатии клавиши-модификатора"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:79
+msgid "Key delays"
+msgstr "Задержки клавиш"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:83
+msgid "Hold a key for"
+msgstr "Удерживать клавишу"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:92
+msgid "Ignore repeated presses for"
+msgstr "Игнорировать повторные нажатия"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:106
+msgid "Turn features on with the keyboard"
+msgstr "Включать функции с клавиатуры"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:107
+msgid "Press Shift five times for sticky keys, or hold it for eight seconds for slow keys"
+msgstr "Нажмите Shift пять раз для залипания клавиш или удерживайте восемь секунд для медленных клавиш"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:115
+msgid "Sound for Caps Lock and Num Lock"
+msgstr "Звук для Caps Lock и Num Lock"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:125
+msgid "Pointer"
+msgstr "Указатель"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:128
+msgid "Move the pointer with the number keys"
+msgstr "Двигать указатель цифровыми клавишами"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:129
+msgid "The keys around 5 move it, 5 clicks"
+msgstr "Клавиши вокруг 5 двигают его, 5 — щелчок"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:137
+msgid "Pointer speed with the keys"
+msgstr "Скорость указателя с клавиатуры"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:142
+msgid "Slow"
+msgstr "Медленно"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:144
+msgid "Fast"
+msgstr "Быстро"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:150
+msgid "Shake the pointer to find it"
+msgstr "Встряхнуть указатель, чтобы найти его"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:151
+msgid "Shaking the mouse makes the pointer bigger for a moment"
+msgstr "Если потрясти мышь, указатель ненадолго увеличится"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:161
+msgid "Alerts"
+msgstr "Сигналы"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:164
+msgid "Play the system bell"
+msgstr "Системный звонок"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:165
+msgid "A short sound when an app asks for attention"
+msgstr "Короткий звук, когда приложение просит внимания"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:24
+msgid "Windows and desktops"
+msgstr "Окна и рабочие столы"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:25
+msgid "Desktop and panel"
+msgstr "Рабочий стол и панель"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:26
+msgid "Screenshot"
+msgstr "Снимок экрана"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:27
+msgid "Media"
+msgstr "Медиа"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:29
+msgid "Keyboard layout"
+msgstr "Раскладка клавиатуры"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:30
+msgid "Power"
+msgstr "Питание"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:31
+msgid "Screens"
+msgstr "Экраны"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:34
+msgid "Emoji"
+msgstr "Эмодзи"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:112
+msgid "The shortcut could not be changed."
+msgstr "Не удалось изменить сочетание клавиш."
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:121
+msgid "Search shortcuts"
+msgstr "Поиск сочетаний"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:127
+msgid "No shortcuts found"
+msgstr "Сочетания не найдены"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:128
+msgid "Try another word."
+msgstr "Попробуйте другое слово."
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:182
+msgid "Press the new shortcut, or Esc to cancel."
+msgstr "Нажмите новое сочетание или Esc для отмены."
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:234
+msgid "Already used for “%1”. It will be taken from there."
+msgstr "Уже используется для «%1». Там оно будет снято."
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:254
+msgid "No shortcut"
+msgstr "Без сочетания"
+
+#: apps/settings/qml/components/Catalog.qml:74
+msgid "hotkeys key bindings global shortcut meta"
+msgstr "горячие клавиши сочетания комбинации meta"

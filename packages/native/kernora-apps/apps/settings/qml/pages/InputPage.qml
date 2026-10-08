@@ -298,7 +298,7 @@ SettingsPage {
             icon: "preferences-desktop-keyboard-shortcut"
             iconStyle: "plain"
             chevron: true
-            onClicked: Process.openModule("kcm_keys")
+            onClicked: page.open("ShortcutsPage.qml", {})
         }
         ListItem {
             title: i18n("Touchpad and mouse options")

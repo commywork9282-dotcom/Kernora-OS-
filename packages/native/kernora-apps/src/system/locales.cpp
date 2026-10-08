@@ -10,6 +10,7 @@
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
+#include <QKeySequence>
 #include <QLocale>
 #include <QProcess>
 #include <QXmlStreamReader>
@@ -589,4 +590,16 @@ void Locales::reloadKeyboard()
     QDBusMessage message = QDBusMessage::createSignal(QStringLiteral("/Layouts"), QStringLiteral("org.kde.keyboard"),
                                                       QStringLiteral("reloadConfig"));
     QDBusConnection::sessionBus().send(message);
+}
+
+QString Locales::shortcutText(const QVariantList &keys) const
+{
+    QStringList texts;
+    for (const QVariant &key : keys) {
+        const int value = key.toInt();
+        if (value != 0) {
+            texts.append(QKeySequence(value).toString(QKeySequence::NativeText));
+        }
+    }
+    return texts.join(QStringLiteral(", "));
 }

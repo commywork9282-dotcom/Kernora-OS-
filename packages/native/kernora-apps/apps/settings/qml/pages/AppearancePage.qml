@@ -317,7 +317,8 @@ SettingsPage {
     }
 
     function fontString(size: real, weight: int): string {
-        return "Roboto," + size + ",-1,5," + weight + ",0,0,0,0,0,0,0,0,0,0,1";
+        const family = String(fontEntry.value).split(",")[0] || "Roboto";
+        return family + "," + size + ",-1,5," + weight + ",0,0,0,0,0,0,0,0,0,0,1";
     }
     function setFontSize(size: real): void {
         const small = size - 1.5;
@@ -377,7 +378,7 @@ SettingsPage {
             icon: "preferences-desktop-font"
             iconStyle: "plain"
             chevron: true
-            onClicked: Process.openModule("kcm_fonts")
+            onClicked: page.open("FontsPage.qml", {})
         }
     }
 

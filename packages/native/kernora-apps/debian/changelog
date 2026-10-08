@@ -1,3 +1,14 @@
+kernora-apps (1.1.5) UNRELEASED; urgency=medium
+
+  * Settings has its own pages for keyboard shortcuts (record, default, no
+    shortcut, conflicts taken over), managing accounts (add, administrator,
+    password, delete), fonts and more accessibility options, instead of
+    KDE's modules.
+  * Changing the interface size in Wallpaper & style or Accessibility keeps
+    the chosen typeface.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 08:00:00 -0700
+
 kernora-apps (1.1.4) UNRELEASED; urgency=medium
 
   * Files asks about name conflicts in its own dialog (replace, keep both,

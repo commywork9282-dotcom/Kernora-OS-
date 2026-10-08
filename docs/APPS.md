@@ -74,12 +74,15 @@ The "advanced" rows in Settings open Kernora pages, not KDE's modules:
 | Keyboard, mouse & touchpad > Touchpad and mouse options | `PointerOptionsPage` | KWin's input device properties: scrolling method, right click method, tap and drag, drag lock, two-finger tap, middle click, acceleration profile, turning the touchpad off while a mouse is connected, and defaults. |
 | Battery & power > Advanced power settings | `PowerAdvancedPage` | Low and critical battery levels and the critical action, the warning level of wireless devices, the power mode for each state, the sleep mode and pausing media (`powerdevilrc`). The main page also has the low battery profile. |
 | Display & brightness > Arrange screens and more | `DisplayArrangementPage` | Dragging screens into place (they snap to each other's edges), mirroring, and per screen adaptive sync, colour range, HDR, overscan and the ICC profile where the screen supports them. |
+| Keyboard, mouse & touchpad > Keyboard shortcuts (also in Apps) | `ShortcutsPage` | Every global shortcut kglobalaccel knows, grouped and searchable. A new shortcut is recorded while global shortcuts are blocked; one already in use is taken from the other action. Default and no shortcut are one tap away (`setForeignShortcut`). |
+| Account > Manage accounts | `AccountsPage`, `UserPage` | Adding an account (the user name is made from the name, Cyrillic transliterated), making it an administrator or not, a new password and deleting it with or without its files, through AccountsService. |
+| Wallpaper & style > Fonts | `FontsPage` | The interface typeface and size and the typeface and size for code and terminals, with a preview (kdeglobals `font`, `menuFont`, `toolBarFont`, `smallestReadableFont`, `fixed` and the title bar font). |
+| Accessibility > More accessibility options | `AccessibilityMorePage` | Sticky keys options, slow and bounce key delays, turning features on from the keyboard, Caps Lock and Num Lock sounds, mouse keys and their speed, the system bell (`kaccessrc`) and shaking the pointer to find it (KWin's `shakecursor`). |
 
 KWin 6.3 has no mirroring of its own: like KDE's module, Kernora puts the
 mirror at the same position as its source, and finds mirrors that way.
 
-Keyboard shortcuts, file types, the network connection editor, managing
-accounts, more accessibility options and fonts still open KDE's modules.
+File types and the network connection editor still open KDE's modules.
 
 Files copies and moves without KIO's own dialogs: it looks for name
 conflicts first (`Files.conflicts`) and asks in a Kernora dialog whether to
