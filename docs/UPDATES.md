@@ -47,6 +47,21 @@ them like any other Kernora notification. What has been announced is kept in
 `~/.local/state/kernora-update-notifierstaterc`. The notifier exits at once in
 the live session.
 
+## What's new
+
+After an update, the next login opens a "What's new" window: Welcome started
+as `kernora-welcome --whats-new`. It says what changed, in plain words, from
+the release notes in `/usr/share/kernora/whatsnew.json`
+(`packages/native/kernora-apps/data/whatsnew.json`). Each release there has an
+`id` (its date, newest first) and items with an icon, a title and a text, each
+in English and Russian.
+
+The notifier opens the window when the newest `id` differs from `Seen` in
+`kernora-welcomerc` `[WhatsNew]`, six seconds after login. On a new
+installation, where Welcome itself is still due, it only records the newest
+release as seen. The window shows every release since the one seen last and
+then records the newest.
+
 ## Kernora's packages win over Debian's
 
 `/etc/apt/preferences.d/kernora-archive.pref` gives the Kernora archive priority
@@ -58,9 +73,12 @@ users.
 ## Publishing an update
 
 1. Change the package and add a changelog entry with a higher version.
-2. If the ISO should carry the new version, update the pins in
+2. If people will notice the change, add a release at the top of
+   `packages/native/kernora-apps/data/whatsnew.json` and publish kernora-apps
+   with it, so that the "What's new" window tells them about it.
+3. If the ISO should carry the new version, update the pins in
    `configs/live/packages.txt` and the version checks in `tests/`.
-3. Run `make publish`. It builds every package and the local archive. It then
+4. Run `make publish`. It builds every package and the local archive. It then
    signs the archive with the Kernora archive key and force-pushes it to the
    `kernora-updates` repository, which GitHub Pages serves a minute later.
 

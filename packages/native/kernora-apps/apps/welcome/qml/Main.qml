@@ -16,12 +16,12 @@ AppWindow {
     id: app
 
     width: 900
-    height: 640
+    height: whatsNew ? 720 : 640
     minimumWidth: 560
     minimumHeight: 520
     color: M3.surfaceContainer
-    visible: !(firstRun && SystemInfo.live)
-    title: i18n("Welcome")
+    visible: !(firstRun && SystemInfo.live) && !(whatsNew && notes.length === 0)
+    title: whatsNew ? i18n("What's new") : i18n("Welcome")
 
     property int page: 0
     readonly property int pages: 6
@@ -34,21 +34,44 @@ AppWindow {
         defaultValue: true
     }
 
+    ConfigEntry {
+        id: seenNotes
+        file: "kernora-welcomerc"
+        group: "WhatsNew"
+        key: "Seen"
+        defaultValue: ""
+    }
+
     function finish(): void {
-        showOnLogin.value = false;
+        if (!whatsNew) {
+            showOnLogin.value = false;
+        }
         Qt.quit();
     }
     function handleArguments(args: var): void {}
 
     readonly property bool firstRun: (startArguments || []).indexOf("--first-run") >= 0
+    readonly property bool whatsNew: (startArguments || []).indexOf("--whats-new") >= 0
+    property var notes: []
+
     Component.onCompleted: {
         if (firstRun && SystemInfo.live) {
             Qt.quit();
         }
+        if (whatsNew) {
+            const releases = SystemInfo.releaseNotes();
+            const seen = releases.findIndex(r => r.id === String(seenNotes.value));
+            notes = seen > 0 ? releases.slice(0, seen) : releases.slice(0, 1);
+            if (releases.length > 0) {
+                seenNotes.value = releases[0].id;
+            } else {
+                Qt.quit();
+            }
+        }
     }
 
-    Shortcut { sequences: ["Right", "PgDown"]; onActivated: app.page = Math.min(app.pages - 1, app.page + 1) }
-    Shortcut { sequences: ["Left", "PgUp"]; onActivated: app.page = Math.max(0, app.page - 1) }
+    Shortcut { enabled: !app.whatsNew; sequences: ["Right", "PgDown"]; onActivated: app.page = Math.min(app.pages - 1, app.page + 1) }
+    Shortcut { enabled: !app.whatsNew; sequences: ["Left", "PgUp"]; onActivated: app.page = Math.max(0, app.page - 1) }
     Shortcut { sequence: "Escape"; onActivated: app.finish() }
 
     RoundedClip {
@@ -61,13 +84,20 @@ AppWindow {
             color: M3.surface
         }
 
+        Loader {
+            anchors.fill: parent
+            active: app.whatsNew
+            sourceComponent: whatsNewView
+        }
+
         Item {
             id: viewport
             anchors.fill: parent
             anchors.bottomMargin: 88
+            visible: !app.whatsNew
 
             Repeater {
-                model: [hello, theme, style, wallpaper, apps, done]
+                model: app.whatsNew ? [] : [hello, theme, style, wallpaper, apps, done]
                 delegate: Loader {
                     id: pageLoader
                     required property var modelData
@@ -90,6 +120,7 @@ AppWindow {
             anchors.bottom: parent.bottom
             anchors.margins: 24
             spacing: 12
+            visible: !app.whatsNew
 
             QQC2.Button {
                 text: app.page === 0 ? i18n("Skip") : i18n("Back")
@@ -460,6 +491,151 @@ AppWindow {
                 }
             }
             Item { Layout.fillHeight: true }
+        }
+    }
+
+    Component {
+        id: whatsNewView
+        Item {
+            Flickable {
+                id: notesFlick
+                anchors.fill: parent
+                anchors.bottomMargin: 88
+                contentHeight: notesColumn.implicitHeight + 24
+                clip: true
+                boundsBehavior: Flickable.StopAtBounds
+                QQC2.ScrollBar.vertical: QQC2.ScrollBar {}
+
+                ColumnLayout {
+                    id: notesColumn
+                    width: notesFlick.width
+                    spacing: 12
+
+                    RoundedClip {
+                        id: banner
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 24
+                        Layout.rightMargin: 24
+                        Layout.topMargin: 24
+                        Layout.preferredHeight: 200
+                        radius: M3.classic ? M3.cornerCard : 28
+
+                        Rectangle {
+                            anchors.fill: parent
+                            color: M3.darkScheme.surface
+                        }
+                        Loader {
+                            id: bannerScene
+                            width: 960
+                            height: 600
+                            scale: banner.width / 960
+                            transformOrigin: Item.TopLeft
+                            y: (banner.height - height * scale) / 2
+                            source: "file:///usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/Scene.qml"
+                            onLoaded: {
+                                item.intro = 1;
+                                item.phase = Qt.binding(() => bannerPhase.value % 1);
+                            }
+                            QtObject {
+                                id: bannerPhase
+                                property real value: 0.35
+                            }
+                            NumberAnimation {
+                                target: bannerPhase
+                                property: "value"
+                                running: M3.motionScale > 0
+                                from: 0.35
+                                to: 1.35
+                                duration: 300000
+                                loops: Animation.Infinite
+                            }
+                        }
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 104
+                            height: 104
+                            radius: 52
+                            color: M3.primaryContainer
+                            MIcon {
+                                anchors.centerIn: parent
+                                size: 60
+                                source: "kernora-logo"
+                                color: M3.primaryContainerContent
+                            }
+                        }
+                    }
+
+                    MText {
+                        Layout.fillWidth: true
+                        Layout.topMargin: 12
+                        Layout.leftMargin: 48
+                        Layout.rightMargin: 48
+                        role: "displaySmall"
+                        wrapMode: Text.Wrap
+                        text: i18n("Kernora got even better")
+                    }
+                    MText {
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 48
+                        Layout.rightMargin: 48
+                        role: "bodyLarge"
+                        color: M3.surfaceVariantContent
+                        wrapMode: Text.Wrap
+                        text: app.notes.length === 1 ? i18n("Here is what is new in the update of %1.", app.notes[0].date)
+                                                     : i18n("Here is what is new in the latest updates.")
+                    }
+
+                    Repeater {
+                        model: app.notes
+                        delegate: ColumnLayout {
+                            id: release
+                            required property var modelData
+                            Layout.fillWidth: true
+                            Layout.leftMargin: 40
+                            Layout.rightMargin: 40
+                            Layout.topMargin: 8
+                            spacing: 2
+
+                            MText {
+                                Layout.leftMargin: 8
+                                Layout.bottomMargin: 6
+                                visible: app.notes.length > 1
+                                role: "labelLarge"
+                                color: M3.primary
+                                text: i18n("Update of %1", release.modelData.date)
+                            }
+                            Repeater {
+                                model: release.modelData.items
+                                delegate: ListItem {
+                                    required property var modelData
+                                    required property int index
+                                    Layout.fillWidth: true
+                                    title: modelData.title
+                                    subtitle: modelData.text
+                                    icon: modelData.icon
+                                    accent: index % 5
+                                    maximumSubtitleLines: 4
+                                    interactive: false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            RowLayout {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 24
+
+                Item { Layout.fillWidth: true }
+                QQC2.Button {
+                    text: i18n("Great")
+                    highlighted: true
+                    onClicked: Qt.quit()
+                }
+            }
         }
     }
 

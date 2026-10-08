@@ -7,11 +7,15 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QGuiApplication>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLocale>
 #include <QNetworkInformation>
 #include <QPointer>
 #include <QProcess>
 #include <QProcessEnvironment>
+#include <QStandardPaths>
 #include <QTimer>
 
 #include <KAboutData>
@@ -34,6 +38,7 @@ static constexpr int FirstCheck = 2 * 60;
 static constexpr int CheckInterval = 6 * 60 * 60;
 static constexpr int RefreshAge = 24 * 60 * 60;
 static constexpr int RestartInterval = 10 * 60;
+static constexpr int WhatsNewDelay = 6;
 
 static QString readFile(const QString &path)
 {
@@ -66,6 +71,36 @@ static void openUpdates(KNotification *notification)
     process.setArguments({QStringLiteral("kcm_updates")});
     process.setProcessEnvironment(environment);
     process.startDetached();
+}
+
+static QString latestRelease()
+{
+    QFile file(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("kernora/whatsnew.json")));
+    if (!file.open(QIODevice::ReadOnly)) {
+        return QString();
+    }
+    return QJsonDocument::fromJson(file.readAll()).array().at(0).toObject().value(QStringLiteral("id")).toString();
+}
+
+static void showWhatsNew()
+{
+    const QString latest = latestRelease();
+    if (latest.isEmpty()) {
+        return;
+    }
+    KSharedConfig::Ptr welcome = KSharedConfig::openConfig(QStringLiteral("kernora-welcomerc"));
+    KConfigGroup notes = welcome->group(QStringLiteral("WhatsNew"));
+    if (notes.readEntry("Seen", QString()) == latest) {
+        return;
+    }
+    if (welcome->group(QStringLiteral("General")).readEntry("ShowOnLogin", true)) {
+        notes.writeEntry("Seen", latest);
+        notes.sync();
+        return;
+    }
+    QTimer::singleShot(WhatsNewDelay * 1000, qApp, []() {
+        QProcess::startDetached(QStringLiteral("kernora-welcome"), {QStringLiteral("--whats-new")});
+    });
 }
 
 class Notifier : public QObject
@@ -236,6 +271,7 @@ int main(int argc, char **argv)
     }
 
     KDBusService service(KDBusService::Unique);
+    showWhatsNew();
     Notifier notifier;
     return app.exec();
 }

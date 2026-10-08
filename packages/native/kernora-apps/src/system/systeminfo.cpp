@@ -3,19 +3,25 @@
 
 #include "systeminfo.h"
 
+#include <QDate>
 #include <QFile>
 #include <QGuiApplication>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLocale>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include <QRegularExpression>
+#include <QStandardPaths>
 #include <QStorageInfo>
 #include <QSysInfo>
 #include <QThread>
 
 #include <KCoreAddons>
 #include <KFormat>
+#include <KLocalizedString>
 
 #include <sys/sysinfo.h>
 #include <sys/utsname.h>
@@ -230,4 +236,48 @@ qint64 SystemInfo::uptimeSeconds() const
 {
     struct sysinfo info;
     return sysinfo(&info) == 0 ? info.uptime : 0;
+}
+
+static QString localized(const QJsonValue &value)
+{
+    if (value.isString()) {
+        return value.toString();
+    }
+    const QJsonObject texts = value.toObject();
+    for (const QString &language : KLocalizedString::languages()) {
+        if (texts.contains(language)) {
+            return texts.value(language).toString();
+        }
+        const QString base = language.section(QLatin1Char('_'), 0, 0);
+        if (texts.contains(base)) {
+            return texts.value(base).toString();
+        }
+    }
+    return texts.value(QStringLiteral("en")).toString();
+}
+
+QVariantList SystemInfo::releaseNotes() const
+{
+    QFile file(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("kernora/whatsnew.json")));
+    if (!file.open(QIODevice::ReadOnly)) {
+        return {};
+    }
+    QVariantList releases;
+    const QJsonArray entries = QJsonDocument::fromJson(file.readAll()).array();
+    for (const QJsonValue &entry : entries) {
+        const QJsonObject release = entry.toObject();
+        QVariantList items;
+        const QJsonArray changes = release.value(QStringLiteral("items")).toArray();
+        for (const QJsonValue &change : changes) {
+            const QJsonObject item = change.toObject();
+            items.append(QVariantMap{{QStringLiteral("icon"), item.value(QStringLiteral("icon")).toString()},
+                                     {QStringLiteral("title"), localized(item.value(QStringLiteral("title")))},
+                                     {QStringLiteral("text"), localized(item.value(QStringLiteral("text")))}});
+        }
+        const QString id = release.value(QStringLiteral("id")).toString();
+        releases.append(QVariantMap{{QStringLiteral("id"), id},
+                                    {QStringLiteral("date"), QLocale().toString(QDate::fromString(id, Qt::ISODate), QStringLiteral("d MMMM yyyy"))},
+                                    {QStringLiteral("items"), items}});
+    }
+    return releases;
 }

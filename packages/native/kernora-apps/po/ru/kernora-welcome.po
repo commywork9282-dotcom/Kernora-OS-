@@ -196,3 +196,27 @@ msgstr "2014 · бумага и чернила"
 #: apps/welcome/qml/Main.qml
 msgid "Kernora's wallpapers are alive: they move slowly and rest behind your windows."
 msgstr "Обои Kernora живые: они медленно движутся и замирают за вашими окнами."
+
+#: apps/welcome/qml/Main.qml:24
+msgid "What's new"
+msgstr "Что нового"
+
+#: apps/welcome/qml/Main.qml:575
+msgid "Kernora got even better"
+msgstr "Kernora стала ещё лучше"
+
+#: apps/welcome/qml/Main.qml:584
+msgid "Here is what is new in the update of %1."
+msgstr "Вот что нового в обновлении от %1."
+
+#: apps/welcome/qml/Main.qml:585
+msgid "Here is what is new in the latest updates."
+msgstr "Вот что нового в последних обновлениях."
+
+#: apps/welcome/qml/Main.qml:605
+msgid "Update of %1"
+msgstr "Обновление от %1"
+
+#: apps/welcome/qml/Main.qml:634
+msgid "Great"
+msgstr "Отлично"

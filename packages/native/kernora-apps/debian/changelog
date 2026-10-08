@@ -1,3 +1,12 @@
+kernora-apps (1.1.8) UNRELEASED; urgency=medium
+
+  * What's new: after an update, the next login opens Welcome as
+    kernora-welcome --whats-new, which tells what changed from the release
+    notes in /usr/share/kernora/whatsnew.json. kernora-update-notifier
+    opens it once per release; new installations skip it.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 11:00:00 -0700
+
 kernora-apps (1.1.7) UNRELEASED; urgency=medium
 
   * kernora-update-notifier: a notification when updates are ready to

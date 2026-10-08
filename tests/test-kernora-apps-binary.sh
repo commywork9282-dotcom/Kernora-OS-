@@ -49,6 +49,15 @@ grep -qx 'Exec=kernora-update-notifier' \
   || fail "the update notifier is not started at login"
 grep -qx 'DesktopEntry=org.kernora.settings' "$temporary_root/usr/share/knotifications6/kernora-updates.notifyrc" \
   || fail "update notifications would not come from Settings"
+python3 - "$temporary_root/usr/share/kernora/whatsnew.json" <<'PYTHON_TEST' || fail "the release notes for What's new are missing or broken"
+import json, sys
+releases = json.load(open(sys.argv[1], encoding="utf-8"))
+assert releases and all(r["id"] and r["items"] for r in releases)
+ids = [r["id"] for r in releases]
+assert ids == sorted(ids, reverse=True), "newest release first"
+for item in (i for r in releases for i in r["items"]):
+    assert item["icon"] and item["title"]["en"] and item["title"]["ru"] and item["text"]["en"] and item["text"]["ru"]
+PYTHON_TEST
 grep -q 'kernora-settings' "$temporary_root/usr/bin/systemsettings" \
   || fail "the systemsettings wrapper is missing"
 grep -Fxq 'License: MPL-2.0' "$temporary_root/usr/share/kernora/copyright/librewolf" \

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 cmake_minimum_required(VERSION 3.25)
-project(kernora-apps VERSION 1.1.7 LANGUAGES CXX)
+project(kernora-apps VERSION 1.1.8 LANGUAGES CXX)
 
 set(QT_MIN_VERSION 6.8)
 set(KF_MIN_VERSION 6.13)
@@ -48,6 +48,7 @@ install(FILES data/copyright/librewolf DESTINATION ${KDE_INSTALL_DATADIR}/kernor
 install(FILES data/knotifications/kernora-screenshot.notifyrc data/knotifications/kernora-updates.notifyrc
         DESTINATION ${KDE_INSTALL_KNOTIFYRCDIR})
 install(FILES data/autostart/org.kernora.update-notifier.desktop DESTINATION ${KDE_INSTALL_AUTOSTARTDIR})
+install(FILES data/whatsnew.json DESTINATION ${KDE_INSTALL_DATADIR}/kernora)
 
 ki18n_install(po)
 

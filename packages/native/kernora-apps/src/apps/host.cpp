@@ -71,11 +71,17 @@ int run(int &argc, char **argv, const Application &application, KLocalizedString
     QCommandLineOption firstRun(QStringLiteral("first-run"));
     firstRun.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(firstRun);
+    QCommandLineOption whatsNew(QStringLiteral("whats-new"));
+    whatsNew.setFlags(QCommandLineOption::HiddenFromHelp);
+    parser.addOption(whatsNew);
     parser.process(app);
     about.processCommandLine(&parser);
     QStringList arguments = normalised(parser.positionalArguments(), QDir::currentPath());
     if (parser.isSet(firstRun)) {
         arguments.prepend(QStringLiteral("--first-run"));
+    }
+    if (parser.isSet(whatsNew)) {
+        arguments.prepend(QStringLiteral("--whats-new"));
     }
 
     std::unique_ptr<KDBusService> service;

@@ -1,0 +1,73 @@
+[
+  {
+    "id": "2026-10-08",
+    "items": [
+      {
+        "icon": "system-software-update",
+        "title": {
+          "en": "Update notifications",
+          "ru": "Уведомления об обновлениях"
+        },
+        "text": {
+          "en": "Kernora tells you when updates are ready and reminds you to restart after a system update. After the restart, this window tells you what is new.",
+          "ru": "Kernora сама сообщает, когда готовы обновления, и напоминает перезагрузиться после обновления системы. А после перезагрузки рассказывает в этом окне, что нового."
+        }
+      },
+      {
+        "icon": "preferences-desktop-sound",
+        "title": {
+          "en": "Kernora sounds",
+          "ru": "Звуки Kernora"
+        },
+        "text": {
+          "en": "Soft new sounds for logging in, notifications, volume, screenshots and the trash. Choose and listen to them in Settings › Sound.",
+          "ru": "Новые мягкие звуки для входа, уведомлений, громкости, снимков экрана и корзины. Выбрать и послушать их можно в Настройки › Звук."
+        }
+      },
+      {
+        "icon": "preferences-desktop-keyboard-shortcut",
+        "title": {
+          "en": "Keyboard shortcuts",
+          "ru": "Сочетания клавиш"
+        },
+        "text": {
+          "en": "Every shortcut in one place: find the one you need and just press a new one. Ctrl+Alt+T opens the terminal again.",
+          "ru": "Все сочетания в одном месте: найдите нужное и просто нажмите новое. А Ctrl+Alt+T снова открывает терминал."
+        }
+      },
+      {
+        "icon": "system-users",
+        "title": {
+          "en": "Accounts",
+          "ru": "Аккаунты"
+        },
+        "text": {
+          "en": "Add the people who use this computer, make them administrators and change their passwords right in Settings.",
+          "ru": "Добавляйте людей, которые пользуются компьютером, делайте их администраторами и меняйте пароли прямо в Настройках."
+        }
+      },
+      {
+        "icon": "preferences-desktop-font",
+        "title": {
+          "en": "Fonts and accessibility",
+          "ru": "Шрифты и специальные возможности"
+        },
+        "text": {
+          "en": "Pick a typeface for the interface and one for code. Sticky keys, moving the pointer with the keyboard and shaking the mouse to find the pointer are in Accessibility.",
+          "ru": "Выберите шрифт для интерфейса и для кода. Залипание клавиш, управление указателем с клавиатуры и встряхивание мыши, чтобы найти курсор, — в специальных возможностях."
+        }
+      },
+      {
+        "icon": "applications-system",
+        "title": {
+          "en": "One style everywhere",
+          "ru": "Всё в одном стиле"
+        },
+        "text": {
+          "en": "Fewer windows from KDE: Files asks itself what to do with matching names, a short notification replaces the crash report, and the browser's dialogs look like Kernora.",
+          "ru": "Меньше окон от KDE: Файлы сами спрашивают, что делать с одинаковыми именами, вместо отчёта о сбое приходит короткое уведомление, а окна браузера выглядят как Kernora."
+        }
+      }
+    ]
+  }
+]
