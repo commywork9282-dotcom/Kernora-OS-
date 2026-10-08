@@ -8,11 +8,18 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Shapes
 import "materialshapes.js" as MaterialShapes
-import "palette.js" as Palette
+import org.kernora.m3
 import "choreography.js" as Choreography
 
 Item {
     id: scene
+
+    readonly property string colour: M3.colour
+    Loader {
+        id: paletteSource
+        source: Qt.resolvedUrl("palettes/" + scene.colour + ".qml")
+    }
+    readonly property var colours: paletteSource.item ? paletteSource.item.palette : null
 
     property real phase: 0
     property real intro: 1
@@ -42,7 +49,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Palette.palette.background
+        color: scene.colours ? scene.colours.background : "black"
     }
 
     Repeater {
@@ -78,7 +85,7 @@ Item {
             ShapePath {
                 strokeWidth: -1
                 strokeColor: "transparent"
-                fillColor: Choreography.colour(shape.spec, scene.sampledPhase, scene.colourCycle)
+                fillColor: Choreography.colour(scene.colours, shape.spec, scene.sampledPhase, scene.colourCycle)
                 PathSvg {
                     path: MaterialShapes.shapes[shape.spec.shape].path
                 }

@@ -31,4 +31,5 @@ target_link_libraries(kernorasystem PRIVATE
 )
 
 ecm_finalize_qml_module(kernorasystem DESTINATION ${KDE_INSTALL_QMLDIR})
-target_compile_definitions(kernorasystem PRIVATE TRANSLATION_DOMAIN="kernora-system")
+target_compile_definitions(kernorasystem PRIVATE TRANSLATION_DOMAIN="kernora-system"
+    KERNORA_LIBEXECDIR="${KDE_INSTALL_FULL_LIBEXECDIR}")

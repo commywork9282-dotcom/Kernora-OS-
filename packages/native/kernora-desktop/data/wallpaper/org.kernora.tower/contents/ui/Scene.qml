@@ -8,11 +8,32 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Shapes
 import "materialshapes.js" as MaterialShapes
-import "palette.js" as Palette
+import org.kernora.m3
 import "tower.js" as Tower
 
 Item {
     id: scene
+
+    readonly property string colour: M3.colour
+    Loader {
+        id: paletteSource
+        source: Qt.resolvedUrl("palettes/" + scene.colour + ".qml")
+    }
+    readonly property var colours: paletteSource.item ? paletteSource.item.palette : null
+
+    function c(family: string, tone: real): color {
+        const p = scene.colours;
+        if (!p) {
+            return "transparent";
+        }
+        let best = p.tones[0];
+        for (const t of p.tones) {
+            if (Math.abs(t - tone) < Math.abs(best - tone)) {
+                best = t;
+            }
+        }
+        return p.families[family][String(best)];
+    }
 
     property real phase: 0
     property real intro: 1
@@ -32,7 +53,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Palette.c("paper", 94)
+        color: scene.c("paper", 94)
     }
 
     Shape {
@@ -48,7 +69,7 @@ Item {
         ShapePath {
             strokeWidth: -1
             strokeColor: "transparent"
-            fillColor: Palette.c("paper", 90)
+            fillColor: scene.c("paper", 90)
             PathSvg {
                 path: MaterialShapes.shapes.cookie12.path
             }
@@ -59,7 +80,7 @@ Item {
         y: scene.height * Tower.FLOOR
         width: scene.width
         height: scene.height - y
-        color: Palette.c("paper", 86)
+        color: scene.c("paper", 86)
     }
 
     Repeater {
@@ -99,7 +120,7 @@ Item {
                     visible: piece.spec.shape === "slab"
                     anchors.fill: parent
                     radius: height / 2
-                    color: Palette.c(piece.spec.family, piece.spec.tone)
+                    color: scene.c(piece.spec.family, piece.spec.tone)
                 }
                 Shape {
                     visible: piece.spec.shape !== "slab"
@@ -113,7 +134,7 @@ Item {
                     ShapePath {
                         strokeWidth: -1
                         strokeColor: "transparent"
-                        fillColor: Palette.c(piece.spec.family, piece.spec.tone)
+                        fillColor: scene.c(piece.spec.family, piece.spec.tone)
                         PathSvg {
                             path: piece.spec.shape === "slab" ? "" : MaterialShapes.shapes[piece.spec.shape].path
                         }

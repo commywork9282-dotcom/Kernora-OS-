@@ -46,7 +46,7 @@ def render(
 ) -> str:
     roles = design.DARK if dark else design.LIGHT
     label = design.GENERATION_LABEL[design.GENERATION]
-    name = name or f"{design.SCHEME_NAME}{label} {'Dark' if dark else 'Light'}"
+    name = name or f"{design.SCHEME_NAME}{design.COLOUR_LABEL}{label} {'Dark' if dark else 'Light'}"
     surfaces = surfaces or {}
 
     def pick(section: str, background: str, alternate: str) -> tuple[str, str]:

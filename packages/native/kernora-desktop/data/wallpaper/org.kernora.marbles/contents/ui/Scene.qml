@@ -8,11 +8,32 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Shapes
 import "materialshapes.js" as MaterialShapes
-import "palette.js" as Palette
+import org.kernora.m3
 import "run.js" as Run
 
 Item {
     id: scene
+
+    readonly property string colour: M3.colour
+    Loader {
+        id: paletteSource
+        source: Qt.resolvedUrl("palettes/" + scene.colour + ".qml")
+    }
+    readonly property var colours: paletteSource.item ? paletteSource.item.palette : null
+
+    function c(family: string, tone: real): color {
+        const p = scene.colours;
+        if (!p) {
+            return "transparent";
+        }
+        let best = p.tones[0];
+        for (const t of p.tones) {
+            if (Math.abs(t - tone) < Math.abs(best - tone)) {
+                best = t;
+            }
+        }
+        return p.families[family][String(best)];
+    }
 
     property real phase: 0
     property real intro: 1
@@ -53,12 +74,12 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Palette.c("board", 18)
+        color: scene.c("board", 18)
     }
 
     MaterialShape {
         shape: "flower"
-        colour: Palette.c("board", 21)
+        colour: scene.c("board", 21)
         size: scene.height * 1.0
         x: -scene.height * 0.25 - width / 2 + size / 2
         y: scene.height * 0.62 - height / 2
@@ -67,7 +88,7 @@ Item {
     }
     MaterialShape {
         shape: "cookie9"
-        colour: Palette.c("board", 21)
+        colour: scene.c("board", 21)
         size: scene.height * 0.5
         x: scene.width * 0.3 - width / 2
         y: scene.height * 0.06 - height / 2
@@ -92,19 +113,19 @@ Item {
             width: lift ? lift.width + parent.wall * 2 : 0
             height: lift ? lift.bottom - lift.top + parent.wall * 2 : 0
             radius: width / 2
-            color: Palette.c("cream", 84)
+            color: scene.c("cream", 84)
         }
         Rectangle {
             x: frame.x + parent.wall
             y: parent.slotTop
             width: frame.width - parent.wall * 2
             height: parent.slotBottom - parent.slotTop
-            color: Palette.c("board", 12)
+            color: scene.c("board", 12)
             Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: Math.max(2, parent.width * 0.05)
                 height: parent.height
-                color: Palette.c("board", 26)
+                color: scene.c("board", 26)
             }
         }
 
@@ -126,7 +147,7 @@ Item {
                     radius: height / 2
                     x: scene.plan ? scene.plan.lift.x - width / 2 - parent.x : 0
                     y: pose && pose.cup !== null ? pose.cup - parent.y : 0
-                    color: Palette.c("cream", 84)
+                    color: scene.c("cream", 84)
                 }
             }
         }
@@ -148,7 +169,7 @@ Item {
                     x: cx - width / 2
                     y: cy - height / 2
                     rotation: ramp.modelData.angle + (ramp.modelData.b[0] < ramp.modelData.a[0] ? 180 : 0)
-                    color: Palette.c("track", 70)
+                    color: scene.c("track", 70)
                 }
 
                 Rectangle {
@@ -159,12 +180,12 @@ Item {
                     width: r * 2
                     height: ramp.modelData.post ? ramp.modelData.a[1] - ramp.modelData.post.top + ramp.thickness * 0.5 : 0
                     radius: r
-                    color: Palette.c("track", 58)
+                    color: scene.c("track", 58)
                 }
                 MaterialShape {
                     visible: ramp.modelData.post !== null
                     shape: "sunny"
-                    colour: Palette.c("amber", 80)
+                    colour: scene.c("amber", 80)
                     size: scene.unit * 0.065
                     x: ramp.modelData.post ? ramp.modelData.post.x - width / 2 : 0
                     y: ramp.modelData.post ? ramp.modelData.post.top - height / 2 : 0
@@ -182,7 +203,7 @@ Item {
                 readonly property var pose: scene.poses.length > index ? scene.poses[index] : null
                 visible: pose !== null
                 shape: spec.shape
-                colour: Palette.c(spec.family, spec.tone)
+                colour: scene.c(spec.family, spec.tone)
                 size: scene.plan ? scene.plan.radius / MaterialShapes.shapes[spec.shape].radius * scene.intro : 0
                 x: pose ? pose.x - width / 2 : 0
                 y: pose ? pose.y - height / 2 : 0

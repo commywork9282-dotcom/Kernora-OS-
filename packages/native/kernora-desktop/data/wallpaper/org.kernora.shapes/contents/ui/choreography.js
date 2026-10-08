@@ -5,7 +5,6 @@
 
 .pragma library
 .import "materialshapes.js" as Shapes
-.import "palette.js" as Palette
 
 var loopSeconds = 180;
 
@@ -46,8 +45,10 @@ function breath(spec, phase) {
     return 1 + spec.breath[0] * Math.sin(spec.breath[1] * phase * TAU + spec.breath[2]);
 }
 
-function colour(spec, phase, cycling) {
-    const p = Palette.palette;
+function colour(p, spec, phase, cycling) {
+    if (!p) {
+        return Qt.rgba(0, 0, 0, 0);
+    }
     const slot = spec.family % p.families.length;
     if (!cycling) {
         return p.fixed[slot][String(spec.tone)];

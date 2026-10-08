@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""usage: gen-plasma-theme SYMBOL_DIRECTORY OUTPUT_DIRECTORY
+"""usage: gen-plasma-theme SYMBOL_DIRECTORY OUTPUT_DIRECTORY [BASE_THEME_DIRECTORY]
 """
 
 from __future__ import annotations
 
 import json
 import math
+import os
 import pathlib
 import re
 import shutil
@@ -595,12 +596,30 @@ enabled=false
 """
 
 
+SHARED = ("dialogs", "icons", "solid", "widgets")
+
+
+def link_shared(theme: pathlib.Path, base: pathlib.Path) -> None:
+    theme.mkdir(parents=True, exist_ok=True)
+    for name in SHARED:
+        link = theme / name
+        if link.is_symlink() or link.is_file():
+            link.unlink()
+        elif link.exists():
+            shutil.rmtree(link)
+        link.symlink_to(os.path.relpath(base / name, theme))
+
+
 def main(argv: list[str]) -> int:
-    if len(argv) != 3:
+    if len(argv) not in (3, 4):
         print(__doc__.strip(), file=sys.stderr)
         return 2
     symbols = pathlib.Path(argv[1])
     output = pathlib.Path(argv[2])
+    base = pathlib.Path(argv[3]) if len(argv) == 4 else None
+    if base is not None:
+        link_shared(output, base)
+        return write_variants(output, base)
 
     files = {
         "widgets/panel-background.svg": panel_background(),
@@ -628,26 +647,36 @@ def main(argv: list[str]) -> int:
         path = output / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
+    print(f"plasma theme: {len(files)} SVG files in {output}")
+    return write_variants(output, None)
 
+
+def write_variants(output: pathlib.Path, base: pathlib.Path | None) -> int:
     label = design.GENERATION_LABEL[design.GENERATION]
-    (output / "metadata.json").write_text(
-        metadata(output.name, f"Kernora{label}", f"Kernora{label}"), encoding="utf-8")
+    name = f"Kernora{design.COLOUR_LABEL}{label}"
+    name_ru = f"Kernora{design.COLOUR_LABEL_RU}{label}"
+    (output / "metadata.json").write_text(metadata(output.name, name, name_ru), encoding="utf-8")
     (output / "plasmarc").write_text(PLASMARC, encoding="utf-8")
     (output / "colors").write_text(
-        kde_colors.render(True, THEME_SURFACES, name=f"Kernora{label} Plasma", selection=kde_colors.ACCENT_SELECTION), encoding="utf-8"
+        kde_colors.render(True, THEME_SURFACES, name=f"{name} Plasma", selection=kde_colors.ACCENT_SELECTION), encoding="utf-8"
     )
-    print(f"plasma theme: {len(files)} SVG files in {output}")
 
     light = output.parent / f"{output.name}-light"
-    if light.exists():
+    if light.is_symlink() or light.is_file():
+        light.unlink()
+    elif light.exists():
         shutil.rmtree(light)
-    shutil.copytree(output, light)
+    if base is None:
+        shutil.copytree(output, light)
+    else:
+        link_shared(light, base)
+        (light / "plasmarc").write_text(PLASMARC, encoding="utf-8")
     (light / "metadata.json").write_text(
-        metadata(f"{output.name}-light", f"Kernora{label} Light", f"Kernora{label}, светлая"), encoding="utf-8")
+        metadata(f"{output.name}-light", f"{name} Light", f"{name_ru}, светлая"), encoding="utf-8")
     (light / "colors").write_text(
-        kde_colors.render(False, THEME_SURFACES, name=f"Kernora{label} Plasma Light", selection=kde_colors.ACCENT_SELECTION), encoding="utf-8"
+        kde_colors.render(False, THEME_SURFACES, name=f"{name} Plasma Light", selection=kde_colors.ACCENT_SELECTION), encoding="utf-8"
     )
-    print(f"plasma theme: {light}")
+    print(f"plasma theme: {output} and {light}")
     return 0
 
 

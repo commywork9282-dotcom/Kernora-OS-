@@ -94,6 +94,51 @@ differences and easing curves.
 The login screen (SDDM) runs before anyone logs in and keeps Material 3; the
 lock screen follows the user's style. So does the boot (GRUB, Plymouth).
 
+## Colour themes
+
+Kernora comes in its own colour and in the Material colours: red, pink,
+purple, deep purple, indigo, blue, light blue, cyan, teal, green, light green,
+lime, yellow, amber, orange, deep orange, brown, grey and blue grey.
+`COLOURS` in `tools/kernora_design.py` lists them with their seeds and names;
+`KERNORA_COLOUR` picks one for a generator run, as `KERNORA_GENERATION` picks
+the generation. Brown, grey and blue grey carry their own chroma (24, 0 and
+16), since Material 3 would otherwise lift every seed to chroma 48, and a
+`tint` that calms their wallpapers.
+
+* **Generated themes.** `debian/rules` runs the generators once per colour
+  and generation. The colour adds its name to every theme: `KernoraBlueDark`,
+  `KernoraBlueMD1Light`, Kvantum `KernoraBlue`, GTK `KernoraBlue`, window
+  frames `kernora-blue-md1`, terminal colours in
+  `/usr/share/kernora/terminal/blue/`. Kernora's own colour keeps the old
+  names. A colour's Plasma themes (`kernora-blue`, `kernora-blue-md1-light`)
+  hold only `colors`, `metadata.json` and `plasmarc` and link `dialogs`,
+  `icons`, `solid` and `widgets` to the generation's Kernora theme: the
+  pictures are the same and Plasma recolours them from `colors`.
+* **App icons.** The ten app icons sit on a primary-container disc, so each
+  colour has a hidden icon theme `Kernora-<colour>` with only those, which
+  inherits `Kernora`. It leaves out dashed names such as `preferences-system`:
+  KIconLoader tries a theme's generic fallbacks (`preferences-system-network`
+  → `preferences-system`) before its parent themes, so such a name would
+  replace every `preferences-system-*` icon with the Settings disc.
+* **QML.** `gen-qml-tokens --palette` writes `/usr/share/kernora/palettes/
+  <colour>.conf`: the colour's name in English and Russian, its swatch and
+  every role of every generation in both modes (hex without `#`). `M3.qml`
+  keeps Kernora's palettes built in; for another colour it reads that file
+  with a QtCore `Settings` object. It takes the colour from `kernorarc`
+  (`[Style] colour=`) whenever the colour scheme changes, as it does the
+  generation, and exposes it as `M3.colour`.
+* **Live wallpapers.** `gen-wallpaper-assets` writes one palette per colour,
+  `contents/ui/palettes/<colour>.qml`. Each scene loads the one named by
+  `M3.colour` with a `Loader`, so the wallpaper changes colour with the
+  theme. Shapes rotates its families around the seed; Tower, Rhythm and Marble
+  Run turn their whole palette by the seed's hue difference from Kernora's.
+* **Switching.** `Appearance.setColour(colour)` runs the same steps as a
+  change of generation with the colour's themes, and then
+  `plasma-changeicons Kernora-<colour>`. Settings shows the colours
+  as Android-style swatches (primary over secondary container and tertiary)
+  in Wallpaper & style → Colour; `Appearance.colours()` reads them from the
+  palette files.
+
 ## Icons
 
 `data/symbols/` vendors Material Symbols Rounded, weight 400, optical size 24

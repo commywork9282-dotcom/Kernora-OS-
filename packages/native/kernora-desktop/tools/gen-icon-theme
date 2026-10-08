@@ -99,8 +99,9 @@ def main(argv: list[str]) -> int:
     written = 0
     linked = 0
     claimed: dict[str, str] = {}
+    coloured = design.COLOUR != design.DEFAULT_COLOUR
 
-    for symbol, fill, context, names in symbols_map.ICONS:
+    for symbol, fill, context, names in [] if coloured else symbols_map.ICONS:
         directory = output / "scalable" / context
         directory.mkdir(parents=True, exist_ok=True)
 
@@ -132,6 +133,8 @@ def main(argv: list[str]) -> int:
     apps.mkdir(parents=True, exist_ok=True)
     for symbol, fill, names in symbols_map.APP_ICONS:
         source = assets / symbols_map.asset_name(symbol, fill)
+        if coloured:
+            names = [name for name in names if "." in name or "-" not in name]
         primary = names[0]
         for name in names:
             if name in claimed:
@@ -151,11 +154,10 @@ def main(argv: list[str]) -> int:
     )
     index = [
         "[Icon Theme]",
-        "Name=Kernora",
+        f"Name=Kernora{design.COLOUR_LABEL}",
         "Comment=Kernora OS icons, drawn from Material Symbols Rounded",
-        "# Kernora replaces the names its own shell and the system UI ask for and",
-        "# inherits the rest, so nothing is left without an icon.",
-        "Inherits=breeze-dark,breeze,hicolor",
+        "Inherits=" + ("Kernora," if coloured else "") + "breeze-dark,breeze,hicolor",
+        "Hidden=true" if coloured else "",
         "Directories=" + ",".join(f"scalable/{name}" for name in directories),
         "",
         "Example=start-here-kde",

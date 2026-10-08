@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.7" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.8" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -49,8 +49,29 @@ assets=$(mktemp -d)
 python3 "$package_root/tools/gen-wallpaper-assets" "$assets" tower >/dev/null \
   || fail "gen-wallpaper-assets cannot write the tower's assets"
 grep -q '"hull":\[\[' "$assets/materialshapes.js" || fail "the shapes have no hulls"
-grep -q '"paper"' "$assets/palette.js" || fail "the tower's palette has no paper"
+grep -q '"paper"' "$assets/palettes/kernora.qml" || fail "the tower's palette has no paper"
+KERNORA_COLOUR=blue python3 "$package_root/tools/gen-wallpaper-assets" "$assets" tower >/dev/null \
+  || fail "gen-wallpaper-assets cannot write the tower's blue palette"
+cmp -s "$assets/palettes/kernora.qml" "$assets/palettes/blue.qml" && fail "the wallpaper does not change with the colour"
 rm -rf "$assets"
+palettes=$(mktemp -d)
+for colour in kernora blue grey; do
+  KERNORA_COLOUR=$colour python3 "$package_root/tools/gen-qml-tokens" --palette "$palettes/$colour.conf" >/dev/null \
+    || fail "no $colour palette"
+done
+grep -Fxq 'id=blue' "$palettes/blue.conf" || fail "the blue palette does not name itself"
+grep -Fxq '[md1-light]' "$palettes/blue.conf" || fail "the blue palette lacks Material Design 1"
+python3 - "$palettes/grey.conf" <<'PYTHON_TEST' || fail "the grey theme is not grey"
+import configparser, sys
+c = configparser.ConfigParser(interpolation=None)
+c.optionxform = str
+c.read(sys.argv[1])
+rgb = bytes.fromhex(c["md3-dark"]["primary"])
+assert max(rgb) - min(rgb) <= 6, rgb.hex()
+PYTHON_TEST
+KERNORA_COLOUR=violet python3 "$package_root/tools/gen-qml-tokens" --palette "$palettes/x.conf" >/dev/null 2>&1 \
+  && fail "an unknown colour was accepted"
+rm -rf "$palettes"
 [[ ! -e "$data_root/wallpapers" ]] || fail "picture wallpapers are back in the package"
 grep -Fxq 'path-exclude=/usr/share/wallpapers/Next/*' "$data_root/dpkg/kernora-wallpapers" \
   || fail "Breeze's picture wallpaper is not kept out"
@@ -166,8 +187,20 @@ for kind, values in design.CORNERS.items():
 for kind, values in design.ELEVATION_LEVEL.items():
     assert len(values) == len(design.GENERATIONS), kind
 PY
-grep -Fq 'Inherits=breeze-dark,breeze,hicolor' "$tools_root/gen-icon-theme" \
+icons=$(mktemp -d)
+python3 "$tools_root/gen-icon-theme" "$package_root/data/symbols" "$icons/Kernora" >/dev/null \
+  || fail "gen-icon-theme fails"
+grep -Fxq 'Inherits=breeze-dark,breeze,hicolor' "$icons/Kernora/index.theme" \
   || fail "icon theme does not inherit Breeze and would lose every other icon"
+KERNORA_COLOUR=blue python3 "$tools_root/gen-icon-theme" "$package_root/data/symbols" "$icons/Kernora-blue" >/dev/null \
+  || fail "gen-icon-theme fails for a colour"
+grep -Fxq 'Inherits=Kernora,breeze-dark,breeze,hicolor' "$icons/Kernora-blue/index.theme" \
+  || fail "a colour's icons do not fall back to Kernora's"
+[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 10 ]] \
+  || fail "a colour's icon theme should hold only the ten app icons"
+find "$icons/Kernora-blue" -name 'preferences-system*' | grep -q . \
+  && fail "a colour's icons would shadow preferences-system-* through KDE's generic fallback"
+rm -rf "$icons"
 grep -Fq 'LookAndFeelPackage=org.kernora.desktop' "$tools_root/gen-kdeglobals" \
   || fail "Kernora look-and-feel is not the system default"
 PYTHONDONTWRITEBYTECODE=1 python3 "$tools_root/fetch-symbols" --check >/dev/null \

@@ -449,21 +449,22 @@ def _rotated_hue(source: Hct, rotations) -> float:
 
 class Scheme:
 
-    def __init__(self, seed: str, dark: bool, contrast_boost: float = 0.0) -> None:
+    def __init__(self, seed: str, dark: bool, contrast_boost: float = 0.0, chroma: float | None = None) -> None:
         self.seed = seed
         self.dark = dark
         source = Hct.from_hex(seed)
         self.source = source
 
-        self.primary = TonalPalette(source.hue, max(source.chroma, 48.0))
+        primary = max(source.chroma, 48.0) if chroma is None else chroma
+        self.primary = TonalPalette(source.hue, primary)
         self.secondary = TonalPalette(
-            _rotated_hue(source, _SECONDARY_ROTATIONS), 16.0
+            _rotated_hue(source, _SECONDARY_ROTATIONS), 16.0 if chroma is None else min(16.0, chroma / 2)
         )
         self.tertiary = TonalPalette(
-            _rotated_hue(source, _TERTIARY_ROTATIONS), 32.0
+            _rotated_hue(source, _TERTIARY_ROTATIONS), 32.0 if chroma is None else min(32.0, chroma)
         )
-        self.neutral = TonalPalette(source.hue, 4.0)
-        self.neutral_variant = TonalPalette(source.hue, 8.0)
+        self.neutral = TonalPalette(source.hue, 4.0 if chroma is None else min(4.0, chroma / 4))
+        self.neutral_variant = TonalPalette(source.hue, 8.0 if chroma is None else min(8.0, chroma / 2))
         self.error = TonalPalette(25.0, 84.0)
         self._boost = contrast_boost
 

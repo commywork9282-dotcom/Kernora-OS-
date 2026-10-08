@@ -5,7 +5,40 @@ import os
 
 import m3color
 
-SEED = "#ff6a1e"
+COLOURS = {
+    "kernora": {"seed": "#ff6a1e", "en": "Kernora", "ru": "Kernora"},
+    "red": {"seed": "#f44336", "en": "Red", "ru": "Красный"},
+    "pink": {"seed": "#e91e63", "en": "Pink", "ru": "Розовый"},
+    "purple": {"seed": "#9c27b0", "en": "Purple", "ru": "Фиолетовый"},
+    "deep-purple": {"seed": "#673ab7", "en": "Deep purple", "ru": "Тёмно-фиолетовый"},
+    "indigo": {"seed": "#3f51b5", "en": "Indigo", "ru": "Индиго"},
+    "blue": {"seed": "#2196f3", "en": "Blue", "ru": "Синий"},
+    "light-blue": {"seed": "#03a9f4", "en": "Light blue", "ru": "Голубой"},
+    "cyan": {"seed": "#00bcd4", "en": "Cyan", "ru": "Бирюзовый"},
+    "teal": {"seed": "#009688", "en": "Teal", "ru": "Сине-зелёный"},
+    "green": {"seed": "#4caf50", "en": "Green", "ru": "Зелёный"},
+    "light-green": {"seed": "#8bc34a", "en": "Light green", "ru": "Светло-зелёный"},
+    "lime": {"seed": "#cddc39", "en": "Lime", "ru": "Лаймовый"},
+    "yellow": {"seed": "#ffeb3b", "en": "Yellow", "ru": "Жёлтый"},
+    "amber": {"seed": "#ffc107", "en": "Amber", "ru": "Янтарный"},
+    "orange": {"seed": "#ff9800", "en": "Orange", "ru": "Оранжевый"},
+    "deep-orange": {"seed": "#ff5722", "en": "Deep orange", "ru": "Тёмно-оранжевый"},
+    "brown": {"seed": "#795548", "chroma": 24.0, "tint": 0.55, "en": "Brown", "ru": "Коричневый"},
+    "grey": {"seed": "#9e9e9e", "chroma": 0.0, "tint": 0.1, "en": "Grey", "ru": "Серый"},
+    "blue-grey": {"seed": "#607d8b", "chroma": 16.0, "tint": 0.4, "en": "Blue grey", "ru": "Сине-серый"},
+}
+DEFAULT_COLOUR = "kernora"
+COLOUR = os.environ.get("KERNORA_COLOUR", DEFAULT_COLOUR)
+if COLOUR not in COLOURS:
+    raise SystemExit(f"KERNORA_COLOUR must be one of {tuple(COLOURS)}, not {COLOUR!r}")
+
+SEED = COLOURS[COLOUR]["seed"]
+SEED_CHROMA = COLOURS[COLOUR].get("chroma")
+WALLPAPER_TINT = COLOURS[COLOUR].get("tint", 1.0)
+COLOUR_SUFFIX = "" if COLOUR == DEFAULT_COLOUR else "".join(part.capitalize() for part in COLOUR.split("-"))
+COLOUR_SLUG = "" if COLOUR == DEFAULT_COLOUR else f"-{COLOUR}"
+COLOUR_LABEL = "" if COLOUR == DEFAULT_COLOUR else f" {COLOURS[COLOUR]['en']}"
+COLOUR_LABEL_RU = "" if COLOUR == DEFAULT_COLOUR else f" · {COLOURS[COLOUR]['ru']}"
 
 SCHEME_NAME = "Kernora"
 
@@ -37,7 +70,7 @@ def _classic_scheme(generation: str, dark: bool) -> dict[str, str]:
     seed = m3color.Hct.from_hex(SEED)
     hue, chroma = seed.hue, seed.chroma
     accent = CLASSIC_ACCENT_HUE
-    tonal = m3color.Scheme(SEED, dark=dark).roles()
+    tonal = m3color.Scheme(SEED, dark=dark, chroma=SEED_CHROMA).roles()
 
     if generation == "md1":
         if dark:
@@ -133,12 +166,12 @@ def _classic_scheme(generation: str, dark: bool) -> dict[str, str]:
 
 def scheme_id(dark: bool, generation: str | None = None) -> str:
     generation = generation or GENERATION
-    return f"{SCHEME_NAME}{GENERATION_SUFFIX[generation]}{'Dark' if dark else 'Light'}"
+    return f"{SCHEME_NAME}{COLOUR_SUFFIX}{GENERATION_SUFFIX[generation]}{'Dark' if dark else 'Light'}"
 
 
 def palette(generation: str, dark: bool) -> dict[str, str]:
     if generation == "md3":
-        return m3color.Scheme(SEED, dark=dark).roles()
+        return m3color.Scheme(SEED, dark=dark, chroma=SEED_CHROMA).roles()
     return _classic_scheme(generation, dark)
 
 

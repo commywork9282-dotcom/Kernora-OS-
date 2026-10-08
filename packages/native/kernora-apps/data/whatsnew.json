@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-08-5",
+    "items": [
+      {
+        "icon": "preferences-desktop-color",
+        "title": {
+          "en": "Colour themes",
+          "ru": "Цветовые темы"
+        },
+        "text": {
+          "en": "Kernora now comes in every Material colour, from red to blue grey. Apps, the panel, windows and even the live wallpapers change with it. Pick one in Settings › Wallpaper & style.",
+          "ru": "Kernora теперь бывает во всех цветах Material — от красного до сине-серого. Вместе с цветом меняются приложения, панель, окна и даже живые обои. Выберите свой в Настройки › Обои и стиль."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-08-4",
     "items": [
       {

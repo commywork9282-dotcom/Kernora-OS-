@@ -14,6 +14,8 @@ THEME_APPS = generated/icon-theme/scalable/apps
 TOOLS = tools
 SYMBOLS = data/symbols
 APPLETS = launcher:org.kernora.launcher shade:org.kernora.quicksettings clipboard:org.kernora.clipboard
+COLOURS := $(shell cd $(TOOLS) && python3 -c 'import kernora_design as d; print(" ".join(d.COLOURS))')
+EXTRA_COLOURS := $(filter-out kernora,$(COLOURS))
 
 %:
 	dh $@
@@ -48,6 +50,9 @@ override_dh_auto_build:
 	  --output=generated/splash/kernora.png $(LOGO)
 	python3 $(TOOLS)/fetch-symbols --check
 	python3 $(TOOLS)/gen-icon-theme $(SYMBOLS) generated/icon-theme
+	set -e; for colour in $(EXTRA_COLOURS); do \
+	  KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-icon-theme $(SYMBOLS) generated/icon-themes/Kernora-$$colour; \
+	done
 	python3 $(TOOLS)/gen-cursor-theme generated/kernora_cursors
 	sed \
 	  -e 's|<g transform=|<style type="text/css" id="current-color-scheme">.ColorScheme-Text{color:#eff0f1;}</style>\n  <g class="ColorScheme-Text" transform=|' \
@@ -61,6 +66,17 @@ override_dh_auto_build:
 	set -e; for generation in md1 md2; do \
 	  KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-color-schemes generated/color-schemes; \
 	  KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-plasma-theme $(SYMBOLS) generated/desktoptheme/kernora-$$generation; \
+	done
+	set -e; for colour in $(EXTRA_COLOURS); do \
+	  for generation in md1 md2 md3; do \
+	    suffix=$$(test $$generation = md3 || echo -$$generation); \
+	    KERNORA_COLOUR=$$colour KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-color-schemes generated/color-schemes; \
+	    KERNORA_COLOUR=$$colour KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-plasma-theme $(SYMBOLS) \
+	      generated/desktoptheme/kernora-$$colour$$suffix generated/desktoptheme/kernora$$suffix; \
+	  done; \
+	done
+	set -e; for colour in $(COLOURS); do \
+	  KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-qml-tokens --palette generated/palettes/$$colour.conf; \
 	done
 	python3 $(TOOLS)/gen-kdeglobals generated/xdg/kdeglobals
 	set -e; for entry in $(APPLETS); do \
@@ -78,10 +94,18 @@ override_dh_auto_build:
 	  cp -a data/wallpaper/org.kernora.$$theme generated/wallpapers/; \
 	  python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.$$theme/contents/ui $$theme; \
 	done
-	set -e; for generation in md1 md2 md3; do \
-	  KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-kvantum-theme generated/kvantum; \
-	  KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-aurorae-theme generated/aurorae; \
-	  KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-gtk-theme generated/gtk-themes; \
+	set -e; for colour in $(EXTRA_COLOURS); do \
+	  KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.shapes/contents/ui; \
+	  for theme in tower rhythm marbles; do \
+	    KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.$$theme/contents/ui $$theme; \
+	  done; \
+	done
+	set -e; for colour in $(COLOURS); do \
+	  for generation in md1 md2 md3; do \
+	    KERNORA_COLOUR=$$colour KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-kvantum-theme generated/kvantum; \
+	    KERNORA_COLOUR=$$colour KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-aurorae-theme generated/aurorae; \
+	    KERNORA_COLOUR=$$colour KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-gtk-theme generated/gtk-themes; \
+	  done; \
 	done
 	install -d generated/style/org/kernora
 	cp -a data/style/org.kernora.desktop generated/style/org/kernora/desktop
@@ -92,7 +116,9 @@ override_dh_auto_build:
 	python3 $(TOOLS)/gen-qml-tokens generated/style/org/kernora/m3/M3.qml
 	cp -a data/ui generated/style/org/kernora/ui
 	python3 $(TOOLS)/gen-translations data/shell/po generated/locale
-	python3 $(TOOLS)/gen-terminal-theme generated/terminal
+	set -e; for colour in $(COLOURS); do \
+	  KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-terminal-theme generated/terminal; \
+	done
 	python3 $(TOOLS)/gen-sound-theme generated/sounds
 	python3 $(TOOLS)/gen-browser-theme generated/librewolf/theme@kernora.os.xpi generated/librewolf/userChrome.css
 	python3 $(TOOLS)/gen-plymouth-theme $(LOGO) $(SYMBOLS) generated/plymouth/kernora

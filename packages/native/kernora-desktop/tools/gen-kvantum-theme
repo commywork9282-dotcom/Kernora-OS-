@@ -14,7 +14,7 @@ import m3color
 TOOLS = pathlib.Path(__file__).resolve().parent
 SYMBOLS = TOOLS.parent / "data" / "symbols"
 
-THEME = "Kernora" + design.GENERATION_SUFFIX[design.GENERATION]
+THEME = "Kernora" + design.COLOUR_SUFFIX + design.GENERATION_SUFFIX[design.GENERATION]
 
 
 BUTTON_FRAME = 18

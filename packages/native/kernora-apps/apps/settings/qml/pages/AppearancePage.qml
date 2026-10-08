@@ -43,6 +43,19 @@ SettingsPage {
         }
     }
 
+    readonly property string colour: Appearance.colour
+    readonly property var colours: Appearance.colours()
+
+    function setColour(value: string): void {
+        if (value !== colour && !Appearance.busy) {
+            Appearance.setColour(value, ok => {
+                if (!ok) {
+                    page.notify(i18n("The colour could not be changed."));
+                }
+            });
+        }
+    }
+
     readonly property string appletsrc: "plasma-org.kde.plasma.desktop-appletsrc"
     property string wallpaperPlugin: ""
     property string wallpaperImage: ""
@@ -173,6 +186,28 @@ SettingsPage {
             checked: page.dark
             enabled: !Appearance.busy
             onToggled: on => page.setDark(on)
+        }
+    }
+
+    Group {
+        title: i18n("Colour")
+        note: Appearance.busy ? i18n("Applying…") : i18n("Apps, the panel, windows and the live wallpapers take on the chosen colour.")
+
+        Flow {
+            width: parent.width
+            spacing: 12
+
+            Repeater {
+                model: page.colours
+                delegate: ColourSwatch {
+                    required property var modelData
+                    swatch: page.dark ? modelData.dark : modelData.light
+                    name: modelData.name
+                    selected: page.colour === modelData.id
+                    enabled: !Appearance.busy
+                    onClicked: page.setColour(modelData.id)
+                }
+            }
         }
     }
 
@@ -388,5 +423,73 @@ SettingsPage {
         nameFilters: [i18n("Pictures (*.png *.jpg *.jpeg *.webp *.avif *.svg)")]
         currentFolder: Files.standardFolder("pictures")
         onAccepted: page.chooseImage(selectedFile)
+    }
+    component ColourSwatch: QQC2.AbstractButton {
+        id: swatchButton
+        property var swatch: ({})
+        property string name
+        property bool selected: false
+        implicitWidth: 56
+        implicitHeight: 56
+        opacity: enabled ? 1 : 0.6
+        Accessible.name: name
+        QQC2.ToolTip.visible: hovered
+        QQC2.ToolTip.text: name
+        QQC2.ToolTip.delay: 400
+        background: Item {
+            Rectangle {
+                anchors.fill: parent
+                radius: width / 2
+                color: "transparent"
+                border.width: swatchButton.selected ? 3 : 0
+                border.color: M3.primary
+            }
+            RoundedClip {
+                anchors.fill: parent
+                anchors.margins: swatchButton.selected ? 6 : 0
+                radius: width / 2
+                Behavior on anchors.margins { NumberAnimation { duration: M3.durationShort4 } }
+
+                Rectangle {
+                    width: parent.width
+                    height: parent.height / 2
+                    color: swatchButton.swatch.primary || "gray"
+                }
+                Rectangle {
+                    y: parent.height / 2
+                    width: parent.width / 2
+                    height: parent.height / 2
+                    color: swatchButton.swatch.secondaryContainer || "gray"
+                }
+                Rectangle {
+                    x: parent.width / 2
+                    y: parent.height / 2
+                    width: parent.width / 2
+                    height: parent.height / 2
+                    color: swatchButton.swatch.tertiary || "gray"
+                }
+                MStateLayer {
+                    anchors.fill: parent
+                    radius: width / 2
+                    hovered: swatchButton.hovered
+                    pressed: swatchButton.pressed
+                }
+            }
+            Rectangle {
+                anchors.centerIn: parent
+                width: 24
+                height: 24
+                radius: 12
+                visible: swatchButton.selected
+                color: M3.primaryContainer
+                MIcon {
+                    anchors.centerIn: parent
+                    size: 16
+                    source: "checkmark"
+                    color: M3.primaryContainerContent
+                }
+            }
+        }
+        contentItem: Item {}
     }
 }

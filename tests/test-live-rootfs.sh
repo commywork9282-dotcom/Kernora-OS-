@@ -91,8 +91,8 @@ done
   || fail "sddm is not installed"
 
 # The Kernora Material 3 shell and what it is set in.
-[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.7" ]] \
-  || fail "kernora-desktop 1.4.7 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.8" ]] \
+  || fail "kernora-desktop 1.4.8 is not installed"
 for applet in org.kernora.launcher org.kernora.quicksettings; do
   [[ -s "/usr/share/plasma/plasmoids/$applet/contents/ui/main.qml" ]] \
     || fail "Kernora shell applet is missing: $applet"
@@ -115,7 +115,7 @@ for module in org/kde/plasma/private/kicker org/kde/plasma/private/sessions \
 done
 # The live wallpaper, the widget style, the window decoration and the Qt Quick
 # style must all resolve in the image.
-[[ -s /usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/palette.js ]] \
+[[ -s /usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/palettes/kernora.qml ]] \
   || fail "Kernora Shapes live wallpaper is missing"
 # Kernora's cursors are the default, and programs start without the
 # bouncing icon.
@@ -151,8 +151,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.11" ]] \
-  || fail "kernora-apps 1.1.11 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.12" ]] \
+  || fail "kernora-apps 1.1.12 is not installed"
 for app in settings files editor photos player calculator screenshot welcome; do
   [[ -x "/usr/bin/kernora-$app" ]] || fail "Kernora application is missing: $app"
   [[ -s "/usr/share/kernora/$app/Main.qml" ]] || fail "interface of kernora-$app is missing"

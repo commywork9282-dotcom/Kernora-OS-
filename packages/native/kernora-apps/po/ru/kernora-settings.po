@@ -3230,3 +3230,23 @@ msgstr "Терминал"
 msgctxt "start the app"
 msgid "Open"
 msgstr "Открыть"
+
+#: apps/settings/qml/components/Catalog.qml:56 apps/settings/qml/pages/AppearancePage.qml:193
+msgid "Colour"
+msgstr "Цвет"
+
+#: apps/settings/qml/pages/AppearancePage.qml:194
+msgid "Apps, the panel, windows and the live wallpapers take on the chosen colour."
+msgstr "Приложения, панель, окна и живые обои окрашиваются в выбранный цвет."
+
+#: apps/settings/qml/pages/AppearancePage.qml:53
+msgid "The colour could not be changed."
+msgstr "Не удалось сменить цвет."
+
+#: apps/settings/qml/components/Catalog.qml:18
+msgid "Dark theme, colour, wallpaper, text size"
+msgstr "Тёмная тема, цвет, обои, размер текста"
+
+#: apps/settings/qml/components/Catalog.qml:56
+msgid "accent palette material color red blue green purple"
+msgstr "цвет акцент палитра оформление красный синий зелёный фиолетовый"

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """usage: gen-qml-tokens OUTPUT_FILE
+       gen-qml-tokens --palette OUTPUT_FILE
 """
 
 from __future__ import annotations
@@ -28,6 +29,8 @@ QtObject {{
 
     // "md1", "md2" or "md3": the Material generation Kernora wears.
     property string generation: "{default}"
+    property string colour: "{colour}"
+    readonly property var colourIds: {colour_ids}
     readonly property int generationIndex: generation === "md1" ? 0 : generation === "md2" ? 1 : 2
     // Material 1 and 2: square-ish shapes, shadows, uppercase buttons,
     // classic switches and sliders.
@@ -42,6 +45,12 @@ QtObject {{
         tokens.styleStore.sync();
         const value = String(tokens.styleStore.value("generation", "{default}"));
         tokens.generation = (value === "md1" || value === "md2" || value === "md3") ? value : "{default}";
+        const colour = String(tokens.styleStore.value("colour", "{colour}"));
+        const chosen = tokens.colourIds.indexOf(colour) >= 0 ? colour : "{colour}";
+        if (chosen !== tokens.colour || (chosen !== "{colour}" && !tokens.colourPalettes)) {{
+            tokens.colour = chosen;
+            tokens.loadColour();
+        }}
     }}
 
     // Any change of colour scheme may come with a change of generation.
@@ -100,7 +109,38 @@ def colour_lines() -> list[str]:
             f"               light: {js(design.palette(generation, False))} }}"
         )
     lines.append("    readonly property var palettes: ({\n" + ",\n".join(entries) + "\n    })")
-    lines.append("    readonly property var activePalette: palettes[tokens.generation][tokens.dark ? \"dark\" : \"light\"]")
+    lines.append("    property var colourPalettes: null")
+    lines.append("    readonly property var activePalette: (tokens.colourPalettes || palettes)[tokens.generation][tokens.dark ? \"dark\" : \"light\"]")
+    lines.append("    readonly property var roleNames: [" + ", ".join(f'"{qml_name(role)}"' for role in sorted(design.DARK)) + "]")
+    lines.append("    property Component paletteReader: Component {")
+    lines.append("        Settings {}")
+    lines.append("    }")
+    lines.append("    function loadColour() {")
+    lines.append(f'        if (tokens.colour === "{design.DEFAULT_COLOUR}") {{')
+    lines.append("            tokens.colourPalettes = null;")
+    lines.append("            return;")
+    lines.append("        }")
+    lines.append('        const file = StandardPaths.locate(StandardPaths.GenericDataLocation, "kernora/palettes/" + tokens.colour + ".conf");')
+    lines.append("        if (String(file).length === 0) {")
+    lines.append("            tokens.colourPalettes = null;")
+    lines.append("            return;")
+    lines.append("        }")
+    lines.append("        const reader = tokens.paletteReader.createObject(tokens, { location: file });")
+    lines.append("        const result = {};")
+    lines.append("        for (const generation of [" + ", ".join(f'"{g}"' for g in design.GENERATIONS) + "]) {")
+    lines.append("            result[generation] = {};")
+    lines.append('            for (const mode of ["dark", "light"]) {')
+    lines.append("                const roles = {};")
+    lines.append("                for (const role of tokens.roleNames) {")
+    lines.append('                    const value = String(reader.value(generation + "-" + mode + "/" + role, ""));')
+    lines.append('                    roles[role] = value.length > 0 ? "#" + value : tokens.palettes[generation][mode][role];')
+    lines.append("                }")
+    lines.append("                result[generation][mode] = roles;")
+    lines.append("            }")
+    lines.append("        }")
+    lines.append("        reader.destroy();")
+    lines.append("        tokens.colourPalettes = result;")
+    lines.append("    }")
     lines.append("")
     for role in sorted(design.DARK):
         lines.append(f"    readonly property color {qml_name(role)}: tokens.activePalette.{qml_name(role)}")
@@ -120,8 +160,8 @@ def scheme_lines() -> list[str]:
         "",
         "    // Both palettes of the generation, whichever is active, for light and",
         "    // dark previews.",
-        "    readonly property var darkScheme: palettes[tokens.generation].dark",
-        "    readonly property var lightScheme: palettes[tokens.generation].light",
+        "    readonly property var darkScheme: (tokens.colourPalettes || palettes)[tokens.generation].dark",
+        "    readonly property var lightScheme: (tokens.colourPalettes || palettes)[tokens.generation].light",
     ]
 
 
@@ -289,7 +329,8 @@ def type_lines() -> list[str]:
 
 
 def render() -> str:
-    parts = [HEADER.format(seed=design.SEED, default=design.DEFAULT_GENERATION)]
+    parts = [HEADER.format(seed=design.SEED, default=design.DEFAULT_GENERATION, colour=design.DEFAULT_COLOUR,
+                           colour_ids="[" + ", ".join(f'"{c}"' for c in design.COLOURS) + "]")]
     parts.append("\n".join(colour_lines()))
     parts.append("\n".join(accent_lines()))
     parts.append("\n".join(scheme_lines()))
@@ -302,7 +343,37 @@ def render() -> str:
     return "\n".join(parts) + "\n"
 
 
+def palette_file() -> str:
+    info = design.COLOURS[design.COLOUR]
+    md3 = {mode: design.palette("md3", mode == "dark") for mode in ("dark", "light")}
+    lines = [
+        "[Colour]",
+        f"id={design.COLOUR}",
+        f"order={list(design.COLOURS).index(design.COLOUR)}",
+        f"seed={design.SEED.lstrip('#')}",
+        f"name={info['en']}",
+        f"name_ru={info['ru']}",
+    ]
+    for mode in ("dark", "light"):
+        for role in ("primary", "secondaryContainer", "tertiary"):
+            lines.append(f"{mode}_{role}={md3[mode][role].lstrip('#')}")
+    for generation in design.GENERATIONS:
+        for mode in ("dark", "light"):
+            lines.append("")
+            lines.append(f"[{generation}-{mode}]")
+            roles = design.palette(generation, mode == "dark")
+            for role in sorted(roles):
+                lines.append(f"{qml_name(role)}={roles[role].lstrip('#')}")
+    return "\n".join(lines) + "\n"
+
+
 def main(argv: list[str]) -> int:
+    if len(argv) == 3 and argv[1] == "--palette":
+        output = pathlib.Path(argv[2])
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(palette_file(), encoding="utf-8")
+        print(f"colour palette: {output}")
+        return 0
     if len(argv) != 2:
         print(__doc__.strip(), file=sys.stderr)
         return 2

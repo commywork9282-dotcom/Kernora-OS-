@@ -100,19 +100,23 @@ for path in \
   usr/share/plasma/wallpapers/org.kernora.shapes/metadata.json \
   usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/main.qml \
   usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js \
-  usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/palette.js \
+  usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/palettes/kernora.qml \
+  usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/palettes/blue-grey.qml \
   usr/share/plasma/wallpapers/org.kernora.tower/metadata.json \
   usr/share/plasma/wallpapers/org.kernora.tower/contents/ui/Scene.qml \
   usr/share/plasma/wallpapers/org.kernora.tower/contents/ui/tower.js \
-  usr/share/plasma/wallpapers/org.kernora.tower/contents/ui/palette.js \
+  usr/share/plasma/wallpapers/org.kernora.tower/contents/ui/palettes/kernora.qml \
+  usr/share/plasma/wallpapers/org.kernora.tower/contents/ui/palettes/blue-grey.qml \
   usr/share/plasma/wallpapers/org.kernora.tower/contents/ui/materialshapes.js \
   usr/share/plasma/wallpapers/org.kernora.rhythm/metadata.json \
   usr/share/plasma/wallpapers/org.kernora.rhythm/contents/ui/Scene.qml \
-  usr/share/plasma/wallpapers/org.kernora.rhythm/contents/ui/palette.js \
+  usr/share/plasma/wallpapers/org.kernora.rhythm/contents/ui/palettes/kernora.qml \
+  usr/share/plasma/wallpapers/org.kernora.rhythm/contents/ui/palettes/blue-grey.qml \
   usr/share/plasma/wallpapers/org.kernora.marbles/metadata.json \
   usr/share/plasma/wallpapers/org.kernora.marbles/contents/ui/Scene.qml \
   usr/share/plasma/wallpapers/org.kernora.marbles/contents/ui/run.js \
-  usr/share/plasma/wallpapers/org.kernora.marbles/contents/ui/palette.js \
+  usr/share/plasma/wallpapers/org.kernora.marbles/contents/ui/palettes/kernora.qml \
+  usr/share/plasma/wallpapers/org.kernora.marbles/contents/ui/palettes/blue-grey.qml \
   usr/share/locale/ru/LC_MESSAGES/plasma_wallpaper_org.kernora.tower.mo \
   usr/share/locale/ru/LC_MESSAGES/plasma_wallpaper_org.kernora.marbles.mo \
   usr/share/Kvantum/Kernora/Kernora.kvconfig \
@@ -337,6 +341,24 @@ grep -Fxq 'X-KDE-Shortcuts=Ctrl+Alt+T' "$temporary_root/desktop/usr/share/applic
   || fail "Ctrl+Alt+T does not open the terminal"
 [[ "$(find "$temporary_root/desktop/usr/share/kernora/avatars" -name '*.png' | wc -l)" -eq 15 ]] \
   || fail "the Kernora profile pictures are missing"
+[[ "$(find "$temporary_root/desktop/usr/share/kernora/palettes" -name '*.conf' | wc -l)" -eq 20 ]] \
+  || fail "the colour palettes are not twenty"
+for path in \
+  usr/share/color-schemes/KernoraDeepPurpleMD1Light.colors \
+  usr/share/color-schemes/KernoraBlueDark.colors \
+  usr/share/Kvantum/KernoraBlue/KernoraBlue.kvconfig \
+  usr/share/Kvantum/KernoraBlueGreyMD2/KernoraBlueGreyMD2Dark.svg \
+  usr/share/aurorae/themes/kernora-blue-md1-light/decoration.svg \
+  usr/share/themes/KernoraTeal/gtk-3.0/gtk.css \
+  usr/share/kernora/terminal/blue/dark.toml \
+  usr/share/icons/Kernora-blue/index.theme \
+  usr/share/icons/Kernora-blue/scalable/apps/org.kernora.files.svg \
+  usr/share/plasma/desktoptheme/kernora-blue/colors \
+  usr/share/plasma/desktoptheme/kernora-blue-md1-light/widgets/panel-background.svg; do
+  [[ -e "$temporary_root/desktop/$path" ]] || fail "a colour theme is incomplete: $path"
+done
+[[ -L "$temporary_root/desktop/usr/share/plasma/desktoptheme/kernora-red/widgets" ]] \
+  || fail "the red Plasma theme copies its pictures instead of linking them"
 [[ "$(readlink "$temporary_root/desktop/usr/share/kglobalaccel/org.kernora.terminal.desktop")" == */applications/org.kernora.terminal.desktop ]] \
   || fail "kglobalaccel does not see the terminal's launch shortcut"
 grep -Fxq 'Icon=org.kernora.terminal' "$temporary_root/desktop/etc/skel/.local/share/applications/Alacritty.desktop" \

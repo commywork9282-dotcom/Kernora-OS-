@@ -14,7 +14,7 @@ import m3color
 TOOLS = pathlib.Path(__file__).resolve().parent
 SYMBOLS = TOOLS.parent / "data" / "symbols"
 
-THEME = "kernora" + ("" if design.GENERATION == "md3" else f"-{design.GENERATION}")
+THEME = "kernora" + design.COLOUR_SLUG + ("" if design.GENERATION == "md3" else f"-{design.GENERATION}")
 
 TITLE = 30
 TITLE_EDGE = 4
@@ -297,8 +297,8 @@ X-KDE-PluginInfo-License=GPL-2.0-or-later
 
 _LABEL = design.GENERATION_LABEL[design.GENERATION]
 VARIANTS = (
-    (THEME, design.DARK, f"Kernora{_LABEL}", f"Kernora{_LABEL}"),
-    (THEME + "-light", design.LIGHT, f"Kernora{_LABEL} Light", f"Kernora{_LABEL}, светлое"),
+    (THEME, design.DARK, f"Kernora{design.COLOUR_LABEL}{_LABEL}", f"Kernora{design.COLOUR_LABEL_RU}{_LABEL}"),
+    (THEME + "-light", design.LIGHT, f"Kernora{design.COLOUR_LABEL}{_LABEL} Light", f"Kernora{design.COLOUR_LABEL_RU}{_LABEL}, светлое"),
 )
 
 

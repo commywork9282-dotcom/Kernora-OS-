@@ -15,6 +15,7 @@
 
 #include <KConfig>
 #include <KConfigGroup>
+#include <KLocalizedString>
 #include <KSharedConfig>
 
 #include <memory>
@@ -50,10 +51,76 @@ QString Appearance::generation() const
     return value == QLatin1String("md1") || value == QLatin1String("md2") ? value : QStringLiteral("md3");
 }
 
-void Appearance::writeTerminalColours(bool dark) const
+static QString paletteFile(const QString &colour)
 {
+    return QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("kernora/palettes/%1.conf").arg(colour));
+}
+
+static QString colourSuffix(const QString &colour)
+{
+    if (colour == QLatin1String("kernora")) {
+        return QString();
+    }
+    QString suffix;
+    const QStringList parts = colour.split(QLatin1Char('-'), Qt::SkipEmptyParts);
+    for (const QString &part : parts) {
+        suffix += part.left(1).toUpper() + part.mid(1);
+    }
+    return suffix;
+}
+
+QString Appearance::colour() const
+{
+    auto config = KSharedConfig::openConfig(QStringLiteral("kernorarc"));
+    config->reparseConfiguration();
+    const QString value = KConfigGroup(config, QStringLiteral("Style")).readEntry("colour", QStringLiteral("kernora"));
+    return value != QLatin1String("kernora") && paletteFile(value).isEmpty() ? QStringLiteral("kernora") : value;
+}
+
+QVariantList Appearance::colours() const
+{
+    const bool russian = KLocalizedString::languages().value(0).startsWith(QLatin1String("ru"));
+    QList<QPair<int, QVariantMap>> found;
+    QStringList seen;
+    const QStringList roots = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QStringLiteral("kernora/palettes"),
+                                                        QStandardPaths::LocateDirectory);
+    for (const QString &root : roots) {
+        const auto files = QDir(root).entryInfoList({QStringLiteral("*.conf")}, QDir::Files, QDir::Name);
+        for (const QFileInfo &file : files) {
+            KConfig palette(file.absoluteFilePath(), KConfig::SimpleConfig);
+            const KConfigGroup group(&palette, QStringLiteral("Colour"));
+            const QString id = group.readEntry("id", file.completeBaseName());
+            if (seen.contains(id)) {
+                continue;
+            }
+            seen.append(id);
+            QVariantMap entry{{QStringLiteral("id"), id},
+                              {QStringLiteral("name"), group.readEntry(russian ? "name_ru" : "name", id)}};
+            for (const QString &mode : {QStringLiteral("dark"), QStringLiteral("light")}) {
+                QVariantMap swatch;
+                for (const QString &role : {QStringLiteral("primary"), QStringLiteral("secondaryContainer"), QStringLiteral("tertiary")}) {
+                    swatch.insert(role, QString(QLatin1Char('#') + group.readEntry(QString(mode + QLatin1Char('_') + role), QStringLiteral("808080"))));
+                }
+                entry.insert(mode, swatch);
+            }
+            found.append({group.readEntry("order", 100), entry});
+        }
+    }
+    std::sort(found.begin(), found.end(), [](const auto &a, const auto &b) {
+        return a.first < b.first;
+    });
+    QVariantList result;
+    for (const auto &item : std::as_const(found)) {
+        result.append(item.second);
+    }
+    return result;
+}
+
+void Appearance::writeTerminalColours(const QString &colour, bool dark) const
+{
+    const QString themes = colour == QLatin1String("kernora") ? QStringLiteral("kernora/terminal") : QStringLiteral("kernora/terminal/") + colour;
     const QString source = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                                  QStringLiteral("kernora/terminal/%1.toml").arg(dark ? QStringLiteral("dark") : QStringLiteral("light")));
+                                                  QStringLiteral("%1/%2.toml").arg(themes, dark ? QStringLiteral("dark") : QStringLiteral("light")));
     if (source.isEmpty()) {
         return;
     }
@@ -72,15 +139,25 @@ void Appearance::writeTerminalColours(bool dark) const
 
 void Appearance::setDark(bool enable, const QJSValue &callback)
 {
-    apply(generation(), enable, callback);
+    applyTheme(colour(), generation(), enable, callback);
 }
 
 void Appearance::setGeneration(const QString &generation, const QJSValue &callback)
 {
-    apply(generation, dark(), callback);
+    applyTheme(colour(), generation, dark(), callback);
 }
 
-void Appearance::apply(const QString &requested, bool enable, const QJSValue &callback)
+void Appearance::setColour(const QString &colour, const QJSValue &callback)
+{
+    applyTheme(colour, generation(), dark(), callback);
+}
+
+void Appearance::apply(const QString &generation, bool enable, const QJSValue &callback)
+{
+    applyTheme(colour(), generation, enable, callback);
+}
+
+void Appearance::applyTheme(const QString &requestedColour, const QString &requested, bool enable, const QJSValue &callback)
 {
     if (m_busy) {
         return;
@@ -88,14 +165,19 @@ void Appearance::apply(const QString &requested, bool enable, const QJSValue &ca
     m_busy = true;
     Q_EMIT busyChanged();
 
+    const QString colour = requestedColour == QLatin1String("kernora") || !paletteFile(requestedColour).isEmpty() ? requestedColour : QStringLiteral("kernora");
     const QString generation = requested == QLatin1String("md1") || requested == QLatin1String("md2") ? requested : QStringLiteral("md3");
+    const bool colourChanges = colour != this->colour();
     const bool generationChanges = generation != this->generation();
-    const QString lower = generation == QLatin1String("md3") ? QString() : QLatin1Char('-') + generation;
-    const QString upper = generation == QLatin1String("md3") ? QString() : generation.toUpper();
+    const bool themesChange = generationChanges || colourChanges;
+    const QString slug = colour == QLatin1String("kernora") ? QString() : QLatin1Char('-') + colour;
+    const QString lower = slug + (generation == QLatin1String("md3") ? QString() : QLatin1Char('-') + generation);
+    const QString upper = colourSuffix(colour) + (generation == QLatin1String("md3") ? QString() : generation.toUpper());
 
     auto kernora = KSharedConfig::openConfig(QStringLiteral("kernorarc"));
     KConfigGroup style(kernora, QStringLiteral("Style"));
     style.writeEntry("generation", generation);
+    style.writeEntry("colour", colour);
     kernora->sync();
 
     const QString kvantumFolder = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QStringLiteral("/Kvantum");
@@ -105,7 +187,7 @@ void Appearance::apply(const QString &requested, bool enable, const QJSValue &ca
     kvantumGeneral.writeEntry("theme", QString(QStringLiteral("Kernora") + upper));
     kvantum.sync();
 
-    if (generationChanges) {
+    if (themesChange) {
         QDBusMessage gtk = QDBusMessage::createMethodCall(QStringLiteral("org.kde.GtkConfig"), QStringLiteral("/GtkConfig"),
                                                           QStringLiteral("org.kde.GtkConfig"), QStringLiteral("setGtkTheme"));
         gtk.setArguments({QString(QStringLiteral("Kernora") + upper)});
@@ -114,7 +196,7 @@ void Appearance::apply(const QString &requested, bool enable, const QJSValue &ca
 
     auto globals = KSharedConfig::openConfig(QStringLiteral("kdeglobals"));
     KConfigGroup kde(globals, QStringLiteral("KDE"));
-    if (generationChanges) {
+    if (themesChange) {
         kde.writeEntry("widgetStyle", enable ? QStringLiteral("kvantum") : QStringLiteral("kvantum-dark"), KConfig::Notify);
         globals->sync();
     }
@@ -127,7 +209,7 @@ void Appearance::apply(const QString &requested, bool enable, const QJSValue &ca
                           KConfig::Notify);
     kwin->sync();
 
-    writeTerminalColours(enable);
+    writeTerminalColours(colour, enable);
 
     QDBusMessage panels = QDBusMessage::createMethodCall(QStringLiteral("org.kde.plasmashell"), QStringLiteral("/PlasmaShell"),
                                                          QStringLiteral("org.kde.PlasmaShell"), QStringLiteral("evaluateScript"));
@@ -140,9 +222,16 @@ void Appearance::apply(const QString &requested, bool enable, const QJSValue &ca
         {QStringLiteral("plasma-apply-desktoptheme"), QStringLiteral("kernora") + lower + (enable ? QString() : QStringLiteral("-light"))},
         {QStringLiteral("plasma-apply-colorscheme"), QStringLiteral("Kernora") + upper + (enable ? QStringLiteral("Dark") : QStringLiteral("Light"))},
     };
+    if (colourChanges) {
+        state->steps.append({QStringLiteral(KERNORA_LIBEXECDIR "/plasma-changeicons"),
+                             colour == QLatin1String("kernora") ? QStringLiteral("Kernora") : QStringLiteral("Kernora-") + colour});
+    }
     state->callback = callback;
     if (generationChanges) {
         Q_EMIT generationChanged();
+    }
+    if (colourChanges) {
+        Q_EMIT colourChanged();
     }
     runStep(state, 0);
 }

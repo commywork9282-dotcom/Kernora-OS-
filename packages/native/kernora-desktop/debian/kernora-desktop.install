@@ -3,6 +3,7 @@ data/sddm.conf.d/kernora-theme.conf etc/sddm.conf.d
 data/icons/kernora-logo.svg usr/share/icons/hicolor/scalable/apps
 generated/icon-theme/index.theme usr/share/icons/Kernora
 generated/icon-theme/scalable usr/share/icons/Kernora
+generated/icon-themes/Kernora-* usr/share/icons
 generated/kernora_cursors usr/share/icons
 data/xdg-kcminputrc/kcminputrc etc/xdg
 data/xdg-klaunchrc/klaunchrc etc/xdg
@@ -36,9 +37,7 @@ data/knotifications/kernora-devices.notifyrc usr/share/knotifications6
 data/skel-config/kglobalshortcutsrc etc/skel/.config
 data/skel-config/gtk-3.0 etc/skel/.config
 data/skel-config/gtk-4.0 etc/skel/.config
-generated/gtk-themes/Kernora usr/share/themes
-generated/gtk-themes/KernoraMD1 usr/share/themes
-generated/gtk-themes/KernoraMD2 usr/share/themes
+generated/gtk-themes/Kernora* usr/share/themes
 data/gtk/90_kernora.gschema.override usr/share/glib-2.0/schemas
 data/kconf_update/kernora-gtk-theme.upd usr/share/kconf_update
 data/kconf_update/kernora-gtk-theme.sh usr/share/kconf_update
@@ -46,6 +45,7 @@ data/kglobalaccel/org.kde.krunner.desktop usr/share/kglobalaccel
 data/kglobalaccel/org.kde.plasma.emojier.desktop usr/share/kglobalaccel
 generated/terminal/alacritty.toml etc/alacritty
 generated/terminal/terminal usr/share/kernora
+generated/palettes usr/share/kernora
 data/applications/org.kernora.terminal.desktop usr/share/applications
 generated/sddm/kernora usr/share/sddm/themes
 data/lockscreen/LockScreen.qml usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen

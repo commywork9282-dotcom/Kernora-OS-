@@ -1,3 +1,11 @@
+kernora-apps (1.1.12) UNRELEASED; urgency=medium
+
+  * Settings > Wallpaper & style: a colour picker with every Kernora colour
+    theme. Appearance.setColour switches the colour scheme, Plasma, Kvantum,
+    GTK, window and terminal themes together (needs kernora-desktop 1.4.8).
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 16:00:00 -0700
+
 kernora-apps (1.1.11) UNRELEASED; urgency=medium
 
   * Settings > Account offers the Kernora profile pictures instead of

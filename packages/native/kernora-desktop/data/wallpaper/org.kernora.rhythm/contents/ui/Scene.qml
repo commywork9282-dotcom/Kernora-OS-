@@ -8,10 +8,31 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Shapes
 import "materialshapes.js" as MaterialShapes
-import "palette.js" as Palette
+import org.kernora.m3
 
 Item {
     id: scene
+
+    readonly property string colour: M3.colour
+    Loader {
+        id: paletteSource
+        source: Qt.resolvedUrl("palettes/" + scene.colour + ".qml")
+    }
+    readonly property var colours: paletteSource.item ? paletteSource.item.palette : null
+
+    function c(family: string, tone: real): color {
+        const p = scene.colours;
+        if (!p) {
+            return "transparent";
+        }
+        let best = p.tones[0];
+        for (const t of p.tones) {
+            if (Math.abs(t - tone) < Math.abs(best - tone)) {
+                best = t;
+            }
+        }
+        return p.families[family][String(best)];
+    }
 
     property real phase: 0
     property real intro: 1
@@ -86,7 +107,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Palette.c("night", 8)
+        color: scene.c("night", 8)
     }
 
     Shape {
@@ -95,7 +116,7 @@ Item {
         ShapePath {
             strokeWidth: -1
             strokeColor: "transparent"
-            fillColor: Palette.c("night", 17)
+            fillColor: scene.c("night", 17)
             PathSvg {
                 path: scene.width > 0 ? scene.blob(scene.positions[0], scene.unit * 0.02) : ""
             }
@@ -103,7 +124,7 @@ Item {
         ShapePath {
             strokeWidth: -1
             strokeColor: "transparent"
-            fillColor: Palette.c("night", 25)
+            fillColor: scene.c("night", 25)
             PathSvg {
                 path: scene.width > 0 ? scene.blob(scene.positions[1], scene.unit * 0.012) : ""
             }
@@ -112,7 +133,7 @@ Item {
 
     MaterialShape {
         shape: "cookie9"
-        colour: Palette.c("night", 32)
+        colour: scene.c("night", 32)
         size: scene.unit * 0.13 * scene.intro
         x: scene.cx - width / 2
         y: scene.cy - height / 2
@@ -120,7 +141,7 @@ Item {
     }
     MaterialShape {
         shape: "sunny"
-        colour: Palette.c("ember", 64)
+        colour: scene.c("ember", 64)
         size: scene.unit * 0.06 * scene.intro
         x: scene.cx - width / 2
         y: scene.cy - height / 2
@@ -143,7 +164,7 @@ Item {
                     readonly property var place: scene.positions[ring.index][index]
 
                     shape: ring.modelData.shapes[index % ring.modelData.shapes.length]
-                    colour: Palette.c(scene.hue(index / ring.modelData.count + ring.index * 0.5), ring.modelData.tone)
+                    colour: scene.c(scene.hue(index / ring.modelData.count + ring.index * 0.5), ring.modelData.tone)
                     size: ring.modelData.size * scene.unit * (1 + 0.22 * place.swing)
                     x: place.x - width / 2
                     y: place.y - height / 2

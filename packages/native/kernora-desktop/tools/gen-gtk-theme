@@ -10,7 +10,7 @@ import sys
 import kernora_design as design
 import m3color
 
-THEME = "Kernora" + design.GENERATION_SUFFIX[design.GENERATION]
+THEME = "Kernora" + design.COLOUR_SUFFIX + design.GENERATION_SUFFIX[design.GENERATION]
 
 
 def radius(kind: str) -> str:

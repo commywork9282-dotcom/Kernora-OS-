@@ -107,10 +107,15 @@ def main(argv: list[str]) -> int:
         print(__doc__.strip(), file=sys.stderr)
         return 2
     output = pathlib.Path(argv[1])
-    (output / "terminal").mkdir(parents=True, exist_ok=True)
-    (output / "alacritty.toml").write_text(SYSTEM, encoding="utf-8")
-    (output / "terminal" / "dark.toml").write_text(scheme(True), encoding="utf-8")
-    (output / "terminal" / "light.toml").write_text(scheme(False), encoding="utf-8")
+    folder = output / "terminal"
+    if design.COLOUR == design.DEFAULT_COLOUR:
+        output.mkdir(parents=True, exist_ok=True)
+        (output / "alacritty.toml").write_text(SYSTEM, encoding="utf-8")
+    else:
+        folder = folder / design.COLOUR
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / "dark.toml").write_text(scheme(True), encoding="utf-8")
+    (folder / "light.toml").write_text(scheme(False), encoding="utf-8")
     print(f"terminal theme: {output}")
     return 0
 
