@@ -29,6 +29,24 @@ itself: the timers carry `ConditionKernelCommandLine=!boot=live`.
 Settings > Updates shows everything else through PackageKit and installs it on
 request.
 
+## Notifications
+
+`kernora-update-notifier` (kernora-apps) starts with the session from
+`/etc/xdg/autostart/org.kernora.update-notifier.desktop`. Two minutes after
+login, and then every six hours, it asks PackageKit for updates. It refreshes
+the package lists itself only when APT's daily refresh is more than a day old
+and the connection is not metered. When the list holds a package it has not
+announced yet, a notification from Settings says how many updates are ready,
+and whether security fixes are among them; "View" opens Settings > Updates.
+When `/run/reboot-required` appears (the kernel hook of `unattended-upgrades`
+creates it), it asks once per boot for a restart, with a "Restart" button that
+opens the session's restart prompt.
+
+The events are in `kernora-updates.notifyrc`, so the notification server draws
+them like any other Kernora notification. What has been announced is kept in
+`~/.local/state/kernora-update-notifierstaterc`. The notifier exits at once in
+the live session.
+
 ## Kernora's packages win over Debian's
 
 `/etc/apt/preferences.d/kernora-archive.pref` gives the Kernora archive priority

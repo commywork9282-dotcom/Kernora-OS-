@@ -1,0 +1,59 @@
+# Russian translations for kernora-update-notifier package.
+# Copyright (C) 2026 THE kernora-update-notifier'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-update-notifier package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-update-notifier\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-08 12:00-0700\n"
+"PO-Revision-Date: 2026-10-08 12:00-0700\n"
+"Last-Translator: Kernora Developers\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/updatenotifier/main.cpp:175
+msgid "Updates are available"
+msgstr "Доступны обновления"
+
+#: src/updatenotifier/main.cpp:177
+msgid "%1 update is ready to install, with security fixes."
+msgid_plural "%1 updates are ready to install, among them security fixes."
+msgstr[0] "Готово к установке: %1 обновление, в нём исправления безопасности."
+msgstr[1] "Готово к установке: %1 обновления, среди них исправления безопасности."
+msgstr[2] "Готово к установке: %1 обновлений, среди них исправления безопасности."
+
+#: src/updatenotifier/main.cpp:179
+msgid "%1 update is ready to install."
+msgid_plural "%1 updates are ready to install."
+msgstr[0] "Готово к установке: %1 обновление."
+msgstr[1] "Готово к установке: %1 обновления."
+msgstr[2] "Готово к установке: %1 обновлений."
+
+#: src/updatenotifier/main.cpp:181
+msgid "Open Updates"
+msgstr "Открыть обновления"
+
+#: src/updatenotifier/main.cpp:184
+msgid "View"
+msgstr "Посмотреть"
+
+#: src/updatenotifier/main.cpp:205
+msgid "Restart to finish updating"
+msgstr "Перезагрузите компьютер"
+
+#: src/updatenotifier/main.cpp:206
+msgid "Updates were installed. They take effect after a restart."
+msgstr "Обновления установлены и заработают после перезагрузки."
+
+#: src/updatenotifier/main.cpp:207
+msgid "Restart"
+msgstr "Перезагрузить"
+
+#: src/updatenotifier/main.cpp:229
+msgid "Update notifications"
+msgstr "Уведомления об обновлениях"

@@ -1,0 +1,24 @@
+[Global]
+IconName=system-software-update
+Name=Updates
+Name[ru]=Обновления
+Comment=Kernora software updates
+Comment[ru]=Обновления Kernora
+DesktopEntry=org.kernora.settings
+
+[Event/updatesAvailable]
+Name=Updates are available
+Name[ru]=Доступны обновления
+Comment=New versions of the system and apps are ready to install
+Comment[ru]=Новые версии системы и приложений готовы к установке
+Action=Popup|Sound
+Sound=dialog-information
+Urgency=Normal
+
+[Event/restartNeeded]
+Name=Restart to finish updating
+Name[ru]=Перезагрузка для завершения обновления
+Comment=Installed updates take effect after a restart
+Comment[ru]=Установленные обновления вступят в силу после перезагрузки
+Action=Popup
+Urgency=Normal

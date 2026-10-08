@@ -9,7 +9,7 @@ of the shell: the same tokens, components, symbols and motion.
 | Package | What it carries |
 | --- | --- |
 | `kernora-desktop` | The QML modules `org.kernora.m3` (tokens, text, icons, sliders, state layers) and `org.kernora.ui` (pages, list rows, groups, dialogs, fields, navigation), the Terminal entry and colours, light variants of the Plasma theme and window frames, app icons. |
-| `kernora-apps` | The applications and `org.kernora.system`, the C++ Qt Quick module through which they read and change the system. |
+| `kernora-apps` | The applications and `org.kernora.system`, the C++ Qt Quick module through which they read and change the system, plus `kernora-update-notifier` (see [UPDATES.md](UPDATES.md#notifications)). |
 | `kernora-calamares` | The installer: Calamares configuration, the Material 3 branding and the `kernora-installer` launcher. Removed from the installed system. |
 | `calamares` (derived) | Debian's Calamares rebuilt with the Kernora partition page patch (`packages/derived/calamares`). |
 

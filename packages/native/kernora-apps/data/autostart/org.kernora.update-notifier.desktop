@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Update notifications
+Name[ru]=Уведомления об обновлениях
+Icon=system-software-update
+Exec=kernora-update-notifier
+NoDisplay=true
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=2

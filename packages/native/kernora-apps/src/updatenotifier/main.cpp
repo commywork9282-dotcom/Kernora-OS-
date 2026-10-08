@@ -1,0 +1,241 @@
+// SPDX-FileCopyrightText: 2026 Kernora Developers
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+#include <QDBusConnection>
+#include <QDBusMessage>
+#include <QDateTime>
+#include <QFile>
+#include <QFileInfo>
+#include <QGuiApplication>
+#include <QLocale>
+#include <QNetworkInformation>
+#include <QPointer>
+#include <QProcess>
+#include <QProcessEnvironment>
+#include <QTimer>
+
+#include <KAboutData>
+#include <KConfigGroup>
+#include <KDBusService>
+#include <KLocalizedString>
+#include <KNotification>
+#include <KSharedConfig>
+
+#include <PackageKit/Daemon>
+#include <PackageKit/Transaction>
+
+#include <algorithm>
+#include <memory>
+
+using PackageKit::Daemon;
+using PackageKit::Transaction;
+
+static constexpr int FirstCheck = 2 * 60;
+static constexpr int CheckInterval = 6 * 60 * 60;
+static constexpr int RefreshAge = 24 * 60 * 60;
+static constexpr int RestartInterval = 10 * 60;
+
+static QString readFile(const QString &path)
+{
+    QFile file(path);
+    return file.open(QIODevice::ReadOnly) ? QString::fromUtf8(file.readAll()).trimmed() : QString();
+}
+
+static bool liveSession()
+{
+    return readFile(QStringLiteral("/proc/cmdline")).split(QLatin1Char(' ')).contains(QStringLiteral("boot=live"));
+}
+
+static bool metered()
+{
+    if (!QNetworkInformation::loadBackendByFeatures(QNetworkInformation::Feature::Metered)) {
+        return false;
+    }
+    return QNetworkInformation::instance()->isMetered();
+}
+
+static void openUpdates(KNotification *notification)
+{
+    QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+    const QString token = notification->xdgActivationToken();
+    if (!token.isEmpty()) {
+        environment.insert(QStringLiteral("XDG_ACTIVATION_TOKEN"), token);
+    }
+    QProcess process;
+    process.setProgram(QStringLiteral("kernora-settings"));
+    process.setArguments({QStringLiteral("kcm_updates")});
+    process.setProcessEnvironment(environment);
+    process.startDetached();
+}
+
+class Notifier : public QObject
+{
+public:
+    Notifier()
+        : m_state(KSharedConfig::openStateConfig()->group(QStringLiteral("Updates")))
+    {
+        Daemon::global()->setHints({QStringLiteral("background=true"), QStringLiteral("interactive=false"),
+                                    QStringLiteral("locale=%1.UTF-8").arg(QLocale::system().name())});
+        m_check.setSingleShot(true);
+        connect(&m_check, &QTimer::timeout, this, &Notifier::check);
+        connect(Daemon::global(), &Daemon::updatesChanged, this, [this]() {
+            schedule(60);
+        });
+        connect(&m_restart, &QTimer::timeout, this, &Notifier::checkRestart);
+        m_restart.start(RestartInterval * 1000);
+        schedule(FirstCheck);
+        checkRestart();
+    }
+
+private:
+    void schedule(int seconds)
+    {
+        if (!m_busy) {
+            m_check.start(seconds * 1000);
+        }
+    }
+
+    qint64 lastRefresh() const
+    {
+        const QFileInfo stamp(QStringLiteral("/var/lib/apt/periodic/update-success-stamp"));
+        const qint64 apt = stamp.exists() ? stamp.lastModified().toSecsSinceEpoch() : 0;
+        return std::max(apt, m_state.readEntry("LastRefresh", qint64(0)));
+    }
+
+    void check()
+    {
+        if (m_busy) {
+            return;
+        }
+        m_busy = true;
+        const qint64 now = QDateTime::currentSecsSinceEpoch();
+        if (now - lastRefresh() < RefreshAge || metered()) {
+            fetch();
+            return;
+        }
+        Transaction *refresh = Daemon::refreshCache(false);
+        connect(refresh, &Transaction::finished, this, [this, now](Transaction::Exit exit) {
+            if (exit == Transaction::ExitSuccess) {
+                m_state.writeEntry("LastRefresh", now);
+                m_state.sync();
+            }
+            fetch();
+        });
+    }
+
+    void fetch()
+    {
+        auto ids = std::make_shared<QStringList>();
+        auto security = std::make_shared<int>(0);
+        Transaction *list = Daemon::getUpdates();
+        connect(list, &Transaction::package, this, [ids, security](Transaction::Info info, const QString &id, const QString &) {
+            if (info == Transaction::InfoBlocked) {
+                return;
+            }
+            ids->append(id);
+            if (info == Transaction::InfoSecurity || Daemon::packageData(id).contains(QLatin1String("security"))) {
+                *security += 1;
+            }
+        });
+        connect(list, &Transaction::finished, this, [this, ids, security](Transaction::Exit exit) {
+            m_busy = false;
+            schedule(CheckInterval);
+            if (exit == Transaction::ExitSuccess) {
+                announce(*ids, *security);
+            }
+        });
+    }
+
+    void announce(const QStringList &ids, int security)
+    {
+        const QStringList notified = m_state.readEntry("Notified", QStringList());
+        if (ids.isEmpty()) {
+            if (m_updates) {
+                m_updates->close();
+            }
+            m_state.writeEntry("Notified", QStringList());
+            m_state.sync();
+            return;
+        }
+        const bool fresh = std::any_of(ids.cbegin(), ids.cend(), [&notified](const QString &id) {
+            return !notified.contains(id);
+        });
+        if (!fresh) {
+            return;
+        }
+        m_state.writeEntry("Notified", ids);
+        m_state.sync();
+
+        if (m_updates) {
+            m_updates->close();
+        }
+        m_updates = new KNotification(QStringLiteral("updatesAvailable"));
+        m_updates->setComponentName(QStringLiteral("kernora-updates"));
+        m_updates->setIconName(QStringLiteral("system-software-update"));
+        m_updates->setTitle(i18n("Updates are available"));
+        m_updates->setText(security > 0
+                               ? i18np("%1 update is ready to install, with security fixes.",
+                                       "%1 updates are ready to install, among them security fixes.", int(ids.size()))
+                               : i18np("%1 update is ready to install.", "%1 updates are ready to install.", int(ids.size())));
+        KNotification *notification = m_updates;
+        connect(m_updates->addDefaultAction(i18n("Open Updates")), &KNotificationAction::activated, this, [notification]() {
+            openUpdates(notification);
+        });
+        connect(m_updates->addAction(i18n("View")), &KNotificationAction::activated, this, [notification]() {
+            openUpdates(notification);
+        });
+        m_updates->sendEvent();
+    }
+
+    void checkRestart()
+    {
+        if (!QFileInfo::exists(QStringLiteral("/run/reboot-required"))) {
+            return;
+        }
+        const QString boot = readFile(QStringLiteral("/proc/sys/kernel/random/boot_id"));
+        if (boot.isEmpty() || m_state.readEntry("RestartNotified", QString()) == boot) {
+            return;
+        }
+        m_state.writeEntry("RestartNotified", boot);
+        m_state.sync();
+
+        auto *notification = new KNotification(QStringLiteral("restartNeeded"));
+        notification->setComponentName(QStringLiteral("kernora-updates"));
+        notification->setIconName(QStringLiteral("system-reboot"));
+        notification->setTitle(i18n("Restart to finish updating"));
+        notification->setText(i18n("Updates were installed. They take effect after a restart."));
+        connect(notification->addAction(i18n("Restart")), &KNotificationAction::activated, this, []() {
+            QDBusConnection::sessionBus().asyncCall(QDBusMessage::createMethodCall(QStringLiteral("org.kde.LogoutPrompt"),
+                                                                                  QStringLiteral("/LogoutPrompt"),
+                                                                                  QStringLiteral("org.kde.LogoutPrompt"),
+                                                                                  QStringLiteral("promptReboot")));
+        });
+        notification->sendEvent();
+    }
+
+    KConfigGroup m_state;
+    QTimer m_check;
+    QTimer m_restart;
+    QPointer<KNotification> m_updates;
+    bool m_busy = false;
+};
+
+int main(int argc, char **argv)
+{
+    QGuiApplication app(argc, argv);
+    QGuiApplication::setQuitOnLastWindowClosed(false);
+    KLocalizedString::setApplicationDomain(TRANSLATION_DOMAIN);
+
+    KAboutData about(QStringLiteral("kernora-update-notifier"), i18n("Update notifications"), QStringLiteral(KERNORA_APPS_VERSION));
+    about.setDesktopFileName(QStringLiteral("org.kernora.settings"));
+    about.setOrganizationDomain("kernora.invalid");
+    KAboutData::setApplicationData(about);
+
+    if (liveSession() || !QFileInfo::exists(QStringLiteral("/usr/libexec/packagekitd"))) {
+        return 0;
+    }
+
+    KDBusService service(KDBusService::Unique);
+    Notifier notifier;
+    return app.exec();
+}

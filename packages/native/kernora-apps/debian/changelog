@@ -1,3 +1,12 @@
+kernora-apps (1.1.7) UNRELEASED; urgency=medium
+
+  * kernora-update-notifier: a notification when updates are ready to
+    install (with "View", which opens Settings > Updates) and, once per
+    boot, when installed updates need a restart. It starts with the session
+    and checks two minutes after login and every six hours.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 10:00:00 -0700
+
 kernora-apps (1.1.6) UNRELEASED; urgency=medium
 
   * Keyboard shortcuts: app shortcuts (Screenshot, Terminal, Screens, Emoji)

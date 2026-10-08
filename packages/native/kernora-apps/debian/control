@@ -14,6 +14,7 @@ Build-Depends:
  libkf6dbusaddons-dev,
  libkf6i18n-dev,
  libkf6kio-dev,
+ libkf6notifications-dev,
  libkf6service-dev,
  libkf6windowsystem-dev,
  libkscreen-dev,
@@ -59,6 +60,8 @@ Description: Kernora OS applications
   * Welcome, the first-run introduction;
   * the file chooser: every program's open and save dialogs, served to
     the session through the desktop portal.
+  * update notifications: a message when updates are ready to install and
+    when installed ones need a restart.
  .
  It also carries org.kernora.system, the Qt Quick module through which the
  applications read and change the system.

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 cmake_minimum_required(VERSION 3.25)
-project(kernora-apps VERSION 1.1.6 LANGUAGES CXX)
+project(kernora-apps VERSION 1.1.7 LANGUAGES CXX)
 
 set(QT_MIN_VERSION 6.8)
 set(KF_MIN_VERSION 6.13)
@@ -20,9 +20,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
-    Core Gui Qml Quick QuickControls2 Widgets DBus)
+    Core Gui Qml Quick QuickControls2 Widgets DBus Network)
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
-    Config CoreAddons DBusAddons I18n KIO Service WindowSystem)
+    Config CoreAddons DBusAddons I18n KIO Notifications Service WindowSystem)
 find_package(KF6Screen REQUIRED)
 find_package(PackageKitQt6 REQUIRED)
 find_package(PkgConfig REQUIRED)
@@ -31,6 +31,7 @@ pkg_check_modules(LIBCRYPT REQUIRED IMPORTED_TARGET libcrypt)
 add_subdirectory(src/system)
 add_subdirectory(src/apps)
 add_subdirectory(src/filechooser)
+add_subdirectory(src/updatenotifier)
 
 set(KERNORA_APPS settings files welcome editor photos player calculator screenshot)
 foreach(app ${KERNORA_APPS})
@@ -44,7 +45,9 @@ install(FILES apps/welcome/org.kernora.welcome-autostart.desktop
         DESTINATION ${KDE_INSTALL_AUTOSTARTDIR} RENAME org.kernora.welcome.desktop)
 install(PROGRAMS data/systemsettings DESTINATION ${KDE_INSTALL_BINDIR})
 install(FILES data/copyright/librewolf DESTINATION ${KDE_INSTALL_DATADIR}/kernora/copyright)
-install(FILES data/knotifications/kernora-screenshot.notifyrc DESTINATION ${KDE_INSTALL_KNOTIFYRCDIR})
+install(FILES data/knotifications/kernora-screenshot.notifyrc data/knotifications/kernora-updates.notifyrc
+        DESTINATION ${KDE_INSTALL_KNOTIFYRCDIR})
+install(FILES data/autostart/org.kernora.update-notifier.desktop DESTINATION ${KDE_INSTALL_AUTOSTARTDIR})
 
 ki18n_install(po)
 

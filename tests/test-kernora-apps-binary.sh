@@ -20,7 +20,8 @@ trap 'find "$temporary_root" -depth -delete' EXIT
 dpkg-deb --extract "$deb" "$temporary_root"
 
 qml=usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/system
-for path in "$qml/qmldir" "$qml/libkernorasystem.so" usr/share/knotifications6/kernora-screenshot.notifyrc; do
+for path in "$qml/qmldir" "$qml/libkernorasystem.so" usr/share/knotifications6/kernora-screenshot.notifyrc \
+  usr/share/knotifications6/kernora-updates.notifyrc; do
   [[ -s "$temporary_root/$path" ]] || fail "missing $path"
 done
 for app in settings files welcome editor photos player calculator screenshot; do
@@ -35,13 +36,19 @@ grep -qx 'Exec=/usr/bin/kernora-screenshot' \
   "$temporary_root/usr/share/applications/org.kernora.screenshot.desktop" \
   || fail "Screenshot's Exec is not an absolute path; KWin would refuse it"
 
-for domain in settings files editor photos player calculator screenshot welcome system; do
+for domain in settings files editor photos player calculator screenshot welcome system update-notifier; do
   [[ -s "$temporary_root/usr/share/locale/ru/LC_MESSAGES/kernora-$domain.mo" ]] \
     || fail "Russian translation is missing: kernora-$domain"
 done
 grep -qx 'Exec=kernora-welcome --first-run' \
   "$temporary_root/etc/xdg/autostart/org.kernora.welcome.desktop" \
   || fail "Welcome is not started at login"
+[[ -x "$temporary_root/usr/bin/kernora-update-notifier" ]] || fail "missing kernora-update-notifier"
+grep -qx 'Exec=kernora-update-notifier' \
+  "$temporary_root/etc/xdg/autostart/org.kernora.update-notifier.desktop" \
+  || fail "the update notifier is not started at login"
+grep -qx 'DesktopEntry=org.kernora.settings' "$temporary_root/usr/share/knotifications6/kernora-updates.notifyrc" \
+  || fail "update notifications would not come from Settings"
 grep -q 'kernora-settings' "$temporary_root/usr/bin/systemsettings" \
   || fail "the systemsettings wrapper is missing"
 grep -Fxq 'License: MPL-2.0' "$temporary_root/usr/share/kernora/copyright/librewolf" \
