@@ -285,9 +285,9 @@ QList<QUrl> Accounts::stockAvatars() const
 {
     QList<QUrl> avatars;
     const QStringList roots = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
-                                                        QStringLiteral("plasma/avatars"), QStandardPaths::LocateDirectory);
+                                                        QStringLiteral("kernora/avatars"), QStandardPaths::LocateDirectory);
     for (const QString &root : roots) {
-        const auto entries = QDir(root).entryInfoList({QStringLiteral("*.png"), QStringLiteral("*.jpg")}, QDir::Files, QDir::Name);
+        const auto entries = QDir(root).entryInfoList({QStringLiteral("*.png")}, QDir::Files, QDir::Name);
         for (const QFileInfo &entry : entries) {
             avatars.append(QUrl::fromLocalFile(entry.absoluteFilePath()));
         }

@@ -8,6 +8,7 @@ data/xdg-kcminputrc/kcminputrc etc/xdg
 data/xdg-klaunchrc/klaunchrc etc/xdg
 generated/hicolor usr/share/icons
 generated/skel/.face etc/skel
+generated/avatars/*.png usr/share/kernora/avatars
 data/skel-applications/*.desktop etc/skel/.local/share/applications
 generated/splash/kernora.png usr/share/plasma/look-and-feel/org.kernora.desktop/contents/splash/images
 generated/xdg/kdeglobals etc/xdg

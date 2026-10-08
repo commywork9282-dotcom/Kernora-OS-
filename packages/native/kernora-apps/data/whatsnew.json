@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-08-4",
+    "items": [
+      {
+        "icon": "user-identity",
+        "title": {
+          "en": "New profile pictures",
+          "ru": "Новые картинки профиля"
+        },
+        "text": {
+          "en": "Waves and ripples in Kernora's colours instead of KDE's pictures. Pick one in Settings › Account.",
+          "ru": "Волны и узоры в цветах Kernora вместо картинок KDE. Выберите любую в Настройки › Аккаунт."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-08-3",
     "items": [
       {

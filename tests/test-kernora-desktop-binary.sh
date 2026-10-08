@@ -306,6 +306,8 @@ for path in \
   usr/share/kconf_update/kernora-librewolf-chrome.upd \
   usr/share/kconf_update/kernora-librewolf-chrome.sh \
   usr/share/sounds/kernora/index.theme \
+  usr/share/kernora/avatars/00-kernora.png \
+  usr/share/kernora/avatars/01-ember-layers.png \
   usr/share/sounds/kernora/stereo/desktop-login.wav \
   usr/share/sounds/kernora/stereo/dialog-information.wav \
   usr/share/sounds/kernora/stereo/bell-window-system.wav \
@@ -333,6 +335,8 @@ grep -Fq 'launcher.globalShortcut = "Alt+Space"' \
   || fail "the Kernora launcher does not open with Alt+Space"
 grep -Fxq 'X-KDE-Shortcuts=Ctrl+Alt+T' "$temporary_root/desktop/usr/share/applications/org.kernora.terminal.desktop" \
   || fail "Ctrl+Alt+T does not open the terminal"
+[[ "$(find "$temporary_root/desktop/usr/share/kernora/avatars" -name '*.png' | wc -l)" -eq 15 ]] \
+  || fail "the Kernora profile pictures are missing"
 [[ "$(readlink "$temporary_root/desktop/usr/share/kglobalaccel/org.kernora.terminal.desktop")" == */applications/org.kernora.terminal.desktop ]] \
   || fail "kglobalaccel does not see the terminal's launch shortcut"
 grep -Fxq 'Icon=org.kernora.terminal' "$temporary_root/desktop/etc/skel/.local/share/applications/Alacritty.desktop" \

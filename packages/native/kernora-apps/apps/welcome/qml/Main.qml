@@ -61,7 +61,17 @@ AppWindow {
         if (whatsNew) {
             const releases = SystemInfo.releaseNotes();
             const seen = releases.findIndex(r => r.id === String(seenNotes.value));
-            notes = seen > 0 ? releases.slice(0, seen) : releases.slice(0, 1);
+            const picked = seen > 0 ? releases.slice(0, seen) : releases.slice(0, seen === 0 ? 1 : 3);
+            const merged = [];
+            for (const release of picked) {
+                const last = merged[merged.length - 1];
+                if (last && last.date === release.date) {
+                    last.items = last.items.concat(release.items);
+                } else {
+                    merged.push({ id: release.id, date: release.date, items: Array.from(release.items) });
+                }
+            }
+            notes = merged;
             if (releases.length > 0) {
                 seenNotes.value = releases[0].id;
             } else {

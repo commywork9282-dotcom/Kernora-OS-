@@ -53,14 +53,15 @@ After an update, the next login opens a "What's new" window: Welcome started
 as `kernora-welcome --whats-new`. It says what changed, in plain words, from
 the release notes in `/usr/share/kernora/whatsnew.json`
 (`packages/native/kernora-apps/data/whatsnew.json`). Each release there has an
-`id` (its date, newest first) and items with an icon, a title and a text, each
-in English and Russian.
+`id` (its date, newest first; a second release on the same day gets a suffix
+such as `2026-10-08-2`) and items with an icon, a title and a text, each in
+English and Russian. Releases of the same day are shown as one.
 
 The notifier opens the window when the newest `id` differs from `Seen` in
 `kernora-welcomerc` `[WhatsNew]`, six seconds after login. On a new
 installation, where Welcome itself is still due, it only records the newest
-release as seen. The window shows every release since the one seen last and
-then records the newest.
+release as seen. The window shows every release since the one seen last (up
+to three when none was seen yet) and then records the newest.
 
 ## Kernora's packages win over Debian's
 

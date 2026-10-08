@@ -1,3 +1,11 @@
+kernora-desktop (1.4.7) UNRELEASED; urgency=medium
+
+  * Kernora profile pictures in /usr/share/kernora/avatars: fourteen waves
+    and ripples in the Kernora hues (tools/gen-avatars) and the Kernora
+    mark, instead of KDE's character pictures.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 12:00:00 -0700
+
 kernora-desktop (1.4.6) UNRELEASED; urgency=high
 
   * Ensure the installed root directory belongs to root before finishing

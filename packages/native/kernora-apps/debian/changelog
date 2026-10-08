@@ -1,3 +1,12 @@
+kernora-apps (1.1.11) UNRELEASED; urgency=medium
+
+  * Settings > Account offers the Kernora profile pictures instead of
+    KDE's (needs kernora-desktop 1.4.5).
+  * What's new: releases of the same day are shown together, and a first
+    showing covers up to three releases.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 12:00:00 -0700
+
 kernora-apps (1.1.10) UNRELEASED; urgency=high
 
   * Announce the installed-system boot fix in What's new.

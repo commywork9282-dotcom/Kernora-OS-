@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-# Exercise the tar-to-SquashFS conversion as an ordinary user, preserving
-# both the system root owner and a distinct live account owner.
 work=$(mktemp -d)
 trap 'rm -rf -- "$work"' EXIT
 mkdir -p "$work/input/home/live"

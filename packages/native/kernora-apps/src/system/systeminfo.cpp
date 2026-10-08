@@ -276,7 +276,7 @@ QVariantList SystemInfo::releaseNotes() const
         }
         const QString id = release.value(QStringLiteral("id")).toString();
         releases.append(QVariantMap{{QStringLiteral("id"), id},
-                                    {QStringLiteral("date"), QLocale().toString(QDate::fromString(id, Qt::ISODate), QStringLiteral("d MMMM yyyy"))},
+                                    {QStringLiteral("date"), QLocale().toString(QDate::fromString(id.left(10), Qt::ISODate), QStringLiteral("d MMMM yyyy"))},
                                     {QStringLiteral("items"), items}});
     }
     return releases;

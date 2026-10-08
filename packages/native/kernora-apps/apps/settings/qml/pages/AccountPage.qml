@@ -155,40 +155,47 @@ SettingsPage {
         preferredWidth: 520
         showAccept: false
 
-        GridLayout {
+        Item {
             Layout.fillWidth: true
-            columns: 5
-            columnSpacing: 12
-            rowSpacing: 12
+            implicitWidth: pictureGrid.implicitWidth
+            implicitHeight: pictureGrid.implicitHeight
 
-            Repeater {
-                model: pictureDialog.opened ? Accounts.stockAvatars() : []
-                delegate: Item {
-                    id: stock
-                    required property url modelData
-                    Layout.alignment: Qt.AlignHCenter
-                    implicitWidth: 72
-                    implicitHeight: 72
-                    Avatar {
-                        anchors.fill: parent
-                        size: 72
-                        source: stock.modelData
-                    }
-                    MStateLayer {
-                        anchors.fill: parent
-                        radius: M3.classic ? M3.cornerCard : 36
-                        hovered: stockMouse.containsMouse
-                        pressed: stockMouse.pressed
-                        pressPoint: Qt.point(stockMouse.mouseX, stockMouse.mouseY)
-                    }
-                    MouseArea {
-                        id: stockMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            Accounts.setAvatar(stock.modelData);
-                            pictureDialog.close();
+            GridLayout {
+                id: pictureGrid
+                anchors.horizontalCenter: parent.horizontalCenter
+                columns: 5
+                columnSpacing: 12
+                rowSpacing: 12
+
+                Repeater {
+                    model: pictureDialog.opened ? Accounts.stockAvatars() : []
+                    delegate: Item {
+                        id: stock
+                        required property url modelData
+                        Layout.alignment: Qt.AlignHCenter
+                        implicitWidth: 72
+                        implicitHeight: 72
+                        Avatar {
+                            anchors.fill: parent
+                            size: 72
+                            source: stock.modelData
+                        }
+                        MStateLayer {
+                            anchors.fill: parent
+                            radius: M3.classic ? M3.cornerCard : 36
+                            hovered: stockMouse.containsMouse
+                            pressed: stockMouse.pressed
+                            pressPoint: Qt.point(stockMouse.mouseX, stockMouse.mouseY)
+                        }
+                        MouseArea {
+                            id: stockMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                Accounts.setAvatar(stock.modelData);
+                                pictureDialog.close();
+                            }
                         }
                     }
                 }

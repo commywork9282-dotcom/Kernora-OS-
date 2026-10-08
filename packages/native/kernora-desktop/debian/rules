@@ -36,6 +36,13 @@ override_dh_auto_build:
 	python3 $(TOOLS)/gen-avatar $(LOGO) generated/skel/face.svg
 	rsvg-convert --width=256 --height=256 \
 	  --output=generated/skel/.face generated/skel/face.svg
+	python3 $(TOOLS)/gen-avatars generated/avatars
+	rsvg-convert --width=512 --height=512 \
+	  --output=generated/avatars/00-kernora.png generated/skel/face.svg
+	set -e; for image in generated/avatars/*.svg; do \
+	  rsvg-convert --width=512 --height=512 --output=$${image%.svg}.png $$image; \
+	  rm $$image; \
+	done
 	rm generated/skel/face.svg
 	rsvg-convert --width=512 --height=512 \
 	  --output=generated/splash/kernora.png $(LOGO)

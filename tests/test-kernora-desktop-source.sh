@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.6" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.7" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -74,7 +74,7 @@ grep -Fxq 'name=kernora' "$defaults" \
 tools_root="$package_root/tools"
 for tool in gen-color-schemes gen-icon-theme gen-kdeglobals gen-plasma-theme \
   gen-qml-tokens gen-translations fetch-symbols gen-wallpaper-assets \
-  gen-kvantum-theme gen-aurorae-theme gen-avatar gen-terminal-theme gen-greeter-palette \
+  gen-kvantum-theme gen-aurorae-theme gen-avatar gen-avatars gen-terminal-theme gen-greeter-palette \
   gen-keyboard-maps gen-qm gen-installer-icons gen-installer-style gen-browser-theme gen-gtk-theme gen-sound-theme gen-plymouth-theme gen-grub-theme gen-emoji-data; do
   [[ -x "$tools_root/$tool" ]] || fail "design-system tool missing: $tool"
 done
@@ -145,6 +145,11 @@ grep -Fxq 'Inherits=freedesktop' "$sounds/kernora/index.theme" || fail "the soun
 [[ "$(head -c 4 "$sounds/kernora/stereo/desktop-login.wav")" == RIFF ]] || fail "the login sound is not a WAV file"
 [[ "$(readlink "$sounds/kernora/stereo/bell-window-system.wav")" == bell.wav ]] || fail "the window bell does not use the bell sound"
 rm -rf "$sounds"
+avatars=$(mktemp -d)
+python3 "$tools_root/gen-avatars" "$avatars" >/dev/null || fail "gen-avatars fails"
+[[ "$(find "$avatars" -name '*.svg' | wc -l)" -eq 14 ]] || fail "the profile pictures are not fourteen plus the Kernora mark"
+grep -l '<path ' "$avatars"/*.svg | wc -l | grep -qx 14 || fail "a profile picture has no waves"
+rm -rf "$avatars"
 if grep -rIl 'firefox-esr' "$package_root/data" >/dev/null; then
   fail "the desktop still refers to Firefox: $(grep -rIl 'firefox-esr' "$package_root/data" | head -1)"
 fi
