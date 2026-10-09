@@ -5,3 +5,5 @@ if [ "$1" = configure ]; then
     update-alternatives --install /usr/share/icons/default/index.theme x-cursor-theme \
         /usr/share/icons/kernora_cursors/cursor.theme 100
 fi
+
+#DEBHELPER#

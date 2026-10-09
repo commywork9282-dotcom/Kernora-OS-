@@ -220,3 +220,39 @@ msgstr "Обновление от %1"
 #: apps/welcome/qml/Main.qml:634
 msgid "Great"
 msgstr "Отлично"
+
+#: apps/welcome/qml/Main.qml:25
+msgid "Kernora restarted"
+msgstr "Kernora перезапустилась"
+
+#: apps/welcome/qml/Main.qml:762
+msgid "Well, this is awkward."
+msgstr "Что ж, неловко вышло."
+
+#: apps/welcome/qml/Main.qml:772
+msgid "Kernora encountered a critical kernel error and could no longer continue running. Your computer restarted automatically to recover from this problem."
+msgstr "В ядре Kernora произошла критическая ошибка, и система не могла продолжать работу. Компьютер автоматически перезагрузился, чтобы восстановиться после этой проблемы."
+
+#: apps/welcome/qml/Main.qml:783
+msgid "It happened on %1."
+msgstr "Это случилось %1."
+
+#: apps/welcome/qml/Main.qml:810
+msgid "Only an administrator can read the full report."
+msgstr "Полный отчёт может прочитать только администратор."
+
+#: apps/welcome/qml/Main.qml:824
+msgid "Hide details"
+msgstr "Скрыть подробности"
+
+#: apps/welcome/qml/Main.qml:824
+msgid "Details"
+msgstr "Подробнее"
+
+#: apps/welcome/qml/Main.qml:830
+msgid "Copy"
+msgstr "Копировать"
+
+#: apps/welcome/qml/Main.qml:841
+msgid "Okay"
+msgstr "Понятно"

@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.8" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.9" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -160,6 +160,9 @@ grep -Fxq 'gtk-sound-theme-name=kernora' "$package_root/data/skel-config/gtk-3.0
   || fail "new accounts do not start with the Kernora sounds"
 sh -n "$package_root/data/kconf_update/kernora-sound-theme.sh" || fail "the sound theme migration does not parse"
 sh -n "$package_root/data/kconf_update/kernora-terminal-entry.sh" || fail "the terminal entry migration does not parse"
+sh -n "$package_root/data/crash/kernora-panic-report" || fail "the panic report does not parse"
+grep -Fxq 'kernel.panic = 10' "$package_root/data/crash/90-kernora-panic.conf" \
+  || fail "a kernel panic would not restart the computer"
 sounds=$(mktemp -d)
 python3 "$tools_root/gen-sound-theme" "$sounds" desktop-login,bell >/dev/null || fail "gen-sound-theme fails"
 grep -Fxq 'Inherits=freedesktop' "$sounds/kernora/index.theme" || fail "the sound theme does not fall back to freedesktop"

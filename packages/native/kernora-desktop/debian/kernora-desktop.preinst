@@ -20,3 +20,5 @@ if [ "$1" = install ] || [ "$1" = upgrade ]; then
             --divert "$file.kde" "$file"
     done
 fi
+
+#DEBHELPER#

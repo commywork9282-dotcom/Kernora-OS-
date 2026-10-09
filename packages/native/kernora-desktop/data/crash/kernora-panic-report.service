@@ -1,0 +1,11 @@
+[Unit]
+Description=Note a kernel panic of the previous boot
+After=systemd-pstore.service
+ConditionPathIsDirectory=/var/lib/systemd/pstore
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/kernora-panic-report
+
+[Install]
+WantedBy=multi-user.target

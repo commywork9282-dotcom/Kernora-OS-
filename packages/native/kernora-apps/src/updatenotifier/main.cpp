@@ -19,6 +19,7 @@
 #include <QTimer>
 
 #include <KAboutData>
+#include <KConfig>
 #include <KConfigGroup>
 #include <KDBusService>
 #include <KLocalizedString>
@@ -39,6 +40,7 @@ static constexpr int CheckInterval = 6 * 60 * 60;
 static constexpr int RefreshAge = 24 * 60 * 60;
 static constexpr int RestartInterval = 10 * 60;
 static constexpr int WhatsNewDelay = 6;
+static constexpr qint64 PanicAge = 3 * 24 * 60 * 60;
 
 static QString readFile(const QString &path)
 {
@@ -101,6 +103,30 @@ static void showWhatsNew()
     QTimer::singleShot(WhatsNewDelay * 1000, qApp, []() {
         QProcess::startDetached(QStringLiteral("kernora-welcome"), {QStringLiteral("--whats-new")});
     });
+}
+
+static bool showKernelPanic()
+{
+    KConfig panic(QStringLiteral("/var/lib/kernora/kernel-panic.conf"), KConfig::SimpleConfig);
+    const KConfigGroup record(&panic, QStringLiteral("Panic"));
+    const QString id = record.readEntry("id", QString());
+    if (id.isEmpty()) {
+        return false;
+    }
+    KSharedConfig::Ptr welcome = KSharedConfig::openConfig(QStringLiteral("kernora-welcomerc"));
+    KConfigGroup seen = welcome->group(QStringLiteral("KernelPanic"));
+    if (seen.readEntry("Seen", QString()) == id) {
+        return false;
+    }
+    seen.writeEntry("Seen", id);
+    seen.sync();
+    if (QDateTime::currentSecsSinceEpoch() - record.readEntry("time", qint64(0)) > PanicAge) {
+        return false;
+    }
+    QTimer::singleShot(WhatsNewDelay * 1000, qApp, []() {
+        QProcess::startDetached(QStringLiteral("kernora-welcome"), {QStringLiteral("--kernel-panic")});
+    });
+    return true;
 }
 
 class Notifier : public QObject
@@ -271,7 +297,9 @@ int main(int argc, char **argv)
     }
 
     KDBusService service(KDBusService::Unique);
-    showWhatsNew();
+    if (!showKernelPanic()) {
+        showWhatsNew();
+    }
     Notifier notifier;
     return app.exec();
 }

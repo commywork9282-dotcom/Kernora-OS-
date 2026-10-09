@@ -74,6 +74,9 @@ data/kconf_update/kernora-terminal-entry.sh usr/share/kconf_update
 data/xdg-notifyrc/plasma_workspace.notifyrc etc/xdg
 data/crash/kernora-crash-notifier usr/libexec
 data/crash/drkonqi-coredump-launcher-kernora.conf usr/lib/systemd/user/drkonqi-coredump-launcher@.service.d
+data/crash/90-kernora-panic.conf usr/lib/sysctl.d
+data/crash/kernora-panic-report usr/libexec
+data/crash/kernora-panic-report.service usr/lib/systemd/system
 data/xdg-mimeapps/mimeapps.list etc/xdg
 data/notifications/main.qml usr/share/plasma/plasmoids/org.kde.plasma.notifications/contents/ui
 data/notifications/kernora usr/share/plasma/plasmoids/org.kde.plasma.notifications/contents/ui

@@ -1,3 +1,12 @@
+kernora-apps (1.1.13) UNRELEASED; urgency=medium
+
+  * After a kernel panic, the next login shows a friendly screen in
+    Welcome (kernora-welcome --kernel-panic): "Well, this is awkward.",
+    when it happened and the report. kernora-update-notifier opens it once
+    per panic, within three days.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 18:00:00 -0700
+
 kernora-apps (1.1.12) UNRELEASED; urgency=medium
 
   * Settings > Wallpaper & style: a colour picker with every Kernora colour

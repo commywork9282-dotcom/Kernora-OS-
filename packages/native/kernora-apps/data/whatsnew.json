@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-08-6",
+    "items": [
+      {
+        "icon": "system-reboot",
+        "title": {
+          "en": "Back on its feet",
+          "ru": "Снова на ногах"
+        },
+        "text": {
+          "en": "If the system ever hits a critical kernel error, the computer restarts by itself, and Kernora tells you what happened when you are back.",
+          "ru": "Если в ядре когда-нибудь случится критическая ошибка, компьютер перезагрузится сам, а после перезагрузки Kernora расскажет, что произошло."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-08-5",
     "items": [
       {

@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+archive=/var/lib/systemd/pstore
+state=/var/lib/kernora
+latest=$(ls -1 "$archive" 2>/dev/null | grep -E '^[0-9]+$' | sort -n | tail -n 1 || true)
+[ -n "$latest" ] || exit 0
+log=$(find "$archive/$latest" -name dmesg.txt -type f 2>/dev/null | head -n 1)
+[ -n "$log" ] || exit 0
+reason=$(grep -a -m 1 -o 'Kernel panic - not syncing: .*' "$log" | tr -d '\r' || true)
+[ -n "$reason" ] || exit 0
+if [ -f "$state/kernel-panic.conf" ] && grep -qx "id=$latest" "$state/kernel-panic.conf"; then
+    exit 0
+fi
+record=$(find "$archive/$latest" -name 'dmesg-*' -type f 2>/dev/null | head -n 1)
+time=$(stat -c %Y "${record:-$log}")
+mkdir -p "$state"
+umask 022
+printf '[Panic]\nid=%s\ntime=%s\nreason=%s\n' "$latest" "$time" "$reason" > "$state/kernel-panic.conf.new"
+mv "$state/kernel-panic.conf.new" "$state/kernel-panic.conf"
+umask 027
+start=$(grep -a -n -m 1 'Kernel panic - not syncing' "$log" | cut -d: -f1)
+start=$((start > 10 ? start - 10 : 1))
+tail -n +"$start" "$log" | grep -a -v -E '^(Panic|Oops)#[0-9]+ Part[0-9]+$' | sed 's/^<[0-9]*>//' | head -n 160 > "$state/kernel-panic.log.new"
+chgrp sudo "$state/kernel-panic.log.new" 2>/dev/null || true
+chmod 0640 "$state/kernel-panic.log.new"
+mv "$state/kernel-panic.log.new" "$state/kernel-panic.log"

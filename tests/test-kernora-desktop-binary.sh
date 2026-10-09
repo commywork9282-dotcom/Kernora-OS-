@@ -359,6 +359,12 @@ for path in \
 done
 [[ -L "$temporary_root/desktop/usr/share/plasma/desktoptheme/kernora-red/widgets" ]] \
   || fail "the red Plasma theme copies its pictures instead of linking them"
+[[ -s "$temporary_root/desktop/usr/lib/sysctl.d/90-kernora-panic.conf" ]] || fail "the panic timeout is missing"
+[[ -x "$temporary_root/desktop/usr/libexec/kernora-panic-report" ]] || fail "the panic report is missing"
+grep -Fxq 'After=systemd-pstore.service' "$temporary_root/desktop/usr/lib/systemd/system/kernora-panic-report.service" \
+  || fail "the panic report does not wait for systemd-pstore"
+dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -q 'kernora-panic-report.service' \
+  || fail "the panic report service is not enabled on installation"
 [[ "$(readlink "$temporary_root/desktop/usr/share/kglobalaccel/org.kernora.terminal.desktop")" == */applications/org.kernora.terminal.desktop ]] \
   || fail "kglobalaccel does not see the terminal's launch shortcut"
 grep -Fxq 'Icon=org.kernora.terminal' "$temporary_root/desktop/etc/skel/.local/share/applications/Alacritty.desktop" \

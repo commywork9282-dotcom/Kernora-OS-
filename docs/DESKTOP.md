@@ -539,6 +539,18 @@ package is patched (sounds, below, are a fifth):
   entry from the socket, looks up the app's launcher entry and sends a short
   notification ("Settings closed unexpectedly"); processes without a visible
   entry, plasmashell among them, are left alone.
+* **Kernel panics** — Debian's kernel draws nothing at a panic
+  (`CONFIG_DRM_PANIC` is off) and would wait forever (`CONFIG_PANIC_TIMEOUT=0`).
+  `/usr/lib/sysctl.d/90-kernora-panic.conf` sets `kernel.panic = 10`, so the
+  computer restarts ten seconds later. On UEFI computers the kernel writes the
+  panic to EFI variables (`efi_pstore`), `systemd-pstore` archives it to
+  `/var/lib/systemd/pstore/` at the next boot, and
+  `kernora-panic-report.service` writes `/var/lib/kernora/kernel-panic.conf`
+  (id, time, the "Kernel panic" line, readable by all) and
+  `kernel-panic.log` (the panic and its trace, group `sudo`). At login
+  `kernora-update-notifier` opens `kernora-welcome --kernel-panic` once per
+  panic within three days: a sad face on a turning Material cookie, "Well,
+  this is awkward.", when it happened, and the report under "Details".
 * **Window decoration** — `gen-aurorae-theme` writes the Aurorae theme
   `kernora`: a 38px title bar on the application header's surface with 12px
   top corners, circular Material Symbols buttons (the close button on the

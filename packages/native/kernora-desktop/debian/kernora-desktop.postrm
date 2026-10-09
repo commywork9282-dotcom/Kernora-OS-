@@ -24,3 +24,5 @@ if [ "$1" = remove ] || [ "$1" = abort-install ] || [ "$1" = disappear ]; then
             --divert "$file.kde" "$file"
     done
 fi
+
+#DEBHELPER#

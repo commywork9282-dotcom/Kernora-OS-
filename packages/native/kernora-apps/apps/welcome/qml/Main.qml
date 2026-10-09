@@ -8,6 +8,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
+import QtQuick.Shapes
 import org.kernora.m3
 import org.kernora.ui
 import org.kernora.system
@@ -15,13 +16,13 @@ import org.kernora.system
 AppWindow {
     id: app
 
-    width: 900
-    height: whatsNew ? 720 : 640
+    width: kernelPanic ? 760 : 900
+    height: whatsNew ? 720 : kernelPanic ? 660 : 640
     minimumWidth: 560
     minimumHeight: 520
     color: M3.surfaceContainer
-    visible: !(firstRun && SystemInfo.live) && !(whatsNew && notes.length === 0)
-    title: whatsNew ? i18n("What's new") : i18n("Welcome")
+    visible: !(firstRun && SystemInfo.live) && !(whatsNew && notes.length === 0) && !(kernelPanic && !panic.id)
+    title: kernelPanic ? i18n("Kernora restarted") : whatsNew ? i18n("What's new") : i18n("Welcome")
 
     property int page: 0
     readonly property int pages: 6
@@ -43,7 +44,7 @@ AppWindow {
     }
 
     function finish(): void {
-        if (!whatsNew) {
+        if (!special) {
             showOnLogin.value = false;
         }
         Qt.quit();
@@ -52,10 +53,26 @@ AppWindow {
 
     readonly property bool firstRun: (startArguments || []).indexOf("--first-run") >= 0
     readonly property bool whatsNew: (startArguments || []).indexOf("--whats-new") >= 0
+    readonly property bool kernelPanic: (startArguments || []).indexOf("--kernel-panic") >= 0
+    readonly property bool special: whatsNew || kernelPanic
+    readonly property var panic: kernelPanic ? SystemInfo.kernelPanic() : ({})
     property var notes: []
+
+    function cookie(centre: real, radius: real, depth: real, lobes: int): var {
+        const points = [];
+        for (let step = 0; step <= 360; ++step) {
+            const angle = step * Math.PI / 180;
+            const r = radius * (1 - depth + depth * Math.cos(lobes * angle));
+            points.push(Qt.point(centre + r * Math.cos(angle), centre + r * Math.sin(angle)));
+        }
+        return points;
+    }
 
     Component.onCompleted: {
         if (firstRun && SystemInfo.live) {
+            Qt.quit();
+        }
+        if (kernelPanic && !panic.id) {
             Qt.quit();
         }
         if (whatsNew) {
@@ -80,8 +97,8 @@ AppWindow {
         }
     }
 
-    Shortcut { enabled: !app.whatsNew; sequences: ["Right", "PgDown"]; onActivated: app.page = Math.min(app.pages - 1, app.page + 1) }
-    Shortcut { enabled: !app.whatsNew; sequences: ["Left", "PgUp"]; onActivated: app.page = Math.max(0, app.page - 1) }
+    Shortcut { enabled: !app.special; sequences: ["Right", "PgDown"]; onActivated: app.page = Math.min(app.pages - 1, app.page + 1) }
+    Shortcut { enabled: !app.special; sequences: ["Left", "PgUp"]; onActivated: app.page = Math.max(0, app.page - 1) }
     Shortcut { sequence: "Escape"; onActivated: app.finish() }
 
     RoundedClip {
@@ -100,14 +117,20 @@ AppWindow {
             sourceComponent: whatsNewView
         }
 
+        Loader {
+            anchors.fill: parent
+            active: app.kernelPanic
+            sourceComponent: panicView
+        }
+
         Item {
             id: viewport
             anchors.fill: parent
             anchors.bottomMargin: 88
-            visible: !app.whatsNew
+            visible: !app.special
 
             Repeater {
-                model: app.whatsNew ? [] : [hello, theme, style, wallpaper, apps, done]
+                model: app.special ? [] : [hello, theme, style, wallpaper, apps, done]
                 delegate: Loader {
                     id: pageLoader
                     required property var modelData
@@ -130,7 +153,7 @@ AppWindow {
             anchors.bottom: parent.bottom
             anchors.margins: 24
             spacing: 12
-            visible: !app.whatsNew
+            visible: !app.special
 
             QQC2.Button {
                 text: app.page === 0 ? i18n("Skip") : i18n("Back")
@@ -642,6 +665,206 @@ AppWindow {
                 Item { Layout.fillWidth: true }
                 QQC2.Button {
                     text: i18n("Great")
+                    highlighted: true
+                    onClicked: Qt.quit()
+                }
+            }
+        }
+    }
+
+    Component {
+        id: panicView
+        Item {
+            id: panicPage
+            property bool details: false
+            onDetailsChanged: {
+                if (details) {
+                    reveal.restart();
+                }
+            }
+
+            Timer {
+                id: reveal
+                interval: 80
+                onTriggered: panicFlick.contentY = Math.max(0, Math.min(panicDetails.y - 24, panicFlick.contentHeight - panicFlick.height))
+            }
+
+            Flickable {
+                id: panicFlick
+                anchors.fill: parent
+                anchors.bottomMargin: 88
+                contentHeight: panicColumn.implicitHeight + 32
+                clip: true
+                boundsBehavior: Flickable.StopAtBounds
+                QQC2.ScrollBar.vertical: QQC2.ScrollBar {}
+
+                ColumnLayout {
+                    id: panicColumn
+                    width: panicFlick.width
+                    spacing: 16
+
+                    Item {
+                        id: face
+                        readonly property real side: 176
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.topMargin: 48
+                        implicitWidth: side
+                        implicitHeight: side
+
+                        Shape {
+                            anchors.fill: parent
+                            preferredRendererType: Shape.CurveRenderer
+                            RotationAnimation on rotation {
+                                from: 0
+                                to: 360
+                                duration: 90000
+                                loops: Animation.Infinite
+                                running: M3.motionScale > 0
+                            }
+                            ShapePath {
+                                strokeWidth: -1
+                                strokeColor: "transparent"
+                                fillColor: M3.primaryContainer
+                                PathPolyline {
+                                    path: app.cookie(face.side / 2, face.side / 2, 0.06, 9)
+                                }
+                            }
+                        }
+                        Repeater {
+                            model: [-1, 1]
+                            delegate: Rectangle {
+                                required property int modelData
+                                width: 16
+                                height: 16
+                                radius: 8
+                                x: face.side / 2 + modelData * 30 - 8
+                                y: face.side * 0.38
+                                color: M3.primaryContainerContent
+                            }
+                        }
+                        Shape {
+                            anchors.fill: parent
+                            preferredRendererType: Shape.CurveRenderer
+                            ShapePath {
+                                strokeWidth: 9
+                                strokeColor: M3.primaryContainerContent
+                                fillColor: "transparent"
+                                capStyle: ShapePath.RoundCap
+                                startX: face.side / 2 - 34
+                                startY: face.side * 0.7
+                                PathQuad {
+                                    x: face.side / 2 + 34
+                                    y: face.side * 0.7
+                                    controlX: face.side / 2
+                                    controlY: face.side * 0.56
+                                }
+                            }
+                        }
+                    }
+
+                    MText {
+                        Layout.fillWidth: true
+                        Layout.topMargin: 8
+                        Layout.leftMargin: 56
+                        Layout.rightMargin: 56
+                        role: "displaySmall"
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.Wrap
+                        text: i18n("Well, this is awkward.")
+                    }
+                    MText {
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 56
+                        Layout.rightMargin: 56
+                        role: "bodyLarge"
+                        color: M3.surfaceVariantContent
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.Wrap
+                        text: i18n("Kernora encountered a critical kernel error and could no longer continue running. Your computer restarted automatically to recover from this problem.")
+                    }
+                    MText {
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 56
+                        Layout.rightMargin: 56
+                        role: "bodyMedium"
+                        color: M3.surfaceVariantContent
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.Wrap
+                        visible: String(app.panic.when || "").length > 0
+                        text: i18n("It happened on %1.", app.panic.when)
+                    }
+
+                    Rectangle {
+                        id: panicDetails
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 32
+                        Layout.rightMargin: 32
+                        Layout.topMargin: 8
+                        visible: panicPage.details
+                        implicitHeight: reason.implicitHeight + report.implicitHeight + 44
+                        radius: M3.classic ? M3.cornerCard : 20
+                        color: M3.surfaceContainerHigh
+
+                        MText {
+                            id: reason
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.margins: 16
+                            role: "titleSmall"
+                            color: M3.error
+                            wrapMode: Text.Wrap
+                            text: app.panic.reason || ""
+                        }
+                        TextEdit {
+                            id: report
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: reason.bottom
+                            anchors.margins: 16
+                            anchors.topMargin: 12
+                            readOnly: true
+                            selectByMouse: true
+                            wrapMode: TextEdit.Wrap
+                            font.family: "monospace"
+                            font.pointSize: 9
+                            color: M3.surfaceContent
+                            selectionColor: M3.primaryContainer
+                            selectedTextColor: M3.primaryContainerContent
+                            text: String(app.panic.log || "").length > 0
+                                ? app.panic.log
+                                : i18n("Only an administrator can read the full report.")
+                        }
+                    }
+                }
+            }
+
+            RowLayout {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 24
+                spacing: 8
+
+                QQC2.Button {
+                    text: panicPage.details ? i18n("Hide details") : i18n("Details")
+                    flat: true
+                    onClicked: panicPage.details = !panicPage.details
+                }
+                QQC2.Button {
+                    visible: panicPage.details
+                    text: i18n("Copy")
+                    icon.name: "edit-copy"
+                    flat: true
+                    onClicked: {
+                        report.selectAll();
+                        report.copy();
+                        report.deselect();
+                    }
+                }
+                Item { Layout.fillWidth: true }
+                QQC2.Button {
+                    text: i18n("Okay")
                     highlighted: true
                     onClicked: Qt.quit()
                 }

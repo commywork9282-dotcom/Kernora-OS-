@@ -74,6 +74,9 @@ int run(int &argc, char **argv, const Application &application, KLocalizedString
     QCommandLineOption whatsNew(QStringLiteral("whats-new"));
     whatsNew.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(whatsNew);
+    QCommandLineOption kernelPanic(QStringLiteral("kernel-panic"));
+    kernelPanic.setFlags(QCommandLineOption::HiddenFromHelp);
+    parser.addOption(kernelPanic);
     parser.process(app);
     about.processCommandLine(&parser);
     QStringList arguments = normalised(parser.positionalArguments(), QDir::currentPath());
@@ -82,6 +85,9 @@ int run(int &argc, char **argv, const Application &application, KLocalizedString
     }
     if (parser.isSet(whatsNew)) {
         arguments.prepend(QStringLiteral("--whats-new"));
+    }
+    if (parser.isSet(kernelPanic)) {
+        arguments.prepend(QStringLiteral("--kernel-panic"));
     }
 
     std::unique_ptr<KDBusService> service;

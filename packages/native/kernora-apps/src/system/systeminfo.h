@@ -66,6 +66,7 @@ public:
     Q_INVOKABLE QString packageVersion(const QString &package) const;
     Q_INVOKABLE qint64 uptimeSeconds() const;
     Q_INVOKABLE QVariantList releaseNotes() const;
+    Q_INVOKABLE QVariantMap kernelPanic() const;
 
 private:
     static QString dmi(const QString &name);

@@ -1,3 +1,14 @@
+kernora-desktop (1.4.9) UNRELEASED; urgency=medium
+
+  * After a kernel panic the computer restarts by itself after ten seconds
+    (/usr/lib/sysctl.d/90-kernora-panic.conf); Debian's kernel would wait
+    forever. kernora-panic-report.service reads the panic that
+    systemd-pstore archived from the EFI variables and writes
+    /var/lib/kernora/kernel-panic.conf, with the log readable by
+    administrators.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 18:00:00 -0700
+
 kernora-desktop (1.4.8) UNRELEASED; urgency=medium
 
   * Colour themes: the Kernora colour and the Material colours (red, pink,

@@ -4,6 +4,7 @@
 #include "systeminfo.h"
 
 #include <QDate>
+#include <QDateTime>
 #include <QFile>
 #include <QGuiApplication>
 #include <QJsonArray>
@@ -19,6 +20,8 @@
 #include <QSysInfo>
 #include <QThread>
 
+#include <KConfig>
+#include <KConfigGroup>
 #include <KCoreAddons>
 #include <KFormat>
 #include <KLocalizedString>
@@ -280,4 +283,24 @@ QVariantList SystemInfo::releaseNotes() const
                                     {QStringLiteral("items"), items}});
     }
     return releases;
+}
+
+QVariantMap SystemInfo::kernelPanic() const
+{
+    KConfig panic(QStringLiteral("/var/lib/kernora/kernel-panic.conf"), KConfig::SimpleConfig);
+    const KConfigGroup group(&panic, QStringLiteral("Panic"));
+    const QString id = group.readEntry("id", QString());
+    if (id.isEmpty()) {
+        return {};
+    }
+    const QDateTime when = QDateTime::fromSecsSinceEpoch(group.readEntry("time", qint64(0)));
+    QString log;
+    QFile file(QStringLiteral("/var/lib/kernora/kernel-panic.log"));
+    if (file.open(QIODevice::ReadOnly)) {
+        log = QString::fromUtf8(file.readAll()).trimmed();
+    }
+    return {{QStringLiteral("id"), id},
+            {QStringLiteral("when"), QLocale().toString(when, QStringLiteral("d MMMM yyyy, HH:mm"))},
+            {QStringLiteral("reason"), group.readEntry("reason", QString())},
+            {QStringLiteral("log"), log}};
 }
