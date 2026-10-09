@@ -1,3 +1,11 @@
+kernora-desktop (1.4.15) UNRELEASED; urgency=medium
+
+  * The analog clock's seconds dot stays inside the dial: it ran on a circle
+    wider than the dips between the dial's scallops (cookie12 is 0.456 of
+    its width at the dips), so it poked out between them.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 09 Oct 2026 19:00:00 -0700
+
 kernora-desktop (1.4.14) UNRELEASED; urgency=medium
 
   * The analog Kernora Clock follows Pixel's: a pale scalloped dial

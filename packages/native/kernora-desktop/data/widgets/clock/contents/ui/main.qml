@@ -146,9 +146,9 @@ PlasmoidItem {
                 }
 
                 Rectangle {
-                    readonly property real dot: dial.side * 0.1
+                    readonly property real dot: dial.side * 0.09
                     x: -dot / 2
-                    y: -dial.side * 0.44 - dot / 2
+                    y: -dial.side * 0.37 - dot / 2
                     width: dot
                     height: dot
                     radius: dot / 2
