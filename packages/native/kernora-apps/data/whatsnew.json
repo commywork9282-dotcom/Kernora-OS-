@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-09-4",
+    "items": [
+      {
+        "icon": "preferences-system-windows",
+        "title": {
+          "en": "Sharp window previews",
+          "ru": "Чёткие превью окон"
+        },
+        "text": {
+          "en": "Hovering an app in the panel shows a clear preview of its window again, also in virtual machines, instead of coloured stripes.",
+          "ru": "При наведении на приложение в панели снова видно чёткое превью его окна, в том числе в виртуальных машинах, а не цветные полосы."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-09-2",
     "items": [
       {

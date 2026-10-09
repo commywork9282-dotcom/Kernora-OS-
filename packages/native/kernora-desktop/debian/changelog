@@ -1,3 +1,13 @@
+kernora-desktop (1.4.17) UNRELEASED; urgency=medium
+
+  * Window previews in the task bar's tooltips are sharp again on computers
+    and virtual machines without a 3D GPU: the PipeWire stream arrived
+    garbled over DMA-BUF with llvmpipe (Plasma's own tooltip too).
+    KernoraWindowThumbnail.qml asks for shared-memory buffers instead
+    (allowDmaBuf: false).
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 09 Oct 2026 20:15:00 -0700
+
 kernora-desktop (1.4.16) UNRELEASED; urgency=medium
 
   * The analog Kernora Clock goes back to its first face (cookie12 dial in

@@ -91,6 +91,7 @@ data/notifications/main.qml usr/share/plasma/plasmoids/org.kde.plasma.notificati
 data/notifications/kernora usr/share/plasma/plasmoids/org.kde.plasma.notifications/contents/ui
 data/taskmanager/Badge.qml usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui
 data/taskmanager/ToolTipInstance.qml usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui
+data/taskmanager/KernoraWindowThumbnail.qml usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui
 generated/plymouth/kernora usr/share/plymouth/themes
 data/plymouth/plymouthd.defaults usr/share/plymouth
 data/grub/kernora.cfg etc/default/grub.d

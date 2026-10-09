@@ -416,7 +416,10 @@ the package and live-image tests.
   (`data/kwin-tabbox/org.kernora.switcher`, a KWin window switcher).
 * **Task manager** (`data/taskmanager`): count badges as Material badges;
   tooltip previews and album art on rounded tiles (`Badge.qml`,
-  `ToolTipInstance.qml`).
+  `ToolTipInstance.qml`). Window previews come from
+  `KernoraWindowThumbnail.qml`, Plasma's PipeWire thumbnail with
+  `allowDmaBuf: false`: without a 3D GPU (llvmpipe, most virtual machines)
+  the DMA-BUF stream arrives as coloured stripes.
 * **Alt+Space** opens the Kernora launcher. KRunner's kglobalaccel service
   file is diverted so that its own window keeps Alt+F2.
 * **Authentication prompt**: `packages/derived/polkit-kde-agent-1` rebuilds

@@ -273,7 +273,7 @@ ColumnLayout {
 
             active: !toolTipDelegate.isLauncher && !albumArtImage.visible && KWindowSystem.isPlatformWayland && root.index !== -1
             asynchronous: true
-            source: "PipeWireThumbnail.qml"
+            source: "KernoraWindowThumbnail.qml"
         }
 
         Loader {

@@ -437,6 +437,10 @@ grep -Fq 'onShouldClose: main.closed()' "$temporary_root/desktop/$shell/explorer
   || fail "the Kernora widget picker does not keep Plasma's explorer contract"
 [[ -s "$temporary_root/desktop/usr/share/plasma/desktoptheme/kernora/widgets/margins-highlight.svg" ]] \
   || fail "the Plasma theme lets edit mode fall back to Breeze's margin highlight"
+grep -Fq 'allowDmaBuf: false' "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui/KernoraWindowThumbnail.qml" \
+  || fail "window previews may arrive garbled over DMA-BUF"
+grep -Fq 'source: "KernoraWindowThumbnail.qml"' "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui/ToolTipInstance.qml" \
+  || fail "the task tooltip does not use the Kernora window preview"
 clipboard_ui="$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.clipboard/contents/ui"
 [[ -s "$clipboard_ui/EmojiPage.qml" && -s "$clipboard_ui/emoji.js" ]] \
   || fail "the clipboard sheet has no emoji tab"
