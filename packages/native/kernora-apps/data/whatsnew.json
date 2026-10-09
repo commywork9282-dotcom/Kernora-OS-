@@ -1,5 +1,32 @@
 [
   {
+    "id": "2026-10-09-2",
+    "items": [
+      {
+        "icon": "preferences-desktop-wallpaper",
+        "title": {
+          "en": "Starfall",
+          "ru": "Звездопад"
+        },
+        "text": {
+          "en": "A new live wallpaper: stars twinkle over quiet hills, and every few seconds a shooting star crosses the sky. Pick it in Settings › Wallpaper & style.",
+          "ru": "Новые живые обои: звёзды мерцают над тихими холмами, и каждые несколько секунд небо пересекает падающая звезда. Выберите их в Настройки › Обои и стиль."
+        }
+      },
+      {
+        "icon": "user-identity",
+        "title": {
+          "en": "Your picture in the app menu",
+          "ru": "Ваше фото в меню приложений"
+        },
+        "text": {
+          "en": "The app menu shows your profile picture again instead of a plain coloured circle.",
+          "ru": "Меню приложений снова показывает фото профиля, а не просто цветной круг."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-09",
     "items": [
       {

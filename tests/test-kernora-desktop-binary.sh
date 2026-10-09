@@ -113,6 +113,12 @@ for path in \
   usr/share/plasma/wallpapers/org.kernora.rhythm/contents/ui/palettes/kernora.qml \
   usr/share/plasma/wallpapers/org.kernora.rhythm/contents/ui/palettes/blue-grey.qml \
   usr/share/plasma/wallpapers/org.kernora.marbles/metadata.json \
+  usr/share/plasma/wallpapers/org.kernora.starfall/metadata.json \
+  usr/share/plasma/wallpapers/org.kernora.starfall/contents/ui/Scene.qml \
+  usr/share/plasma/wallpapers/org.kernora.starfall/contents/ui/materialshapes.js \
+  usr/share/plasma/wallpapers/org.kernora.starfall/contents/ui/palettes/kernora.qml \
+  usr/share/plasma/wallpapers/org.kernora.starfall/contents/ui/palettes/blue-grey.qml \
+  usr/share/locale/ru/LC_MESSAGES/plasma_wallpaper_org.kernora.starfall.mo \
   usr/share/plasma/wallpapers/org.kernora.marbles/contents/ui/Scene.qml \
   usr/share/plasma/wallpapers/org.kernora.marbles/contents/ui/run.js \
   usr/share/plasma/wallpapers/org.kernora.marbles/contents/ui/palettes/kernora.qml \

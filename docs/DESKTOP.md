@@ -502,6 +502,17 @@ Settings and Welcome load `Scene.qml` directly for previews
   even intervals, and the lift's speed makes a trip a whole fraction of
   the loop. In its cup a marble turns back to its starting angle, modulo
   its symmetry, so every trip starts alike.
+* **Starfall** (`org.kernora.starfall`, 90 s): a night sky in the theme's
+  colours with about 170 stars that twinkle at their own pace, six bright
+  ones drawn as Material shapes (sunny, softBurst) with a soft radial glow,
+  and dark hills (arch, puffy, cookie9) against a warm horizon. Fourteen
+  shooting stars a loop cross the sky down and to the left, each a bright
+  head with a fading tail. Stars and meteors come from a seeded generator,
+  so every screen and every preview draws the same sky; the preview at
+  phase 0.3 catches the first meteor in flight. The sky, the stars and the hills
+  keep their night blue in every colour theme (a third `"sky"` field in
+  `THEMES` pins a family's hue); the horizon glow and the meteors take the
+  theme's colour.
 
 Picture wallpapers are not installed. kernora-desktop no longer ships one,
 and Breeze's (`breeze-wallpaper`, a dependency of `breeze`) is removed from

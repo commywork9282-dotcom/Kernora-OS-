@@ -103,6 +103,10 @@ THEMES = {
         "night": (268, 22), "rose": (8, 48), "ember": (None, 58), "amber": (78, 50),
         "mint": (160, 38), "teal": (196, 36), "sky": (242, 40), "violet": (292, 40),
     },
+    "starfall": {
+        "night": (262, 20, "sky"), "glow": (None, 34), "star": (70, 12, "sky"), "frost": (226, 22, "sky"),
+        "meteor": (None, 30), "hill": (262, 14, "sky"),
+    },
     "marbles": {
         "board": (172, 22), "track": (60, 30), "ember": (None, 62), "amber": (78, 52),
         "rose": (8, 48), "sky": (232, 40), "violet": (292, 40), "cream": (70, 14),
@@ -125,8 +129,8 @@ def theme_palette(theme: str) -> dict:
     seed = m3color.Hct.from_hex(design.SEED)
     shift = seed.hue - m3color.Hct.from_hex(design.COLOURS[design.DEFAULT_COLOUR]["seed"]).hue
     families = {}
-    for name, (hue, chroma) in THEMES[theme].items():
-        h = seed.hue if hue is None else (hue + shift) % 360
+    for name, (hue, chroma, *fixed) in THEMES[theme].items():
+        h = seed.hue if hue is None else hue if fixed else (hue + shift) % 360
         families[name] = {str(t): theme_colour(h, chroma * design.WALLPAPER_TINT, t) for t in THEME_TONES}
     return {"seed": design.SEED, "tones": THEME_TONES, "families": families}
 

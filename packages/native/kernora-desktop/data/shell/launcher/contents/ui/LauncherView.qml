@@ -7,7 +7,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import org.kde.kirigami as Kirigami
+import org.kernora.ui as UI
 import "m3"
 
 FocusScope {
@@ -265,33 +265,12 @@ FocusScope {
             spacing: 4
             opacity: root.reveal
 
-            Kirigami.ShadowedTexture {
+            UI.Avatar {
                 Layout.preferredWidth: 40
                 Layout.preferredHeight: 40
-                radius: 20
-                color: M3.primaryContainer
-                visible: face.status === Image.Ready
-                source: Image {
-                    id: face
-                    source: root.userFace
-                    sourceSize.width: 80
-                    sourceSize.height: 80
-                    fillMode: Image.PreserveAspectCrop
-                    visible: false
-                }
-            }
-            Rectangle {
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 40
-                radius: 20
-                color: M3.primaryContainer
-                visible: face.status !== Image.Ready
-                MText {
-                    anchors.centerIn: parent
-                    role: "titleMedium"
-                    color: M3.primaryContainerContent
-                    text: root.userName.length > 0 ? root.userName.charAt(0).toUpperCase() : ""
-                }
+                size: 40
+                source: root.userFace
+                initials: root.userName.length > 0 ? root.userName.charAt(0).toUpperCase() : ""
             }
 
             MText {

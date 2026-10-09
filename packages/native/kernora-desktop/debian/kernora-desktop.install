@@ -26,6 +26,7 @@ generated/wallpapers/org.kernora.shapes usr/share/plasma/wallpapers
 generated/wallpapers/org.kernora.tower usr/share/plasma/wallpapers
 generated/wallpapers/org.kernora.rhythm usr/share/plasma/wallpapers
 generated/wallpapers/org.kernora.marbles usr/share/plasma/wallpapers
+generated/wallpapers/org.kernora.starfall usr/share/plasma/wallpapers
 data/dpkg/kernora-wallpapers etc/dpkg/dpkg.cfg.d
 generated/kvantum/Kernora* usr/share/Kvantum
 data/kvantum/kvantum.kvconfig etc/xdg/Kvantum

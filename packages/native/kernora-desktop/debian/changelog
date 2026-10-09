@@ -1,3 +1,14 @@
+kernora-desktop (1.4.13) UNRELEASED; urgency=medium
+
+  * New live wallpaper Starfall (org.kernora.starfall): stars twinkle over a
+    night sky in the theme's colours, the brightest as Material shapes with a
+    soft glow, dark hills against a warm horizon, and a shooting star about
+    every six seconds.
+  * The launcher shows the profile picture again; it drew only the coloured
+    circle behind it. It now uses the shared Avatar.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 09 Oct 2026 17:45:00 -0700
+
 kernora-desktop (1.4.12) UNRELEASED; urgency=medium
 
   * Material Design 1 colours stay legible: the primary and accent keep

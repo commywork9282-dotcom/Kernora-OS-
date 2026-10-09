@@ -1,3 +1,10 @@
+kernora-apps (1.1.16) UNRELEASED; urgency=medium
+
+  * What's new: the Starfall wallpaper and the profile picture in the
+    launcher.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 09 Oct 2026 17:45:00 -0700
+
 kernora-apps (1.1.15) UNRELEASED; urgency=medium
 
   * What's new: legible Material Design 1 colours and Add Widgets in the

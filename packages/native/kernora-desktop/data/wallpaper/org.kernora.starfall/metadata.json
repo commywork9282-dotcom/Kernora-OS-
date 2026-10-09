@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/Wallpaper",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "",
+        "Description": "Stars twinkle over quiet hills, and now and then a shooting star crosses the night sky",
+        "Description[ru]": "Звёзды мерцают над тихими холмами, и время от времени ночное небо пересекает падающая звезда",
+        "Icon": "preferences-desktop-wallpaper",
+        "Id": "org.kernora.starfall",
+        "License": "GPL-2.0+",
+        "Name": "Starfall",
+        "Name[ru]": "Звездопад"
+    },
+    "X-KDE-ParentApp": "org.kde.plasmashell",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
