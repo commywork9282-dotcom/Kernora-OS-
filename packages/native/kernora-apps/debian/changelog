@@ -1,3 +1,9 @@
+kernora-apps (1.1.18) UNRELEASED; urgency=medium
+
+  * What's new no longer announces the withdrawn analog clock face.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 09 Oct 2026 19:30:00 -0700
+
 kernora-apps (1.1.17) UNRELEASED; urgency=medium
 
   * What's new: the redesigned analog clock widget.

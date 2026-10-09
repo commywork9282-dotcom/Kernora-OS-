@@ -1,3 +1,11 @@
+kernora-desktop (1.4.16) UNRELEASED; urgency=medium
+
+  * The analog Kernora Clock goes back to its first face (cookie12 dial in
+    the primary container, twelve dots, primary and tertiary hands): the
+    Pixel-style face of 1.4.14 is withdrawn.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 09 Oct 2026 19:30:00 -0700
+
 kernora-desktop (1.4.15) UNRELEASED; urgency=medium
 
   * The analog clock's seconds dot stays inside the dial: it ran on a circle
