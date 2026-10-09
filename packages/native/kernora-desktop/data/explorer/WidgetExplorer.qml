@@ -289,11 +289,15 @@ Item {
                                 Accessible.name: model.name
                                 Accessible.description: model.description
 
-                                Rectangle {
+                                Kirigami.ShadowedRectangle {
                                     id: cardSurface
+                                    readonly property var shadowSpec: M3.elevationOf("card")
                                     anchors.fill: parent
                                     radius: M3.classic ? M3.cornerCard : 24
-                                    color: M3.surfaceContainerHigh
+                                    color: !M3.classic ? M3.surfaceContainerHigh : M3.dark ? M3.surfaceContainerHighest : M3.surfaceContainerLowest
+                                    shadow.size: M3.classic ? shadowSpec.blur * 2 : 0
+                                    shadow.yOffset: M3.classic ? shadowSpec.offset : 0
+                                    shadow.color: Qt.rgba(0, 0, 0, shadowSpec.opacity)
 
                                     MStateLayer {
                                         radius: cardSurface.radius
@@ -310,8 +314,8 @@ Item {
                                     y: 8
                                     width: parent.width - 16
                                     height: 132
-                                    radius: cardSurface.radius - 8
-                                    color: M3.surfaceContainerLowest
+                                    radius: M3.classic ? M3.cornerCardInner : cardSurface.radius - 8
+                                    color: M3.classic ? M3.withAlpha(M3.surfaceContent, M3.dark ? 0.06 : 0.04) : M3.surfaceContainerLowest
 
                                     WidgetPreview {
                                         anchors.fill: parent

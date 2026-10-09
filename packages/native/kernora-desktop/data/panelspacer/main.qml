@@ -80,7 +80,7 @@ PlasmoidItem {
         anchors.bottomMargin: root.horizontal ? 8 : 4
         anchors.leftMargin: root.horizontal ? 4 : 8
         anchors.rightMargin: root.horizontal ? 4 : 8
-        radius: M3.classic ? M3.cornerChip : Math.min(width, height) / 2
+        radius: Math.min(width, height) / 2
         color: M3.withAlpha(M3.primary, 0.14)
         border.width: 1
         border.color: M3.withAlpha(M3.primary, 0.4)

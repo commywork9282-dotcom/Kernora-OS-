@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+"""usage: check-contrast
+"""
+
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+
+PAIRS = (
+    ("onPrimary", "primary", 4.5),
+    ("onPrimaryContainer", "primaryContainer", 4.5),
+    ("onSecondary", "secondary", 4.5),
+    ("onSecondaryContainer", "secondaryContainer", 4.5),
+    ("onTertiaryContainer", "tertiaryContainer", 4.5),
+    ("onError", "error", 4.5),
+    ("onErrorContainer", "errorContainer", 4.5),
+    ("inverseOnSurface", "inverseSurface", 4.5),
+    ("onSurface", "surface", 4.5),
+    ("onSurface", "surfaceContainerHighest", 4.5),
+    ("onSurfaceVariant", "surface", 4.5),
+    ("onSurfaceVariant", "surfaceContainerHigh", 4.5),
+    ("primary", "surface", 3.0),
+    ("primary", "surfaceContainer", 3.0),
+    ("primary", "surfaceContainerHigh", 3.0),
+    ("primary", "primaryContainer", 3.0),
+    ("primary", "secondaryContainer", 3.0),
+    ("secondary", "surface", 3.0),
+    ("error", "surface", 3.0),
+)
+
+
+def audit(colour: str) -> list[str]:
+    os.environ["KERNORA_COLOUR"] = colour
+    import kernora_design as design
+
+    failures = []
+    for generation in design.GENERATIONS:
+        for dark in (False, True):
+            roles = design.palette(generation, dark)
+            for foreground, background, minimum in PAIRS:
+                ratio = design.contrast(roles[foreground], roles[background])
+                if ratio < minimum:
+                    failures.append(
+                        f"{colour} {generation} {'dark' if dark else 'light'}: {foreground} {roles[foreground]} "
+                        f"on {background} {roles[background]} is {ratio:.2f}:1, needs {minimum}:1"
+                    )
+    return failures
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) == 2:
+        failures = audit(argv[1])
+        print("\n".join(failures))
+        return 1 if failures else 0
+    if len(argv) != 1:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import kernora_design as design
+
+    failed = False
+    for colour in design.COLOURS:
+        result = subprocess.run([sys.executable, os.path.abspath(__file__), colour], capture_output=True, text=True)
+        if result.returncode != 0:
+            failed = True
+            sys.stdout.write(result.stdout + result.stderr)
+    if failed:
+        return 1
+    print(f"contrast: {len(design.COLOURS)} colours x {len(design.GENERATIONS)} generations x light and dark are legible")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

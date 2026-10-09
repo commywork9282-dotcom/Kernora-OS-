@@ -21,6 +21,7 @@ Item {
     property bool open: false
 
     readonly property real cornerRadius: M3.classic ? M3.cornerCard : 28
+    readonly property bool compact: editModeUi.width < (M3.classic ? 780 : 720)
     readonly property int toolBarGap: 12
 
     function tr(text: string): string {
@@ -33,6 +34,39 @@ Item {
 
     Component.onCompleted: {
         open = Qt.binding(() => containment.plasmoid.corona.editMode);
+    }
+
+    component ToolbarButton: Item {
+        id: control
+
+        property string icon
+        property string text
+        property bool compact: false
+        readonly property string variant: M3.classic ? "text" : "tonal"
+
+        signal clicked()
+
+        implicitWidth: compact ? small.implicitWidth : wide.implicitWidth
+        implicitHeight: wide.implicitHeight
+
+        MButton {
+            id: wide
+            anchors.centerIn: parent
+            visible: !control.compact
+            variant: control.variant
+            icon: control.icon
+            text: control.text
+            onClicked: control.clicked()
+        }
+        MIconButton {
+            id: small
+            anchors.centerIn: parent
+            visible: control.compact
+            variant: M3.classic ? "standard" : "tonal"
+            icon: control.icon
+            text: control.text
+            onClicked: control.clicked()
+        }
     }
 
     Item {
@@ -56,8 +90,8 @@ Item {
         }
         Rectangle {
             anchors.fill: parent
-            color: M3.surfaceDim
-            opacity: 0.78
+            color: M3.dark ? M3.surfaceDim : M3.surfaceContainerHigh
+            opacity: M3.dark ? 0.8 : 0.92
         }
     }
 
@@ -178,36 +212,36 @@ Item {
             anchors.centerIn: parent
             spacing: 8
 
-            MButton {
+            ToolbarButton {
                 readonly property QtObject qAction: containment?.plasmoid.internalAction("add widgets") || null
-                variant: "tonal"
+                compact: editMode.compact
                 icon: "preferences-desktop-widgets"
                 text: i18nd("plasma_shell_org.kde.plasma.desktop", "Widgets")
                 Accessible.description: editMode.plain(qAction?.text)
                 onClicked: qAction.trigger()
             }
-            MButton {
+            ToolbarButton {
                 readonly property QtObject qAction: containment?.plasmoid.internalAction("configure") || null
                 visible: qAction !== null
-                variant: "tonal"
+                compact: editMode.compact
                 icon: "preferences-desktop-wallpaper"
                 text: editMode.tr("Wallpaper")
                 Accessible.description: editMode.plain(qAction?.text)
                 onClicked: qAction.trigger()
             }
-            MButton {
+            ToolbarButton {
                 id: addPanelButton
                 readonly property QtObject qAction: containment?.plasmoid.corona.action("add panel") || null
-                variant: "tonal"
+                compact: editMode.compact
                 icon: "list-add"
                 text: editMode.plain(qAction?.text)
                 Accessible.role: Accessible.ButtonMenu
-                onClicked: containment.plasmoid.corona.showAddPanelContextMenu(mapToGlobal(0, height + 8))
+                onClicked: containment.plasmoid.corona.showAddPanelContextMenu(addPanelButton.mapToGlobal(0, addPanelButton.height + 8))
             }
-            MIconButton {
+            ToolbarButton {
                 readonly property QtObject qAction: containment?.plasmoid.corona.action("manage-containments") || null
                 visible: qAction?.visible || false
-                variant: "tonal"
+                compact: true
                 icon: "configure"
                 text: editMode.plain(qAction?.text)
                 onClicked: qAction.trigger()

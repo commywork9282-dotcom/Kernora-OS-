@@ -66,6 +66,44 @@ def _blend(base: str, over: str, amount: float) -> str:
     return m3color.hex_from_rgb(tuple(round(a[i] + (b[i] - a[i]) * amount) for i in range(3)))
 
 
+def _luminance(colour: str) -> float:
+    def channel(value: int) -> float:
+        value /= 255.0
+        return value / 12.92 if value <= 0.03928 else ((value + 0.055) / 1.055) ** 2.4
+    red, green, blue = m3color.rgb_from_hex(colour)
+    return 0.2126 * channel(red) + 0.7152 * channel(green) + 0.0722 * channel(blue)
+
+
+def contrast(first: str, second: str) -> float:
+    lighter, darker = sorted((_luminance(first), _luminance(second)), reverse=True)
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def _legible(colour: str, backgrounds: tuple[str, ...], minimum: float) -> str:
+    if all(contrast(colour, background) >= minimum for background in backgrounds):
+        return colour
+    hct = m3color.Hct.from_hex(colour)
+    step = -1.0 if _luminance(backgrounds[0]) > 0.18 else 1.0
+    tone = hct.tone
+    while 0.0 < tone + step < 100.0:
+        tone += step
+        candidate = _hct(hct.hue, hct.chroma, tone)
+        if all(contrast(candidate, background) >= minimum for background in backgrounds):
+            return candidate
+    return "#000000" if step < 0 else "#ffffff"
+
+
+def _ink(colour: str) -> str:
+    return max(("#ffffff", "#212121"), key=lambda ink: contrast(ink, colour))
+
+
+def _filled(colour: str) -> tuple[str, str]:
+    ink = _ink(colour)
+    if contrast(ink, colour) >= 4.5:
+        return colour, ink
+    return _legible(colour, ("#ffffff",), 4.5), "#ffffff"
+
+
 def _classic_scheme(generation: str, dark: bool) -> dict[str, str]:
     seed = m3color.Hct.from_hex(SEED)
     hue, chroma = seed.hue, seed.chroma
@@ -75,19 +113,19 @@ def _classic_scheme(generation: str, dark: bool) -> dict[str, str]:
     if generation == "md1":
         if dark:
             surfaces = ("#303030", "#212121", "#383838", "#424242", "#484848", "#505050")
-            on_surface, on_variant = "#ffffff", "#b3b3b3"
+            on_surface, on_variant = "#ffffff", "#bdbdbd"
             outline, outline_variant = "#8a8a8a", "#4f4f4f"
         else:
             surfaces = ("#fafafa", "#ffffff", "#ffffff", "#ffffff", "#f5f5f5", "#eeeeee")
-            on_surface, on_variant = "#212121", "#757575"
+            on_surface, on_variant = "#212121", "#6b6b6b"
             outline, outline_variant = "#bdbdbd", "#e0e0e0"
-        primary = SEED
-        on_primary = "#ffffff"
-        secondary = _hct(accent, 80.0, 70.0 if dark else 55.0)
-        on_secondary = "#000000" if dark else "#ffffff"
         selection = "#505050" if dark else "#e8e8e8"
-        on_selection = SEED
-        error, on_error = ("#ef5350", "#000000") if dark else ("#f44336", "#ffffff")
+        primary, on_primary = _filled(_legible(SEED, (surfaces[0], surfaces[4], selection), 3.0))
+        secondary, on_secondary = _filled(_legible(_hct(accent, 80.0, 70.0 if dark else 55.0),
+                                                   (surfaces[0], surfaces[4]), 3.0))
+        on_selection = _legible(primary, (selection,), 4.5)
+        error = "#ef5350" if dark else "#d32f2f"
+        on_error = _ink(error)
         inverse, on_inverse = "#323232", "#ffffff"
     else:
         if dark:
@@ -123,7 +161,8 @@ def _classic_scheme(generation: str, dark: bool) -> dict[str, str]:
         "primary": primary,
         "onPrimary": on_primary,
         "primaryContainer": _blend(surface, primary, 0.16 if dark else 0.12),
-        "onPrimaryContainer": primary if dark else _hct(hue, chroma, 30.0),
+        "onPrimaryContainer": _legible(primary if dark else _hct(hue, chroma, 30.0),
+                                       (_blend(surface, primary, 0.16 if dark else 0.12),), 4.5),
         "inversePrimary": _hct(hue, chroma, 40.0 if dark else 80.0),
         "primaryFixed": _hct(hue, chroma, 90.0),
         "onPrimaryFixed": _hct(hue, chroma, 10.0),
@@ -134,11 +173,12 @@ def _classic_scheme(generation: str, dark: bool) -> dict[str, str]:
         "tertiary": secondary,
         "onTertiary": on_secondary,
         "tertiaryContainer": _blend(surface, secondary, 0.16 if dark else 0.12),
-        "onTertiaryContainer": secondary if dark else _hct(accent, 60.0, 30.0),
+        "onTertiaryContainer": _legible(secondary if dark else _hct(accent, 60.0, 30.0),
+                                        (_blend(surface, secondary, 0.16 if dark else 0.12),), 4.5),
         "error": error,
         "onError": on_error,
         "errorContainer": _blend(surface, error, 0.16 if dark else 0.12),
-        "onErrorContainer": error,
+        "onErrorContainer": _legible(error, (_blend(surface, error, 0.16 if dark else 0.12),), 4.5),
         "background": surface,
         "onBackground": on_surface,
         "surface": surface,

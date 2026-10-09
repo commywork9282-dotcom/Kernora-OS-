@@ -60,6 +60,13 @@ them at run time, for the whole session at once.
 | Quick settings | bare icons over labels, four columns | round toggles, four columns | wide tiles, two columns |
 | Panel | a shelf on the screen edge | floating, 8dp | a floating pill |
 
+Material Design 1 keeps each colour's hue but not always its raw swatch: the
+primary and accent take the tone that stands out from the surfaces, and a
+filled button gets white or dark text, whichever reads better.
+`tools/check-contrast` fails the build when any colour, generation or
+scheme draws text below 4.5:1 or icons and accents below 3:1 on the
+surface they sit on.
+
 `tools/kernora_design.py` defines the three generations: their palettes
 (Material 1 and 2 expressed in Material 3's roles, so every component keeps
 working), corner radii per kind of component (`CORNERS`), shadows

@@ -1,3 +1,19 @@
+kernora-desktop (1.4.12) UNRELEASED; urgency=medium
+
+  * Material Design 1 colours stay legible: the primary and accent keep
+    their hue but take the tone that stands out from the surfaces, filled
+    buttons pick white or dark text by contrast, and the selection, container
+    and secondary text roles reach 4.5:1. tools/check-contrast checks every
+    colour, generation and light or dark scheme, and the source test runs it.
+  * Edit mode in Material Design 1 and 2: flat text buttons in the toolbar,
+    raised paper cards in the widget picker, pill spacers, and a clean light
+    backdrop in light schemes; the toolbar folds to icons when the desktop
+    preview is narrow.
+  * The clock and At a Glance cast a stronger shadow so they read over any
+    shape of the wallpaper.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 09 Oct 2026 16:30:00 -0700
+
 kernora-desktop (1.4.11) UNRELEASED; urgency=medium
 
   * The desktop's right-click menu offers "Add or Manage Widgets…" again

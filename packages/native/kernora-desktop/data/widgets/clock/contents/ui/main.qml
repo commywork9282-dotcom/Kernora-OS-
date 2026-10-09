@@ -67,8 +67,10 @@ PlasmoidItem {
                 layer.enabled: true
                 layer.effect: MultiEffect {
                     shadowEnabled: true
-                    shadowOpacity: 0.45
-                    shadowBlur: 0.6
+                    shadowColor: "#000000"
+                    shadowOpacity: 0.75
+                    shadowBlur: 0.9
+                    shadowScale: 1.04
                     shadowVerticalOffset: 2
                 }
 
