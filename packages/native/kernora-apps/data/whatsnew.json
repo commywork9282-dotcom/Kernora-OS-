@@ -1,5 +1,32 @@
 [
   {
+    "id": "2026-10-09",
+    "items": [
+      {
+        "icon": "preferences-desktop-color",
+        "title": {
+          "en": "Easier to read in every colour",
+          "ru": "Читается в любом цвете"
+        },
+        "text": {
+          "en": "In the Material Design 1 style, yellow, lime, cyan, indigo and other colours no longer melt into the background: text and icons always stand out.",
+          "ru": "В стиле Material Design 1 жёлтый, лаймовый, бирюзовый, индиго и другие цвета больше не сливаются с фоном: текст и значки всегда хорошо видны."
+        }
+      },
+      {
+        "icon": "preferences-desktop-widgets",
+        "title": {
+          "en": "Widgets one click away",
+          "ru": "Виджеты в один клик"
+        },
+        "text": {
+          "en": "Right-click the desktop and choose Add or Manage Widgets. The clock comes first.",
+          "ru": "Нажмите правой кнопкой на рабочем столе и выберите «Добавить или изменить виджеты…». Часы — первые в списке."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-08-7",
     "items": [
       {
