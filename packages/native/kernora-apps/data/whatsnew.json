@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-09-5",
+    "items": [
+      {
+        "icon": "preferences-desktop-wallpaper",
+        "title": {
+          "en": "Pastel",
+          "ru": "Пастель"
+        },
+        "text": {
+          "en": "New live wallpaper with soft Material shapes, like on Pixel, in the colours of your theme. It replaces Marble Run; if you used Marble Run, you now have Pastel.",
+          "ru": "Новые живые обои с мягкими фигурами Material, как на Pixel, в цветах вашей темы. Они заменяют «Горку»: если у вас стояла «Горка», теперь будет «Пастель»."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-09-4",
     "items": [
       {

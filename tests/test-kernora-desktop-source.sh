@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.17" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.18" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -35,7 +35,7 @@ grep -Eq '^ calamares \(>= [^)]*kernora[0-9]+\),$' "$control" \
   || fail "installer configuration does not depend on the Kernora calamares"
 
 data_root="$package_root/data"
-for wallpaper in shapes tower rhythm marbles; do
+for wallpaper in shapes tower rhythm starfall pastel; do
   for file in metadata.json contents/ui/main.qml contents/ui/Scene.qml contents/ui/config.qml contents/config/main.xml; do
     [[ -s "$data_root/wallpaper/org.kernora.$wallpaper/$file" ]] \
       || fail "the $wallpaper wallpaper lacks $file"
@@ -44,7 +44,16 @@ for wallpaper in shapes tower rhythm marbles; do
     || fail "the $wallpaper wallpaper has no Russian translation"
 done
 [[ -s "$data_root/wallpaper/org.kernora.tower/contents/ui/tower.js" ]] || fail "the tower's simulation is missing"
-[[ -s "$data_root/wallpaper/org.kernora.marbles/contents/ui/run.js" ]] || fail "the marble run's simulation is missing"
+[[ ! -e "$data_root/wallpaper/org.kernora.marbles" ]] || fail "Marble Run is back"
+sh -n "$package_root/data/kconf_update/kernora-marbles-to-pastel.sh" || fail "the Marble Run migration does not parse"
+marbles_home=$(mktemp -d)
+printf '[Greeter]\nWallpaperPlugin=org.kernora.marbles\n' > "$marbles_home/kscreenlockerrc"
+XDG_CONFIG_HOME="$marbles_home" sh "$package_root/data/kconf_update/kernora-marbles-to-pastel.sh"
+grep -Fxq 'WallpaperPlugin=org.kernora.pastel' "$marbles_home/kscreenlockerrc" \
+  || fail "a lock screen with Marble Run does not move to Pastel"
+grep -Fq '"org.kernora.pastel"' "$package_root/data/shell-updates/kernora_marbles_to_pastel.js" \
+  || fail "desktops with Marble Run do not move to Pastel"
+rm -rf "$marbles_home"
 assets=$(mktemp -d)
 python3 "$package_root/tools/gen-wallpaper-assets" "$assets" tower >/dev/null \
   || fail "gen-wallpaper-assets cannot write the tower's assets"

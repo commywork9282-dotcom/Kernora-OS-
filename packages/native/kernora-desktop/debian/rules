@@ -91,7 +91,7 @@ override_dh_auto_build:
 	install -d generated/wallpapers
 	cp -a data/wallpaper/org.kernora.shapes generated/wallpapers/
 	python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.shapes/contents/ui
-	for theme in tower rhythm marbles starfall; do \
+	for theme in tower rhythm starfall pastel; do \
 	  cp -a data/wallpaper/org.kernora.$$theme generated/wallpapers/; \
 	  python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.$$theme/contents/ui $$theme; \
 	done
@@ -112,7 +112,7 @@ override_dh_auto_build:
 	cp generated/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js generated/explorer/
 	set -e; for colour in $(EXTRA_COLOURS); do \
 	  KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.shapes/contents/ui; \
-	  for theme in tower rhythm marbles starfall; do \
+	  for theme in tower rhythm starfall pastel; do \
 	    KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.$$theme/contents/ui $$theme; \
 	  done; \
 	done

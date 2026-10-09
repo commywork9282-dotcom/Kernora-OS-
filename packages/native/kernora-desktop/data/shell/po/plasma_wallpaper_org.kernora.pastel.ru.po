@@ -1,4 +1,4 @@
-# Russian translation of the Kernora Marble Run wallpaper.
+# Russian translation of the Kernora Pastel wallpaper.
 msgid ""
 msgstr ""
 "Project-Id-Version: kernora-desktop 1.4\n"

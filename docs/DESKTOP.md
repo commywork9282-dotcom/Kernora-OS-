@@ -137,8 +137,9 @@ the generation. Brown, grey and blue grey carry their own chroma (24, 0 and
 * **Live wallpapers.** `gen-wallpaper-assets` writes one palette per colour,
   `contents/ui/palettes/<colour>.qml`. Each scene loads the one named by
   `M3.colour` with a `Loader`, so the wallpaper changes colour with the
-  theme. Shapes rotates its families around the seed; Tower, Rhythm and Marble
-  Run turn their whole palette by the seed's hue difference from Kernora's.
+  theme. Shapes rotates its families around the seed; Tower, Rhythm, Starfall
+  and Pastel turn their palette by the seed's hue difference from Kernora's,
+  except families marked fixed (Starfall's night sky, Pastel's accents).
 * **Switching.** `Appearance.setColour(colour)` runs the same steps as a
   change of generation with the colour's themes, and then
   `plasma-changeicons Kernora-<colour>`. Settings shows the colours
@@ -496,15 +497,19 @@ Settings and Welcome load `Scene.qml` directly for previews
   the end of the loop. Behind them, a blob whose outline is a Catmull-Rom
   curve through the shapes morphs with the pattern; a slower inner ring
   keeps its own time round an ember sun.
-* **Marble Run** (`org.kernora.marbles`, 60 s): five shape marbles roll
-  down a zigzag of wooden ramps on a green board, fly off each end onto the
-  ramp below, knock against its post -- whose little sun nods -- and roll
-  back the other way, until the last ramp runs them into the lift, whose
-  cups carry them back to the top. `run.js` simulates one marble's trip
-  (rolling on a slope, flight, landing hops, posts); the others follow at
-  even intervals, and the lift's speed makes a trip a whole fraction of
-  the loop. In its cup a marble turns back to its starting angle, modulo
-  its symmetry, so every trip starts alike.
+* **Pastel** (`org.kernora.pastel`, 120 s): Material 3 Expressive shapes
+  laid out like Pixel's shape wallpapers, for a landscape screen (and a
+  portrait one): a light hill with a soft wave along its top, a deep arch
+  and a large circle on a mid-tone ground in the theme's colour, and a
+  small cluster of a pink pill, a light dot, an amber cookie12 and a plum
+  triangle that float and turn slowly. The ground, the hill and the arch
+  take the seed's hue; the pink, amber and plum stay put in every colour
+  theme (the `"fixed"` field in `THEMES`). The rounded triangle is Material
+  3's `triangle`, added to `material_shapes.py`. Marble Run is gone. A Plasma shell update
+  script (`contents/updates/kernora_marbles_to_pastel.js`) moves desktops that
+  used it to Pastel when plasmashell starts; a kconf_update script cannot,
+  since kded runs it at once on installation and the running shell writes
+  its old wallpaper back. kconf_update moves the lock screen.
 * **Starfall** (`org.kernora.starfall`, 90 s): a night sky in the theme's
   colours with about 170 stars that twinkle at their own pace, six bright
   ones drawn as Material shapes (sunny, softBurst) with a soft radial glow,
@@ -513,7 +518,7 @@ Settings and Welcome load `Scene.qml` directly for previews
   head with a fading tail. Stars and meteors come from a seeded generator,
   so every screen and every preview draws the same sky; the preview at
   phase 0.3 catches the first meteor in flight. The sky, the stars and the hills
-  keep their night blue in every colour theme (a third `"sky"` field in
+  keep their night blue in every colour theme (a third `"fixed"` field in
   `THEMES` pins a family's hue); the horizon glow and the meteors take the
   theme's colour.
 

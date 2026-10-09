@@ -233,7 +233,7 @@ sync() {
   cp -a "$package_root/data/wallpaper/org.kernora.shapes" "$tree/usr/share/plasma/wallpapers/"
   python3 "$tools/gen-wallpaper-assets" "$tree/usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui" >/dev/null
   local theme
-  for theme in tower rhythm marbles; do
+  for theme in tower rhythm starfall pastel; do
     cp -a "$package_root/data/wallpaper/org.kernora.$theme" "$tree/usr/share/plasma/wallpapers/"
     python3 "$tools/gen-wallpaper-assets" "$tree/usr/share/plasma/wallpapers/org.kernora.$theme/contents/ui" "$theme" >/dev/null
   done

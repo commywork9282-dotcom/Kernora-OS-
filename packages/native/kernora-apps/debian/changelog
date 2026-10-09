@@ -1,3 +1,9 @@
+kernora-apps (1.1.20) UNRELEASED; urgency=medium
+
+  * What's new: the Pastel wallpaper replaces Marble Run.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 09 Oct 2026 21:30:00 -0700
+
 kernora-apps (1.1.19) UNRELEASED; urgency=medium
 
   * What's new: sharp window previews in the task bar.

@@ -25,7 +25,7 @@ data/skel-autostart/*.desktop etc/skel/.config/autostart
 generated/wallpapers/org.kernora.shapes usr/share/plasma/wallpapers
 generated/wallpapers/org.kernora.tower usr/share/plasma/wallpapers
 generated/wallpapers/org.kernora.rhythm usr/share/plasma/wallpapers
-generated/wallpapers/org.kernora.marbles usr/share/plasma/wallpapers
+generated/wallpapers/org.kernora.pastel usr/share/plasma/wallpapers
 generated/wallpapers/org.kernora.starfall usr/share/plasma/wallpapers
 data/dpkg/kernora-wallpapers etc/dpkg/dpkg.cfg.d
 generated/kvantum/Kernora* usr/share/Kvantum
@@ -80,6 +80,9 @@ data/kconf_update/kernora-terminal-entry.upd usr/share/kconf_update
 data/kconf_update/kernora-terminal-entry.sh usr/share/kconf_update
 data/kconf_update/kernora-add-widgets-menu.upd usr/share/kconf_update
 data/kconf_update/kernora-add-widgets-menu.sh usr/share/kconf_update
+data/kconf_update/kernora-marbles-to-pastel.upd usr/share/kconf_update
+data/kconf_update/kernora-marbles-to-pastel.sh usr/share/kconf_update
+data/shell-updates/kernora_marbles_to_pastel.js usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates
 data/xdg-notifyrc/plasma_workspace.notifyrc etc/xdg
 data/crash/kernora-crash-notifier usr/libexec
 data/crash/drkonqi-coredump-launcher-kernora.conf usr/lib/systemd/user/drkonqi-coredump-launcher@.service.d

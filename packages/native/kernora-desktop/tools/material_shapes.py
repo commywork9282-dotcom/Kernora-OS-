@@ -274,6 +274,7 @@ def shape_definitions() -> dict[str, list[Cubic]]:
                                 (1.000, 0.609, R(1.0))], reps=2, mirroring=True),
         "oval": transform_cubics(circle(8), lambda p: rotate([P(p.x, p.y * 0.64)], -45)[0]),
         "arch": rounded_polygon(rotate(regular(4), -135), per_vertex=[r100, r100, r20, r20]),
+        "triangle": rounded_polygon(rotate(regular(3), -90), rounding=r20),
         "sunny": star_shape(8, 0.8, r15),
         "verySunny": custom_polygon([(0.500, 1.080, R(0.085)), (0.358, 0.843, R(0.085))], reps=8),
         "cookie4": custom_polygon([(1.237, 1.236, R(0.258)), (0.500, 0.918, R(0.233))], reps=4),

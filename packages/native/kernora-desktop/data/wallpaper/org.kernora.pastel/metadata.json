@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/Wallpaper",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "",
+        "Description": "Soft Material shapes in the colours of your theme drift slowly over a calm background",
+        "Description[ru]": "Мягкие фигуры Material в цветах вашей темы медленно плывут по спокойному фону",
+        "Icon": "preferences-desktop-wallpaper",
+        "Id": "org.kernora.pastel",
+        "License": "GPL-2.0+",
+        "Name": "Pastel",
+        "Name[ru]": "Пастель"
+    },
+    "X-KDE-ParentApp": "org.kde.plasmashell",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

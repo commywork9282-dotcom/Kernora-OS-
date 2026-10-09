@@ -112,19 +112,21 @@ for path in \
   usr/share/plasma/wallpapers/org.kernora.rhythm/contents/ui/Scene.qml \
   usr/share/plasma/wallpapers/org.kernora.rhythm/contents/ui/palettes/kernora.qml \
   usr/share/plasma/wallpapers/org.kernora.rhythm/contents/ui/palettes/blue-grey.qml \
-  usr/share/plasma/wallpapers/org.kernora.marbles/metadata.json \
+  usr/share/plasma/wallpapers/org.kernora.pastel/metadata.json \
   usr/share/plasma/wallpapers/org.kernora.starfall/metadata.json \
   usr/share/plasma/wallpapers/org.kernora.starfall/contents/ui/Scene.qml \
   usr/share/plasma/wallpapers/org.kernora.starfall/contents/ui/materialshapes.js \
   usr/share/plasma/wallpapers/org.kernora.starfall/contents/ui/palettes/kernora.qml \
   usr/share/plasma/wallpapers/org.kernora.starfall/contents/ui/palettes/blue-grey.qml \
   usr/share/locale/ru/LC_MESSAGES/plasma_wallpaper_org.kernora.starfall.mo \
-  usr/share/plasma/wallpapers/org.kernora.marbles/contents/ui/Scene.qml \
-  usr/share/plasma/wallpapers/org.kernora.marbles/contents/ui/run.js \
-  usr/share/plasma/wallpapers/org.kernora.marbles/contents/ui/palettes/kernora.qml \
-  usr/share/plasma/wallpapers/org.kernora.marbles/contents/ui/palettes/blue-grey.qml \
+  usr/share/plasma/wallpapers/org.kernora.pastel/contents/ui/Scene.qml \
+  usr/share/plasma/wallpapers/org.kernora.pastel/contents/ui/materialshapes.js \
+  usr/share/kconf_update/kernora-marbles-to-pastel.upd \
+  usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/kernora_marbles_to_pastel.js \
+  usr/share/plasma/wallpapers/org.kernora.pastel/contents/ui/palettes/kernora.qml \
+  usr/share/plasma/wallpapers/org.kernora.pastel/contents/ui/palettes/blue-grey.qml \
   usr/share/locale/ru/LC_MESSAGES/plasma_wallpaper_org.kernora.tower.mo \
-  usr/share/locale/ru/LC_MESSAGES/plasma_wallpaper_org.kernora.marbles.mo \
+  usr/share/locale/ru/LC_MESSAGES/plasma_wallpaper_org.kernora.pastel.mo \
   usr/share/Kvantum/Kernora/Kernora.kvconfig \
   usr/share/Kvantum/Kernora/Kernora.svg \
   usr/share/Kvantum/Kernora/KernoraDark.kvconfig \
@@ -441,6 +443,7 @@ grep -Fq 'allowDmaBuf: false' "$temporary_root/desktop/usr/share/plasma/plasmoid
   || fail "window previews may arrive garbled over DMA-BUF"
 grep -Fq 'source: "KernoraWindowThumbnail.qml"' "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui/ToolTipInstance.qml" \
   || fail "the task tooltip does not use the Kernora window preview"
+[[ ! -e "$temporary_root/desktop/usr/share/plasma/wallpapers/org.kernora.marbles" ]] || fail "Marble Run is still installed"
 clipboard_ui="$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.clipboard/contents/ui"
 [[ -s "$clipboard_ui/EmojiPage.qml" && -s "$clipboard_ui/emoji.js" ]] \
   || fail "the clipboard sheet has no emoji tab"

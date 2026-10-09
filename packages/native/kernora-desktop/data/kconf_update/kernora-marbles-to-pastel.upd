@@ -1,0 +1,4 @@
+Version=6
+
+Id=kernora_marbles_to_pastel
+Script=kernora-marbles-to-pastel.sh,sh

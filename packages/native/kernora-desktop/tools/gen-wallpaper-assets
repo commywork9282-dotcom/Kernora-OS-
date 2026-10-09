@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""usage: gen-wallpaper-assets OUTPUT_DIRECTORY [tower|rhythm|marbles]
+"""usage: gen-wallpaper-assets OUTPUT_DIRECTORY [tower|rhythm|starfall|pastel]
 """
 
 from __future__ import annotations
@@ -104,12 +104,12 @@ THEMES = {
         "mint": (160, 38), "teal": (196, 36), "sky": (242, 40), "violet": (292, 40),
     },
     "starfall": {
-        "night": (262, 20, "sky"), "glow": (None, 34), "star": (70, 12, "sky"), "frost": (226, 22, "sky"),
-        "meteor": (None, 30), "hill": (262, 14, "sky"),
+        "night": (262, 20, "fixed"), "glow": (None, 34), "star": (70, 12, "fixed"), "frost": (226, 22, "fixed"),
+        "meteor": (None, 30), "hill": (262, 14, "fixed"),
     },
-    "marbles": {
-        "board": (172, 22), "track": (60, 30), "ember": (None, 62), "amber": (78, 52),
-        "rose": (8, 48), "sky": (232, 40), "violet": (292, 40), "cream": (70, 14),
+    "pastel": {
+        "base": (None, 40), "light": (None, 24), "deep": (None, 36),
+        "rose": (352, 48, "fixed"), "amber": (78, 36, "fixed"), "plum": (305, 24, "fixed"),
     },
 }
 THEME_TONES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 34, 38, 42, 46, 50, 55,

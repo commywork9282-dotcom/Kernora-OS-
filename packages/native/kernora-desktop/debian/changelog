@@ -1,3 +1,16 @@
+kernora-desktop (1.4.18) UNRELEASED; urgency=medium
+
+  * New live wallpaper Pastel (org.kernora.pastel): Material 3 Expressive
+    shapes in the style of Pixel's shape wallpapers, laid out for landscape
+    screens, in the theme's colour, slowly floating.
+  * Marble Run is removed. Desktops that used it move to Pastel through a
+    Plasma shell update script (contents/updates/kernora_marbles_to_pastel.js)
+    when plasmashell starts; kconf_update kernora_marbles_to_pastel moves
+    the lock screen.
+  * material_shapes.py gains Material 3's rounded triangle.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 09 Oct 2026 21:30:00 -0700
+
 kernora-desktop (1.4.17) UNRELEASED; urgency=medium
 
   * Window previews in the task bar's tooltips are sharp again on computers

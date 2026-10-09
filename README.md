@@ -26,7 +26,7 @@ repair the root directory ownership that caused this failure.
 - Kernora apps in place of KDE's: Settings, Files, Text Editor, Photos, Media
   Player, Calculator, Screenshot, Terminal (Alacritty) and Welcome, plus a
   file chooser that every program uses.
-- Live wallpapers: Kernora Shapes, Tower, Rhythm and Marble Run.
+- Live wallpapers: Kernora Shapes, Tower, Rhythm, Starfall and Pastel.
 - LibreWolf as the browser. It isn't in Debian, so the build installs one
   pinned version from the LibreWolf repository, and the installed system
   gets updates from there.

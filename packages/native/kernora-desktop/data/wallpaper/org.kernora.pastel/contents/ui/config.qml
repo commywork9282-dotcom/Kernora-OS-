@@ -15,7 +15,7 @@ ColumnLayout {
     property bool cfg_PauseWhenCovered
 
     function tr(text: string): string {
-        return i18nd("plasma_wallpaper_org.kernora.marbles", text);
+        return i18nd("plasma_wallpaper_org.kernora.pastel", text);
     }
 
     spacing: 0
