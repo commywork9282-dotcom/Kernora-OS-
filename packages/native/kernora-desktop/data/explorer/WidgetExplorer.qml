@@ -20,6 +20,9 @@ Item {
     readonly property string kernoraPrefix: "org.kernora.widget."
     readonly property bool forPanel: !!containment && containment.containmentType == 1
     readonly property int cardSpacing: 12
+    readonly property int cardHeight: 228
+    readonly property var kernoraOrder: ["clock", "glance", "weather", "calendar", "battery", "media", "photo", "note"]
+    property var kernoraKinds: []
 
     property QtObject containment
     property PlasmaCore.Dialog sidePanel
@@ -39,6 +42,26 @@ Item {
 
     function shell(text: string): string {
         return i18nd("plasma_shell_org.kde.plasma.desktop", text);
+    }
+
+    function rank(kind: string): int {
+        const position = kernoraOrder.indexOf(kind);
+        return position < 0 ? kernoraOrder.length : position;
+    }
+
+    function before(kind: string, other: string): bool {
+        return rank(kind) < rank(other) || (rank(kind) === rank(other) && kind < other);
+    }
+
+    function refreshKinds(): void {
+        const kinds = [];
+        for (let i = 0; i < kernoraWidgets.count; ++i) {
+            const item = kernoraWidgets.itemAt(i);
+            if (item && item.shown) {
+                kinds.push(item.kind);
+            }
+        }
+        kernoraKinds = kinds;
     }
 
     function removeInstances(pluginName: string): void {
@@ -232,13 +255,18 @@ Item {
                         text: "Kernora"
                     }
 
-                    Flow {
+                    Item {
                         id: kernoraGrid
                         width: parent.width
-                        spacing: main.cardSpacing
+                        implicitHeight: main.kernoraKinds.length === 0 ? 0
+                            : Math.ceil(main.kernoraKinds.length / 2) * (main.cardHeight + main.cardSpacing) - main.cardSpacing
+                        height: implicitHeight
 
                         Repeater {
                             id: kernoraWidgets
+
+                            onItemAdded: Qt.callLater(main.refreshKinds)
+                            onItemRemoved: Qt.callLater(main.refreshKinds)
 
                             delegate: Item {
                                 id: card
@@ -248,9 +276,14 @@ Item {
                                 readonly property string pluginName: model.pluginName
                                 readonly property string kind: pluginName.slice(main.kernoraPrefix.length)
 
-                                visible: !main.forPanel && pluginName.startsWith(main.kernoraPrefix)
+                                readonly property bool shown: !main.forPanel && pluginName.startsWith(main.kernoraPrefix)
+                                readonly property int slot: main.kernoraKinds.filter(other => main.before(other, card.kind)).length
+
+                                visible: shown
+                                x: (slot % 2) * (width + main.cardSpacing)
+                                y: Math.floor(slot / 2) * (height + main.cardSpacing)
                                 width: (kernoraGrid.width - main.cardSpacing) / 2
-                                height: 228
+                                height: main.cardHeight
 
                                 Accessible.role: Accessible.Button
                                 Accessible.name: model.name

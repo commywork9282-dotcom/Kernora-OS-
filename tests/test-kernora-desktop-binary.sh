@@ -423,6 +423,8 @@ done
   || fail "At a Glance has no battery source"
 [[ -s "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.media/contents/ui/MediaSource.qml" ]] \
   || fail "the Now Playing widget has no media source"
+grep -Fxq 'Script=kernora-add-widgets-menu.sh,sh' "$temporary_root/desktop/usr/share/kconf_update/kernora-add-widgets-menu.upd" \
+  || fail "the desktop menu migration is not installed"
 grep -Fq 'text/x-plasmoidservicename' "$temporary_root/desktop/$shell/explorer/WidgetDrag.qml" \
   || fail "widgets cannot be dragged from the Kernora widget picker"
 grep -Fq 'onShouldClose: main.closed()' "$temporary_root/desktop/$shell/explorer/WidgetExplorer.qml" \

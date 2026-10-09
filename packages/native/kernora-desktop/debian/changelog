@@ -1,3 +1,13 @@
+kernora-desktop (1.4.11) UNRELEASED; urgency=medium
+
+  * The desktop's right-click menu offers "Add or Manage Widgets…" again
+    (kconf_update kernora_add_widgets_menu enables Plasma's hidden action).
+  * The widget picker shows the Kernora widgets in a fixed order with the
+    clock first, and the edit-mode toolbar keeps "Manage desktops and
+    panels" as an icon so it fits next to the widget picker.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 23:40:00 -0700
+
 kernora-desktop (1.4.10) UNRELEASED; urgency=medium
 
   * Material 3 widgets for the desktop: Kernora Clock (bold digits or an

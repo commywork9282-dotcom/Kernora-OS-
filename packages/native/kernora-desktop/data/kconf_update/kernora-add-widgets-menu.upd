@@ -1,0 +1,4 @@
+Version=6
+
+Id=kernora_add_widgets_menu
+Script=kernora-add-widgets-menu.sh,sh

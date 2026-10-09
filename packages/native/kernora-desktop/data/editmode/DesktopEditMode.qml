@@ -204,7 +204,7 @@ Item {
                 Accessible.role: Accessible.ButtonMenu
                 onClicked: containment.plasmoid.corona.showAddPanelContextMenu(mapToGlobal(0, height + 8))
             }
-            MButton {
+            MIconButton {
                 readonly property QtObject qAction: containment?.plasmoid.corona.action("manage-containments") || null
                 visible: qAction?.visible || false
                 variant: "tonal"

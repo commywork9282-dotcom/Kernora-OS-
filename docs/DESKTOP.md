@@ -354,6 +354,11 @@ shapes and tick when the widget is on the desktop (the tick removes them
 again), and the other widgets as a list. A tap adds a widget, dragging it
 (`WidgetDrag.qml`, MIME `text/x-plasmoidservicename`) drops it where it
 should go. On a panel the Kernora widgets give way to the panel applets.
+The Kernora cards come in a fixed order, the clock first. Plasma 6 hides
+"Add or Manage Widgets…" from the desktop's right-click menu; the
+`kernora_add_widgets_menu` kconf_update script turns it back on
+(`[ActionPlugins][0][RightButton;NoModifier] add widgets=true` in
+`plasma-org.kde.plasma.desktop-appletsrc`).
 
 Edit mode (`data/editmode`) is Kernora's as well: `DesktopEditMode.qml`
 puts a floating toolbar (Widgets, Wallpaper, Add panel, Done) above the

@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.10" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.11" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -160,6 +160,13 @@ grep -Fxq 'gtk-sound-theme-name=kernora' "$package_root/data/skel-config/gtk-3.0
   || fail "new accounts do not start with the Kernora sounds"
 sh -n "$package_root/data/kconf_update/kernora-sound-theme.sh" || fail "the sound theme migration does not parse"
 sh -n "$package_root/data/kconf_update/kernora-terminal-entry.sh" || fail "the terminal entry migration does not parse"
+sh -n "$package_root/data/kconf_update/kernora-add-widgets-menu.sh" || fail "the widgets menu migration does not parse"
+menu_home=$(mktemp -d)
+XDG_CONFIG_HOME="$menu_home" sh "$package_root/data/kconf_update/kernora-add-widgets-menu.sh"
+XDG_CONFIG_HOME="$menu_home" sh "$package_root/data/kconf_update/kernora-add-widgets-menu.sh"
+[[ "$(grep -c "add widgets=true" "$menu_home/plasma-org.kde.plasma.desktop-appletsrc")" == 1 ]] \
+  || fail "the desktop menu does not offer Add Widgets exactly once"
+rm -rf "$menu_home"
 sh -n "$package_root/data/crash/kernora-panic-report" || fail "the panic report does not parse"
 for widget in clock glance weather battery calendar media photo note; do
   python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$package_root/data/widgets/$widget/metadata.json" \
