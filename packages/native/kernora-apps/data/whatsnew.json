@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-09-3",
+    "items": [
+      {
+        "icon": "clock",
+        "title": {
+          "en": "A new analog clock",
+          "ru": "Новые стрелочные часы"
+        },
+        "text": {
+          "en": "The analog Kernora Clock now looks like Pixel's: a soft scalloped dial, two round hands and a seconds dot running round the edge. Choose Analog in the widget's settings.",
+          "ru": "Стрелочные часы Kernora теперь как на Pixel: мягкий волнистый циферблат, две округлые стрелки и точка секунд, бегущая по краю. Выберите «Стрелочные» в настройках виджета."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-09-2",
     "items": [
       {

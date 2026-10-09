@@ -1,3 +1,12 @@
+kernora-desktop (1.4.14) UNRELEASED; urgency=medium
+
+  * The analog Kernora Clock follows Pixel's: a pale scalloped dial
+    (cookie12), two equally thick rounded hands that meet in the centre, the
+    hour hand dark and the minute hand in the primary colour, and a seconds
+    dot that steps round the rim. It keeps the light colours on any wallpaper.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 09 Oct 2026 18:30:00 -0700
+
 kernora-desktop (1.4.13) UNRELEASED; urgency=medium
 
   * New live wallpaper Starfall (org.kernora.starfall): stars twinkle over a

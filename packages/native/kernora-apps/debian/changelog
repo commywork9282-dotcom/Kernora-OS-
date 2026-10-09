@@ -1,3 +1,9 @@
+kernora-apps (1.1.17) UNRELEASED; urgency=medium
+
+  * What's new: the redesigned analog clock widget.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 09 Oct 2026 18:30:00 -0700
+
 kernora-apps (1.1.16) UNRELEASED; urgency=medium
 
   * What's new: the Starfall wallpaper and the profile picture in the

@@ -103,72 +103,69 @@ PlasmoidItem {
 
         Item {
             id: dial
+
+            readonly property var scheme: M3.lightScheme
             readonly property real side: Math.min(width, height)
             readonly property real hours: root.now.getHours() % 12 + root.now.getMinutes() / 60
             readonly property real minutes: root.now.getMinutes() + root.now.getSeconds() / 60
+            readonly property int seconds: root.now.getSeconds()
 
             MaterialShape {
-                anchors.fill: parent
+                anchors.centerIn: parent
+                width: dial.side
+                height: dial.side
                 shape: "cookie12"
-                color: M3.primaryContainer
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    shadowEnabled: true
-                    shadowOpacity: 0.3
-                    shadowBlur: 0.5
-                    shadowVerticalOffset: 2
-                }
-            }
-
-            Repeater {
-                model: 12
-                delegate: Item {
-                    required property int index
-                    anchors.centerIn: parent
-                    width: 0
-                    height: 0
-                    rotation: index * 30
-                    Rectangle {
-                        readonly property real dot: dial.side * (index % 3 === 0 ? 0.035 : 0.022)
-                        width: dot
-                        height: dot
-                        radius: dot / 2
-                        x: -dot / 2
-                        y: -dial.side * 0.36 - dot / 2
-                        color: M3.primaryContainerContent
-                        opacity: index % 3 === 0 ? 0.9 : 0.5
-                    }
-                }
+                color: Qt.tint(dial.scheme.primaryContainer, Qt.rgba(1, 1, 1, 0.3))
             }
 
             Hand {
                 angle: dial.hours * 30
-                length: dial.side * 0.24
-                thickness: dial.side * 0.075
-                color: M3.primary
+                length: dial.side * 0.18
+                thickness: dial.side * 0.1
+                color: dial.scheme.surfaceVariantContent
             }
             Hand {
                 angle: dial.minutes * 6
-                length: dial.side * 0.34
-                thickness: dial.side * 0.05
-                color: M3.tertiary
+                length: dial.side * 0.315
+                thickness: dial.side * 0.1
+                color: dial.scheme.primary
             }
-            Rectangle {
+
+            Item {
                 anchors.centerIn: parent
-                width: dial.side * 0.06
-                height: width
-                radius: width / 2
-                color: M3.primaryContainerContent
+                width: 0
+                height: 0
+                rotation: dial.seconds * 6
+
+                Behavior on rotation {
+                    RotationAnimation {
+                        duration: 350
+                        direction: RotationAnimation.Clockwise
+                        easing.type: Easing.OutBack
+                    }
+                }
+
+                Rectangle {
+                    readonly property real dot: dial.side * 0.1
+                    x: -dot / 2
+                    y: -dial.side * 0.44 - dot / 2
+                    width: dot
+                    height: dot
+                    radius: dot / 2
+                    color: dial.scheme.tertiary
+                }
             }
         }
     }
 
     component Hand: Item {
         id: hand
+
         property real angle
         property real length
         property real thickness
         property color color
+
         anchors.centerIn: parent
         width: 0
         height: 0
@@ -176,11 +173,12 @@ PlasmoidItem {
 
         Rectangle {
             x: -hand.thickness / 2
-            y: -hand.length
+            y: -hand.length - hand.thickness / 2
             width: hand.thickness
-            height: hand.length + hand.thickness / 2
+            height: hand.length + hand.thickness
             radius: hand.thickness / 2
             color: hand.color
+            antialiasing: true
         }
     }
 }

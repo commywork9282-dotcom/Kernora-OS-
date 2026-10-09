@@ -332,7 +332,7 @@ with Russian names and translations (`data/shell/po`):
 
 | Widget | What it shows |
 | --- | --- |
-| Kernora Clock (`clock`) | Hours over minutes in primary and tertiary, or an analog dial on a Material cookie (its settings) |
+| Kernora Clock (`clock`) | Hours over minutes in primary and tertiary, or Pixel's analog face: a pale cookie12 dial, a dark hour hand and a primary minute hand of equal width, and a seconds dot on the rim (its settings) |
 | At a Glance (`glance`) | The date, the weather and the battery when it is charging or low, straight on the wallpaper |
 | Weather (`weather`) | Temperature and sky on a Material shape that changes with the sky |
 | Batteries (`battery`) | A ring for this computer and every connected device that reports a charge |
