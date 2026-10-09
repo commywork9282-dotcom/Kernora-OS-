@@ -1,0 +1,38 @@
+# Russian translation of the Kernora Photo widget.
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-desktop 1.4\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Photo"
+msgstr "Фото"
+
+msgid "Shape"
+msgstr "Фигура"
+
+msgid "Pictures"
+msgstr "Изображения"
+
+msgid "Folder"
+msgstr "Папка"
+
+msgid "Change the picture"
+msgstr "Менять снимок"
+
+msgid "Every 5 minutes"
+msgstr "Каждые 5 минут"
+
+msgid "Every 30 minutes"
+msgstr "Каждые 30 минут"
+
+msgid "Every 2 hours"
+msgstr "Каждые 2 часа"
+
+msgid "Every day"
+msgstr "Каждый день"
+
+msgid "Put pictures in the Pictures folder"
+msgstr "Положите снимки в папку «Изображения»"

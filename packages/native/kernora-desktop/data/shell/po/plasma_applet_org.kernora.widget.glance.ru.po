@@ -1,0 +1,68 @@
+# Russian translation of the Kernora At a Glance widget.
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-desktop 1.4\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Weather"
+msgstr "Погода"
+
+msgid "Show the weather"
+msgstr "Показывать погоду"
+
+msgid "Charging · %1%"
+msgstr "Заряжается · %1%"
+
+msgid "Battery low · %1%"
+msgstr "Батарея садится · %1%"
+
+msgid "Location"
+msgstr "Место"
+
+msgid "Every Kernora weather widget uses this place. Forecasts come from Open-Meteo.com."
+msgstr "Это место используют все виджеты погоды Kernora. Прогноз предоставляет Open-Meteo.com."
+
+msgid "Remove"
+msgstr "Убрать"
+
+msgid "Choose another city"
+msgstr "Выбрать другой город"
+
+msgid "Search for a city"
+msgstr "Найти город"
+
+msgid "Searching…"
+msgstr "Поиск…"
+
+msgid "The weather service could not be reached."
+msgstr "Не удалось связаться с сервисом погоды."
+
+msgid "No place with this name."
+msgstr "Места с таким названием не найдено."
+
+msgid "Sunny"
+msgstr "Солнечно"
+
+msgid "Clear"
+msgstr "Ясно"
+
+msgid "Partly cloudy"
+msgstr "Переменная облачность"
+
+msgid "Fog"
+msgstr "Туман"
+
+msgid "Rain"
+msgstr "Дождь"
+
+msgid "Snow"
+msgstr "Снег"
+
+msgid "Thunderstorm"
+msgstr "Гроза"
+
+msgid "Cloudy"
+msgstr "Облачно"

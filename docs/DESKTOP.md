@@ -318,6 +318,51 @@ Meta+V first: new accounts get it without a shortcut
 (`data/skel-config/kglobalshortcutsrc`). `/etc/xdg/klipperrc` keeps
 pictures in the history.
 
+### Widgets (`data/widgets`)
+
+Eight desktop widgets in the spirit of Pixel's, all `org.kernora.widget.*`
+with Russian names and translations (`data/shell/po`):
+
+| Widget | What it shows |
+| --- | --- |
+| Kernora Clock (`clock`) | Hours over minutes in primary and tertiary, or an analog dial on a Material cookie (its settings) |
+| At a Glance (`glance`) | The date, the weather and the battery when it is charging or low, straight on the wallpaper |
+| Weather (`weather`) | Temperature and sky on a Material shape that changes with the sky |
+| Batteries (`battery`) | A ring for this computer and every connected device that reports a charge |
+| Calendar (`calendar`) | The month with today in a circle; the arrows page through months |
+| Now Playing (`media`) | Cover, title, a wavy seek bar and the buttons of whatever MPRIS player plays |
+| Photo (`photo`) | A picture from Pictures (or a chosen folder) masked by a Material shape, changing every 5 minutes to every day |
+| Note (`note`) | Text typed straight on the desktop, kept in the widget's configuration |
+
+`debian/rules` gives each package a copy of `data/shell/m3` with generated
+tokens, the shared pieces from `data/widgets/common` and the generated
+`materialshapes.js`; Now Playing and At a Glance take the quick settings'
+media and battery sources. The weather comes from Open-Meteo (no key): one
+city, chosen in either weather widget's settings, is shared through
+`~/.config/kernorarc [Weather]` together with a 25-minute cache.
+Fahrenheit follows a US locale. Plasma sizes a new desktop applet from its
+`switchWidth`/`switchHeight`, so each widget sets them to its preferred
+size until it has been placed once (`placed` in its configuration) and
+then drops them, which keeps it from ever collapsing into an icon.
+
+### Widget picker and edit mode
+
+Kernora replaces Plasma's widget explorer
+(`data/explorer/WidgetExplorer.qml`, diverted): a search bar, a Kernora
+section of cards whose previews (`WidgetPreview.qml`) are drawn on Material
+shapes and tick when the widget is on the desktop (the tick removes them
+again), and the other widgets as a list. A tap adds a widget, dragging it
+(`WidgetDrag.qml`, MIME `text/x-plasmoidservicename`) drops it where it
+should go. On a panel the Kernora widgets give way to the panel applets.
+
+Edit mode (`data/editmode`) is Kernora's as well: `DesktopEditMode.qml`
+puts a floating toolbar (Widgets, Wallpaper, Add panel, Done) above the
+rounded desktop preview; `ConfigOverlay.qml` frames the selected widget in
+primary with Material resize handles and a side toolbar (settings, rotate,
+move, remove); panel spacers (`data/panelspacer/main.qml`) turn into tinted
+pills, the Plasma theme draws the margin highlights in the theme colour and
+the panel settings' previews (`PanelRepresentation.qml`) use the M3 roles.
+
 ## System surfaces
 
 Plasma loads some surfaces from places a look-and-feel package cannot
@@ -350,6 +395,11 @@ the package and live-image tests.
   `org.kde.desktopcontainment/contents/ui/Config*.qml`) keep their `cfg_*`
   properties and the folder view's translations; titles that Plasma writes
   as form labels lose their colon.
+* **Widget picker and edit mode** (`data/explorer` over
+  `explorer/WidgetExplorer.qml`, `data/editmode` over
+  `views/DesktopEditMode.qml`, `panelconfiguration/PanelRepresentation.qml`
+  and the folder view's `ConfigOverlay.qml`, `data/panelspacer` over the
+  panel spacer's `main.qml`); see "Widget picker and edit mode" above.
 * **Power menu** (`look-and-feel/.../logout`) and **Alt+Tab**
   (`data/kwin-tabbox/org.kernora.switcher`, a KWin window switcher).
 * **Task manager** (`data/taskmanager`): count badges as Material badges;

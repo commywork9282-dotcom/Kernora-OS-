@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.9" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.10" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -161,6 +161,18 @@ grep -Fxq 'gtk-sound-theme-name=kernora' "$package_root/data/skel-config/gtk-3.0
 sh -n "$package_root/data/kconf_update/kernora-sound-theme.sh" || fail "the sound theme migration does not parse"
 sh -n "$package_root/data/kconf_update/kernora-terminal-entry.sh" || fail "the terminal entry migration does not parse"
 sh -n "$package_root/data/crash/kernora-panic-report" || fail "the panic report does not parse"
+for widget in clock glance weather battery calendar media photo note; do
+  python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$package_root/data/widgets/$widget/metadata.json" \
+    || fail "the $widget widget metadata is not JSON"
+  xmllint --noout "$package_root/data/widgets/$widget/contents/config/main.xml" \
+    || fail "the $widget widget configuration is not XML"
+  grep -q "^WIDGETS = .*\b$widget\b" "$package_root/debian/rules" || fail "the $widget widget is not built"
+done
+for po in "$package_root"/data/shell/po/plasma_applet_org.kernora.widget.*.ru.po; do
+  msgfmt -c -o /dev/null "$po" 2>/dev/null || fail "$(basename "$po") does not compile"
+done
+grep -Fq 'api.open-meteo.com/v1/forecast' "$package_root/data/widgets/common/WeatherModel.qml" \
+  || fail "the weather widgets do not use Open-Meteo"
 grep -Fxq 'kernel.panic = 10' "$package_root/data/crash/90-kernora-panic.conf" \
   || fail "a kernel panic would not restart the computer"
 sounds=$(mktemp -d)

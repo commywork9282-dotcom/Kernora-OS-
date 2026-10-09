@@ -1,5 +1,32 @@
 [
   {
+    "id": "2026-10-08-7",
+    "items": [
+      {
+        "icon": "preferences-desktop-widgets",
+        "title": {
+          "en": "Material 3 widgets",
+          "ru": "Виджеты Material 3"
+        },
+        "text": {
+          "en": "A big clock, At a Glance, weather, batteries, calendar, music, photos and notes for your desktop, in the colours of your theme. Right-click the desktop, choose Enter Edit Mode and press Widgets.",
+          "ru": "Большие часы, «Коротко о главном», погода, батареи, календарь, музыка, фото и заметки на рабочем столе — в цветах вашей темы. Нажмите правой кнопкой на рабочем столе, выберите «Перейти в режим редактирования» и нажмите «Виджеты»."
+        }
+      },
+      {
+        "icon": "document-edit",
+        "title": {
+          "en": "A new edit mode",
+          "ru": "Новый режим редактирования"
+        },
+        "text": {
+          "en": "Moving and resizing widgets, wallpapers and panels now looks like the rest of Kernora.",
+          "ru": "Перемещать виджеты, менять их размер, обои и панели теперь можно в том же стиле, что и вся Kernora."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-08-6",
     "items": [
       {

@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Date and Time",
+        "Description": "The date, the weather and the battery at a glance, right on the wallpaper",
+        "Description[ru]": "Дата, погода и заряд с первого взгляда прямо на обоях",
+        "Icon": "weather-few-clouds",
+        "Id": "org.kernora.widget.glance",
+        "License": "GPL-2.0+",
+        "Name": "At a Glance",
+        "Name[ru]": "Коротко о главном"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-FormFactors": [
+        "desktop"
+    ]
+}

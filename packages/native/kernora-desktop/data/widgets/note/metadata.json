@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Utilities",
+        "Description": "A note on the desktop",
+        "Description[ru]": "Заметка на рабочем столе",
+        "Icon": "note",
+        "Id": "org.kernora.widget.note",
+        "License": "GPL-2.0+",
+        "Name": "Note",
+        "Name[ru]": "Заметка"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-FormFactors": [
+        "desktop"
+    ]
+}

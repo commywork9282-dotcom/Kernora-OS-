@@ -265,6 +265,15 @@ for path in \
   usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/ConfigLocation.qml \
   usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/ConfigIcons.qml \
   usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/ConfigFilter.qml \
+  usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/ConfigOverlay.qml \
+  usr/share/plasma/plasmoids/org.kde.plasma.panelspacer/contents/ui/main.qml \
+  "$shell/explorer/WidgetExplorer.qml" \
+  "$shell/explorer/WidgetPreview.qml" \
+  "$shell/explorer/WidgetDrag.qml" \
+  "$shell/explorer/MaterialShape.qml" \
+  "$shell/explorer/materialshapes.js" \
+  "$shell/views/DesktopEditMode.qml" \
+  "$shell/configuration/panelconfiguration/PanelRepresentation.qml" \
   "$notifications/main.qml" \
   "$notifications/kernora/global/Globals.qml" \
   "$notifications/kernora/global/qmldir" \
@@ -393,6 +402,33 @@ grep -Fxq 'X-KDE-Shortcuts=Meta+Ctrl+Alt+Shift+Space' "$temporary_root/desktop/u
 grep -Fq 'emoji.globalShortcut = "Meta+."' \
   "$temporary_root/desktop/usr/share/plasma/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
   || fail "the Kernora emoji tab does not open with Meta+."
+for widget in clock glance weather battery calendar media photo note; do
+  widget_root="$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.$widget"
+  for path in metadata.json contents/ui/main.qml contents/ui/m3/M3.qml contents/ui/materialshapes.js \
+      contents/ui/MaterialShape.qml contents/config/main.xml; do
+    [[ -s "$widget_root/$path" ]] || fail "the $widget widget lacks $path"
+  done
+  python3 -c 'import json,sys; m=json.load(open(sys.argv[1]))["KPlugin"]; assert m["Name[ru]"] and m["Description[ru]"]' \
+    "$widget_root/metadata.json" || fail "the $widget widget has no Russian name"
+  grep -q 'name="placed"' "$widget_root/contents/config/main.xml" \
+    || fail "the $widget widget does not remember that it was placed"
+done
+for widget in glance weather; do
+  [[ -s "$temporary_root/desktop/usr/share/locale/ru/LC_MESSAGES/plasma_applet_org.kernora.widget.$widget.mo" ]] \
+    || fail "the $widget widget is not translated"
+  [[ -s "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.$widget/contents/ui/WeatherModel.qml" ]] \
+    || fail "the $widget widget has no weather source"
+done
+[[ -s "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.glance/contents/ui/BatterySource.qml" ]] \
+  || fail "At a Glance has no battery source"
+[[ -s "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.media/contents/ui/MediaSource.qml" ]] \
+  || fail "the Now Playing widget has no media source"
+grep -Fq 'text/x-plasmoidservicename' "$temporary_root/desktop/$shell/explorer/WidgetDrag.qml" \
+  || fail "widgets cannot be dragged from the Kernora widget picker"
+grep -Fq 'onShouldClose: main.closed()' "$temporary_root/desktop/$shell/explorer/WidgetExplorer.qml" \
+  || fail "the Kernora widget picker does not keep Plasma's explorer contract"
+[[ -s "$temporary_root/desktop/usr/share/plasma/desktoptheme/kernora/widgets/margins-highlight.svg" ]] \
+  || fail "the Plasma theme lets edit mode fall back to Breeze's margin highlight"
 clipboard_ui="$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.clipboard/contents/ui"
 [[ -s "$clipboard_ui/EmojiPage.qml" && -s "$clipboard_ui/emoji.js" ]] \
   || fail "the clipboard sheet has no emoji tab"
@@ -403,7 +439,9 @@ dpkg-deb --control "$desktop_deb" "$desktop_control"
 for file in lockscreen/LockScreen.qml osd/Osd.qml configuration/AppletConfiguration.qml \
     configuration/ConfigurationContainmentAppearance.qml configuration/ConfigurationContainmentActions.qml \
     configuration/AboutPlugin.qml configuration/ConfigurationShortcuts.qml \
-    org.kde.desktopcontainment/contents/ui ConfigLocation.qml ConfigIcons.qml ConfigFilter.qml \
+    org.kde.desktopcontainment/contents/ui ConfigLocation.qml ConfigIcons.qml ConfigFilter.qml ConfigOverlay.qml \
+    explorer/WidgetExplorer.qml views/DesktopEditMode.qml panelconfiguration/PanelRepresentation.qml \
+    org.kde.plasma.panelspacer/contents/ui/main.qml \
     org.kde.plasma.notifications/contents/ui main.qml \
     org.kde.plasma.taskmanager/contents/ui Badge.qml ToolTipInstance.qml kglobalaccel/org.kde.krunner.desktop \
     kglobalaccel/org.kde.plasma.emojier.desktop plymouth/plymouthd.defaults; do

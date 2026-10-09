@@ -1,0 +1,14 @@
+# Russian translation of the Kernora Note widget.
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-desktop 1.4\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Note"
+msgstr "Заметка"
+
+msgid "Write a note"
+msgstr "Напишите заметку"

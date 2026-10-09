@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "System Information",
+        "Description": "The charge of this computer and of connected devices, as rings",
+        "Description[ru]": "Заряд компьютера и подключённых устройств в виде колец",
+        "Icon": "battery-full",
+        "Id": "org.kernora.widget.battery",
+        "License": "GPL-2.0+",
+        "Name": "Batteries",
+        "Name[ru]": "Батареи"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-FormFactors": [
+        "desktop"
+    ]
+}

@@ -404,6 +404,16 @@ def line() -> str:
     return sheet.render()
 
 
+def margins_highlight() -> str:
+    sheet = Sheet()
+    for element, opacity in (("fill", 0.16), ("topleft", 0.08), ("topright", 0.08),
+                             ("bottomleft", 0.08), ("bottomright", 0.08)):
+        x, y = sheet.place(16, 16)
+        sheet.add(f'<rect id="{element}" x="{fmt(x)}" y="{fmt(y)}" width="16" height="16" '
+                  f'{paint("ColorScheme-Highlight", opacity)}/>')
+    return sheet.render()
+
+
 def scrollbar() -> str:
     sheet = Sheet()
     for orientation in ("vertical", "horizontal"):
@@ -633,6 +643,7 @@ def main(argv: list[str]) -> int:
         "widgets/listitem.svg": listitem(),
         "widgets/viewitem.svg": viewitem(),
         "widgets/line.svg": line(),
+        "widgets/margins-highlight.svg": margins_highlight(),
         "widgets/scrollbar.svg": scrollbar(),
         "widgets/plasmoidheading.svg": plasmoidheading(),
         "widgets/slider.svg": slider(),

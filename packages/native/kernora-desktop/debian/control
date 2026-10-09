@@ -18,6 +18,7 @@ Depends:
  qml6-module-org-kde-desktop,
  qml6-module-org-kde-kirigami,
  qml6-module-qtquick-effects,
+ qml6-module-qt-labs-folderlistmodel,
  qml6-module-qtquick-layouts,
  qml6-module-qtquick-shapes,
  qml6-module-qtquick-templates,

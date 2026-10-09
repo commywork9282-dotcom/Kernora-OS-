@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Graphics",
+        "Description": "A picture from your Pictures folder, in a Material shape",
+        "Description[ru]": "Снимок из папки «Изображения» в фигуре Material",
+        "Icon": "image-x-generic",
+        "Id": "org.kernora.widget.photo",
+        "License": "GPL-2.0+",
+        "Name": "Photo",
+        "Name[ru]": "Фото"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-FormFactors": [
+        "desktop"
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Date and Time",
+        "Description": "Bold digits or an analog dial on a Material shape",
+        "Description[ru]": "Крупные цифры или циферблат на фигуре Material",
+        "Icon": "clock",
+        "Id": "org.kernora.widget.clock",
+        "License": "GPL-2.0+",
+        "Name": "Kernora Clock",
+        "Name[ru]": "Часы"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-FormFactors": [
+        "desktop"
+    ]
+}

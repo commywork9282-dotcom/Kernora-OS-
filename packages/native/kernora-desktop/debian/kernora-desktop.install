@@ -19,6 +19,7 @@ generated/desktoptheme/kernora* usr/share/plasma/desktoptheme
 generated/plasmoids/org.kernora.launcher usr/share/plasma/plasmoids
 generated/plasmoids/org.kernora.quicksettings usr/share/plasma/plasmoids
 generated/plasmoids/org.kernora.clipboard usr/share/plasma/plasmoids
+generated/plasmoids/org.kernora.widget.* usr/share/plasma/plasmoids
 generated/locale usr/share
 data/skel-autostart/*.desktop etc/skel/.config/autostart
 generated/wallpapers/org.kernora.shapes usr/share/plasma/wallpapers
@@ -57,9 +58,14 @@ data/configuration/ConfigurationContainmentAppearance.qml usr/share/plasma/shell
 data/configuration/ConfigurationContainmentActions.qml usr/share/plasma/shells/org.kde.plasma.desktop/contents/configuration
 data/configuration/AboutPlugin.qml usr/share/plasma/shells/org.kde.plasma.desktop/contents/configuration
 data/configuration/ConfigurationShortcuts.qml usr/share/plasma/shells/org.kde.plasma.desktop/contents/configuration
+generated/explorer/* usr/share/plasma/shells/org.kde.plasma.desktop/contents/explorer
+data/editmode/DesktopEditMode.qml usr/share/plasma/shells/org.kde.plasma.desktop/contents/views
+data/editmode/PanelRepresentation.qml usr/share/plasma/shells/org.kde.plasma.desktop/contents/configuration/panelconfiguration
 data/folderview/ConfigLocation.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
 data/folderview/ConfigIcons.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
 data/folderview/ConfigFilter.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
+data/editmode/ConfigOverlay.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
+data/panelspacer/main.qml usr/share/plasma/plasmoids/org.kde.plasma.panelspacer/contents/ui
 data/kwin-tabbox/org.kernora.switcher usr/share/kwin/tabbox
 generated/librewolf/theme@kernora.os.xpi usr/share/librewolf/distribution/extensions
 data/librewolf/kernora.js usr/share/librewolf/browser/defaults/preferences

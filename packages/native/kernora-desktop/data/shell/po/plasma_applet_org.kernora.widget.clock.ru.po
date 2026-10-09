@@ -1,0 +1,26 @@
+# Russian translation of the Kernora Clock.
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-desktop 1.4\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Appearance"
+msgstr "Внешний вид"
+
+msgid "Style"
+msgstr "Стиль"
+
+msgid "Bold digits"
+msgstr "Крупные цифры"
+
+msgid "Hours above minutes, in the colours of the theme"
+msgstr "Часы над минутами, в цветах темы"
+
+msgid "Analog"
+msgstr "Стрелочные"
+
+msgid "Hands on a Material shape"
+msgstr "Стрелки на фигуре Material"

@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Multimedia",
+        "Description": "The music or video that is playing, with its cover and controls",
+        "Description[ru]": "Музыка или видео, которые сейчас играют, с обложкой и кнопками",
+        "Icon": "media-playback-start",
+        "Id": "org.kernora.widget.media",
+        "License": "GPL-2.0+",
+        "Name": "Now Playing",
+        "Name[ru]": "Сейчас играет"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-FormFactors": [
+        "desktop"
+    ]
+}

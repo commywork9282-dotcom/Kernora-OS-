@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Date and Time",
+        "Description": "This month, with today in a circle",
+        "Description[ru]": "Текущий месяц, сегодняшний день в кружке",
+        "Icon": "view-calendar",
+        "Id": "org.kernora.widget.calendar",
+        "License": "GPL-2.0+",
+        "Name": "Calendar",
+        "Name[ru]": "Календарь"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-FormFactors": [
+        "desktop"
+    ]
+}

@@ -49,8 +49,14 @@ PlasmoidItem {
         running: true
         onTriggered: root.acceptActivations = true
     }
+    readonly property bool arranging: (Plasmoid.containment?.corona?.editMode ?? false) || (Plasmoid.containment?.userConfiguring ?? false)
+    onArrangingChanged: arrangingTimer.restart()
+    Timer {
+        id: arrangingTimer
+        interval: 1500
+    }
     onExpandedChanged: {
-        if (root.acceptActivations) {
+        if (root.acceptActivations && !root.arranging && !arrangingTimer.running) {
             sheetWindow.toggle();
         }
     }

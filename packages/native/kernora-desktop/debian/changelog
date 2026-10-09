@@ -1,3 +1,21 @@
+kernora-desktop (1.4.10) UNRELEASED; urgency=medium
+
+  * Material 3 widgets for the desktop: Kernora Clock (bold digits or an
+    analog dial on a Material shape), At a Glance, Weather (Open-Meteo, one
+    shared city in kernorarc), Batteries, Calendar, Now Playing, Photo and
+    Note. They start at their preferred size and translate into Russian.
+  * The widget picker is Kernora's: search, a Kernora section with live
+    previews on Material shapes, the other widgets as a list; tap or drag a
+    widget onto the desktop.
+  * Edit mode in Kernora's style: a floating toolbar with Widgets,
+    Wallpaper, Add panel and Done, rounded desktop preview, Material resize
+    handles and a side toolbar for each widget, panel spacers and margin
+    highlights in the theme colour, Material previews in the panel settings.
+  * The clipboard and quick settings sheets no longer open by themselves
+    while a panel is being edited.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 08 Oct 2026 21:00:00 -0700
+
 kernora-desktop (1.4.9) UNRELEASED; urgency=medium
 
   * After a kernel panic the computer restarts by itself after ten seconds

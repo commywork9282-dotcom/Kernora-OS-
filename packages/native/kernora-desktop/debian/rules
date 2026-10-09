@@ -14,6 +14,7 @@ THEME_APPS = generated/icon-theme/scalable/apps
 TOOLS = tools
 SYMBOLS = data/symbols
 APPLETS = launcher:org.kernora.launcher shade:org.kernora.quicksettings clipboard:org.kernora.clipboard
+WIDGETS = clock glance weather battery calendar media photo note
 COLOURS := $(shell cd $(TOOLS) && python3 -c 'import kernora_design as d; print(" ".join(d.COLOURS))')
 EXTRA_COLOURS := $(filter-out kernora,$(COLOURS))
 
@@ -94,6 +95,21 @@ override_dh_auto_build:
 	  cp -a data/wallpaper/org.kernora.$$theme generated/wallpapers/; \
 	  python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.$$theme/contents/ui $$theme; \
 	done
+	set -e; for widget in $(WIDGETS); do \
+	  target=generated/plasmoids/org.kernora.widget.$$widget; \
+	  install -d $$target; \
+	  cp -a data/widgets/$$widget/. $$target/; \
+	  cp -a data/widgets/common/. $$target/contents/ui/; \
+	  cp generated/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js $$target/contents/ui/; \
+	  cp -a data/shell/m3 $$target/contents/ui/m3; \
+	  python3 $(TOOLS)/gen-qml-tokens $$target/contents/ui/m3/M3.qml; \
+	done
+	cp data/shell/shade/contents/ui/sources/BatterySource.qml generated/plasmoids/org.kernora.widget.glance/contents/ui/
+	cp data/shell/shade/contents/ui/sources/MediaSource.qml data/shell/shade/contents/ui/WavyProgress.qml \
+	  generated/plasmoids/org.kernora.widget.media/contents/ui/
+	install -d generated/explorer
+	cp data/explorer/*.qml data/widgets/common/MaterialShape.qml generated/explorer/
+	cp generated/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js generated/explorer/
 	set -e; for colour in $(EXTRA_COLOURS); do \
 	  KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.shapes/contents/ui; \
 	  for theme in tower rhythm marbles; do \

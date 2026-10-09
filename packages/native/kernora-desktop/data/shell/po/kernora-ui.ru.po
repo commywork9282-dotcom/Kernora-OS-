@@ -120,3 +120,18 @@ msgstr "Сочетание клавиш"
 
 msgid "Discard"
 msgstr "Не применять"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Search widgets"
+msgstr "Поиск виджетов"
+
+msgid "Other widgets"
+msgstr "Другие виджеты"
+
+msgid "Wallpaper"
+msgstr "Обои"
+
+msgid "Done"
+msgstr "Готово"

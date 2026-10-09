@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Environment and Weather",
+        "Description": "The weather where you are, on a shape that changes with the sky",
+        "Description[ru]": "Погода в вашем городе на фигуре, которая меняется вместе с небом",
+        "Icon": "weather-few-clouds",
+        "Id": "org.kernora.widget.weather",
+        "License": "GPL-2.0+",
+        "Name": "Weather",
+        "Name[ru]": "Погода"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-FormFactors": [
+        "desktop"
+    ]
+}
