@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.18" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.19" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -192,6 +192,10 @@ grep -Fq 'api.open-meteo.com/v1/forecast' "$package_root/data/widgets/common/Wea
 grep -Fxq 'kernel.panic = 10' "$package_root/data/crash/90-kernora-panic.conf" \
   || fail "a kernel panic would not restart the computer"
 python3 "$tools_root/check-contrast" >/dev/null || fail "a colour theme draws text or icons that blend into their background"
+grep -Fxq '  - shellprocess@upgrade' "$package_root/data/calamares/settings.conf" \
+  || fail "the installer does not bring the new system up to date"
+grep -Fq 'full-upgrade' "$package_root/data/calamares/modules/shellprocess-upgrade.conf" \
+  || fail "the installer's update step does not upgrade"
 sounds=$(mktemp -d)
 python3 "$tools_root/gen-sound-theme" "$sounds" desktop-login,bell >/dev/null || fail "gen-sound-theme fails"
 grep -Fxq 'Inherits=freedesktop' "$sounds/kernora/index.theme" || fail "the sound theme does not fall back to freedesktop"

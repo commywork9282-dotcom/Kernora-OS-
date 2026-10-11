@@ -148,9 +148,9 @@ trap cleanup EXIT
   "$BASE_CODENAME" \
   "$rootfs" \
   "deb copy:$temporary_archive $DIST_CODENAME main" \
-  "deb $DEBIAN_SNAPSHOT/$SNAPSHOT_TIMESTAMP $BASE_CODENAME main" \
-  "deb $DEBIAN_SNAPSHOT/$SNAPSHOT_TIMESTAMP $BASE_CODENAME-updates main" \
-  "deb $DEBIAN_SECURITY_SNAPSHOT/$SNAPSHOT_TIMESTAMP $BASE_CODENAME-security main"
+  "deb $DEBIAN_SNAPSHOT/$SNAPSHOT_TIMESTAMP $BASE_CODENAME main non-free-firmware" \
+  "deb $DEBIAN_SNAPSHOT/$SNAPSHOT_TIMESTAMP $BASE_CODENAME-updates main non-free-firmware" \
+  "deb $DEBIAN_SECURITY_SNAPSHOT/$SNAPSHOT_TIMESTAMP $BASE_CODENAME-security main non-free-firmware"
 
 "$PROJECT_ROOT/tests/test-live-rootfs.sh" "$rootfs"
 

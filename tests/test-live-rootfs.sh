@@ -91,8 +91,8 @@ done
   || fail "sddm is not installed"
 
 # The Kernora Material 3 shell and what it is set in.
-[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.18" ]] \
-  || fail "kernora-desktop 1.4.18 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.19" ]] \
+  || fail "kernora-desktop 1.4.19 is not installed"
 for applet in org.kernora.launcher org.kernora.quicksettings; do
   [[ -s "/usr/share/plasma/plasmoids/$applet/contents/ui/main.qml" ]] \
     || fail "Kernora shell applet is missing: $applet"
@@ -242,6 +242,15 @@ grep -Fxq 'gtk-theme-name=Kernora' "/home/$LIVE_USER/.config/gtk-3.0/settings.in
 if grep -rq 'snapshot.debian.org\|file:/usr/share/kernora' /etc/apt/sources.list.d; then
   fail "the image still points APT at the build's sources"
 fi
+grep -Fxq 'Components: main non-free-firmware' /etc/apt/sources.list.d/debian.sources \
+  || fail "the image takes no firmware updates"
+for firmware in firmware-amd-graphics firmware-intel-graphics firmware-nvidia-graphics firmware-iwlwifi \
+    firmware-realtek firmware-atheros firmware-mediatek firmware-sof-signed amd64-microcode intel-microcode; do
+  [[ "$(dpkg-query -W -f='${Status}' "$firmware" 2>/dev/null)" == 'install ok installed' ]] \
+    || fail "the image lacks $firmware: graphics, Wi-Fi or sound would not start on such hardware"
+done
+compgen -G '/usr/lib/firmware/amdgpu/gc_10_3_6_*' >/dev/null \
+  || fail "the AMD Ryzen graphics firmware is missing"
 grep -Fxq 'Suites: trixie-security' /etc/apt/sources.list.d/debian.sources \
   || fail "the image takes no Debian security updates"
 grep -Fxq 'Signed-By: /usr/share/keyrings/kernora-archive-keyring.asc' /etc/apt/sources.list.d/kernora.sources \

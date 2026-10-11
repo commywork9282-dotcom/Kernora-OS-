@@ -1,3 +1,11 @@
+kernora-archive (1.1) UNRELEASED; urgency=medium
+
+  * Debian's non-free-firmware component, so the firmware for graphics
+    cards, Wi-Fi, Bluetooth, sound and processor microcode that the image
+    ships keeps receiving updates.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 10 Oct 2026 12:00:00 -0700
+
 kernora-archive (1.0) UNRELEASED; urgency=medium
 
   * The Debian archive and its security updates, from the live mirrors
