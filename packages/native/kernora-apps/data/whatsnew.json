@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-11",
+    "items": [
+      {
+        "icon": "system-reboot",
+        "title": {
+          "en": "A clean boot screen",
+          "ru": "Чистый экран загрузки"
+        },
+        "text": {
+          "en": "Technical kernel messages, for example about NVIDIA RTX 50 graphics cards, no longer appear on screen while the computer starts.",
+          "ru": "Технические сообщения ядра, например о видеокартах NVIDIA RTX 50, больше не появляются на экране при включении компьютера."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-10",
     "items": [
       {

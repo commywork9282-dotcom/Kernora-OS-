@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.20" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.21" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -96,6 +96,9 @@ grep -Fxq 'Theme=Kernora' "$defaults" \
   || fail "look-and-feel does not select the Kernora icon theme"
 grep -Fxq 'Theme=org.kernora.desktop' "$defaults" \
   || fail "look-and-feel does not select the Kernora session splash"
+grep -Fq 'loglevel=3' "$package_root/data/grub/kernora.cfg" \
+  && grep -Fq 'update-grub' "$package_root/debian/kernora-desktop.postinst" \
+  || fail "installed systems print kernel errors over the boot splash"
 grep -Fxq 'ColorScheme=KernoraDark' "$defaults" \
   || fail "look-and-feel does not select the Kernora colour scheme"
 grep -Fxq 'name=kernora' "$defaults" \

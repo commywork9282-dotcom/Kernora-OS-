@@ -1,3 +1,13 @@
+kernora-desktop (1.4.21) UNRELEASED; urgency=medium
+
+  * The boot splash stays clean: GRUB adds loglevel=3, so harmless kernel
+    errors such as nouveau's "unknown chipset" on NVIDIA RTX 50 cards or
+    amdgpu's "lttpr_caps phy_repeater_cnt" no longer print over it. They
+    stay in the journal. A loglevel the user chose is kept, and the package
+    runs update-grub when the system has a GRUB menu.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 11 Oct 2026 14:00:00 -0700
+
 kernora-desktop (1.4.20) UNRELEASED; urgency=medium
 
   * The notifications applet no longer throws "effectiveStatus is not
