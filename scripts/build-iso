@@ -30,7 +30,7 @@ rootfs_checksum="$rootfs_tar.sha256"
   sha256sum --check --status "$rootfs_name.sha256"
 ) || die "live rootfs checksum mismatch"
 
-temporary_root=$(mktemp -d "$PROJECT_ROOT/_build/.iso.XXXXXX")
+temporary_root=$(mktemp -d "${KERNORA_SCRATCH_DIR:-$PROJECT_ROOT/_build}/.iso.XXXXXX")
 iso_tree="$temporary_root/tree"
 kernel_tree="$temporary_root/kernel"
 mkdir -p "$iso_tree/live" "$iso_tree/boot/grub" "$iso_tree/.disk" "$kernel_tree"

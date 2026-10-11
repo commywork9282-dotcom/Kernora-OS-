@@ -68,6 +68,10 @@ Steps can also be run one at a time, for example `make local-archive` (all
 packages and the signed APT archive) or `make live-rootfs`. See the
 `Makefile` for the full list.
 
+The ISO build stages its squashfs in `_build/`. On a tight disk, set
+`KERNORA_SCRATCH_DIR` (for example to `/tmp`) to stage it elsewhere; the
+finished ISO still lands in `out/iso/`.
+
 Builds are reproducible: the Debian snapshot, tool versions and every
 downloaded file are pinned by SHA-256, and archives are written with fixed
 file order, times and owners. Build outputs (`_build/`, `_cache/`, `out/`,

@@ -15,6 +15,19 @@ The ISO is still built from the pinned Debian snapshot (`configs/upstream/base.e
 Only the installed system points at the live archives: `build-live-rootfs` removes
 the build's `sources.list` and its copy of the Kernora archive.
 
+Both the Debian archive and its security updates come with the `main` and
+`non-free-firmware` components. The image ships the firmware that graphics
+cards, Wi-Fi, Bluetooth and laptop sound need, and CPU microcode
+(`configs/live/packages.txt`: AMD, Intel and NVIDIA graphics, Intel, Realtek,
+Qualcomm, MediaTek and Broadcom Wi-Fi, SOF sound); without it AMD's integrated
+graphics stop with "Fatal error during GPU init" and most Wi-Fi stays dark.
+
+The installer copies the system on the medium, which may be days of updates
+behind. When the computer is online it brings the new system up to date before
+it finishes (`shellprocess@upgrade` in `data/calamares/settings.conf`:
+`apt-get update`, `full-upgrade` and `update-grub` in the target). Offline,
+the step is skipped and Settings > Updates catches up later.
+
 ## Automatic updates
 
 `unattended-upgrades` runs from APT's daily timers. `kernora-archive` enables it
