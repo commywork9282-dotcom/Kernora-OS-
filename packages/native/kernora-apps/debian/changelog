@@ -1,3 +1,15 @@
+kernora-apps (1.1.21) UNRELEASED; urgency=medium
+
+  * Settings › Updates in the live session explains that updates come with
+    the installation and offers to start the installer, instead of
+    downloading updates into a system that is not kept.
+  * Welcome: the frame of the chosen wallpaper and the press highlight are
+    rounded like the preview. Inside RoundedClip, parent.radius pointed at
+    the clip's inner item, which has no radius.
+  * What's new: the lock screen no longer asks for a fingerprint.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 10 Oct 2026 18:00:00 -0700
+
 kernora-apps (1.1.20) UNRELEASED; urgency=medium
 
   * What's new: the Pastel wallpaper replaces Marble Run.

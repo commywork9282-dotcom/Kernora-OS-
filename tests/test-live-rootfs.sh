@@ -91,8 +91,8 @@ done
   || fail "sddm is not installed"
 
 # The Kernora Material 3 shell and what it is set in.
-[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.19" ]] \
-  || fail "kernora-desktop 1.4.19 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.20" ]] \
+  || fail "kernora-desktop 1.4.20 is not installed"
 for applet in org.kernora.launcher org.kernora.quicksettings; do
   [[ -s "/usr/share/plasma/plasmoids/$applet/contents/ui/main.qml" ]] \
     || fail "Kernora shell applet is missing: $applet"
@@ -151,8 +151,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.20" ]] \
-  || fail "kernora-apps 1.1.20 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.21" ]] \
+  || fail "kernora-apps 1.1.21 is not installed"
 for app in settings files editor photos player calculator screenshot welcome; do
   [[ -x "/usr/bin/kernora-$app" ]] || fail "Kernora application is missing: $app"
   [[ -s "/usr/share/kernora/$app/Main.qml" ]] || fail "interface of kernora-$app is missing"

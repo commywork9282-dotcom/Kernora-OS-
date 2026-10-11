@@ -1,3 +1,17 @@
+kernora-desktop (1.4.20) UNRELEASED; urgency=medium
+
+  * The notifications applet no longer throws "effectiveStatus is not
+    defined" when it goes passive: the deferred status update keeps its own
+    copy of the value.
+  * The lock screen no longer asks to scan a fingerprint or a smartcard.
+    kscreenlocker reports both authenticators even when the computer has no
+    reader; PAM's own prompts still appear when a reader is in use.
+  * New users see the same default picture in the app menu, on the lock
+    screen and in the power dialog as in Settings: /etc/skel/.face.icon
+    links to .face, the file Plasma's KUser reads.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 10 Oct 2026 18:00:00 -0700
+
 kernora-desktop (1.4.19) UNRELEASED; urgency=medium
 
   * The installer brings the new system up to date when it is online

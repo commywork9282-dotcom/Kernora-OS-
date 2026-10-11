@@ -913,13 +913,13 @@ AppWindow {
                 }
                 Rectangle {
                     anchors.fill: parent
-                    radius: parent.radius
+                    radius: thumb.radius
                     color: "transparent"
                     border.width: tile.selected ? 3 : 0
                     border.color: M3.primary
                 }
                 MStateLayer {
-                    radius: parent.radius
+                    radius: thumb.radius
                     hovered: tile.hovered
                     pressed: tile.pressed
                 }

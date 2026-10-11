@@ -195,6 +195,8 @@ grep -Fq 'Inherits=breeze-dark' "$temporary_root/desktop/usr/share/icons/Kernora
 platform="$temporary_root/desktop/usr/lib/x86_64-linux-gnu/qt6/plugins/kf6/kirigami/platform"
 [[ "$(readlink "$platform/org.kernora.desktop.so")" == "org.kde.desktop.so" ]] \
   || fail "Kirigami platform plugin link does not lead to the desktop plugin"
+[[ "$(readlink "$temporary_root/desktop/etc/skel/.face.icon")" == ".face" ]] \
+  || fail "the shell does not see the default profile picture"
 grep -Fxq 'widgetStyle=kvantum-dark' "$kdeglobals" \
   || fail "system defaults do not select the Kvantum widget style"
 if grep -q '^AccentColor=' "$temporary_root/desktop/usr/share/color-schemes/KernoraDark.colors"; then

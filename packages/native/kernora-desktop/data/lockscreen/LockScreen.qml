@@ -448,25 +448,6 @@ Item {
                     font.pixelSize: 14
                     wrapMode: Text.Wrap
                 }
-                Text {
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignHCenter
-                    visible: text.length > 0 && !root.passwordless
-                    text: {
-                        const hints = [];
-                        if (authenticator.authenticatorTypes & 1) {
-                            hints.push(root.tr("(or scan your fingerprint on the reader)"));
-                        }
-                        if (authenticator.authenticatorTypes & 2) {
-                            hints.push(root.tr("(or scan your smartcard)"));
-                        }
-                        return hints.join("\n");
-                    }
-                    color: M3.darkScheme.surfaceVariantContent
-                    font.family: M3.typeface
-                    font.pixelSize: 13
-                    wrapMode: Text.Wrap
-                }
             }
         }
 

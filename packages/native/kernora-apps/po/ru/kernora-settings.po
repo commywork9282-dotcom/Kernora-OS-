@@ -3250,3 +3250,12 @@ msgstr "Тёмная тема, цвет, обои, размер текста"
 #: apps/settings/qml/components/Catalog.qml:56
 msgid "accent palette material color red blue green purple"
 msgstr "цвет акцент палитра оформление красный синий зелёный фиолетовый"
+
+msgid "Updates come with the installation"
+msgstr "Обновления придут вместе с установкой"
+
+msgid "You are trying Kernora from the installation medium, and nothing installed here is kept. Install Kernora: when the computer is online, the installer brings the new system up to date by itself."
+msgstr "Сейчас Kernora запущена с установочного носителя, и всё, что здесь устанавливается, не сохранится. Установите Kernora: если компьютер подключён к интернету, установщик сам обновит новую систему."
+
+msgid "Install Kernora"
+msgstr "Установить Kernora"

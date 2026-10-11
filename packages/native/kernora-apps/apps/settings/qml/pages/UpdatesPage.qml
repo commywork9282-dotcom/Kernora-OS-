@@ -22,7 +22,7 @@ SettingsPage {
     readonly property bool working: state === Updates.Checking || state === Updates.Installing
 
     Component.onCompleted: {
-        if (Updates.available && state === Updates.Idle) {
+        if (!SystemInfo.live && Updates.available && state === Updates.Idle) {
             Updates.check();
         }
     }
@@ -58,7 +58,58 @@ SettingsPage {
     }
 
     Rectangle {
+        id: liveCard
+        visible: SystemInfo.live
+        width: parent.width
+        implicitHeight: liveContent.implicitHeight + 48
+        radius: M3.classic ? M3.cornerCard : 28
+        color: M3.surfaceContainerHigh
+
+        ColumnLayout {
+            id: liveContent
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: 24
+            spacing: 16
+
+            RowLayout {
+                spacing: 16
+                IconCircle {
+                    size: 56
+                    icon: "system-software-install"
+                    accent: 1
+                }
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    MText {
+                        Layout.fillWidth: true
+                        role: "titleLarge"
+                        text: i18n("Updates come with the installation")
+                        wrapMode: Text.Wrap
+                    }
+                    MText {
+                        Layout.fillWidth: true
+                        role: "bodyMedium"
+                        text: i18n("You are trying Kernora from the installation medium, and nothing installed here is kept. Install Kernora: when the computer is online, the installer brings the new system up to date by itself.")
+                        wrapMode: Text.Wrap
+                        color: M3.surfaceVariantContent
+                    }
+                }
+            }
+            QQC2.Button {
+                text: i18n("Install Kernora")
+                icon.name: "system-software-install"
+                highlighted: true
+                onClicked: Process.launchApplication("org.kernora.installer.desktop", [])
+            }
+        }
+    }
+
+    Rectangle {
         id: card
+        visible: !SystemInfo.live
         width: parent.width
         implicitHeight: status.implicitHeight + 48
         radius: M3.classic ? M3.cornerCard : 28

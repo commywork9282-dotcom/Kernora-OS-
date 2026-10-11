@@ -42,12 +42,13 @@ PlasmoidItem {
                      || Globals.inhibited ? PlasmaCore.Types.ActiveStatus
                                           : PlasmaCore.Types.PassiveStatus
     onEffectiveStatusChanged: {
-        if (effectiveStatus === PlasmaCore.Types.PassiveStatus) {
+        const status = effectiveStatus;
+        if (status === PlasmaCore.Types.PassiveStatus) {
             Qt.callLater(function() {
-                Plasmoid.status = effectiveStatus;
+                Plasmoid.status = status;
             });
         } else {
-            Plasmoid.status = effectiveStatus;
+            Plasmoid.status = status;
         }
     }
 
