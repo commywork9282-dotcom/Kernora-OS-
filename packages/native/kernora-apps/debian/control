@@ -31,7 +31,7 @@ Depends:
  ${shlibs:Depends},
  accountsservice,
  kde-cli-tools,
- kernora-desktop (>= 1.4.21),
+ kernora-desktop (>= 1.4.22),
  libarchive-tools,
  packagekit,
  plasma-nm,

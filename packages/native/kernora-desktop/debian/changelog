@@ -1,3 +1,21 @@
+kernora-desktop (1.4.22) UNRELEASED; urgency=medium
+
+  * Weather: Enter in the city search searches instead of closing the
+    widget settings (TextInput passes Return on to the dialog, whose
+    default button is OK). The weather and At a Glance widgets notice a
+    newly chosen city within two seconds instead of at the next five-minute
+    poll, and the weather card shows the city's name. The location pages
+    keep their content at the top.
+  * "Add or Manage Widgets…" is in the desktop menu from the first session
+    on, the live session included: a plasma-plasmashell.service drop-in
+    runs kernora-add-widgets-menu.sh before plasmashell starts, so the
+    setting no longer races kded's kconf_update. The script also writes the
+    desktop's RightButton containment action when [ActionPlugins][0] is
+    missing: a settings group written before plasmashell's first start kept
+    Plasma from adding its defaults and left the desktop without a menu.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 11 Oct 2026 23:00:00 -0700
+
 kernora-desktop (1.4.21) UNRELEASED; urgency=medium
 
   * The boot splash stays clean: GRUB adds loglevel=3, so harmless kernel

@@ -113,6 +113,22 @@ QtObject {
         request.send();
     }
 
+    property Timer watch: Timer {
+        interval: 2000
+        running: true
+        repeat: true
+        onTriggered: {
+            model.store.sync();
+            if (String(model.store.value("city", "")) !== model.city
+                    || Number(model.store.value("latitude", 0)) !== model.latitude
+                    || Number(model.store.value("longitude", 0)) !== model.longitude) {
+                model.ready = false;
+                model.failed = false;
+                model.reload();
+            }
+        }
+    }
+
     property Timer poll: Timer {
         interval: 5 * 60000
         running: true

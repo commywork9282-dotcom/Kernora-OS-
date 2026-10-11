@@ -61,9 +61,19 @@ PlasmoidItem {
             spacing: 0
             visible: weather.ready
 
+            Text {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                text: weather.city
+                color: M3.primaryContainerContent
+                font.family: M3.typeface
+                font.pixelSize: Math.round(card.side * 0.06)
+                font.weight: Font.Medium
+                elide: Text.ElideRight
+            }
             MIcon {
                 Layout.alignment: Qt.AlignHCenter
-                size: Math.round(card.side * 0.18)
+                size: Math.round(card.side * 0.13)
                 source: weather.icon
                 color: M3.primaryContainerContent
             }
@@ -72,7 +82,7 @@ PlasmoidItem {
                 text: weather.degrees
                 color: M3.primaryContainerContent
                 font.family: M3.typeface
-                font.pixelSize: Math.round(card.side * 0.26)
+                font.pixelSize: Math.round(card.side * 0.24)
                 font.weight: Font.Medium
             }
             Text {

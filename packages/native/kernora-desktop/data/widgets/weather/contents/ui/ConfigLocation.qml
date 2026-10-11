@@ -13,4 +13,7 @@ ColumnLayout {
         Layout.fillWidth: true
         domain: "plasma_applet_org.kernora.widget.weather"
     }
+    Item {
+        Layout.fillHeight: true
+    }
 }

@@ -38,4 +38,7 @@ ColumnLayout {
         visible: root.cfg_showWeather
         domain: "plasma_applet_org.kernora.widget.glance"
     }
+    Item {
+        Layout.fillHeight: true
+    }
 }

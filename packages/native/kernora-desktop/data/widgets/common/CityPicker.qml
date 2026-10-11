@@ -102,6 +102,8 @@ ColumnLayout {
         Layout.fillWidth: true
         placeholderText: picker.city.length > 0 ? picker.tr("Choose another city") : picker.tr("Search for a city")
         onAccepted: picker.search(text)
+        Keys.onReturnPressed: event => event.accepted = true
+        Keys.onEnterPressed: event => event.accepted = true
     }
 
     Repeater {

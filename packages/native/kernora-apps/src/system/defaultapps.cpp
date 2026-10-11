@@ -125,6 +125,13 @@ QString DefaultApps::current(const QString &category) const
     if (types.isEmpty()) {
         return QString();
     }
+    const KConfig mimeApps(QStringLiteral("mimeapps.list"), KConfig::NoGlobals, QStandardPaths::GenericConfigLocation);
+    const KConfigGroup defaults(&mimeApps, QStringLiteral("Default Applications"));
+    for (const QString &storageId : defaults.readXdgListEntry(types.first())) {
+        if (KService::serviceByStorageId(storageId)) {
+            return storageId;
+        }
+    }
     const auto service = KApplicationTrader::preferredService(types.first());
     return service ? service->storageId() : QString();
 }

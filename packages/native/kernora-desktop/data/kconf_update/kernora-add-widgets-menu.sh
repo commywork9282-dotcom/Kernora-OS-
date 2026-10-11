@@ -2,9 +2,11 @@
 config=${XDG_CONFIG_HOME:-$HOME/.config}
 file="$config/plasma-org.kde.plasma.desktop-appletsrc"
 group='[ActionPlugins][0][RightButton;NoModifier]'
-if [ -f "$file" ] && grep -Fxq "$group" "$file"; then
-  exit 0
-fi
 mkdir -p "$config"
-printf '\n%s\nadd widgets=true\n' "$group" >> "$file"
+if ! { [ -f "$file" ] && grep -Fxq '[ActionPlugins][0]' "$file"; }; then
+  printf '\n[ActionPlugins][0]\nRightButton;NoModifier=org.kde.contextmenu\n' >> "$file"
+fi
+if ! grep -Fxq "$group" "$file"; then
+  printf '\n%s\nadd widgets=true\n' "$group" >> "$file"
+fi
 exit 0

@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.22" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.23" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -52,5 +52,7 @@ grep -Fq 'Files.liveWallpapers()' "$package_root/apps/settings/qml/pages/Appeara
 grep -Fq '!SystemInfo.live && Updates.available' "$package_root/apps/settings/qml/pages/UpdatesPage.qml" \
   && grep -Fq 'org.kernora.installer.desktop' "$package_root/apps/settings/qml/pages/UpdatesPage.qml" \
   || fail "Settings downloads updates in the live session"
+[[ "$(grep -c 'Default Applications' "$package_root/src/system/defaultapps.cpp")" -ge 2 ]] \
+  || fail "Settings shows a stale default app after choosing one"
 
 printf 'kernora-apps source test: OK\n'

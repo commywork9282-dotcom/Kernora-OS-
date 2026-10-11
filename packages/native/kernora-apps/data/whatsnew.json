@@ -1,5 +1,43 @@
 [
   {
+    "id": "2026-10-11-2",
+    "items": [
+      {
+        "icon": "preferences-desktop-default-applications",
+        "title": {
+          "en": "Default apps on the first try",
+          "ru": "Приложения по умолчанию с первого раза"
+        },
+        "text": {
+          "en": "Choosing a default app in Settings › Apps now shows your choice right away.",
+          "ru": "Выбор приложения по умолчанию в «Настройки › Приложения» теперь сразу виден."
+        }
+      },
+      {
+        "icon": "weather-few-clouds",
+        "title": {
+          "en": "Weather shows your city",
+          "ru": "Погода показывает ваш город"
+        },
+        "text": {
+          "en": "Pressing Enter in the city search no longer closes the settings, the widget picks up a new city at once and shows its name.",
+          "ru": "Enter в поиске города больше не закрывает настройки, виджет сразу подхватывает новый город и показывает его название."
+        }
+      },
+      {
+        "icon": "preferences-desktop-widgets",
+        "title": {
+          "en": "Add widgets from the desktop menu",
+          "ru": "Виджеты из меню рабочего стола"
+        },
+        "text": {
+          "en": "Right-click the desktop and choose Add or Manage Widgets… — now from the very first start.",
+          "ru": "Нажмите правой кнопкой на рабочем столе и выберите «Добавить или изменить виджеты…» — теперь с самого первого запуска."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-11",
     "items": [
       {
