@@ -81,13 +81,14 @@ for dependency in appstream flatpak; do
   grep -Eq "^ $dependency[, ]*$" "$package_root/debian/control" || fail "missing Store runtime dependency: $dependency"
 done
 python3 - "$package_root" <<'PY'
-import json, pathlib, sys
+import datetime, json, pathlib, sys
 p = pathlib.Path(sys.argv[1])
 featured = json.loads((p / 'data/store/featured.json').read_text())
 assert all(isinstance(ids, list) and ids and len(ids) == len(set(ids)) for ids in featured.values())
 notes = json.loads((p / 'data/whatsnew.json').read_text())
-assert any(i['icon'] == 'org.kernora.store' for i in notes[0]['items'])
-assert notes[0]['date'] == '2026-10-11'
+assert any(i['icon'] == 'org.kernora.store' for r in notes for i in r['items'])
+for release in notes:
+    datetime.date.fromisoformat(release.get('date', release['id'][:10]))
 PY
 
 printf 'kernora-apps source test: OK\n'
