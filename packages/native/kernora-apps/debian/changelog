@@ -1,3 +1,11 @@
+kernora-apps (1.1.31) UNRELEASED; urgency=medium
+
+  * Launch the installed Flatpak scope and ref instead of a native launcher.
+  * Use Debian launchables for native apps and report launch failures.
+  * What's new: consistent app launching, in English and Russian.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 12 Oct 2026 16:10:00 -0700
+
 kernora-apps (1.1.30) UNRELEASED; urgency=medium
 
   * Searching from app details returns to results immediately.

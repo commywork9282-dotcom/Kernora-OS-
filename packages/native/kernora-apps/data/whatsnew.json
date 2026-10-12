@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-13-4",
+    "date": "2026-10-12",
+    "items": [
+      {
+        "icon": "org.kernora.store",
+        "title": {
+          "en": "Open the app you installed",
+          "ru": "Запускается установленная версия"
+        },
+        "text": {
+          "en": "Store now starts the installed Flatpak version from the correct installation, even when a Debian launcher has the same name. Native apps use their Debian launcher.",
+          "ru": "Магазин запускает установленную версию Flatpak из нужной области установки, даже если ярлык Debian называется так же. Для обычных пакетов используется ярлык Debian."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-13-3",
     "date": "2026-10-11",
     "items": [

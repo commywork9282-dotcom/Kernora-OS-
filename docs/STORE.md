@@ -44,3 +44,15 @@ publishing a release.
 What's New IDs are stable release identifiers. An optional `date` field
 sets the displayed publication date independently; older entries continue
 to derive their date from the ID. Keep the newest entry first.
+
+## Launch regression
+
+`tests/store-launch-smoke/run.sh` runs in a disposable desktop session with
+Telegram installed as a Flatpak and Store closed. It puts conflicting native
+launchers in a temporary data directory and records the command instead of
+starting Telegram. The check requires the installed Flatpak scope and full
+ref, so a Debian launcher or another Flatpak branch cannot silently win.
+The test does not install or remove apps.
+
+The Flatpak launch retains exported command options (including `--command`),
+GPU preference and startup metadata. The installed desktop file is not rewritten.

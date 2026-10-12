@@ -35,10 +35,14 @@
 #include <AppStreamQt/screenshot.h>
 
 #include <KFormat>
+#include <KConfigGroup>
+#include <KDesktopFile>
 #include <KIO/ApplicationLauncherJob>
+#include <KIO/CommandLauncherJob>
 #include <KLocalizedString>
 #include <KNotification>
 #include <KService>
+#include <KShell>
 
 using AppStream::Component;
 
@@ -1116,45 +1120,102 @@ void Store::jobFinished(const QString &id, bool success, const QString &error)
 
 bool Store::launch(const QString &id)
 {
-    if (!m_apps.contains(id)) {
+    if (!m_apps.contains(id) || !isInstalled(m_apps[id])) {
         return false;
     }
     const App &app = m_apps[id];
+    if (app.installedFlatpak) {
+        const FlatpakApp &installed = *app.installedFlatpak;
+        const QString scope = installed.installation == QLatin1String("user") ? QStringLiteral("--user") : QStringLiteral("--system");
+        const QString exportRoot = installed.installation == QLatin1String("user")
+            ? QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QStringLiteral("/flatpak")
+            : QStringLiteral("/var/lib/flatpak");
+        const QString desktopPath = exportRoot + QStringLiteral("/exports/share/applications/") + installed.name + QStringLiteral(".desktop");
+        if (QFileInfo::exists(desktopPath)) {
+            KDesktopFile desktop(desktopPath);
+            KConfigGroup group = desktop.desktopGroup();
+            QStringList arguments = KShell::splitArgs(group.readEntry("Exec", QString()));
+            const auto run = std::find_if(arguments.cbegin(), arguments.cend(), [](const QString &argument) {
+                return QFileInfo(argument).fileName() == QLatin1String("flatpak");
+            });
+            const int executable = int(std::distance(arguments.cbegin(), run));
+            int appIndex = arguments.indexOf(installed.name, executable + 2);
+            if (executable + 1 >= arguments.size() || arguments.at(executable + 1) != QLatin1String("run") || appIndex < 0) {
+                arguments = {QStringLiteral("flatpak"), QStringLiteral("run"), scope, installed.ref};
+            } else {
+                arguments[executable] = QStringLiteral("flatpak");
+                for (int index = executable + 2; index < appIndex;) {
+                    const QString argument = arguments.at(index);
+                    if (argument == QLatin1String("--user") || argument == QLatin1String("--system")
+                        || argument.startsWith(QLatin1String("--branch=")) || argument.startsWith(QLatin1String("--arch="))) {
+                        arguments.removeAt(index);
+                        --appIndex;
+                    } else if ((argument == QLatin1String("--branch") || argument == QLatin1String("--arch")) && index + 1 < appIndex) {
+                        arguments.removeAt(index);
+                        arguments.removeAt(index);
+                        appIndex -= 2;
+                    } else {
+                        ++index;
+                    }
+                }
+                arguments[appIndex] = installed.ref;
+                arguments.insert(executable + 2, scope);
+            }
+            const QString command = KShell::joinArgs(arguments);
+            group.writeEntry("Exec", command);
+            group.writeEntry("DBusActivatable", false);
+            desktop.markAsClean();
+            KService::Ptr service(new KService(&desktop, desktopPath));
+            if (service->isValid() && service->exec() == command && !service->property<bool>(QStringLiteral("DBusActivatable"))) {
+                auto *job = new KIO::ApplicationLauncherJob(service);
+                connect(job, &KJob::result, this, [this](KJob *job) {
+                    if (job->error()) {
+                        Q_EMIT message(job->errorText());
+                    }
+                });
+                job->start();
+                return true;
+            }
+        }
+        auto *job = new KIO::CommandLauncherJob(QStringLiteral("flatpak"), {QStringLiteral("run"), scope, installed.ref});
+        job->setDesktopName(installed.name);
+        connect(job, &KJob::result, this, [this](KJob *job) {
+            if (job->error()) {
+                Q_EMIT message(job->errorText());
+            }
+        });
+        job->start();
+        return true;
+    }
+    QStringList options;
+    if (const auto native = component(app, false)) {
+        options = native->launchable(AppStream::Launchable::KindDesktopId).entries();
+    }
     const QString package = app.localInfo.value(QStringLiteral("package")).toString();
-    const QStringList options{
-        app.desktopId,
-        app.id + QStringLiteral(".desktop"),
-        app.installedFlatpak ? QString(app.installedFlatpak->name + QStringLiteral(".desktop")) : QString(),
-        package.isEmpty() ? QString() : QString(package + QStringLiteral(".desktop")),
-    };
+    options.append({app.desktopId, app.id + QStringLiteral(".desktop"),
+                    package.isEmpty() ? QString() : package + QStringLiteral(".desktop")});
     QStringList candidates;
-    for (const QString &candidate : options) {
+    for (const QString &candidate : std::as_const(options)) {
         if (!candidate.isEmpty() && candidate != QLatin1String(".desktop") && !candidates.contains(candidate)) {
             candidates.append(candidate);
         }
     }
-    const QStringList exports = {QStringLiteral("/var/lib/flatpak/exports/share/applications"),
-                                 QDir::homePath() + QStringLiteral("/.local/share/flatpak/exports/share/applications")};
     for (const QString &candidate : std::as_const(candidates)) {
-        QString path = QStandardPaths::locate(QStandardPaths::ApplicationsLocation, candidate);
-        for (const QString &directory : exports) {
-            if (path.isEmpty() && QFileInfo::exists(directory + QLatin1Char('/') + candidate)) {
-                path = directory + QLatin1Char('/') + candidate;
+        const QStringList paths = QStandardPaths::locateAll(QStandardPaths::ApplicationsLocation, candidate);
+        for (const QString &path : paths) {
+            KService::Ptr service(new KService(path));
+            if (!service->isValid() || !service->property<QString>(QStringLiteral("X-Flatpak")).isEmpty()) {
+                continue;
             }
+            auto *job = new KIO::ApplicationLauncherJob(service);
+            connect(job, &KJob::result, this, [this](KJob *job) {
+                if (job->error()) {
+                    Q_EMIT message(job->errorText());
+                }
+            });
+            job->start();
+            return true;
         }
-        if (path.isEmpty()) {
-            continue;
-        }
-        KService::Ptr service(new KService(path));
-        if (!service->isValid()) {
-            continue;
-        }
-        auto *job = new KIO::ApplicationLauncherJob(service);
-        job->start();
-        return true;
-    }
-    if (app.installedFlatpak) {
-        return QProcess::startDetached(QStringLiteral("flatpak"), {QStringLiteral("run"), app.installedFlatpak->name});
     }
     return false;
 }
