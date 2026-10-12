@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-// Run with KERNORA_QML_STORE pointing at this directory in a test session
-// that has the Flathub/Debian catalogues. Does not change installed apps.
 import QtQuick
 import org.kernora.store
 
