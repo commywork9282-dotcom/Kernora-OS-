@@ -1,3 +1,13 @@
+kernora-apps (1.1.29) UNRELEASED; urgency=medium
+
+  * Ship Store with Flathub and Debian catalogues, install/remove/update
+    actions, local package handling, cached artwork and Russian translation.
+  * Complete build/runtime dependencies and release checks.
+  * Handle cancelled and failed transactions without claiming success.
+  * What's new: introduce Store in English and Russian.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 11 Oct 2026 22:30:00 -0700
+
 kernora-apps (1.1.28) UNRELEASED; urgency=medium
 
   * org.kernora.shell: AppletSettings opens a widget's settings dialog

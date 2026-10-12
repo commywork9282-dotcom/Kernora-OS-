@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 cmake_minimum_required(VERSION 3.25)
-project(kernora-apps VERSION 1.1.28 LANGUAGES CXX)
+project(kernora-apps VERSION 1.1.29 LANGUAGES CXX)
 
 set(QT_MIN_VERSION 6.8)
 set(KF_MIN_VERSION 6.13)
@@ -29,14 +29,17 @@ find_package(Plasma REQUIRED)
 find_package(PlasmaQuick REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBCRYPT REQUIRED IMPORTED_TARGET libcrypt)
+pkg_check_modules(FLATPAK REQUIRED IMPORTED_TARGET flatpak)
+find_package(AppStreamQt 1.0 REQUIRED)
 
 add_subdirectory(src/system)
 add_subdirectory(src/shell)
+add_subdirectory(src/store)
 add_subdirectory(src/apps)
 add_subdirectory(src/filechooser)
 add_subdirectory(src/updatenotifier)
 
-set(KERNORA_APPS settings files welcome editor photos player calculator screenshot)
+set(KERNORA_APPS settings files welcome editor photos player calculator screenshot store)
 foreach(app ${KERNORA_APPS})
     install(DIRECTORY apps/${app}/qml/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/${app})
     install(FILES apps/${app}/org.kernora.${app}.desktop DESTINATION ${KDE_INSTALL_APPDIR})
@@ -48,10 +51,13 @@ install(FILES apps/welcome/org.kernora.welcome-autostart.desktop
         DESTINATION ${KDE_INSTALL_AUTOSTARTDIR} RENAME org.kernora.welcome.desktop)
 install(PROGRAMS data/systemsettings DESTINATION ${KDE_INSTALL_BINDIR})
 install(FILES data/copyright/librewolf DESTINATION ${KDE_INSTALL_DATADIR}/kernora/copyright)
-install(FILES data/knotifications/kernora-screenshot.notifyrc data/knotifications/kernora-updates.notifyrc
+install(FILES data/knotifications/kernora-screenshot.notifyrc data/knotifications/kernora-updates.notifyrc data/knotifications/kernora-store.notifyrc
         DESTINATION ${KDE_INSTALL_KNOTIFYRCDIR})
 install(FILES data/autostart/org.kernora.update-notifier.desktop DESTINATION ${KDE_INSTALL_AUTOSTARTDIR})
 install(FILES data/whatsnew.json DESTINATION ${KDE_INSTALL_DATADIR}/kernora)
+install(FILES data/store/featured.json DESTINATION ${KDE_INSTALL_DATADIR}/kernora/store)
+install(FILES data/store/flathub.flatpakrepo DESTINATION ${KDE_INSTALL_DATADIR}/flatpak/remotes.d)
+install(FILES data/store/60kernora-store DESTINATION ${KDE_INSTALL_SYSCONFDIR}/apt/apt.conf.d)
 
 ki18n_install(po)
 

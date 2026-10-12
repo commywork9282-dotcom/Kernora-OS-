@@ -295,6 +295,8 @@ ICONS: list[tuple[str, bool, str, list[str]]] = [
     ("battery_saver", True, "status", ["kernora-tile-powersave-on"]),
     ("cast_connected", True, "status", ["kernora-tile-cast-on"]),
     ("screen_rotation", True, "status", ["kernora-tile-rotate-on"]),
+    ("verified", True, "status", ["kernora-verified"]),
+    ("license", False, "status", ["license", "kernora-license"]),
 ]
 
 
@@ -309,6 +311,7 @@ APP_ICONS: list[tuple[str, bool, list[str]]] = [
     ("waving_hand", True, ["org.kernora.welcome"]),
     ("terminal", True, ["org.kernora.terminal"]),
     ("install_desktop", True, ["org.kernora.installer", "calamares"]),
+    ("storefront", True, ["org.kernora.store"]),
 ]
 
 

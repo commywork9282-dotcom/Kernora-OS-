@@ -9,6 +9,8 @@ Build-Depends:
  extra-cmake-modules,
  gettext,
  libcrypt-dev,
+ libappstreamqt-dev,
+ libflatpak-dev,
  libkf6config-dev,
  libkf6coreaddons-dev,
  libkf6dbusaddons-dev,
@@ -31,8 +33,10 @@ Depends:
  ${misc:Depends},
  ${shlibs:Depends},
  accountsservice,
+ appstream,
+ flatpak,
  kde-cli-tools,
- kernora-desktop (>= 1.4.26),
+ kernora-desktop (>= 1.4.27),
  libarchive-tools,
  packagekit,
  pkexec,
@@ -59,6 +63,7 @@ Description: Kernora OS applications
   * Settings: network, Bluetooth, display, sound, notifications, wallpaper
     and style, apps, power, input devices, accessibility, privacy, the
     account, date and language, updates and information about the system;
+  * Store: find, install, remove and update Flathub and Debian apps;
   * Files, Text Editor, Photos, Media Player, Calculator and Screenshot;
   * Welcome, the first-run introduction;
   * the file chooser: every program's open and save dialogs, served to

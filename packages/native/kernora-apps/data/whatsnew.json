@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-13-2",
+    "date": "2026-10-11",
+    "items": [
+      {
+        "icon": "org.kernora.store",
+        "title": {
+          "en": "Your new app store",
+          "ru": "Новый магазин приложений"
+        },
+        "text": {
+          "en": "Find apps and games in Store, choose Flathub or Debian, and install them without a terminal. Browse categories, screenshots and ratings, manage installed apps and update Flatpak apps in one place. System updates stay in Settings.",
+          "ru": "Находите приложения и игры в «Магазине», выбирайте Flathub или Debian и устанавливайте без терминала. Категории, снимки экрана, оценки, установленные приложения и обновления Flatpak теперь в одном месте. Обновления системы остаются в «Настройках»."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-13-1",
     "items": [
       {

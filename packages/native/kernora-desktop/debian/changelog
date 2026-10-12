@@ -1,3 +1,10 @@
+kernora-desktop (1.4.27) UNRELEASED; urgency=medium
+
+  * Store icon and verification/licence symbols in all icon variants.
+  * Pin Store in the panel and app menu for new profiles.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 11 Oct 2026 22:30:00 -0700
+
 kernora-desktop (1.4.26) UNRELEASED; urgency=medium
 
   * A widget's settings no longer end edit mode. The settings button on a

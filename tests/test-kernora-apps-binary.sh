@@ -19,6 +19,12 @@ temporary_root=$(mktemp -d /tmp/kernora-apps-test.XXXXXX)
 trap 'find "$temporary_root" -depth -delete' EXIT
 dpkg-deb --extract "$deb" "$temporary_root"
 
+for dependency in flatpak appstream libflatpak0 libappstreamqt3; do
+  dpkg-deb --field "$deb" Depends | grep -Eq "(^|, )$dependency( |,|$)" || fail "missing dependency: $dependency"
+done
+for path in usr/share/kernora/store/featured.json usr/share/flatpak/remotes.d/flathub.flatpakrepo etc/apt/apt.conf.d/60kernora-store usr/share/knotifications6/kernora-store.notifyrc usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/store/qmldir usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/store/libkernorastore.so; do
+  [[ -s "$temporary_root/$path" ]] || fail "missing Store file: $path"
+done
 qml=usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/system
 for path in "$qml/qmldir" "$qml/libkernorasystem.so" usr/share/knotifications6/kernora-screenshot.notifyrc \
   usr/share/knotifications6/kernora-updates.notifyrc \
@@ -26,7 +32,7 @@ for path in "$qml/qmldir" "$qml/libkernorasystem.so" usr/share/knotifications6/k
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/shell/libkernorashell.so; do
   [[ -s "$temporary_root/$path" ]] || fail "missing $path"
 done
-for app in settings files welcome editor photos player calculator screenshot; do
+for app in settings files welcome editor photos player calculator screenshot store; do
   [[ -x "$temporary_root/usr/bin/kernora-$app" ]] || fail "missing kernora-$app"
   [[ -s "$temporary_root/usr/share/kernora/$app/Main.qml" ]] || fail "missing the $app interface"
   [[ -s "$temporary_root/usr/share/applications/org.kernora.$app.desktop" ]] || fail "missing the $app desktop entry"
@@ -38,7 +44,7 @@ grep -qx 'Exec=/usr/bin/kernora-screenshot' \
   "$temporary_root/usr/share/applications/org.kernora.screenshot.desktop" \
   || fail "Screenshot's Exec is not an absolute path; KWin would refuse it"
 
-for domain in settings files editor photos player calculator screenshot welcome system update-notifier; do
+for domain in settings files editor photos player calculator screenshot welcome system update-notifier store; do
   [[ -s "$temporary_root/usr/share/locale/ru/LC_MESSAGES/kernora-$domain.mo" ]] \
     || fail "Russian translation is missing: kernora-$domain"
 done

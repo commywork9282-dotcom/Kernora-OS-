@@ -1,0 +1,71 @@
+{
+  "hero": [
+    "com.valvesoftware.Steam",
+    "com.discordapp.Discord",
+    "com.spotify.Client",
+    "com.obsproject.Studio"
+  ],
+  "popular": [
+    "com.valvesoftware.Steam",
+    "com.discordapp.Discord",
+    "org.telegram.desktop",
+    "com.spotify.Client",
+    "org.videolan.VLC",
+    "com.obsproject.Studio",
+    "org.gimp.GIMP",
+    "org.libreoffice.LibreOffice",
+    "com.google.Chrome",
+    "com.visualstudio.code",
+    "org.qbittorrent.qBittorrent",
+    "org.mozilla.Thunderbird"
+  ],
+  "games": [
+    "com.valvesoftware.Steam",
+    "com.heroicgameslauncher.hgl",
+    "net.lutris.Lutris",
+    "com.usebottles.bottles",
+    "org.prismlauncher.PrismLauncher",
+    "net.davidotek.pupgui2",
+    "com.github.Matoking.protontricks",
+    "org.libretro.RetroArch",
+    "net.supertuxkart.SuperTuxKart",
+    "org.openttd.OpenTTD"
+  ],
+  "chat": [
+    "com.discordapp.Discord",
+    "org.telegram.desktop",
+    "org.signal.Signal",
+    "us.zoom.Zoom",
+    "com.slack.Slack",
+    "im.riot.Riot",
+    "org.mozilla.Thunderbird"
+  ],
+  "media": [
+    "com.spotify.Client",
+    "org.videolan.VLC",
+    "io.mpv.Mpv",
+    "com.obsproject.Studio",
+    "org.audacityteam.Audacity",
+    "fr.handbrake.ghb",
+    "org.kde.kdenlive"
+  ],
+  "create": [
+    "org.gimp.GIMP",
+    "org.kde.krita",
+    "org.inkscape.Inkscape",
+    "org.blender.Blender",
+    "org.darktable.Darktable",
+    "org.kde.kdenlive",
+    "org.audacityteam.Audacity"
+  ],
+  "work": [
+    "org.libreoffice.LibreOffice",
+    "org.onlyoffice.desktopeditors",
+    "md.obsidian.Obsidian",
+    "com.visualstudio.code",
+    "com.google.Chrome",
+    "org.chromium.Chromium",
+    "com.github.xournalpp.xournalpp",
+    "com.rustdesk.RustDesk"
+  ]
+}

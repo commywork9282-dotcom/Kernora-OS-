@@ -5,6 +5,8 @@
 
 #include <KLocalizedString>
 
+class QQmlEngine;
+
 namespace Kernora
 {
 struct Application {
@@ -13,6 +15,7 @@ struct Application {
     const char *folder;
     const char *icon;
     bool unique;
+    void (*setup)(QQmlEngine &engine) = nullptr;
 };
 
 int run(int &argc, char **argv, const Application &application, KLocalizedString (*displayName)());

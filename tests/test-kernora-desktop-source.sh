@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.26" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.27" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -265,8 +265,8 @@ KERNORA_COLOUR=blue python3 "$tools_root/gen-icon-theme" "$package_root/data/sym
   || fail "gen-icon-theme fails for a colour"
 grep -Fxq 'Inherits=Kernora,breeze-dark,breeze,hicolor' "$icons/Kernora-blue/index.theme" \
   || fail "a colour's icons do not fall back to Kernora's"
-[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 10 ]] \
-  || fail "a colour's icon theme should hold only the ten app icons"
+[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 11 ]] \
+  || fail "a colour's icon theme should hold only the eleven app icons"
 find "$icons/Kernora-blue" -name 'preferences-system*' | grep -q . \
   && fail "a colour's icons would shadow preferences-system-* through KDE's generic fallback"
 rm -rf "$icons"

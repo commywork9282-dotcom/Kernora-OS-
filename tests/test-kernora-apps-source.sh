@@ -15,14 +15,14 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.28" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.29" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
 [[ -x "$package_root/debian/rules" ]] || fail "debian/rules is not executable"
 grep -Fxq 'Package: kernora-apps' "$package_root/debian/control" || fail "binary stanza is missing"
 
-for app in settings files welcome editor photos player calculator screenshot; do
+for app in settings files welcome editor photos player calculator screenshot store; do
   [[ -s "$package_root/apps/$app/qml/Main.qml" ]] || fail "$app has no interface"
   desktop="$package_root/apps/$app/org.kernora.$app.desktop"
   [[ -s "$desktop" ]] || fail "$app has no desktop entry"
@@ -72,5 +72,22 @@ grep -Fq 'new PlasmaQuick::ConfigView(applet)' "$package_root/src/shell/appletse
   && grep -Fq 'add_subdirectory(src/shell)' "$package_root/CMakeLists.txt" \
   && grep -Fxq ' libplasma-dev,' "$package_root/debian/control" \
   || fail "a widget's settings cannot open without ending edit mode"
+
+
+for dependency in libappstreamqt-dev libflatpak-dev; do
+  grep -Eq "^ $dependency[, ]*$" "$package_root/debian/control" || fail "missing Store build dependency: $dependency"
+done
+for dependency in appstream flatpak; do
+  grep -Eq "^ $dependency[, ]*$" "$package_root/debian/control" || fail "missing Store runtime dependency: $dependency"
+done
+python3 - "$package_root" <<'PY'
+import json, pathlib, sys
+p = pathlib.Path(sys.argv[1])
+featured = json.loads((p / 'data/store/featured.json').read_text())
+assert all(isinstance(ids, list) and ids and len(ids) == len(set(ids)) for ids in featured.values())
+notes = json.loads((p / 'data/whatsnew.json').read_text())
+assert any(i['icon'] == 'org.kernora.store' for i in notes[0]['items'])
+assert notes[0]['date'] == '2026-10-11'
+PY
 
 printf 'kernora-apps source test: OK\n'

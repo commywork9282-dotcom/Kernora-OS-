@@ -1,0 +1,2 @@
+Acquire::IndexTargets::deb::DEP-11-icons::DefaultEnabled "true";
+Acquire::IndexTargets::deb::DEP-11-icons-large::DefaultEnabled "true";

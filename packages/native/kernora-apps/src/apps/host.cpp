@@ -97,6 +97,9 @@ int run(int &argc, char **argv, const Application &application, KLocalizedString
 
     QQmlApplicationEngine engine;
     KLocalization::setupLocalizedContext(&engine);
+    if (application.setup) {
+        application.setup(engine);
+    }
     engine.rootContext()->setContextProperty(QStringLiteral("startArguments"), arguments);
 
     const QString file = interfaceFile(application);

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Store
+Name[ru]=Магазин
+GenericName=App store
+GenericName[ru]=Магазин приложений
+Comment=Find, install and update apps
+Comment[ru]=Поиск, установка и обновление приложений
+Icon=org.kernora.store
+Exec=kernora-store %U
+MimeType=application/vnd.debian.binary-package;application/vnd.flatpak.ref;x-scheme-handler/appstream;
+Categories=Qt;System;PackageManager;
+Keywords=store;apps;install;software;flatpak;flathub;deb;package;магазин;приложения;программы;установить;
+StartupNotify=true

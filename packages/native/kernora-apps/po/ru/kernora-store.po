@@ -1,0 +1,564 @@
+# Russian translations for kernora-store package.
+# Copyright (C) 2026 THE kernora-store'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-store package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-store\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-11 22:28-0700\n"
+"PO-Revision-Date: 2026-10-11 21:53-0700\n"
+"Last-Translator: Kernora Developers\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:77
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:53
+#: packages/native/kernora-apps/apps/store/qml/ListPage.qml:62
+msgid "Back"
+msgstr "Назад"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:147
+msgid "%1 rating"
+msgid_plural "%1 ratings"
+msgstr[0] "%1 оценка"
+msgstr[1] "%1 оценки"
+msgstr[2] "%1 оценок"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:165
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:246
+msgid "Open"
+msgstr "Открыть"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:165
+msgid "Install"
+msgstr "Установить"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:170
+msgid "%1 is installed. Open it from the app menu."
+msgstr "%1 установлено. Откройте его из меню приложений."
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:180
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:127
+#: packages/native/kernora-apps/apps/store/qml/components/StateChip.qml:38
+msgid "Update"
+msgstr "Обновить"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:186
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:464
+msgid "Remove"
+msgstr "Удалить"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:223
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:93
+msgid "Cancel"
+msgstr "Отмена"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:235
+msgid "From Flathub. The app runs in its own sandbox and updates on its own."
+msgstr "С Flathub. Приложение работает в своей песочнице и обновляется само."
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:237
+msgid "From Debian. Installing it asks for your password."
+msgstr "Из Debian. При установке понадобится ваш пароль."
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:247
+msgid "Only install packages you trust"
+msgstr "Ставьте только пакеты, которым доверяете"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:248
+msgid "This package comes from a file, not from a checked source. It gets full access to your computer."
+msgstr "Этот пакет взят из файла, а не из проверенного источника. Он получит полный доступ к компьютеру."
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:255
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:118
+msgid "You are trying Kernora"
+msgstr "Вы пробуете Kernora"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:256
+msgid "Apps you install now disappear after a restart."
+msgstr "Приложения, установленные сейчас, пропадут после перезагрузки."
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:324
+msgid "About this app"
+msgstr "О приложении"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:344
+msgid "Show less"
+msgstr "Свернуть"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:344
+msgid "Read more"
+msgstr "Подробнее"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:351
+msgid "Details"
+msgstr "Сведения"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:354
+msgid "Version"
+msgstr "Версия"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:358
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:359
+msgid "Unknown"
+msgstr "Неизвестно"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:362
+msgid "Source"
+msgstr "Источник"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:372
+msgid "Size on disk"
+msgstr "Занимает на диске"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:380
+msgid "Licence"
+msgstr "Лицензия"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:388
+msgid "Website"
+msgstr "Сайт"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:397
+msgid "File"
+msgstr "Файл"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:460
+msgid "Remove %1?"
+msgstr "Удалить %1?"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:462
+msgid "The app and its files in the sandbox are removed. Your documents stay."
+msgstr "Приложение и его файлы в песочнице будут удалены. Ваши документы останутся."
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:463
+msgid "The app is removed from the computer. Your documents stay."
+msgstr "Приложение будет удалено с компьютера. Ваши документы останутся."
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:532
+msgid "Previous"
+msgstr "Предыдущий"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:542
+msgid "Next"
+msgstr "Следующий"
+
+#: packages/native/kernora-apps/apps/store/qml/AppPage.qml:551
+msgid "Close"
+msgstr "Закрыть"
+
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:60
+msgid "More"
+msgstr "Ещё"
+
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:67
+msgid "See all"
+msgstr "Все"
+
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:119
+msgid "Apps you install now disappear after a restart. Install Kernora to keep them."
+msgstr "Приложения, установленные сейчас, пропадут после перезагрузки. Установите Kernora на диск, чтобы они остались."
+
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:214
+msgid "Popular choice"
+msgstr "Выбор многих"
+
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:246
+msgid "Get it"
+msgstr "Установить"
+
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:318
+msgid "Popular apps"
+msgstr "Популярное"
+
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:322
+#: packages/native/kernora-apps/src/store/store.cpp:613
+msgid "Games"
+msgstr "Игры"
+
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:327
+msgid "Chat & calls"
+msgstr "Общение и звонки"
+
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:332
+#: packages/native/kernora-apps/src/store/store.cpp:619
+msgid "Music & video"
+msgstr "Музыка и видео"
+
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:337
+msgid "Create"
+msgstr "Творчество"
+
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:342
+msgid "Work & study"
+msgstr "Работа и учёба"
+
+#: packages/native/kernora-apps/apps/store/qml/HomePage.qml:353
+msgid "Browse by category"
+msgstr "Категории"
+
+#: packages/native/kernora-apps/apps/store/qml/ListPage.qml:71
+msgid "Results for “%1”"
+msgstr "Результаты по запросу «%1»"
+
+#: packages/native/kernora-apps/apps/store/qml/ListPage.qml:79
+msgid "%1 app installed"
+msgid_plural "%1 apps installed"
+msgstr[0] "Установлено %1 приложение"
+msgstr[1] "Установлено %1 приложения"
+msgstr[2] "Установлено %1 приложений"
+
+#: packages/native/kernora-apps/apps/store/qml/ListPage.qml:80
+msgid "%1 app"
+msgid_plural "%1 apps"
+msgstr[0] "%1 приложение"
+msgstr[1] "%1 приложения"
+msgstr[2] "%1 приложений"
+
+#: packages/native/kernora-apps/apps/store/qml/ListPage.qml:141
+msgid "No apps from the store yet"
+msgstr "Из магазина пока ничего не установлено"
+
+#: packages/native/kernora-apps/apps/store/qml/ListPage.qml:142
+msgid "Nothing found"
+msgstr "Ничего не нашлось"
+
+#: packages/native/kernora-apps/apps/store/qml/ListPage.qml:142
+msgid "This category is empty"
+msgstr "В этой категории пока пусто"
+
+#: packages/native/kernora-apps/apps/store/qml/ListPage.qml:143
+msgid "Apps you install from the store appear here."
+msgstr "Здесь появятся приложения, установленные из магазина."
+
+#: packages/native/kernora-apps/apps/store/qml/ListPage.qml:144
+msgid "Try another name or a shorter word."
+msgstr "Попробуйте другое название или слово покороче."
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:18
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:214
+msgid "Store"
+msgstr "Магазин"
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:43
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:296
+#: packages/native/kernora-apps/apps/store/qml/components/StateChip.qml:38
+msgid "Installed"
+msgstr "Установленные"
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:45
+msgid "Search"
+msgstr "Поиск"
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:222
+msgid "Search apps"
+msgstr "Поиск приложений"
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:241
+msgid "Refreshing…"
+msgstr "Обновление…"
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:241
+msgid "Refresh"
+msgstr "Обновить"
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:258
+msgid "Discover"
+msgstr "Главная"
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:269
+msgid "Categories"
+msgstr "Категории"
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:302
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:25
+msgid "Updates"
+msgstr "Обновления"
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:374
+msgid "The catalogue is not available"
+msgstr "Каталог недоступен"
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:374
+msgid "Getting the catalogue ready"
+msgstr "Готовим каталог"
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:375
+msgid "This takes a moment the first time."
+msgstr "В первый раз это займёт немного времени."
+
+#: packages/native/kernora-apps/apps/store/qml/Main.qml:376
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:166
+msgid "Try again"
+msgstr "Повторить"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:27
+msgid "%1 app has a new version"
+msgid_plural "%1 apps have a new version"
+msgstr[0] "У %1 приложения есть новая версия"
+msgstr[1] "У %1 приложений есть новые версии"
+msgstr[2] "У %1 приложений есть новые версии"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:27
+msgid "App components have new versions"
+msgstr "Есть новые версии компонентов приложений"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:28
+msgid "Checking for updates…"
+msgstr "Проверка обновлений…"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:29
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:164
+msgid "Could not check for updates"
+msgstr "Не удалось проверить обновления"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:29
+msgid "Your apps are up to date"
+msgstr "Все приложения обновлены"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:61
+msgid "Update all"
+msgstr "Обновить всё"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:70
+msgid "Apps keep working while they update."
+msgstr "Приложения можно не закрывать — они обновятся в фоне."
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:101
+msgid "Apps"
+msgstr "Приложения"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:117
+msgid "A new version is ready"
+msgstr "Доступна новая версия"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:127
+#: packages/native/kernora-apps/apps/store/qml/components/StateChip.qml:37
+msgid "%1%"
+msgstr "%1%"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:127
+#: packages/native/kernora-apps/apps/store/qml/components/StateChip.qml:37
+msgid "Working…"
+msgstr "Выполняется…"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:138
+msgid "App components"
+msgstr "Компоненты приложений"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:139
+msgid "%1 shared component used by your apps"
+msgid_plural "%1 shared components used by your apps"
+msgstr[0] "%1 общий компонент ваших приложений"
+msgstr[1] "%1 общих компонента ваших приложений"
+msgstr[2] "%1 общих компонентов ваших приложений"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:150
+msgid "Everything is up to date"
+msgstr "Всё обновлено"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:151
+msgid "The store checks for new versions of your apps by itself."
+msgstr "Магазин сам проверяет новые версии ваших приложений."
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:165
+msgid "Check your internet connection and try again. Your installed apps are still available."
+msgstr "Проверьте подключение к интернету и повторите попытку. Установленные приложения по-прежнему доступны."
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:172
+msgid "System"
+msgstr "Система"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:175
+msgid "System updates"
+msgstr "Обновления системы"
+
+#: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:176
+msgid "Kernora and the apps that come with it update in Settings"
+msgstr "Kernora и встроенные приложения обновляются в Настройках"
+
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:23
+msgid "Downloading…"
+msgstr "Скачивание…"
+
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:25
+msgid "Waiting for your password…"
+msgstr "Ждём ваш пароль…"
+
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:28
+msgid "Waiting for another installation to finish…"
+msgstr "Ждём окончания другой установки…"
+
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:30
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:32
+#: packages/native/kernora-apps/src/store/flatpakbackend.cpp:50
+msgid "Removing…"
+msgstr "Удаление…"
+
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:32
+#: packages/native/kernora-apps/src/store/flatpakbackend.cpp:55
+msgid "Installing…"
+msgstr "Установка…"
+
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:153
+msgid "The package sources could not be read. Refresh the catalogue and try again."
+msgstr "Не удалось прочитать источники пакетов. Обновите каталог и повторите попытку."
+
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:162
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:175
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:188
+msgid "Preparing…"
+msgstr "Подготовка…"
+
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:166
+msgid "This app is not available from the Debian sources right now."
+msgstr "Сейчас этого приложения нет в источниках Debian."
+
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:169
+#: packages/native/kernora-apps/src/store/flatpakbackend.cpp:435
+msgid "The app could not be installed."
+msgstr "Не удалось установить приложение."
+
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:182
+msgid "The app could not be removed."
+msgstr "Не удалось удалить приложение."
+
+#: packages/native/kernora-apps/src/store/debianbackend.cpp:189
+msgid "The package could not be installed."
+msgstr "Не удалось установить пакет."
+
+#: packages/native/kernora-apps/src/store/flatpakbackend.cpp:53
+msgid "Downloading %1 of %2"
+msgstr "Скачано %1 из %2"
+
+#: packages/native/kernora-apps/src/store/flatpakbackend.cpp:385
+msgid "Flatpak is not available."
+msgstr "Flatpak недоступен."
+
+#: packages/native/kernora-apps/src/store/store.cpp:145
+#: packages/native/kernora-apps/src/store/store.cpp:1165
+msgid "Downloading the Flathub catalogue…"
+msgstr "Загружаем каталог Flathub…"
+
+#: packages/native/kernora-apps/src/store/store.cpp:153
+#: packages/native/kernora-apps/src/store/store.cpp:1170
+msgid "Downloading the Debian catalogue…"
+msgstr "Загружаем каталог Debian…"
+
+#: packages/native/kernora-apps/src/store/store.cpp:160
+msgid "The catalogue could not be downloaded. Check the internet connection and try again."
+msgstr "Не удалось загрузить каталог. Проверьте подключение к интернету и попробуйте снова."
+
+#: packages/native/kernora-apps/src/store/store.cpp:244
+msgid "Updating the catalogue…"
+msgstr "Обновляем каталог…"
+
+#: packages/native/kernora-apps/src/store/store.cpp:244
+msgid "Loading the catalogue…"
+msgstr "Открываем каталог…"
+
+#: packages/native/kernora-apps/src/store/store.cpp:616
+msgid "Internet & chat"
+msgstr "Интернет и общение"
+
+#: packages/native/kernora-apps/src/store/store.cpp:622
+msgid "Graphics & photos"
+msgstr "Графика и фото"
+
+#: packages/native/kernora-apps/src/store/store.cpp:625
+msgid "Office"
+msgstr "Офис"
+
+#: packages/native/kernora-apps/src/store/store.cpp:628
+msgid "Learning & science"
+msgstr "Учёба и наука"
+
+#: packages/native/kernora-apps/src/store/store.cpp:631
+msgid "Development"
+msgstr "Разработка"
+
+#: packages/native/kernora-apps/src/store/store.cpp:634
+msgid "Tools"
+msgstr "Инструменты"
+
+#: packages/native/kernora-apps/src/store/store.cpp:832
+msgid "Flatpak file"
+msgstr "Файл Flatpak"
+
+#: packages/native/kernora-apps/src/store/store.cpp:836
+msgid "Package file"
+msgstr "Файл пакета"
+
+#: packages/native/kernora-apps/src/store/store.cpp:888
+msgid "Proprietary"
+msgstr "Проприетарная"
+
+#: packages/native/kernora-apps/src/store/store.cpp:944
+msgid "Waiting…"
+msgstr "Ожидание…"
+
+#: packages/native/kernora-apps/src/store/store.cpp:958
+msgid "This package could not be read. Choose a valid Debian package and try again."
+msgstr "Не удалось прочитать пакет. Выберите исправный пакет Debian и повторите попытку."
+
+#: packages/native/kernora-apps/src/store/store.cpp:1041
+msgid "Cancelling…"
+msgstr "Отмена…"
+
+#: packages/native/kernora-apps/src/store/store.cpp:1084
+#: packages/native/kernora-apps/src/store/store.cpp:1085
+msgid "%1 is installed"
+msgstr "%1 установлено"
+
+#: packages/native/kernora-apps/src/store/store.cpp:1085
+msgid "Open it from the app menu."
+msgstr "Откройте его из меню приложений."
+
+#: packages/native/kernora-apps/src/store/store.cpp:1087
+msgid "%1 is removed"
+msgstr "%1 удалено"
+
+#: packages/native/kernora-apps/src/store/store.cpp:1089
+#: packages/native/kernora-apps/src/store/store.cpp:1090
+msgid "All apps are up to date"
+msgstr "Все приложения обновлены"
+
+#: packages/native/kernora-apps/src/store/store.cpp:1092
+msgid "%1 is updated"
+msgstr "%1 обновлено"
+
+#: packages/native/kernora-apps/src/store/store.cpp:1097
+msgid "%1 could not be removed: %2"
+msgstr "Не удалось удалить %1: %2"
+
+#: packages/native/kernora-apps/src/store/store.cpp:1099
+msgid "The updates could not be installed: %1"
+msgstr "Не удалось установить обновления: %1"
+
+#: packages/native/kernora-apps/src/store/store.cpp:1099
+msgid "%1 could not be updated: %2"
+msgstr "Не удалось обновить %1: %2"
+
+#: packages/native/kernora-apps/src/store/store.cpp:1101
+msgid "%1 could not be installed: %2"
+msgstr "Не удалось установить %1: %2"
+
+#: packages/native/kernora-apps/src/apps/store.cpp:37
+msgctxt "@title application name"
+msgid "Store"
+msgstr "Магазин"
+
+#: packages/native/kernora-apps/src/apps/host.cpp:59
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: packages/native/kernora-apps/src/apps/host.cpp:67
+msgid "Files or pages to open."
+msgstr "Файлы или страницы, которые нужно открыть."
