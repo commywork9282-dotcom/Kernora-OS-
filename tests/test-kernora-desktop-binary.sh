@@ -215,6 +215,7 @@ for path in \
   etc/calamares/settings.conf \
   etc/calamares/modules/unpackfs.conf \
   etc/calamares/modules/removeuser.conf \
+  etc/calamares/modules/shellprocess-drivers.conf \
   etc/calamares/branding/kernora/branding.desc \
   etc/calamares/branding/kernora/show.qml \
   etc/calamares/branding/kernora/kernora-logo.png \
@@ -384,6 +385,15 @@ grep -Fxq 'After=systemd-pstore.service' "$temporary_root/desktop/usr/lib/system
   || fail "the panic report does not wait for systemd-pstore"
 dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -q 'kernora-panic-report.service' \
   || fail "the panic report service is not enabled on installation"
+[[ -x "$temporary_root/desktop/usr/libexec/kernora-drivers" ]] \
+  && [[ -s "$temporary_root/desktop/usr/share/kernora/nvidia-archive-keyring.gpg" ]] \
+  && [[ -s "$temporary_root/desktop/usr/lib/systemd/system/kernora-drivers@.service" ]] \
+  && [[ -s "$temporary_root/desktop/usr/share/polkit-1/actions/org.kernora.drivers.policy" ]] \
+  || fail "the graphics driver tool is incomplete"
+dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -q 'kernora-drivers.timer' \
+  || fail "the graphics driver check is not enabled on installation"
+dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -q "'kernora-drivers.service'" \
+  && fail "installing the package would run the driver install inside the dpkg transaction"
 [[ "$(readlink "$temporary_root/desktop/usr/share/kglobalaccel/org.kernora.terminal.desktop")" == */applications/org.kernora.terminal.desktop ]] \
   || fail "kglobalaccel does not see the terminal's launch shortcut"
 grep -Fxq 'Icon=org.kernora.terminal' "$temporary_root/desktop/etc/skel/.local/share/applications/Alacritty.desktop" \

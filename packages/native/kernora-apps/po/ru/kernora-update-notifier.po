@@ -57,3 +57,18 @@ msgstr "Перезагрузить"
 #: src/updatenotifier/main.cpp:229
 msgid "Update notifications"
 msgstr "Уведомления об обновлениях"
+
+msgid "your NVIDIA graphics card"
+msgstr "вашей видеокарты NVIDIA"
+
+msgid "Installing the graphics driver"
+msgstr "Установка драйвера видеокарты"
+
+msgid "Kernora is installing the driver for %1. It takes a few minutes, and you can keep working."
+msgstr "Kernora устанавливает драйвер для %1. Это займёт несколько минут, можно продолжать работать."
+
+msgid "Restart to use your graphics card"
+msgstr "Перезагрузите компьютер, чтобы заработала видеокарта"
+
+msgid "The driver for %1 is installed. It starts working after a restart."
+msgstr "Драйвер для %1 установлен и заработает после перезагрузки."

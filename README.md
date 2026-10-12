@@ -92,7 +92,9 @@ To try changes to the shell or the apps without rebuilding the ISO,
   [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), then
   [docs/DESKTOP.md](docs/DESKTOP.md) for the shell and design system,
   [docs/APPS.md](docs/APPS.md) for the apps and
-  [docs/UPDATES.md](docs/UPDATES.md) for updates and publishing them.
+  [docs/UPDATES.md](docs/UPDATES.md) for updates and publishing them,
+  [docs/DRIVERS.md](docs/DRIVERS.md) for the graphics drivers Kernora installs
+  by itself.
 
 ## License
 

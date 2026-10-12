@@ -158,5 +158,8 @@ override_dh_auto_build:
 	cp -a data/sddm-theme/kernora generated/sddm/kernora
 	python3 $(TOOLS)/gen-greeter-palette $(SYMBOLS) generated/sddm/kernora
 
+override_dh_installsystemd:
+	dh_installsystemd -pkernora-desktop kernora-drivers.timer kernora-panic-report.service
+
 override_dh_auto_clean:
 	rm -rf generated $(TOOLS)/__pycache__

@@ -1,3 +1,16 @@
+kernora-apps (1.1.24) UNRELEASED; urgency=medium
+
+  * Settings › System › Drivers shows the graphics card, the driver's state
+    and version, installs or removes the driver and turns the automatic
+    install on or off.
+  * The update notifier says when the driver is being installed and asks for
+    a restart once it is ready.
+  * Depends on pkexec, which Settings uses for the driver actions: the
+    installer's autoremove dropped it together with kernora-calamares.
+  * What's new: drivers that install themselves.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 12 Oct 2026 01:00:00 -0700
+
 kernora-apps (1.1.23) UNRELEASED; urgency=medium
 
   * Default apps: the chosen app shows at once. Settings read the default

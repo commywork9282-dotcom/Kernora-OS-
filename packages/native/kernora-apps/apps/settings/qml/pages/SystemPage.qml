@@ -54,6 +54,15 @@ SettingsPage {
             onClicked: page.open("UpdatesPage.qml", {})
         }
         ListItem {
+            visible: !SystemInfo.live
+            title: i18n("Drivers")
+            subtitle: i18n("Graphics card drivers")
+            icon: "cpu"
+            accent: 1
+            chevron: true
+            onClicked: page.open("DriversPage.qml", {})
+        }
+        ListItem {
             title: i18n("Storage")
             subtitle: i18n("Free space, trash")
             icon: "drive-harddisk"

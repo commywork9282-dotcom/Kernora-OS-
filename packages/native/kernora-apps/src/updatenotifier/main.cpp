@@ -39,6 +39,7 @@ static constexpr int FirstCheck = 2 * 60;
 static constexpr int CheckInterval = 6 * 60 * 60;
 static constexpr int RefreshAge = 24 * 60 * 60;
 static constexpr int RestartInterval = 10 * 60;
+static constexpr int DriverInterval = 60;
 static constexpr int WhatsNewDelay = 6;
 static constexpr qint64 PanicAge = 3 * 24 * 60 * 60;
 
@@ -144,8 +145,11 @@ public:
         });
         connect(&m_restart, &QTimer::timeout, this, &Notifier::checkRestart);
         m_restart.start(RestartInterval * 1000);
+        connect(&m_driver, &QTimer::timeout, this, &Notifier::checkDriver);
+        m_driver.start(DriverInterval * 1000);
         schedule(FirstCheck);
         checkRestart();
+        checkDriver();
     }
 
 private:
@@ -274,9 +278,66 @@ private:
         notification->sendEvent();
     }
 
+    void checkDriver()
+    {
+        const QString boot = readFile(QStringLiteral("/proc/sys/kernel/random/boot_id"));
+        if (boot.isEmpty()) {
+            return;
+        }
+        const QString readyFile = QStringLiteral("/run/kernora-driver-ready");
+        QString status;
+        QString name;
+        if (QFileInfo::exists(readyFile)) {
+            status = QStringLiteral("ready");
+            name = readFile(readyFile);
+        } else {
+            const QStringList lines = readFile(QStringLiteral("/var/lib/kernora/drivers/state")).split(QLatin1Char('\n'));
+            for (const QString &line : lines) {
+                if (line.startsWith(QLatin1String("status="))) {
+                    status = line.mid(7);
+                } else if (line.startsWith(QLatin1String("name="))) {
+                    name = line.mid(5);
+                }
+            }
+        }
+        if (status != QLatin1String("ready") && status != QLatin1String("installing")) {
+            return;
+        }
+        const QString key = status == QLatin1String("ready") ? QStringLiteral("DriverReadyNotified") : QStringLiteral("DriverInstallingNotified");
+        if (m_state.readEntry(key, QString()) == boot) {
+            return;
+        }
+        m_state.writeEntry(key, boot);
+        m_state.sync();
+
+        const QString card = name.isEmpty() ? i18n("your NVIDIA graphics card") : name;
+        if (status == QLatin1String("installing")) {
+            auto *notification = new KNotification(QStringLiteral("driverInstalling"));
+            notification->setComponentName(QStringLiteral("kernora-updates"));
+            notification->setIconName(QStringLiteral("cpu"));
+            notification->setTitle(i18n("Installing the graphics driver"));
+            notification->setText(i18n("Kernora is installing the driver for %1. It takes a few minutes, and you can keep working.", card));
+            notification->sendEvent();
+            return;
+        }
+        auto *notification = new KNotification(QStringLiteral("driverReady"));
+        notification->setComponentName(QStringLiteral("kernora-updates"));
+        notification->setIconName(QStringLiteral("system-reboot"));
+        notification->setTitle(i18n("Restart to use your graphics card"));
+        notification->setText(i18n("The driver for %1 is installed. It starts working after a restart.", card));
+        connect(notification->addAction(i18n("Restart")), &KNotificationAction::activated, this, []() {
+            QDBusConnection::sessionBus().asyncCall(QDBusMessage::createMethodCall(QStringLiteral("org.kde.LogoutPrompt"),
+                                                                                  QStringLiteral("/LogoutPrompt"),
+                                                                                  QStringLiteral("org.kde.LogoutPrompt"),
+                                                                                  QStringLiteral("promptReboot")));
+        });
+        notification->sendEvent();
+    }
+
     KConfigGroup m_state;
     QTimer m_check;
     QTimer m_restart;
+    QTimer m_driver;
     QPointer<KNotification> m_updates;
     bool m_busy = false;
 };

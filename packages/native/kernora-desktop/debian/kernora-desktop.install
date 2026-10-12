@@ -102,3 +102,9 @@ data/grub/kernora.cfg etc/default/grub.d
 generated/grub/kernora usr/share/grub/themes
 data/plymouth/plymouth-quit-kernora.conf usr/lib/systemd/system/plymouth-quit.service.d
 data/plymouth/sddm-plymouth.conf usr/lib/systemd/system/sddm.service.d
+data/drivers/kernora-drivers usr/libexec
+data/drivers/nvidia-archive-keyring.gpg usr/share/kernora
+data/drivers/kernora-drivers.service usr/lib/systemd/system
+data/drivers/kernora-drivers.timer usr/lib/systemd/system
+data/drivers/kernora-drivers@.service usr/lib/systemd/system
+data/drivers/org.kernora.drivers.policy usr/share/polkit-1/actions

@@ -22,3 +22,19 @@ Comment=Installed updates take effect after a restart
 Comment[ru]=Установленные обновления вступят в силу после перезагрузки
 Action=Popup
 Urgency=Normal
+
+[Event/driverInstalling]
+Name=Installing the graphics driver
+Name[ru]=Установка драйвера видеокарты
+Comment=Kernora is installing the driver your graphics card needs
+Comment[ru]=Kernora устанавливает драйвер, нужный вашей видеокарте
+Action=Popup
+Urgency=Normal
+
+[Event/driverReady]
+Name=Graphics driver installed
+Name[ru]=Драйвер видеокарты установлен
+Comment=The new graphics driver works after a restart
+Comment[ru]=Новый драйвер видеокарты заработает после перезагрузки
+Action=Popup
+Urgency=Normal

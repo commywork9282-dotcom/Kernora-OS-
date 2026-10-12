@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.22" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.23" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -106,6 +106,20 @@ grep -Fq 'property Timer watch' "$package_root/data/widgets/common/WeatherModel.
   || fail "the weather widget does not show the chosen city"
 grep -Fq 'RightButton;NoModifier=org.kde.contextmenu' "$package_root/data/kconf_update/kernora-add-widgets-menu.sh" \
   || fail "a new user's desktop can lose its right-click menu"
+drivers="$package_root/data/drivers"
+bash -n "$drivers/kernora-drivers" || fail "kernora-drivers is not valid bash"
+[[ -x "$drivers/kernora-drivers" ]] || fail "kernora-drivers is not executable"
+[[ "$(gpg --show-keys --with-colons "$drivers/nvidia-archive-keyring.gpg" 2>/dev/null | awk -F: '$1 == "fpr" {print $10; exit}')" == 02182E60104FCDC26EAE1B8597A5D4CB8793F200 ]] \
+  || fail "the NVIDIA archive key is not NVIDIA's Debian 13 key"
+grep -Fq 'OnActiveSec=90s' "$drivers/kernora-drivers.timer" \
+  && grep -Fq 'ExecStart=/usr/libexec/kernora-drivers auto' "$drivers/kernora-drivers.service" \
+  && grep -Fq 'ExecStart=/usr/libexec/kernora-drivers %i' "$drivers/kernora-drivers@.service" \
+  || fail "the driver check is not scheduled"
+grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-drivers</annotate>' "$drivers/org.kernora.drivers.policy" \
+  || fail "Settings cannot run kernora-drivers"
+grep -Fxq '  - shellprocess@drivers' "$package_root/data/calamares/settings.conf" \
+  && grep -Fq 'kernora-drivers install --target' "$package_root/data/calamares/modules/shellprocess-drivers.conf" \
+  || fail "the installer does not install graphics drivers"
 grep -Fxq 'ColorScheme=KernoraDark' "$defaults" \
   || fail "look-and-feel does not select the Kernora colour scheme"
 grep -Fxq 'name=kernora' "$defaults" \

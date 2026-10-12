@@ -1,0 +1,9 @@
+[Unit]
+Description=Install the graphics driver this computer needs
+ConditionPathExists=!/run/live/medium
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/kernora-drivers auto
+Nice=10
+IOSchedulingClass=idle

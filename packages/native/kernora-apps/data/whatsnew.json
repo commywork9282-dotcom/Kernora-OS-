@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-12",
+    "items": [
+      {
+        "icon": "cpu",
+        "title": {
+          "en": "Drivers install themselves",
+          "ru": "Драйверы ставятся сами"
+        },
+        "text": {
+          "en": "If your computer has an NVIDIA graphics card, Kernora downloads its driver by itself, RTX 50 cards included, and asks you to restart. Without an NVIDIA card nothing is downloaded. See Settings › System › Drivers.",
+          "ru": "Если в компьютере видеокарта NVIDIA, Kernora сама скачает для неё драйвер, в том числе для RTX 50, и попросит перезагрузиться. Без видеокарты NVIDIA ничего не скачивается. Подробности — в «Настройки › Система › Драйверы»."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-11-2",
     "items": [
       {

@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.23" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.24" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -54,5 +54,13 @@ grep -Fq '!SystemInfo.live && Updates.available' "$package_root/apps/settings/qm
   || fail "Settings downloads updates in the live session"
 [[ "$(grep -c 'Default Applications' "$package_root/src/system/defaultapps.cpp")" -ge 2 ]] \
   || fail "Settings shows a stale default app after choosing one"
+[[ -s "$package_root/apps/settings/qml/pages/DriversPage.qml" ]] \
+  && grep -Fq 'page.open("DriversPage.qml"' "$package_root/apps/settings/qml/pages/SystemPage.qml" \
+  || fail "Settings has no Drivers page"
+grep -Fq 'driverReady' "$package_root/src/updatenotifier/main.cpp" \
+  && grep -Fxq '[Event/driverReady]' "$package_root/data/knotifications/kernora-updates.notifyrc" \
+  || fail "nobody is told to restart after a driver install"
+grep -Fxq ' pkexec,' "$package_root/debian/control" \
+  || fail "Settings cannot ask for the driver actions without pkexec"
 
 printf 'kernora-apps source test: OK\n'

@@ -3259,3 +3259,96 @@ msgstr "Сейчас Kernora запущена с установочного но
 
 msgid "Install Kernora"
 msgstr "Установить Kernora"
+
+msgid "Drivers"
+msgstr "Драйверы"
+
+msgid "Kernora finds the drivers your hardware needs and installs them by itself."
+msgstr "Kernora сама находит и устанавливает драйверы, которые нужны вашему оборудованию."
+
+msgid "NVIDIA graphics card"
+msgstr "видеокарты NVIDIA"
+
+msgid "Looking at your hardware…"
+msgstr "Проверяем оборудование…"
+
+msgid "No extra drivers are needed"
+msgstr "Дополнительные драйверы не нужны"
+
+msgid "Installing the driver…"
+msgstr "Установка драйвера…"
+
+msgid "Restart to use the driver"
+msgstr "Перезагрузите компьютер, чтобы драйвер заработал"
+
+msgid "The driver is installed"
+msgstr "Драйвер установлен"
+
+msgid "The driver could not be installed"
+msgstr "Не удалось установить драйвер"
+
+msgid "Your graphics card works with the drivers built into Kernora."
+msgstr "Ваша видеокарта работает со встроенными драйверами Kernora."
+
+msgid "The installer sets up the driver for %1 when the computer is online."
+msgstr "Если компьютер подключён к интернету, установщик сам поставит драйвер для %1."
+
+msgid "NVIDIA no longer makes a driver for this card. It keeps working with the open driver built into Kernora."
+msgstr "NVIDIA больше не выпускает драйвер для этой видеокарты. Она продолжит работать со встроенным открытым драйвером Kernora."
+
+msgid "Kernora is downloading the driver for %1 and installing it. It takes a few minutes, and you can keep working."
+msgstr "Kernora скачивает и устанавливает драйвер для %1. Это займёт несколько минут, можно продолжать работать."
+
+msgid "The driver for %1 is installed. It starts working after a restart."
+msgstr "Драйвер для %1 установлен и заработает после перезагрузки."
+
+msgid "%1 uses the NVIDIA driver %2."
+msgstr "%1 работает с драйвером NVIDIA %2."
+
+msgid "%1 uses the NVIDIA driver."
+msgstr "%1 работает с драйвером NVIDIA."
+
+msgid "The NVIDIA driver cannot load while Secure Boot is on. Turn Secure Boot off in the computer's firmware settings, then try again."
+msgstr "Драйвер NVIDIA не загрузится, пока включён Secure Boot. Выключите Secure Boot в настройках BIOS/UEFI и попробуйте снова."
+
+msgid "Check the internet connection and try again."
+msgstr "Проверьте подключение к интернету и попробуйте снова."
+
+msgid "There is no internet connection. The driver for %1 will be installed when the computer is online."
+msgstr "Нет подключения к интернету. Драйвер для %1 установится, когда компьютер будет в сети."
+
+msgid "The NVIDIA driver will be installed automatically as soon as the computer is online."
+msgstr "Драйвер NVIDIA установится автоматически, как только компьютер будет в сети."
+
+msgid "Install the NVIDIA driver to get the full speed of this card."
+msgstr "Установите драйвер NVIDIA, чтобы видеокарта работала в полную силу."
+
+msgid "Try again"
+msgstr "Попробовать снова"
+
+msgid "Remove the driver"
+msgstr "Удалить драйвер"
+
+msgid "Install drivers automatically"
+msgstr "Устанавливать драйверы автоматически"
+
+msgid "When a graphics card needs a driver, Kernora installs it and asks you to restart"
+msgstr "Если видеокарте нужен драйвер, Kernora установит его и попросит перезагрузить компьютер"
+
+msgid "Graphics card drivers"
+msgstr "Драйверы видеокарты"
+
+msgid "graphics card video nvidia gpu driver"
+msgstr "видеокарта видео графика nvidia gpu драйвер"
+
+msgid "Kernora could not start this. Install the latest updates and try again."
+msgstr "Не получилось запустить. Установите последние обновления и попробуйте снова."
+
+msgid "Removing the driver…"
+msgstr "Удаление драйвера…"
+
+msgid "Kernora is removing the NVIDIA driver."
+msgstr "Kernora удаляет драйвер NVIDIA."
+
+msgid "The NVIDIA driver is removed and stops being used after a restart."
+msgstr "Драйвер NVIDIA удалён и перестанет использоваться после перезагрузки."

@@ -1,0 +1,10 @@
+[Unit]
+Description=Look for the graphics driver this computer needs
+
+[Timer]
+OnActiveSec=90s
+OnUnitInactiveSec=6h
+RandomizedDelaySec=30s
+
+[Install]
+WantedBy=timers.target

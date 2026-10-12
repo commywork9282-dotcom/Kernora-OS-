@@ -1,0 +1,9 @@
+[Unit]
+Description=Graphics driver: %i
+ConditionPathExists=!/run/live/medium
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/kernora-drivers %i
+Nice=10
+IOSchedulingClass=idle

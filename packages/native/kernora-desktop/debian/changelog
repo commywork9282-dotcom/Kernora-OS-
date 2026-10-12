@@ -1,3 +1,28 @@
+kernora-desktop (1.4.23) UNRELEASED; urgency=medium
+
+  * Graphics drivers install themselves. kernora-drivers looks for an NVIDIA
+    display controller in /sys/bus/pci; without one it does nothing and
+    downloads nothing. GeForce GTX 16 / RTX 20 and newer (PCI device
+    0x1e00 and up, RTX 50 included) get nvidia-open from NVIDIA's signed
+    Debian 13 repository (key 02182E60104FCDC26EAE1B8597A5D4CB8793F200,
+    pinned so that only NVIDIA's driver packages come from it); GTX 900 and
+    10 get Debian's nvidia-driver from contrib and non-free; older cards stay
+    on nouveau. A failed install is rolled back.
+  * kernora-drivers.timer runs the check 90 seconds after it starts (at boot
+    or right after the package is installed) and every six
+    hours, without delaying the login screen. The live session and systems
+    with Secure Boot on are left alone; /etc/kernora/drivers.conf turns the
+    automatic install off.
+  * The package enables and starts only the timer: starting the oneshot
+    service from postinst would run apt-get inside the dpkg transaction and
+    wait for its own lock.
+  * The installer installs the driver into the new system when it is
+    online (shellprocess@drivers after the update step).
+  * kernora-drivers@install and @remove serve Settings through pkexec
+    (org.kernora.drivers).
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 12 Oct 2026 01:00:00 -0700
+
 kernora-desktop (1.4.22) UNRELEASED; urgency=medium
 
   * Weather: Enter in the city search searches instead of closing the
