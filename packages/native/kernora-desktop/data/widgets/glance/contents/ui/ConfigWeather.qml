@@ -33,9 +33,17 @@ ColumnLayout {
         }
     }
 
+    signal configurationChanged()
+
+    function saveConfig(): void {
+        picker.commit();
+    }
+
     CityPicker {
+        id: picker
         Layout.fillWidth: true
         visible: root.cfg_showWeather
+        onChanged: root.configurationChanged()
         domain: "plasma_applet_org.kernora.widget.glance"
     }
     Item {

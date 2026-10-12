@@ -69,6 +69,8 @@ PlasmoidItem {
                 font.family: M3.typeface
                 font.pixelSize: Math.round(card.side * 0.06)
                 font.weight: Font.Medium
+                fontSizeMode: Text.HorizontalFit
+                minimumPixelSize: Math.round(card.side * 0.045)
                 elide: Text.ElideRight
             }
             MIcon {
@@ -92,6 +94,8 @@ PlasmoidItem {
                 color: M3.primaryContainerContent
                 font.family: M3.typeface
                 font.pixelSize: Math.round(card.side * 0.075)
+                fontSizeMode: Text.HorizontalFit
+                minimumPixelSize: Math.round(card.side * 0.05)
                 elide: Text.ElideRight
             }
             Text {

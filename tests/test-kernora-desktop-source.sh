@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.23" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.24" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -104,6 +104,11 @@ grep -Fq 'Keys.onReturnPressed: event => event.accepted = true' "$package_root/d
 grep -Fq 'property Timer watch' "$package_root/data/widgets/common/WeatherModel.qml" \
   && grep -Fq 'text: weather.city' "$package_root/data/widgets/weather/contents/ui/main.qml" \
   || fail "the weather widget does not show the chosen city"
+grep -Fq 'function commit()' "$package_root/data/widgets/common/CityPicker.qml" \
+  && grep -Fq 'picker.commit()' "$package_root/data/widgets/weather/contents/ui/ConfigLocation.qml" \
+  && grep -Fq 'picker.commit()' "$package_root/data/widgets/glance/contents/ui/ConfigWeather.qml" \
+  && grep -Fq 'onTextChanged: typing.restart()' "$package_root/data/widgets/common/CityPicker.qml" \
+  || fail "the weather city does not follow Apply or does not search while typing"
 grep -Fq 'RightButton;NoModifier=org.kde.contextmenu' "$package_root/data/kconf_update/kernora-add-widgets-menu.sh" \
   || fail "a new user's desktop can lose its right-click menu"
 drivers="$package_root/data/drivers"

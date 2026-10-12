@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-12-2",
+    "items": [
+      {
+        "icon": "weather-few-clouds",
+        "title": {
+          "en": "Choosing the weather city",
+          "ru": "Выбор города для погоды"
+        },
+        "text": {
+          "en": "Cities appear while you type. Pick one and press Apply or OK, like every other widget setting.",
+          "ru": "Города находятся прямо при наборе. Выберите нужный и нажмите «Применить» или «ОК» — как в любых других настройках виджета."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-12",
     "items": [
       {

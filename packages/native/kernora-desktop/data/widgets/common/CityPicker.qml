@@ -14,9 +14,12 @@ ColumnLayout {
 
     property string domain
     property string city: ""
+    property var pending: null
     property var results: []
     property bool searching: false
     property string message: ""
+
+    signal changed()
 
     function tr(text: string): string {
         return i18nd(picker.domain, text);
@@ -29,7 +32,10 @@ ColumnLayout {
 
     function search(query: string): void {
         const name = query.trim();
-        if (name.length === 0) {
+        if (name.length < 2) {
+            results = [];
+            message = "";
+            searching = false;
             return;
         }
         searching = true;
@@ -39,7 +45,7 @@ ColumnLayout {
         request.open("GET", "https://geocoding-api.open-meteo.com/v1/search?count=6&format=json&language=" + language
                      + "&name=" + encodeURIComponent(name));
         request.onreadystatechange = () => {
-            if (request.readyState !== XMLHttpRequest.DONE) {
+            if (request.readyState !== XMLHttpRequest.DONE || searchField.text.trim() !== name) {
                 return;
             }
             picker.searching = false;
@@ -59,20 +65,36 @@ ColumnLayout {
     }
 
     function choose(place: var): void {
-        store.setValue("city", place.name);
-        store.setValue("latitude", place.latitude);
-        store.setValue("longitude", place.longitude);
-        store.setValue("cacheTime", 0);
-        store.sync();
+        pending = { name: place.name, latitude: place.latitude, longitude: place.longitude };
         city = place.name;
         results = [];
+        message = "";
         searchField.text = "";
+        changed();
     }
 
     function forget(): void {
-        store.setValue("city", "");
-        store.sync();
+        pending = { name: "", latitude: 0, longitude: 0 };
         city = "";
+        changed();
+    }
+
+    function commit(): void {
+        if (!pending) {
+            return;
+        }
+        store.setValue("city", pending.name);
+        store.setValue("latitude", pending.latitude);
+        store.setValue("longitude", pending.longitude);
+        store.setValue("cacheTime", 0);
+        store.sync();
+        pending = null;
+    }
+
+    Timer {
+        id: typing
+        interval: 400
+        onTriggered: picker.search(searchField.text)
     }
 
     Component.onCompleted: {
@@ -101,7 +123,11 @@ ColumnLayout {
         id: searchField
         Layout.fillWidth: true
         placeholderText: picker.city.length > 0 ? picker.tr("Choose another city") : picker.tr("Search for a city")
-        onAccepted: picker.search(text)
+        onTextChanged: typing.restart()
+        onAccepted: {
+            typing.stop();
+            picker.search(text);
+        }
         Keys.onReturnPressed: event => event.accepted = true
         Keys.onEnterPressed: event => event.accepted = true
     }

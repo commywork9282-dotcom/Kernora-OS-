@@ -1,3 +1,17 @@
+kernora-desktop (1.4.24) UNRELEASED; urgency=medium
+
+  * Weather location works like the rest of the widget settings: a chosen
+    or removed city waits for Apply or OK (the page signals
+    configurationChanged and saves in saveConfig), so Apply lights up and
+    closing asks about unsaved changes. Before, the city was written at
+    once and Apply stayed grey, which read as "nothing happened".
+  * The city search runs while typing (after a short pause) instead of only
+    on Enter; late answers for an older query are dropped.
+  * The weather card shrinks a long city or condition ("Переменная
+    облачность") to fit instead of cutting it off.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 12 Oct 2026 12:00:00 -0700
+
 kernora-desktop (1.4.23) UNRELEASED; urgency=medium
 
   * Graphics drivers install themselves. kernora-drivers looks for an NVIDIA
