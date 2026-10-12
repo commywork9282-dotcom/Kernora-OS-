@@ -221,7 +221,7 @@ AppWindow {
                     Layout.topMargin: app.narrow ? 0 : 8
                     placeholderText: i18n("Search apps")
                     onTextChanged: {
-                        if (text.trim().length > 0 && app.section !== "search") {
+                        if (text.trim().length > 0 && (app.section !== "search" || stack.depth > 1)) {
                             app.showSection("search");
                         } else if (text.trim().length === 0 && app.section === "search") {
                             app.showSection("home");

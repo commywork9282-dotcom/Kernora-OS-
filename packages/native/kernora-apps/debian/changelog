@@ -2,6 +2,8 @@ kernora-apps (1.1.29) UNRELEASED; urgency=medium
 
   * Ship Store with Flathub and Debian catalogues, install/remove/update
     actions, local package handling, cached artwork and Russian translation.
+  * Searching from app details returns to results immediately; missing
+    screenshots show a fallback icon.
   * Complete build/runtime dependencies and release checks.
   * Handle cancelled and failed transactions without claiming success.
   * What's new: introduce Store in English and Russian.

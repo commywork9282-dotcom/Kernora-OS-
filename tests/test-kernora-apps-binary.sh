@@ -35,6 +35,7 @@ done
 for app in settings files welcome editor photos player calculator screenshot store; do
   [[ -x "$temporary_root/usr/bin/kernora-$app" ]] || fail "missing kernora-$app"
   [[ -s "$temporary_root/usr/share/kernora/$app/Main.qml" ]] || fail "missing the $app interface"
+  cmp -s "$package_root/apps/$app/qml/Main.qml" "$temporary_root/usr/share/kernora/$app/Main.qml" || fail "$app interface differs from the source"
   [[ -s "$temporary_root/usr/share/applications/org.kernora.$app.desktop" ]] || fail "missing the $app desktop entry"
 done
 grep -q 'X-KDE-DBUS-Restricted-Interfaces=org.kde.KWin.ScreenShot2' \

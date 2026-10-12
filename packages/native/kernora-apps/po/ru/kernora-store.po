@@ -60,8 +60,8 @@ msgid "Cancel"
 msgstr "Отмена"
 
 #: packages/native/kernora-apps/apps/store/qml/AppPage.qml:235
-msgid "From Flathub. The app runs in its own sandbox and updates on its own."
-msgstr "С Flathub. Приложение работает в своей песочнице и обновляется само."
+msgid "From Flathub. App updates are available in Store."
+msgstr "С Flathub. Обновления приложения доступны в магазине."
 
 #: packages/native/kernora-apps/apps/store/qml/AppPage.qml:237
 msgid "From Debian. Installing it asks for your password."

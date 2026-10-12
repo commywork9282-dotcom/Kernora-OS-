@@ -231,7 +231,7 @@ Item {
                     wrapMode: Text.Wrap
                     visible: !page.installed && !page.busy && text.length > 0
                     text: page.source === "flatpak" && !page.info.local
-                        ? i18n("From Flathub. The app runs in its own sandbox and updates on its own.")
+                        ? i18n("From Flathub. App updates are available in Store.")
                         : page.source === "debian" && !page.info.local
                         ? i18n("From Debian. Installing it asks for your password.")
                         : ""
@@ -296,6 +296,14 @@ Item {
                             cache: true
                             sourceSize.height: 600
                         }
+                    }
+
+                    MIcon {
+                        anchors.centerIn: parent
+                        size: 48
+                        source: "image-x-generic"
+                        color: M3.surfaceVariantContent
+                        visible: image.status === Image.Error
                     }
 
                     LinearProgress {
