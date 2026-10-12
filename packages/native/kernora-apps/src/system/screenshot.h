@@ -20,6 +20,7 @@ public:
     Q_INVOKABLE void captureWorkspace(bool cursor, const QJSValue &callback);
     Q_INVOKABLE void captureActiveWindow(bool cursor, const QJSValue &callback);
     Q_INVOKABLE void captureActiveScreen(bool cursor, const QJSValue &callback);
+    Q_INVOKABLE void captureScreen(const QString &name, bool cursor, const QJSValue &callback);
     Q_INVOKABLE bool discard(const QUrl &image);
     Q_INVOKABLE void captureInteractive(int kind, bool cursor, const QJSValue &callback);
     Q_INVOKABLE QUrl crop(const QUrl &image, int x, int y, int width, int height);

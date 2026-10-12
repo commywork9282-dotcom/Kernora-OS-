@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-12-4",
+    "items": [
+      {
+        "icon": "org.kernora.screenshot",
+        "title": {
+          "en": "Screenshots on two monitors",
+          "ru": "Снимки экрана на двух мониторах"
+        },
+        "text": {
+          "en": "Each monitor now shows its own picture while you select an area, and Screen takes the monitor your mouse is on.",
+          "ru": "Каждый монитор теперь показывает свою картинку, пока вы выбираете область, а «Экран» снимает тот монитор, где сейчас мышь."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-12-3",
     "items": [
       {

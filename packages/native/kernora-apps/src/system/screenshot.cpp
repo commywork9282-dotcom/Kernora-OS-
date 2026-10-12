@@ -182,6 +182,11 @@ void Screenshot::captureActiveScreen(bool cursor, const QJSValue &callback)
     capture(QStringLiteral("CaptureActiveScreen"), {options(cursor)}, callback);
 }
 
+void Screenshot::captureScreen(const QString &name, bool cursor, const QJSValue &callback)
+{
+    capture(QStringLiteral("CaptureScreen"), {name, options(cursor)}, callback);
+}
+
 bool Screenshot::discard(const QUrl &image)
 {
     const QString path = image.toLocalFile();

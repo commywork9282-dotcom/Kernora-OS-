@@ -1,3 +1,17 @@
+kernora-apps (1.1.27) UNRELEASED; urgency=medium
+
+  * Screenshot works with several monitors: every monitor is captured on its
+    own (KWin CaptureScreen) and gets its own selection overlay, a
+    layer-shell surface pinned to that monitor (org.kde.layershell). Before,
+    the active monitor's picture went into one fullscreen window that KWin
+    put on another monitor, so the first screen seemed to jump to the
+    second; KWin also ignores the screen a fullscreen window asks for, which
+    is why the overlays are layer surfaces now. The selection and the
+    toolbar follow the mouse; Screen takes the monitor the mouse is on.
+  * What's new: screenshots with two monitors.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 12 Oct 2026 22:00:00 -0700
+
 kernora-apps (1.1.26) UNRELEASED; urgency=medium
 
   * What's new: the audio badge in the panel.

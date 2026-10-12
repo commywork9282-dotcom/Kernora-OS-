@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.26" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.27" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -62,5 +62,11 @@ grep -Fq 'driverReady' "$package_root/src/updatenotifier/main.cpp" \
   || fail "nobody is told to restart after a driver install"
 grep -Fxq ' pkexec,' "$package_root/debian/control" \
   || fail "Settings cannot ask for the driver actions without pkexec"
+grep -Fq 'model: Qt.application.screens' "$package_root/apps/screenshot/qml/Main.qml" \
+  && grep -Fq 'Screenshot.captureScreen(overlay.screen.name' "$package_root/apps/screenshot/qml/Main.qml" \
+  && grep -Fq 'void Screenshot::captureScreen' "$package_root/src/system/screenshot.cpp" \
+  && grep -Fq 'LayerShell.Window.screenConfiguration: LayerShell.Window.ScreenFromQWindow' "$package_root/apps/screenshot/qml/Main.qml" \
+  && grep -Fxq ' qml6-module-org-kde-layershell,' "$package_root/debian/control" \
+  || fail "Screenshot shows one monitor's picture on another"
 
 printf 'kernora-apps source test: OK\n'

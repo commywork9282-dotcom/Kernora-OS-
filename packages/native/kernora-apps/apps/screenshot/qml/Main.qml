@@ -13,6 +13,7 @@ import org.kernora.m3
 import org.kernora.ui
 import org.kernora.system
 import org.kde.notification
+import org.kde.layershell 1.0 as LayerShell
 
 AppWindow {
     id: app
@@ -25,11 +26,12 @@ AppWindow {
     visible: false
     title: i18n("Screenshot")
 
-    property url frozen
-    property int frozenWidth: 0
-    property int frozenHeight: 0
     property url saved
     property string mode: "region"
+    property var current: null
+    property int pending: 0
+    property int captured: 0
+    property string firstError: ""
 
     function start(): void {
         app.hide();
@@ -38,16 +40,62 @@ AppWindow {
     Timer {
         id: startTimer
         interval: 250
-        onTriggered: Screenshot.captureActiveScreen(false, (ok, url, width, height) => {
-            if (!ok) {
-                app.fail(url);
-                return;
+        onTriggered: app.captureScreens()
+    }
+
+    function captureScreens(): void {
+        if (overlays.count === 0) {
+            fail("");
+            return;
+        }
+        pending = overlays.count;
+        captured = 0;
+        firstError = "";
+        for (let i = 0; i < overlays.count; ++i) {
+            const overlay = overlays.objectAt(i);
+            overlay.frozen = "";
+            Screenshot.captureScreen(overlay.screen.name, false, (ok, url, width, height) => {
+                if (ok) {
+                    overlay.frozen = url;
+                    overlay.frozenWidth = width;
+                    overlay.frozenHeight = height;
+                    app.captured += 1;
+                } else if (app.firstError.length === 0) {
+                    app.firstError = url;
+                }
+                app.pending -= 1;
+                if (app.pending === 0) {
+                    app.openOverlays();
+                }
+            });
+        }
+    }
+
+    function openOverlays(): void {
+        if (captured === 0) {
+            fail(firstError);
+            return;
+        }
+        current = null;
+        for (let i = 0; i < overlays.count; ++i) {
+            const overlay = overlays.objectAt(i);
+            if (String(overlay.frozen).length > 0) {
+                overlay.open();
             }
-            app.frozen = url;
-            app.frozenWidth = width;
-            app.frozenHeight = height;
-            overlay.open();
-        })
+        }
+    }
+
+    function closeOverlays(): void {
+        for (let i = 0; i < overlays.count; ++i) {
+            overlays.objectAt(i).hide();
+        }
+    }
+
+    function cancel(): void {
+        closeOverlays();
+        if (!app.visible) {
+            Qt.quit();
+        }
     }
 
     function fail(message: string): void {
@@ -58,7 +106,7 @@ AppWindow {
     }
 
     function finish(url: url): void {
-        overlay.hide();
+        closeOverlays();
         saved = Screenshot.save(url);
         if (String(saved).length === 0) {
             fail(i18n("The screenshot could not be saved."));
@@ -73,15 +121,20 @@ AppWindow {
     }
 
     function capture(): void {
+        const overlay = current;
+        if (!overlay) {
+            return;
+        }
         if (mode === "screen") {
-            finish(frozen);
+            finish(overlay.frozen);
         } else if (mode === "window") {
-            overlay.hide();
+            closeOverlays();
             Screenshot.captureInteractive(0, false, (ok, url) => ok ? app.finish(url) : app.fail(""));
-        } else if (selection.valid) {
-            const scale = frozenWidth / overlay.width;
-            finish(Screenshot.crop(frozen, Math.round(selection.x * scale), Math.round(selection.y * scale),
-                                   Math.round(selection.width * scale), Math.round(selection.height * scale)));
+        } else if (overlay.area.valid) {
+            const area = overlay.area;
+            const scale = overlay.frozenWidth / overlay.width;
+            finish(Screenshot.crop(overlay.frozen, Math.round(area.x * scale), Math.round(area.y * scale),
+                                   Math.round(area.width * scale), Math.round(area.height * scale)));
         }
     }
 
@@ -90,205 +143,246 @@ AppWindow {
     }
     Component.onCompleted: start()
 
-    Window {
-        id: overlay
+    Instantiator {
+        id: overlays
+        model: Qt.application.screens
 
-        function open(): void {
-            selection.touched = false;
-            showFullScreen();
-            raise();
-            requestActivate();
-            selection.reset();
-        }
-        onWidthChanged: {
-            if (!selection.touched) {
+        delegate: Window {
+            id: overlay
+
+            required property var modelData
+            property url frozen
+            property int frozenWidth: 0
+            property int frozenHeight: 0
+            readonly property bool current: app.current === overlay
+            readonly property Item area: selection
+
+            function open(): void {
+                selection.touched = false;
+                show();
+                raise();
                 selection.reset();
-            }
-        }
-        onHeightChanged: {
-            if (!selection.touched) {
-                selection.reset();
-            }
-        }
-
-        flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
-        color: "black"
-        title: i18n("Take a screenshot")
-
-        onClosing: close => {
-            if (!app.visible) {
-                Qt.quit();
-            }
-        }
-
-        Image {
-            anchors.fill: parent
-            source: app.frozen
-            fillMode: Image.Stretch
-            cache: false
-        }
-
-        Item {
-            id: selection
-
-            property real startX: 0
-            property real startY: 0
-            property bool touched: false
-            readonly property bool valid: width >= 4 && height >= 4
-            visible: app.mode === "region"
-
-            function reset(): void {
-                width = overlay.width * 0.5;
-                height = overlay.height * 0.5;
-                x = overlay.width * 0.25;
-                y = overlay.height * 0.25;
+                if (app.current === null) {
+                    app.current = overlay;
+                    requestActivate();
+                }
             }
 
-            Rectangle {
+            screen: modelData
+            transientParent: null
+            width: modelData.width
+            height: modelData.height
+            LayerShell.Window.scope: "kernora-screenshot"
+            LayerShell.Window.layer: LayerShell.Window.LayerOverlay
+            LayerShell.Window.anchors: LayerShell.Window.AnchorTop | LayerShell.Window.AnchorBottom | LayerShell.Window.AnchorLeft | LayerShell.Window.AnchorRight
+            LayerShell.Window.exclusionZone: -1
+            LayerShell.Window.keyboardInteractivity: LayerShell.Window.KeyboardInteractivityExclusive
+            LayerShell.Window.screenConfiguration: LayerShell.Window.ScreenFromQWindow
+            onWidthChanged: {
+                if (!selection.touched) {
+                    selection.reset();
+                }
+            }
+            onHeightChanged: {
+                if (!selection.touched) {
+                    selection.reset();
+                }
+            }
+            onActiveChanged: {
+                if (active) {
+                    app.current = overlay;
+                }
+            }
+
+            flags: Qt.FramelessWindowHint
+            color: "black"
+            title: i18n("Take a screenshot")
+
+            onClosing: close => {
+                close.accepted = false;
+                app.cancel();
+            }
+
+            Image {
                 anchors.fill: parent
-                color: "transparent"
-                border.width: 2
-                border.color: M3.primary
+                source: overlay.frozen
+                fillMode: Image.Stretch
+                cache: false
             }
-            Repeater {
-                model: [[0, 0], [1, 0], [0, 1], [1, 1]]
-                delegate: Rectangle {
-                    required property var modelData
-                    x: modelData[0] * selection.width - width / 2
-                    y: modelData[1] * selection.height - height / 2
-                    width: 16
-                    height: 16
-                    radius: 8
-                    color: M3.primary
-                    border.width: 2
-                    border.color: M3.primaryContent
-                }
-            }
-            Rectangle {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottom: parent.top
-                anchors.bottomMargin: 8
-                visible: selection.valid
-                width: sizeLabel.implicitWidth + 20
-                height: 28
-                radius: M3.classic ? M3.cornerTooltip : 14
-                color: M3.inverseSurface
-                Text {
-                    id: sizeLabel
-                    anchors.centerIn: parent
-                    color: M3.inverseOnSurface
-                    font: M3.labelMedium
-                    text: Math.round(selection.width * app.frozenWidth / Math.max(1, overlay.width)) + " × "
-                        + Math.round(selection.height * app.frozenWidth / Math.max(1, overlay.width))
-                }
-            }
-        }
-        Rectangle { visible: selection.visible; color: "#99000000"; x: 0; y: 0; width: parent.width; height: selection.y }
-        Rectangle { visible: selection.visible; color: "#99000000"; x: 0; y: selection.y + selection.height; width: parent.width; height: parent.height - y }
-        Rectangle { visible: selection.visible; color: "#99000000"; x: 0; y: selection.y; width: selection.x; height: selection.height }
-        Rectangle { visible: selection.visible; color: "#99000000"; x: selection.x + selection.width; y: selection.y; width: parent.width - x; height: selection.height }
-        Rectangle { visible: app.mode === "window"; anchors.fill: parent; color: "#66000000" }
 
-        MouseArea {
-            anchors.fill: parent
-            enabled: app.mode === "region"
-            cursorShape: Qt.CrossCursor
-            property bool moving: false
-            property point grab
-            onPressed: mouse => {
-                selection.touched = true;
-                const inside = mouse.x > selection.x && mouse.x < selection.x + selection.width
-                    && mouse.y > selection.y && mouse.y < selection.y + selection.height;
-                moving = inside;
-                if (inside) {
-                    grab = Qt.point(mouse.x - selection.x, mouse.y - selection.y);
-                } else {
-                    selection.startX = mouse.x;
-                    selection.startY = mouse.y;
-                    selection.x = mouse.x;
-                    selection.y = mouse.y;
-                    selection.width = 0;
-                    selection.height = 0;
-                }
-            }
-            onPositionChanged: mouse => {
-                if (moving) {
-                    selection.x = Math.max(0, Math.min(overlay.width - selection.width, mouse.x - grab.x));
-                    selection.y = Math.max(0, Math.min(overlay.height - selection.height, mouse.y - grab.y));
-                } else {
-                    const x = Math.max(0, Math.min(overlay.width, mouse.x));
-                    const y = Math.max(0, Math.min(overlay.height, mouse.y));
-                    selection.x = Math.min(selection.startX, x);
-                    selection.y = Math.min(selection.startY, y);
-                    selection.width = Math.abs(x - selection.startX);
-                    selection.height = Math.abs(y - selection.startY);
-                }
-            }
-            onDoubleClicked: app.capture()
-        }
-
-        Rectangle {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 40
-            width: toolbar.implicitWidth + 24
-            height: 72
-            radius: M3.classic ? M3.cornerCard : 36
-            color: M3.surfaceContainerHigh
-
-            RowLayout {
-                id: toolbar
-                anchors.centerIn: parent
-                spacing: 12
-
-                SegmentedButtons {
-                    implicitWidth: 380
-                    options: [
-                        { value: "region", label: i18n("Area"), icon: "kernora-select-region" },
-                        { value: "screen", label: i18n("Screen"), icon: "video-display" },
-                        { value: "window", label: i18n("Window"), icon: "kernora-select-window" }
-                    ]
-                    currentValue: app.mode
-                    onSelected: value => app.mode = value
-                }
-                QQC2.AbstractButton {
-                    id: shutter
-                    implicitWidth: 56
-                    implicitHeight: 56
-                    enabled: app.mode !== "region" || selection.valid
-                    opacity: enabled ? 1 : 0.38
-                    Accessible.name: i18n("Take the screenshot")
-                    QQC2.ToolTip.text: i18n("Take the screenshot (Enter)")
-                    QQC2.ToolTip.visible: hovered
-                    background: Rectangle {
-                        radius: shutter.pressed && !M3.classic ? 16 : 28
-                        color: M3.primary
-                        Behavior on radius { NumberAnimation { duration: M3.durationShort4 } }
-                        MStateLayer {
-                            radius: parent.radius
-                            color: M3.primaryContent
-                            hovered: shutter.hovered
-                            pressed: shutter.pressed
-                        }
-                        MIcon {
-                            anchors.centerIn: parent
-                            size: 26
-                            source: "camera-photo"
-                            color: M3.primaryContent
-                        }
+            HoverHandler {
+                onHoveredChanged: {
+                    if (hovered) {
+                        app.current = overlay;
                     }
-                    onClicked: app.capture()
-                }
-                IconButton {
-                    iconName: "window-close"
-                    text: i18n("Cancel (Esc)")
-                    onClicked: overlay.close()
                 }
             }
-        }
 
-        Shortcut { sequences: ["Escape"]; onActivated: overlay.close() }
-        Shortcut { sequences: ["Return", "Enter", "Space"]; onActivated: app.capture() }
+            Item {
+                id: selection
+
+                property real startX: 0
+                property real startY: 0
+                property bool touched: false
+                readonly property bool valid: width >= 4 && height >= 4
+                visible: app.mode === "region" && overlay.current
+
+                function reset(): void {
+                    width = overlay.width * 0.5;
+                    height = overlay.height * 0.5;
+                    x = overlay.width * 0.25;
+                    y = overlay.height * 0.25;
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: "transparent"
+                    border.width: 2
+                    border.color: M3.primary
+                }
+                Repeater {
+                    model: [[0, 0], [1, 0], [0, 1], [1, 1]]
+                    delegate: Rectangle {
+                        required property var modelData
+                        x: modelData[0] * selection.width - width / 2
+                        y: modelData[1] * selection.height - height / 2
+                        width: 16
+                        height: 16
+                        radius: 8
+                        color: M3.primary
+                        border.width: 2
+                        border.color: M3.primaryContent
+                    }
+                }
+                Rectangle {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottom: parent.top
+                    anchors.bottomMargin: 8
+                    visible: selection.valid
+                    width: sizeLabel.implicitWidth + 20
+                    height: 28
+                    radius: M3.classic ? M3.cornerTooltip : 14
+                    color: M3.inverseSurface
+                    Text {
+                        id: sizeLabel
+                        anchors.centerIn: parent
+                        color: M3.inverseOnSurface
+                        font: M3.labelMedium
+                        text: Math.round(selection.width * overlay.frozenWidth / Math.max(1, overlay.width)) + " × "
+                            + Math.round(selection.height * overlay.frozenWidth / Math.max(1, overlay.width))
+                    }
+                }
+            }
+            Rectangle { visible: selection.visible; color: "#99000000"; x: 0; y: 0; width: parent.width; height: selection.y }
+            Rectangle { visible: selection.visible; color: "#99000000"; x: 0; y: selection.y + selection.height; width: parent.width; height: parent.height - y }
+            Rectangle { visible: selection.visible; color: "#99000000"; x: 0; y: selection.y; width: selection.x; height: selection.height }
+            Rectangle { visible: selection.visible; color: "#99000000"; x: selection.x + selection.width; y: selection.y; width: parent.width - x; height: selection.height }
+            Rectangle { visible: app.mode === "window"; anchors.fill: parent; color: "#66000000" }
+            Rectangle { visible: app.mode === "region" && !overlay.current; anchors.fill: parent; color: "#99000000" }
+
+            MouseArea {
+                anchors.fill: parent
+                enabled: app.mode === "region"
+                cursorShape: Qt.CrossCursor
+                property bool moving: false
+                property point grab
+                onPressed: mouse => {
+                    app.current = overlay;
+                    selection.touched = true;
+                    const inside = mouse.x > selection.x && mouse.x < selection.x + selection.width
+                        && mouse.y > selection.y && mouse.y < selection.y + selection.height;
+                    moving = inside;
+                    if (inside) {
+                        grab = Qt.point(mouse.x - selection.x, mouse.y - selection.y);
+                    } else {
+                        selection.startX = mouse.x;
+                        selection.startY = mouse.y;
+                        selection.x = mouse.x;
+                        selection.y = mouse.y;
+                        selection.width = 0;
+                        selection.height = 0;
+                    }
+                }
+                onPositionChanged: mouse => {
+                    if (moving) {
+                        selection.x = Math.max(0, Math.min(overlay.width - selection.width, mouse.x - grab.x));
+                        selection.y = Math.max(0, Math.min(overlay.height - selection.height, mouse.y - grab.y));
+                    } else {
+                        const x = Math.max(0, Math.min(overlay.width, mouse.x));
+                        const y = Math.max(0, Math.min(overlay.height, mouse.y));
+                        selection.x = Math.min(selection.startX, x);
+                        selection.y = Math.min(selection.startY, y);
+                        selection.width = Math.abs(x - selection.startX);
+                        selection.height = Math.abs(y - selection.startY);
+                    }
+                }
+                onDoubleClicked: app.capture()
+            }
+
+            Rectangle {
+                visible: overlay.current
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 40
+                width: toolbar.implicitWidth + 24
+                height: 72
+                radius: M3.classic ? M3.cornerCard : 36
+                color: M3.surfaceContainerHigh
+
+                RowLayout {
+                    id: toolbar
+                    anchors.centerIn: parent
+                    spacing: 12
+
+                    SegmentedButtons {
+                        implicitWidth: 380
+                        options: [
+                            { value: "region", label: i18n("Area"), icon: "kernora-select-region" },
+                            { value: "screen", label: i18n("Screen"), icon: "video-display" },
+                            { value: "window", label: i18n("Window"), icon: "kernora-select-window" }
+                        ]
+                        currentValue: app.mode
+                        onSelected: value => app.mode = value
+                    }
+                    QQC2.AbstractButton {
+                        id: shutter
+                        implicitWidth: 56
+                        implicitHeight: 56
+                        enabled: app.mode !== "region" || selection.valid
+                        opacity: enabled ? 1 : 0.38
+                        Accessible.name: i18n("Take the screenshot")
+                        QQC2.ToolTip.text: i18n("Take the screenshot (Enter)")
+                        QQC2.ToolTip.visible: hovered
+                        background: Rectangle {
+                            radius: shutter.pressed && !M3.classic ? 16 : 28
+                            color: M3.primary
+                            Behavior on radius { NumberAnimation { duration: M3.durationShort4 } }
+                            MStateLayer {
+                                radius: parent.radius
+                                color: M3.primaryContent
+                                hovered: shutter.hovered
+                                pressed: shutter.pressed
+                            }
+                            MIcon {
+                                anchors.centerIn: parent
+                                size: 26
+                                source: "camera-photo"
+                                color: M3.primaryContent
+                            }
+                        }
+                        onClicked: app.capture()
+                    }
+                    IconButton {
+                        iconName: "window-close"
+                        text: i18n("Cancel (Esc)")
+                        onClicked: app.cancel()
+                    }
+                }
+            }
+
+            Shortcut { sequences: ["Escape"]; onActivated: app.cancel() }
+            Shortcut { sequences: ["Return", "Enter", "Space"]; onActivated: app.capture() }
+        }
     }
 
     ColumnLayout {
