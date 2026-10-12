@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-12-3",
+    "items": [
+      {
+        "icon": "audio-volume-high",
+        "title": {
+          "en": "A tidier sound badge",
+          "ru": "Аккуратный значок звука"
+        },
+        "text": {
+          "en": "An app that plays sound gets a small round badge on its panel icon; click it to mute. Turn off \"Use audio indicators to mute tasks\" in the panel's settings and the badge goes away.",
+          "ru": "У приложения, которое играет звук, на значке в панели появляется маленький круглый значок — нажмите на него, чтобы выключить звук. Если в настройках панели снять галочку «Использовать индикаторы воспроизведения для отключения звука», значок пропадёт."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-12-2",
     "items": [
       {

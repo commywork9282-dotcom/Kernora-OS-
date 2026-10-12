@@ -1,3 +1,13 @@
+kernora-desktop (1.4.25) UNRELEASED; urgency=medium
+
+  * The task manager's audio indicator follows "Use audio indicators to mute
+    tasks": unchecked, apps that play sound get no indicator at all. Plasma
+    6.3 kept showing it and only stopped the click from muting. Shown, it is
+    a round badge on the app icon's corner (diverted AudioStream.qml),
+    instead of a speaker beside the icon that crowded the next one.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 12 Oct 2026 18:00:00 -0700
+
 kernora-desktop (1.4.24) UNRELEASED; urgency=medium
 
   * Weather location works like the rest of the widget settings: a chosen

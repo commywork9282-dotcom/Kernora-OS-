@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.24" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.25" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -109,6 +109,10 @@ grep -Fq 'function commit()' "$package_root/data/widgets/common/CityPicker.qml" 
   && grep -Fq 'picker.commit()' "$package_root/data/widgets/glance/contents/ui/ConfigWeather.qml" \
   && grep -Fq 'onTextChanged: typing.restart()' "$package_root/data/widgets/common/CityPicker.qml" \
   || fail "the weather city does not follow Apply or does not search while typing"
+grep -Fq 'readonly property bool shown: Plasmoid.configuration.interactiveMute' "$package_root/data/taskmanager/AudioStream.qml" \
+  && grep -Fq '"$tasks/AudioStream.qml"' "$package_root/debian/kernora-desktop.preinst" \
+  && grep -Fq '"$tasks/AudioStream.qml"' "$package_root/debian/kernora-desktop.postrm" \
+  || fail "the task audio indicator ignores its setting"
 grep -Fq 'RightButton;NoModifier=org.kde.contextmenu' "$package_root/data/kconf_update/kernora-add-widgets-menu.sh" \
   || fail "a new user's desktop can lose its right-click menu"
 drivers="$package_root/data/drivers"
