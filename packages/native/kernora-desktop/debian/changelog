@@ -1,3 +1,13 @@
+kernora-desktop (1.4.26) UNRELEASED; urgency=medium
+
+  * A widget's settings no longer end edit mode. The settings button on a
+    desktop widget opens the dialog through org.kernora.shell (kernora-apps)
+    over the edit mode, so moving, resizing and setting up widgets goes on
+    after the dialog closes. Plasma's own path turns edit mode off before it
+    opens the dialog; it stays the fallback when the module is missing.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 13 Oct 2026 10:00:00 -0700
+
 kernora-desktop (1.4.25) UNRELEASED; urgency=medium
 
   * The task manager's audio indicator follows "Use audio indicators to mute

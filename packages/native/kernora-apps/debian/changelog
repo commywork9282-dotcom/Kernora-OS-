@@ -1,3 +1,13 @@
+kernora-apps (1.1.28) UNRELEASED; urgency=medium
+
+  * org.kernora.shell: AppletSettings opens a widget's settings dialog
+    (PlasmaQuick ConfigView) for the desktop's edit mode, without Plasma's
+    DesktopView, which leaves edit mode first. One dialog at a time; the
+    same widget brings its open dialog back.
+  * What's new: widget settings keep edit mode.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 13 Oct 2026 10:00:00 -0700
+
 kernora-apps (1.1.27) UNRELEASED; urgency=medium
 
   * Screenshot works with several monitors: every monitor is captured on its

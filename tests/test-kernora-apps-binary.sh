@@ -21,7 +21,9 @@ dpkg-deb --extract "$deb" "$temporary_root"
 
 qml=usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/system
 for path in "$qml/qmldir" "$qml/libkernorasystem.so" usr/share/knotifications6/kernora-screenshot.notifyrc \
-  usr/share/knotifications6/kernora-updates.notifyrc; do
+  usr/share/knotifications6/kernora-updates.notifyrc \
+  usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/shell/qmldir \
+  usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/shell/libkernorashell.so; do
   [[ -s "$temporary_root/$path" ]] || fail "missing $path"
 done
 for app in settings files welcome editor photos player calculator screenshot; do

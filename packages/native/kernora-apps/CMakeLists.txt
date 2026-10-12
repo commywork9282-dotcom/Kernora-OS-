@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 cmake_minimum_required(VERSION 3.25)
-project(kernora-apps VERSION 1.1.27 LANGUAGES CXX)
+project(kernora-apps VERSION 1.1.28 LANGUAGES CXX)
 
 set(QT_MIN_VERSION 6.8)
 set(KF_MIN_VERSION 6.13)
@@ -25,10 +25,13 @@ find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
     Config CoreAddons DBusAddons I18n KIO Notifications Service WindowSystem)
 find_package(KF6Screen REQUIRED)
 find_package(PackageKitQt6 REQUIRED)
+find_package(Plasma REQUIRED)
+find_package(PlasmaQuick REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBCRYPT REQUIRED IMPORTED_TARGET libcrypt)
 
 add_subdirectory(src/system)
+add_subdirectory(src/shell)
 add_subdirectory(src/apps)
 add_subdirectory(src/filechooser)
 add_subdirectory(src/updatenotifier)

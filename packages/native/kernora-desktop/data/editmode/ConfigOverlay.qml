@@ -17,6 +17,15 @@ ContainmentLayoutManager.ConfigOverlay {
 
     readonly property real frameRadius: M3.classic ? M3.cornerCard + 4 : 28
     readonly property bool onRight: overlay.rightAvailableSpace > toolbar.width + 20
+    property QtObject appletSettings: null
+
+    Component.onCompleted: {
+        try {
+            appletSettings = Qt.createQmlObject("import org.kernora.shell\nAppletSettings {}", overlay, "AppletSettings");
+        } catch (error) {
+            appletSettings = null;
+        }
+    }
 
     LayoutMirroring.enabled: false
     LayoutMirroring.childrenInherit: true
@@ -275,7 +284,11 @@ ContainmentLayoutManager.ConfigOverlay {
                 visible: qAction !== null && qAction.enabled && applet.plasmoid.hasConfigurationInterface
                 icon: "configure"
                 text: qAction ? qAction.text.replace(/&(?!&)/g, "") : ""
-                onClicked: qAction.trigger()
+                onClicked: {
+                    if (!overlay.appletSettings || !overlay.appletSettings.open(applet.plasmoid, overlay)) {
+                        qAction.trigger();
+                    }
+                }
                 Component.onCompleted: {
                     if (qAction) {
                         qAction.enabled = true;

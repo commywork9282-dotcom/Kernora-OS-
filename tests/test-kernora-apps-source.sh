@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.27" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.28" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -68,5 +68,9 @@ grep -Fq 'model: Qt.application.screens' "$package_root/apps/screenshot/qml/Main
   && grep -Fq 'LayerShell.Window.screenConfiguration: LayerShell.Window.ScreenFromQWindow' "$package_root/apps/screenshot/qml/Main.qml" \
   && grep -Fxq ' qml6-module-org-kde-layershell,' "$package_root/debian/control" \
   || fail "Screenshot shows one monitor's picture on another"
+grep -Fq 'new PlasmaQuick::ConfigView(applet)' "$package_root/src/shell/appletsettings.cpp" \
+  && grep -Fq 'add_subdirectory(src/shell)' "$package_root/CMakeLists.txt" \
+  && grep -Fxq ' libplasma-dev,' "$package_root/debian/control" \
+  || fail "a widget's settings cannot open without ending edit mode"
 
 printf 'kernora-apps source test: OK\n'

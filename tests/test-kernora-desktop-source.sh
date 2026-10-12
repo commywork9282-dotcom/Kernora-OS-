@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.25" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.26" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -410,5 +410,9 @@ for key, role in (("SidebarBackground", "surfaceContainerLow"), ("SidebarText", 
     if line not in text:
         raise SystemExit(f"{key} is not {role}")
 PYTHON_TEST
+
+grep -Fq 'import org.kernora.shell' "$package_root/data/editmode/ConfigOverlay.qml" \
+  && grep -Fq 'overlay.appletSettings.open(applet.plasmoid, overlay)' "$package_root/data/editmode/ConfigOverlay.qml" \
+  || fail "a widget's settings end edit mode"
 
 printf 'kernora-desktop source test: OK\n'

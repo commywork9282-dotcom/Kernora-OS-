@@ -18,6 +18,7 @@ Build-Depends:
  libkf6service-dev,
  libkf6windowsystem-dev,
  libkscreen-dev,
+ libplasma-dev,
  libpackagekitqt6-dev,
  pkgconf,
  qt6-base-dev,
@@ -31,7 +32,7 @@ Depends:
  ${shlibs:Depends},
  accountsservice,
  kde-cli-tools,
- kernora-desktop (>= 1.4.25),
+ kernora-desktop (>= 1.4.26),
  libarchive-tools,
  packagekit,
  pkexec,
@@ -66,4 +67,5 @@ Description: Kernora OS applications
     when installed ones need a restart.
  .
  It also carries org.kernora.system, the Qt Quick module through which the
- applications read and change the system.
+ applications read and change the system, and org.kernora.shell, which the
+ desktop uses to open a widget's settings without leaving edit mode.

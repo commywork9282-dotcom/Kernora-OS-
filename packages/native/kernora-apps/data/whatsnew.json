@@ -1,5 +1,21 @@
 [
   {
+    "id": "2026-10-13-1",
+    "items": [
+      {
+        "icon": "preferences-desktop-widgets",
+        "title": {
+          "en": "Widget settings keep edit mode",
+          "ru": "Настройки виджета не выходят из редактирования"
+        },
+        "text": {
+          "en": "Opening a widget's settings while you arrange the desktop no longer ends edit mode. Close the settings and carry on.",
+          "ru": "Если открыть настройки виджета во время редактирования рабочего стола, режим редактирования больше не выключается. Закройте настройки и продолжайте."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-12-4",
     "items": [
       {
