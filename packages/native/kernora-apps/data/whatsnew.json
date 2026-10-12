@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-13-3",
+    "date": "2026-10-11",
+    "items": [
+      {
+        "icon": "org.kernora.store",
+        "title": {
+          "en": "Smoother app browsing",
+          "ru": "Удобнее искать приложения"
+        },
+        "text": {
+          "en": "Typing a new search from an app page now takes you straight to the results. Missing screenshots show a fallback icon. Find Flatpak app updates in Store and system updates in Settings.",
+          "ru": "Новый запрос со страницы приложения сразу открывает результаты поиска. Если снимок экрана недоступен, показывается значок. Обновления Flatpak находятся в магазине, системные — в настройках."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-13-2",
     "date": "2026-10-11",
     "items": [
