@@ -2,8 +2,10 @@
 Type=Application
 Name=Media Player
 Name[ru]=Медиаплеер
+Name[nl]=Mediaspeler
 GenericName=Video and music player
 GenericName[ru]=Видео и музыка
+GenericName[nl]=Mediaspeler
 Icon=org.kernora.player
 Exec=kernora-player %U
 Categories=Qt;AudioVideo;Player;Video;Audio;

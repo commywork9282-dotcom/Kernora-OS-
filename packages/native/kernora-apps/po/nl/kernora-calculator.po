@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-calculator\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "@title application name"
+msgid "Calculator"
+msgstr "Rekenmachine"
+
+msgid "Calculator"
+msgstr "Rekenmachine"
+
+msgid "Not a number"
+msgstr "Geen getal"
+
+msgid "Can't calculate this"
+msgstr "Dit kan niet worden berekend"
+
+msgid "Copied"
+msgstr "Gekopieerd"
+
+msgid "History"
+msgstr "Geschiedenis"
+
+msgid "DEG"
+msgstr "GRD"
+
+msgid "RAD"
+msgstr "RAD"
+
+msgid "Copy the result"
+msgstr "Uitkomst kopiëren"
+
+msgid "Delete"
+msgstr "Verwijderen"
+
+msgid "Back"
+msgstr "Terug"
+
+msgid "Clear"
+msgstr "Wissen"
+
+msgid "Results appear here"
+msgstr "Uitkomsten verschijnen hier"

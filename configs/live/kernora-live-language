@@ -27,7 +27,7 @@ LANG=$lang
 LANGUAGE=$language:en_US
 LOCALE
 case "$language" in
-    en_*) ;;
+    en_*|nl_*) ;;
     *)
         cat > "$config/kxkbrc" <<LAYOUT
 [Layout]

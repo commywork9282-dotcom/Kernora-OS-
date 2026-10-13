@@ -56,7 +56,7 @@ xorriso -osirrox on -indev "$iso" \
 awk '/usr\/share\/kernora\/settings\/Main.qml/ && !found { found = NR } /^menuentry "Lumo · English"/ { live = NR }
      END { exit !(found && live && found < live) }' "$temporary_root/grub.cfg" \
   || fail "the ISO menu does not start an installed Kernora before the live session"
-[[ "$(grep -c ' quiet loglevel=3 splash ' "$temporary_root/grub.cfg")" == 2 ]] \
+[[ "$(grep -c ' quiet loglevel=3 splash ' "$temporary_root/grub.cfg")" == 3 ]] \
   || fail "the live session prints kernel errors over the boot splash"
 
 xorriso -osirrox on -indev "$iso" \

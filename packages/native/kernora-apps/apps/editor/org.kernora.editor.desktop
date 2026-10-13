@@ -2,8 +2,10 @@
 Type=Application
 Name=Text Editor
 Name[ru]=Текстовый редактор
+Name[nl]=Teksteditor
 GenericName=Text editor
 GenericName[ru]=Текстовый редактор
+GenericName[nl]=Teksteditor
 Icon=org.kernora.editor
 Exec=kernora-editor %U
 Categories=Qt;Utility;TextEditor;

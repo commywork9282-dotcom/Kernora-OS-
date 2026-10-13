@@ -2,8 +2,10 @@
 Type=Application
 Name=Store
 Name[ru]=Магазин
+Name[nl]=Store
 GenericName=App store
 GenericName[ru]=Магазин приложений
+GenericName[nl]=Appwinkel
 Comment=Find, install and update apps
 Comment[ru]=Поиск, установка и обновление приложений
 Icon=org.kernora.store

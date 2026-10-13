@@ -2,8 +2,10 @@
 Type=Application
 Name=Welcome
 Name[ru]=Добро пожаловать
+Name[nl]=Welkom
 GenericName=Introduction to Lumo
 GenericName[ru]=Знакомство с Lumo
+GenericName[nl]=Kennismaking met Lumo
 Icon=org.kernora.welcome
 Exec=kernora-welcome
 Categories=Qt;System;

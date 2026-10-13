@@ -1,0 +1,87 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-player\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "@title application name"
+msgid "Media Player"
+msgstr "Mediaspeler"
+
+msgid "Media Player"
+msgstr "Mediaspeler"
+
+msgid "This file cannot be played."
+msgstr "Dit bestand kan niet worden afgespeeld."
+
+msgid "Open a file"
+msgstr "Een bestand openen"
+
+msgid "Music"
+msgstr "Muziek"
+
+msgid "Videos"
+msgstr "Video's"
+
+msgid "Nothing to play yet"
+msgstr "Nog niets om af te spelen"
+
+msgid "Music from your Music folder and videos from your Videos folder appear here. You can also open any file."
+msgstr "Muziek uit je map Muziek en video's uit je map Video's verschijnen hier. Je kunt ook elk ander bestand openen."
+
+msgid "Library"
+msgstr "Bibliotheek"
+
+msgid "Up next"
+msgstr "Hierna"
+
+msgid "Repeat: off"
+msgstr "Herhalen: uit"
+
+msgid "Repeat: all"
+msgstr "Herhalen: alles"
+
+msgid "Repeat: this one"
+msgstr "Herhalen: deze"
+
+msgid "Previous"
+msgstr "Vorige"
+
+msgid "Pause"
+msgstr "Pauzeren"
+
+msgid "Play"
+msgstr "Afspelen"
+
+msgid "Next"
+msgstr "Volgende"
+
+msgid "Speed: %1×"
+msgstr "Snelheid: %1×"
+
+msgid "Unmute"
+msgstr "Geluid aan"
+
+msgid "Mute"
+msgstr "Dempen"
+
+msgid "Full screen"
+msgstr "Volledig scherm"
+
+msgid "Normal"
+msgstr "Normaal"
+
+msgid "%1×"
+msgstr "%1×"
+
+msgid "Open a video or music file"
+msgstr "Een video- of muziekbestand openen"
+
+msgid "Media files (*.mp4 *.mkv *.webm *.avi *.mov *.m4v *.ogv *.mpg *.mp3 *.flac *.ogg *.oga *.opus *.wav *.m4a *.aac)"
+msgstr "Mediabestanden (*.mp4 *.mkv *.webm *.avi *.mov *.m4v *.ogv *.mpg *.mp3 *.flac *.ogg *.oga *.opus *.wav *.m4a *.aac)"
+
+msgid "All files (*)"
+msgstr "Alle bestanden (*)"

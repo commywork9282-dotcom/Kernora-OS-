@@ -2,8 +2,10 @@
 Type=Application
 Name=Settings
 Name[ru]=Настройки
+Name[nl]=Instellingen
 GenericName=System settings
 GenericName[ru]=Параметры системы
+GenericName[nl]=Instellingen
 Icon=org.kernora.settings
 Exec=kernora-settings %u
 X-KDE-Shortcuts=Meta+I

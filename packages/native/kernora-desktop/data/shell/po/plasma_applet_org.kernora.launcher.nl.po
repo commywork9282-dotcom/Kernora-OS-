@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma_applet_org.kernora.launcher\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Applications"
+msgstr "Toepassingen"
+
+msgid "Search apps, settings and more"
+msgstr "Apps, instellingen en meer zoeken"
+
+msgid "Clear search"
+msgstr "Zoekopdracht wissen"
+
+msgid "Pinned"
+msgstr "Vastgezet"
+
+msgid "All apps"
+msgstr "Alle apps"
+
+msgid "Nothing matches “%1”"
+msgstr "Niets komt overeen met “%1”"
+
+msgid "System Settings"
+msgstr "Systeeminstellingen"
+
+msgid "Lock"
+msgstr "Vergrendelen"
+
+msgid "Log Out"
+msgstr "Afmelden"
+
+msgid "Shut Down…"
+msgstr "Afsluiten…"
+
+msgid "Pin to launcher"
+msgstr "Vastzetten in het startmenu"
+
+msgid "Unpin"
+msgstr "Losmaken"

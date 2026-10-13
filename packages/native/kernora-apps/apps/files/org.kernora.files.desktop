@@ -2,8 +2,10 @@
 Type=Application
 Name=Files
 Name[ru]=Файлы
+Name[nl]=Bestanden
 GenericName=File manager
 GenericName[ru]=Файловый менеджер
+GenericName[nl]=Bestandsbeheer
 Icon=org.kernora.files
 Exec=kernora-files %U
 X-KDE-Shortcuts=Meta+E

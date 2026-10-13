@@ -1,0 +1,2601 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-settings\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "@title application name"
+msgid "Settings"
+msgstr "Instellingen"
+
+msgid "Account, picture, password"
+msgstr "Account, foto, wachtwoord"
+
+msgid "Account"
+msgstr "Account"
+
+msgid "Name, picture, password"
+msgstr "Naam, foto, wachtwoord"
+
+msgid "Network & internet"
+msgstr "Netwerk en internet"
+
+msgid "Wi-Fi, wired, airplane mode, VPN"
+msgstr "Wifi, kabel, vliegtuigstand, VPN"
+
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+msgid "Pairing, connected devices"
+msgstr "Koppelen, verbonden apparaten"
+
+msgid "Display & brightness"
+msgstr "Beeldscherm en helderheid"
+
+msgid "Brightness, Night Light, resolution, scale"
+msgstr "Helderheid, nachtlicht, resolutie, schaal"
+
+msgid "Sound"
+msgstr "Geluid"
+
+msgid "Volume, output, microphone"
+msgstr "Volume, uitvoer, microfoon"
+
+msgid "Notifications"
+msgstr "Meldingen"
+
+msgid "Do Not Disturb, pop-ups, history"
+msgstr "Niet storen, pop-ups, geschiedenis"
+
+msgid "Wallpaper & style"
+msgstr "Achtergrond en stijl"
+
+msgid "Dark theme, colour, wallpaper, text size"
+msgstr "Donker thema, kleur, achtergrond, tekstgrootte"
+
+msgid "Apps"
+msgstr "Apps"
+
+msgid "Default apps, startup apps"
+msgstr "Standaardapps, opstartapps"
+
+msgid "Printers & scanners"
+msgstr "Printers en scanners"
+
+msgid "Printers, scanners, test page"
+msgstr "Printers, scanners, testpagina"
+
+msgid "Battery & power"
+msgstr "Batterij en energie"
+
+msgid "Power mode, screen timeout, sleep"
+msgstr "Energiestand, scherm uitschakelen, slaapstand"
+
+msgid "Keyboard, mouse & touchpad"
+msgstr "Toetsenbord, muis en touchpad"
+
+msgid "Layouts, pointer speed, scrolling"
+msgstr "Indelingen, aanwijzersnelheid, scrollen"
+
+msgid "Accessibility"
+msgstr "Toegankelijkheid"
+
+msgid "Zoom, larger text, motion, keys"
+msgstr "Zoom, grotere tekst, beweging, toetsen"
+
+msgid "Security & privacy"
+msgstr "Beveiliging en privacy"
+
+msgid "Screen lock, file search, history"
+msgstr "Schermvergrendeling, bestanden zoeken, geschiedenis"
+
+msgid "System"
+msgstr "Systeem"
+
+msgid "Language, date & time, updates, storage"
+msgstr "Taal, datum en tijd, updates, opslag"
+
+msgid "About Lumo"
+msgstr "Over Lumo"
+
+msgid "Device name, hardware, legal"
+msgstr "Apparaatnaam, hardware, juridisch"
+
+msgid "Wi-Fi"
+msgstr "Wifi"
+
+msgid "wireless network hotspot internet connect password"
+msgstr "wifi draadloos netwerk hotspot internet verbinden wachtwoord wireless"
+
+msgid "Airplane mode"
+msgstr "Vliegtuigstand"
+
+msgid "flight offline radio"
+msgstr "vliegtuig offline radio flight"
+
+msgid "Wired network"
+msgstr "Bekabeld netwerk"
+
+msgid "ethernet cable lan"
+msgstr "ethernet kabel lan bekabeld"
+
+msgid "VPN"
+msgstr "VPN"
+
+msgid "virtual private network tunnel"
+msgstr "virtueel privénetwerk tunnel vpn"
+
+msgid "Proxy and advanced network settings"
+msgstr "Proxy en geavanceerde netwerkinstellingen"
+
+msgid "ip dns proxy static"
+msgstr "ip dns proxy statisch"
+
+msgid "Pair a new device"
+msgstr "Een nieuw apparaat koppelen"
+
+msgid "bluetooth headphones speaker mouse keyboard add"
+msgstr "bluetooth koptelefoon speaker muis toetsenbord toevoegen koppelen"
+
+msgid "Brightness"
+msgstr "Helderheid"
+
+msgid "screen backlight dim"
+msgstr "scherm achtergrondverlichting dimmen helderheid"
+
+msgid "Night Light"
+msgstr "Nachtlicht"
+
+msgid "blue light warm colour temperature evening"
+msgstr "blauw licht warm kleurtemperatuur avond nachtlicht"
+
+msgid "Resolution"
+msgstr "Resolutie"
+
+msgid "screen monitor size pixels"
+msgstr "scherm monitor grootte pixels resolutie"
+
+msgid "Refresh rate"
+msgstr "Vernieuwingsfrequentie"
+
+msgid "hz frequency monitor"
+msgstr "hz frequentie monitor verversing"
+
+msgid "Scale"
+msgstr "Schaal"
+
+msgid "zoom size hidpi display scaling"
+msgstr "zoom grootte hidpi schaal schermschaal"
+
+msgid "Orientation"
+msgstr "Oriëntatie"
+
+msgid "rotate portrait landscape"
+msgstr "draaien staand liggend oriëntatie"
+
+msgid "Arrange screens and more"
+msgstr "Schermen schikken en meer"
+
+msgid "multiple monitors position mirror duplicate adaptive sync vrr freesync hdr overscan colour profile icc rgb range"
+msgstr "meerdere monitoren positie spiegelen dupliceren adaptive sync vrr freesync hdr overscan kleurprofiel icc rgb bereik"
+
+msgid "Volume"
+msgstr "Volume"
+
+msgid "loud quiet mute speaker"
+msgstr "hard zacht dempen speaker volume"
+
+msgid "Output device"
+msgstr "Uitvoerapparaat"
+
+msgid "speakers headphones hdmi"
+msgstr "luidsprekers koptelefoon hdmi uitvoer"
+
+msgid "Microphone"
+msgstr "Microfoon"
+
+msgid "input record mic"
+msgstr "invoer opnemen microfoon mic"
+
+msgid "App volume"
+msgstr "Appvolume"
+
+msgid "mixer applications streams"
+msgstr "mixer apps toepassingen streams"
+
+msgid "Sound devices"
+msgstr "Geluidsapparaten"
+
+msgid "profile connector balance channels surround hdmi test speakers"
+msgstr "profiel aansluiting balans kanalen surround hdmi luidsprekers testen"
+
+msgid "System sounds"
+msgstr "Systeemgeluiden"
+
+msgid "sound theme kernora ocean login chime alerts notification sounds"
+msgstr "geluidsthema kernora oceaan inloggen geluid waarschuwingen meldingsgeluiden"
+
+msgid "Do Not Disturb"
+msgstr "Niet storen"
+
+msgid "quiet silence focus"
+msgstr "stil stilte focus niet storen"
+
+msgid "Notification history"
+msgstr "Meldingsgeschiedenis"
+
+msgid "popups list"
+msgstr "pop-ups lijst meldingen geschiedenis"
+
+msgid "Dark theme"
+msgstr "Donker thema"
+
+msgid "light dark mode colour scheme night"
+msgstr "licht donker modus kleurenschema nacht thema"
+
+msgid "Colour"
+msgstr "Kleur"
+
+msgid "accent palette material color red blue green purple"
+msgstr "accent palet material kleur rood blauw groen paars"
+
+msgid "Wallpaper"
+msgstr "Achtergrond"
+
+msgid "background picture desktop live shapes"
+msgstr "achtergrond afbeelding bureaublad live vormen wallpaper"
+
+msgid "Text size"
+msgstr "Tekstgrootte"
+
+msgid "font size bigger smaller"
+msgstr "lettergrootte groter kleiner tekst"
+
+msgid "Fonts"
+msgstr "Lettertypen"
+
+msgid "typeface font family monospace code terminal"
+msgstr "lettertype letterfamilie monospace code terminal font"
+
+msgid "Animations"
+msgstr "Animaties"
+
+msgid "speed effects motion"
+msgstr "snelheid effecten beweging animaties"
+
+msgid "Default apps"
+msgstr "Standaardapps"
+
+msgid "browser mail files open with association"
+msgstr "browser mail bestanden openen met koppeling standaard"
+
+msgid "Startup apps"
+msgstr "Opstartapps"
+
+msgid "autostart login launch"
+msgstr "automatisch starten inloggen opstarten autostart"
+
+msgid "Power mode"
+msgstr "Energiestand"
+
+msgid "performance balanced power saver profile"
+msgstr "prestaties gebalanceerd energiebesparing profiel"
+
+msgid "Screen timeout"
+msgstr "Scherm uitschakelen"
+
+msgid "dim turn off display idle"
+msgstr "dimmen scherm uit inactief time-out"
+
+msgid "Sleep"
+msgstr "Slaapstand"
+
+msgid "suspend idle lid power button"
+msgstr "slaapstand inactief deksel aan-uitknop"
+
+msgid "Battery"
+msgstr "Batterij"
+
+msgid "charge percentage"
+msgstr "opladen percentage batterij accu"
+
+msgid "Advanced power settings"
+msgstr "Geavanceerde energie-instellingen"
+
+msgid "low battery critical level hibernate wireless mouse keyboard battery hybrid sleep pause media"
+msgstr "lage batterij kritiek niveau slaapstand op schijf draadloze muis toetsenbord batterij hybride slaap media pauzeren"
+
+msgid "Keyboard layouts"
+msgstr "Toetsenbordindelingen"
+
+msgid "language input switch keymap"
+msgstr "taal invoer wisselen toetsenbordindeling"
+
+msgid "Key repeat"
+msgstr "Toetsherhaling"
+
+msgid "delay rate typing"
+msgstr "vertraging snelheid typen herhalen"
+
+msgid "Pointer speed"
+msgstr "Aanwijzersnelheid"
+
+msgid "mouse acceleration sensitivity"
+msgstr "muis versnelling gevoeligheid snelheid"
+
+msgid "Natural scrolling"
+msgstr "Natuurlijk scrollen"
+
+msgid "reverse scroll direction touchpad"
+msgstr "scrollrichting omkeren touchpad scrollen"
+
+msgid "Tap to click"
+msgstr "Tikken om te klikken"
+
+msgid "touchpad tapping"
+msgstr "touchpad tikken klikken"
+
+msgid "Primary button"
+msgstr "Primaire knop"
+
+msgid "left handed mouse"
+msgstr "linkshandig muis knop"
+
+msgid "Compose key"
+msgstr "Compose-toets"
+
+msgid "special characters accents caps lock alt meta keyboard model xkb options"
+msgstr "speciale tekens accenten caps lock alt meta toetsenbordmodel xkb opties"
+
+msgid "Keyboard shortcuts"
+msgstr "Sneltoetsen"
+
+msgid "hotkeys key bindings global shortcut meta"
+msgstr "sneltoetsen toetscombinaties globale sneltoets meta"
+
+msgid "Touchpad and mouse options"
+msgstr "Opties voor touchpad en muis"
+
+msgid "two finger scrolling edge tap and drag drag lock right click acceleration middle click"
+msgstr "scrollen met twee vingers rand tikken en slepen sleepvergrendeling rechtsklik versnelling middelklik"
+
+msgid "Zoom"
+msgstr "Zoom"
+
+msgid "magnifier enlarge screen"
+msgstr "vergrootglas vergroten scherm zoom"
+
+msgid "Reduce motion"
+msgstr "Minder beweging"
+
+msgid "animations off"
+msgstr "animaties uit beweging"
+
+msgid "Sticky keys"
+msgstr "Plaktoetsen"
+
+msgid "modifier keys shift"
+msgstr "aanpassingstoetsen shift plaktoetsen"
+
+msgid "Cursor size"
+msgstr "Cursorgrootte"
+
+msgid "pointer large mouse"
+msgstr "aanwijzer groot muis cursor"
+
+msgid "Screen lock"
+msgstr "Schermvergrendeling"
+
+msgid "lock password idle security"
+msgstr "vergrendelen wachtwoord inactief beveiliging"
+
+msgid "File search"
+msgstr "Bestanden zoeken"
+
+msgid "indexing baloo search files"
+msgstr "indexeren baloo zoeken bestanden"
+
+msgid "Recent files"
+msgstr "Recente bestanden"
+
+msgid "history clear activity"
+msgstr "geschiedenis wissen activiteit recent"
+
+msgid "Password"
+msgstr "Wachtwoord"
+
+msgid "change password login"
+msgstr "wachtwoord wijzigen inloggen"
+
+msgid "Account picture"
+msgstr "Accountfoto"
+
+msgid "avatar photo face user"
+msgstr "avatar foto gezicht gebruiker"
+
+msgid "Name"
+msgstr "Naam"
+
+msgid "full name user"
+msgstr "volledige naam gebruiker"
+
+msgid "Accounts"
+msgstr "Accounts"
+
+msgid "users people add account administrator delete user"
+msgstr "gebruikers mensen account toevoegen beheerder gebruiker verwijderen"
+
+msgid "Date & time"
+msgstr "Datum en tijd"
+
+msgid "clock time zone automatic 24-hour"
+msgstr "klok tijdzone automatisch 24-uurs datum tijd"
+
+msgid "Language & region"
+msgstr "Taal en regio"
+
+msgid "language translation locale formats region"
+msgstr "taal vertaling locale notaties regio"
+
+msgid "Detailed formats"
+msgstr "Gedetailleerde notaties"
+
+msgid "numbers currency money measurement units paper size metric imperial date format"
+msgstr "getallen valuta geld maateenheden papierformaat metrisch imperiaal datumnotatie"
+
+msgid "Software updates"
+msgstr "Software-updates"
+
+msgid "upgrade packages install security"
+msgstr "upgrade pakketten installeren beveiliging updates"
+
+msgid "Drivers"
+msgstr "Stuurprogramma's"
+
+msgid "graphics card video nvidia gpu driver"
+msgstr "grafische kaart videokaart nvidia gpu stuurprogramma driver"
+
+msgid "Storage"
+msgstr "Opslag"
+
+msgid "disk space free trash"
+msgstr "schijf ruimte vrij prullenbak opslag"
+
+msgid "Bring files from Windows"
+msgstr "Bestanden van Windows overzetten"
+
+msgid "windows migrate move transfer copy documents pictures wallpaper bookmarks usb old computer"
+msgstr "windows overstappen verhuizen overzetten kopiëren documenten afbeeldingen achtergrond bladwijzers usb oude computer"
+
+msgid "More settings"
+msgstr "Meer instellingen"
+
+msgid "advanced kde modules shortcuts fonts"
+msgstr "geavanceerd kde modules sneltoetsen lettertypen"
+
+msgid "Device name"
+msgstr "Apparaatnaam"
+
+msgid "hostname computer name"
+msgstr "hostnaam computernaam"
+
+msgid "System information"
+msgstr "Systeeminformatie"
+
+msgid "version hardware processor memory graphics kernel"
+msgstr "versie hardware processor geheugen grafisch kernel"
+
+msgid "Legal information"
+msgstr "Juridische informatie"
+
+msgid "licenses copyright authors credits open source"
+msgstr "licenties copyright auteurs dankbetuiging open source"
+
+msgid "Section"
+msgstr "Onderdeel"
+
+msgid "Nothing found"
+msgstr "Niets gevonden"
+
+msgid "Try another word, like “Wi-Fi”, “wallpaper” or “password”."
+msgstr "Probeer een ander woord, zoals “wifi”, “achtergrond” of “wachtwoord”."
+
+msgid "Screen brightness"
+msgstr "Schermhelderheid"
+
+msgid "Night Light makes the screen warmer, which is easier on the eyes in the evening."
+msgstr "Nachtlicht maakt het scherm warmer, wat 's avonds prettiger is voor je ogen."
+
+msgid "Use Night Light"
+msgstr "Nachtlicht gebruiken"
+
+msgid "Paused for now"
+msgstr "Voorlopig gepauzeerd"
+
+msgid "On now"
+msgstr "Nu aan"
+
+msgid "Waiting for the evening"
+msgstr "Wacht op de avond"
+
+msgid "Off"
+msgstr "Uit"
+
+msgid "Schedule"
+msgstr "Planning"
+
+msgid "Always on"
+msgstr "Altijd aan"
+
+msgid "Custom times"
+msgstr "Eigen tijden"
+
+msgid "From %1 to %2"
+msgstr "Van %1 tot %2"
+
+msgid "Sunset to sunrise"
+msgstr "Zonsondergang tot zonsopkomst"
+
+msgid "Follows your location"
+msgstr "Volgt je locatie"
+
+msgid "Turns on at"
+msgstr "Gaat aan om"
+
+msgid "Turns off at"
+msgstr "Gaat uit om"
+
+msgid "Warmth"
+msgstr "Warmte"
+
+msgid "%1 K"
+msgstr "%1 K"
+
+msgid "The display settings could not be applied."
+msgstr "De beeldscherminstellingen konden niet worden toegepast."
+
+msgid "%1%"
+msgstr "%1%"
+
+msgid "%1. %2"
+msgstr "%1. %2"
+
+msgid "Screen"
+msgstr "Scherm"
+
+msgid "Use this screen"
+msgstr "Dit scherm gebruiken"
+
+msgid "Main screen"
+msgstr "Hoofdscherm"
+
+msgid "Holds the panel and new windows"
+msgstr "Bevat het paneel en nieuwe vensters"
+
+msgid "Recommended"
+msgstr "Aanbevolen"
+
+msgid "%1 Hz"
+msgstr "%1 Hz"
+
+msgid "Landscape"
+msgstr "Liggend"
+
+msgid "Portrait"
+msgstr "Staand"
+
+msgid "Landscape, flipped"
+msgstr "Liggend, omgedraaid"
+
+msgid "Portrait, flipped"
+msgstr "Staand, omgedraaid"
+
+msgid "Position of several screens, mirroring, colour"
+msgstr "Positie van meerdere schermen, spiegelen, kleur"
+
+msgid "Keep these display settings?"
+msgstr "Deze beeldscherminstellingen houden?"
+
+msgid "The previous settings come back in %1 second."
+msgid_plural "The previous settings come back in %1 seconds."
+msgstr[0] "De vorige instellingen komen terug over %1 seconde."
+msgstr[1] "De vorige instellingen komen terug over %1 seconden."
+
+msgid "Keep"
+msgstr "Houden"
+
+msgid "Revert"
+msgstr "Terugzetten"
+
+msgid "Connected"
+msgstr "Verbonden"
+
+msgid "Not connected"
+msgstr "Niet verbonden"
+
+msgid "Disconnect"
+msgstr "Verbinding verbreken"
+
+msgid "Connect"
+msgstr "Verbinden"
+
+msgid "Forget"
+msgstr "Vergeten"
+
+msgid "Device"
+msgstr "Apparaat"
+
+msgid "Connect automatically"
+msgstr "Automatisch verbinden"
+
+msgid "Let the device connect without asking"
+msgstr "Laat het apparaat verbinden zonder te vragen"
+
+msgid "Address"
+msgstr "Adres"
+
+msgid "Rename device"
+msgstr "Apparaat hernoemen"
+
+msgid "Rename"
+msgstr "Naam wijzigen"
+
+msgid "Forget this device?"
+msgstr "Dit apparaat vergeten?"
+
+msgid "To use it again you have to pair it again."
+msgstr "Om het weer te gebruiken moet je het opnieuw koppelen."
+
+msgid "Make sure the device is in pairing mode and close by."
+msgstr "Zorg dat het apparaat in koppelstand staat en dichtbij is."
+
+msgid "The pairing code was wrong. Try again."
+msgstr "De koppelcode was verkeerd. Probeer het opnieuw."
+
+msgid "Pairing was cancelled."
+msgstr "Koppelen is geannuleerd."
+
+msgid "The device didn't answer in time. Try again."
+msgstr "Het apparaat antwoordde niet op tijd. Probeer het opnieuw."
+
+msgid "Couldn't reach the device. Bring it closer and try again."
+msgstr "Het apparaat is niet bereikbaar. Breng het dichterbij en probeer het opnieuw."
+
+msgid "Pairing failed. Try again."
+msgstr "Koppelen mislukt. Probeer het opnieuw."
+
+msgid "Couldn't pair with %1"
+msgstr "Koppelen met %1 is mislukt"
+
+msgid "Paired with %1"
+msgstr "Gekoppeld met %1"
+
+msgid "Searching…"
+msgstr "Zoeken…"
+
+msgid "Search again"
+msgstr "Opnieuw zoeken"
+
+msgid "Available devices"
+msgstr "Beschikbare apparaten"
+
+msgid "No devices found yet."
+msgstr "Nog geen apparaten gevonden."
+
+msgid "If the device asks for a code, Lumo shows it or asks you to type it."
+msgstr "Als het apparaat om een code vraagt, laat Lumo die zien of vraagt Lumo je hem te typen."
+
+msgid "Pairing…"
+msgstr "Koppelen…"
+
+msgid "The quick brown fox jumps over the lazy dog"
+msgstr "Wijzigt Joost Bijl voor 's middags nu ook zijn quiz?"
+
+msgid "Menus, buttons and the text in apps use this typeface."
+msgstr "Menu's, knoppen en de tekst in apps gebruiken dit lettertype."
+
+msgid "Interface"
+msgstr "Interface"
+
+msgid "Typeface"
+msgstr "Lettertype"
+
+msgid "Size"
+msgstr "Grootte"
+
+msgid "%1 pt"
+msgstr "%1 pt"
+
+msgid "Code and terminals"
+msgstr "Code en terminals"
+
+msgid "Restore the Lumo fonts"
+msgstr "De Lumo-lettertypen terugzetten"
+
+msgid "Printers on your network and USB printers are found by themselves. Most need no driver."
+msgstr "Printers op je netwerk en USB-printers worden vanzelf gevonden. De meeste hebben geen stuurprogramma nodig."
+
+msgid "Default"
+msgstr "Standaard"
+
+msgid "Printing"
+msgstr "Bezig met afdrukken"
+
+msgid "Paused"
+msgstr "Gepauzeerd"
+
+msgid "Ready"
+msgstr "Gereed"
+
+msgid "%1 is now the default printer"
+msgstr "%1 is nu de standaardprinter"
+
+msgid "Couldn't change the default printer"
+msgstr "De standaardprinter kon niet worden gewijzigd"
+
+msgid "Test page sent to %1"
+msgstr "Testpagina naar %1 gestuurd"
+
+msgid "Couldn't print a test page"
+msgstr "De testpagina kon niet worden afgedrukt"
+
+msgid "Printers"
+msgstr "Printers"
+
+msgid "Looking for printers…"
+msgstr "Printers zoeken…"
+
+msgid "No printers yet. Turn your printer on and connect it to the same network or with a USB cable."
+msgstr "Nog geen printers. Zet je printer aan en verbind hem met hetzelfde netwerk of met een USB-kabel."
+
+msgid "Test page"
+msgstr "Testpagina"
+
+msgid "Add a printer"
+msgstr "Een printer toevoegen"
+
+msgid "For a printer that isn't found by itself"
+msgstr "Voor een printer die niet vanzelf wordt gevonden"
+
+msgid "Scanners"
+msgstr "Scanners"
+
+msgid "Scan a document"
+msgstr "Een document scannen"
+
+msgid "Scanners on the network and USB scanners work without drivers"
+msgstr "Netwerkscanners en USB-scanners werken zonder stuurprogramma's"
+
+msgid "The scanning app is not installed"
+msgstr "De scanapp is niet geïnstalleerd"
+
+msgid "Print queue and advanced options"
+msgstr "Afdrukwachtrij en geavanceerde opties"
+
+msgid "Jobs, paper, drivers, sharing"
+msgstr "Taken, papier, stuurprogramma's, delen"
+
+msgid "Each format follows the region unless you choose another one"
+msgstr "Elke notatie volgt de regio, tenzij je een andere kiest"
+
+msgid "Numbers"
+msgstr "Getallen"
+
+msgid "Date and time"
+msgstr "Datum en tijd"
+
+msgid "Money"
+msgstr "Geld"
+
+msgid "Units of measurement"
+msgstr "Maateenheden"
+
+msgid "Paper size"
+msgstr "Papierformaat"
+
+msgid "Log out to finish"
+msgstr "Afmelden om af te ronden"
+
+msgid "Apps use the new language and formats after you log in again."
+msgstr "Apps gebruiken de nieuwe taal en notaties nadat je opnieuw bent ingelogd."
+
+msgid "Log out"
+msgstr "Afmelden"
+
+msgid "As in the region"
+msgstr "Zoals in de regio"
+
+msgid "The theme could not be changed."
+msgstr "Het thema kon niet worden gewijzigd."
+
+msgid "The style could not be changed."
+msgstr "De stijl kon niet worden gewijzigd."
+
+msgid "The colour could not be changed."
+msgstr "De kleur kon niet worden gewijzigd."
+
+msgid "Theme"
+msgstr "Thema"
+
+msgid "Applying…"
+msgstr "Toepassen…"
+
+msgid "Dark backgrounds for the system and apps"
+msgstr "Donkere achtergronden voor het systeem en apps"
+
+msgid "Apps, the panel, windows and the live wallpapers take on the chosen colour."
+msgstr "Apps, het paneel, vensters en de live achtergronden krijgen de gekozen kleur."
+
+msgid "Style"
+msgstr "Stijl"
+
+msgid "Shapes, depth, buttons and the quick settings follow the chosen generation of Material."
+msgstr "Vormen, diepte, knoppen en snelle instellingen volgen de gekozen generatie van Material."
+
+msgid "Interface style"
+msgstr "Interfacestijl"
+
+msgid "2021 · Material You"
+msgstr "2021 · Material You"
+
+msgid "2018 · Material Theming"
+msgstr "2018 · Material Theming"
+
+msgid "2014 · paper and ink"
+msgstr "2014 · papier en inkt"
+
+msgid "Live"
+msgstr "Live"
+
+msgid "Your picture"
+msgstr "Jouw afbeelding"
+
+msgid "Choose…"
+msgstr "Kiezen…"
+
+msgid "Use on the lock screen too"
+msgstr "Ook op het vergrendelscherm gebruiken"
+
+msgid "Speed"
+msgstr "Snelheid"
+
+msgid "Normal"
+msgstr "Normaal"
+
+msgid "%1×"
+msgstr "%1×"
+
+msgid "Changing colours"
+msgstr "Wisselende kleuren"
+
+msgid "The shapes slowly move through the palette"
+msgstr "De vormen bewegen langzaam door het palet"
+
+msgid "Pause behind windows"
+msgstr "Pauzeren achter vensters"
+
+msgid "Saves power while a maximised window covers the desktop"
+msgstr "Bespaart energie als een gemaximaliseerd venster het bureaublad bedekt"
+
+msgid "Text and motion"
+msgstr "Tekst en beweging"
+
+msgid "Small"
+msgstr "Klein"
+
+msgid "Large"
+msgstr "Groot"
+
+msgid "Larger"
+msgstr "Groter"
+
+msgid "Faster"
+msgstr "Sneller"
+
+msgid "Slower"
+msgstr "Langzamer"
+
+msgid "Typefaces for the interface and for code"
+msgstr "Lettertypen voor de interface en voor code"
+
+msgid "Choose a picture"
+msgstr "Een afbeelding kiezen"
+
+msgid "Pictures (*.png *.jpg *.jpeg *.webp *.avif *.svg)"
+msgstr "Afbeeldingen (*.png *.jpg *.jpeg *.webp *.avif *.svg)"
+
+msgid "In use"
+msgstr "In gebruik"
+
+msgid "Left"
+msgstr "Links"
+
+msgid "Right"
+msgstr "Rechts"
+
+msgid "Mono"
+msgstr "Mono"
+
+msgid "Front left"
+msgstr "Linksvoor"
+
+msgid "Front right"
+msgstr "Rechtsvoor"
+
+msgid "Front centre"
+msgstr "Middenvoor"
+
+msgid "Rear left"
+msgstr "Linksachter"
+
+msgid "Rear right"
+msgstr "Rechtsachter"
+
+msgid "Rear centre"
+msgstr "Middenachter"
+
+msgid "Side left"
+msgstr "Linkerzijde"
+
+msgid "Side right"
+msgstr "Rechterzijde"
+
+msgid "Subwoofer"
+msgstr "Subwoofer"
+
+msgid "Output"
+msgstr "Uitvoer"
+
+msgid "Input"
+msgstr "Invoer"
+
+msgid "Play sound through this device"
+msgstr "Geluid via dit apparaat afspelen"
+
+msgid "Record sound from this device"
+msgstr "Geluid van dit apparaat opnemen"
+
+msgid "Muted"
+msgstr "Gedempt"
+
+msgid "Mute"
+msgstr "Dempen"
+
+msgid "Connector"
+msgstr "Aansluiting"
+
+msgid "Nothing plugged in"
+msgstr "Niets aangesloten"
+
+msgid "Profile"
+msgstr "Profiel"
+
+msgid "Not available"
+msgstr "Niet beschikbaar"
+
+msgid "Channels"
+msgstr "Kanalen"
+
+msgid "Turn one side down to move the sound towards the other."
+msgstr "Zet één kant zachter om het geluid naar de andere kant te verplaatsen."
+
+msgid "Test speakers"
+msgstr "Luidsprekers testen"
+
+msgid "Click a speaker to play a short sound from it."
+msgstr "Klik op een luidspreker om er een kort geluid uit te laten komen."
+
+msgid "Playing"
+msgstr "Speelt af"
+
+msgid "Set the time automatically"
+msgstr "De tijd automatisch instellen"
+
+msgid "From time servers on the internet"
+msgstr "Via tijdservers op internet"
+
+msgid "Time zone"
+msgstr "Tijdzone"
+
+msgid "Choose a time zone"
+msgstr "Een tijdzone kiezen"
+
+msgid "Set date and time"
+msgstr "Datum en tijd instellen"
+
+msgid "Time and date format"
+msgstr "Notatie van tijd en datum"
+
+msgid "Follows your region"
+msgstr "Volgt je regio"
+
+msgid "Set"
+msgstr "Instellen"
+
+msgid "The time could not be set."
+msgstr "De tijd kon niet worden ingesteld."
+
+msgid "Date (YYYY-MM-DD)"
+msgstr "Datum (JJJJ-MM-DD)"
+
+msgid "Time (HH:MM)"
+msgstr "Tijd (UU:MM)"
+
+msgid "No sound devices"
+msgstr "Geen geluidsapparaten"
+
+msgid "Connect speakers or headphones to hear sound."
+msgstr "Sluit luidsprekers of een koptelefoon aan om geluid te horen."
+
+msgid "Outputs"
+msgstr "Uitvoer"
+
+msgid "Inputs"
+msgstr "Invoer"
+
+msgid "Sound cards"
+msgstr "Geluidskaarten"
+
+msgid "A profile decides which outputs and inputs a card offers, for example stereo, surround or HDMI."
+msgstr "Een profiel bepaalt welke uitgangen en ingangen een kaart biedt, bijvoorbeeld stereo, surround of HDMI."
+
+msgid "Notification sounds"
+msgstr "Meldingsgeluiden"
+
+msgid "Allow volume above 100%"
+msgstr "Volume boven 100% toestaan"
+
+msgid "Up to 150%, which can distort the sound"
+msgstr "Tot 150%, wat het geluid kan vervormen"
+
+msgid "Volume step"
+msgstr "Volumestap"
+
+msgid "Windows and desktops"
+msgstr "Vensters en bureaubladen"
+
+msgid "Desktop and panel"
+msgstr "Bureaublad en paneel"
+
+msgid "Screenshot"
+msgstr "Schermafbeelding"
+
+msgid "Terminal"
+msgstr "Terminal"
+
+msgid "Media"
+msgstr "Media"
+
+msgid "Keyboard layout"
+msgstr "Toetsenbordindeling"
+
+msgid "Power"
+msgstr "Energie"
+
+msgid "Screens"
+msgstr "Schermen"
+
+msgid "Touchpad"
+msgstr "Touchpad"
+
+msgid "Emoji"
+msgstr "Emoji"
+
+msgid "Session"
+msgstr "Sessie"
+
+msgctxt "start the app"
+msgid "Open"
+msgstr "Openen"
+
+msgid "The shortcut could not be changed."
+msgstr "De sneltoets kon niet worden gewijzigd."
+
+msgid "Search shortcuts"
+msgstr "Sneltoetsen zoeken"
+
+msgid "No shortcuts found"
+msgstr "Geen sneltoetsen gevonden"
+
+msgid "Try another word."
+msgstr "Probeer een ander woord."
+
+msgid "None"
+msgstr "Geen"
+
+msgid "Press the new shortcut, or Esc to cancel."
+msgstr "Druk op de nieuwe sneltoets, of op Esc om te annuleren."
+
+msgid "Already used for “%1”. It will be taken from there."
+msgstr "Al in gebruik voor “%1”. Daar wordt hij weggehaald."
+
+msgid "No shortcut"
+msgstr "Geen sneltoets"
+
+msgid "%1 update available"
+msgid_plural "%1 updates available"
+msgstr[0] "%1 update beschikbaar"
+msgstr[1] "%1 updates beschikbaar"
+
+msgid "Security fixes and new versions"
+msgstr "Beveiligingsoplossingen en nieuwe versies"
+
+msgid "Graphics card drivers"
+msgstr "Stuurprogramma's voor de videokaart"
+
+msgid "Free space, trash"
+msgstr "Vrije ruimte, prullenbak"
+
+msgid "Documents, pictures, wallpaper, bookmarks"
+msgstr "Documenten, afbeeldingen, achtergrond, bladwijzers"
+
+msgid "When you log in"
+msgstr "Bij het inloggen"
+
+msgid "Start with an empty desktop"
+msgstr "Beginnen met een leeg bureaublad"
+
+msgid "Reopen the apps that were open"
+msgstr "De apps die open waren weer openen"
+
+msgid "More"
+msgstr "Meer"
+
+msgid "Printers, shortcuts, fonts and every other option"
+msgstr "Printers, sneltoetsen, lettertypen en alle andere opties"
+
+msgid "Advanced keyboard options"
+msgstr "Geavanceerde toetsenbordopties"
+
+msgid "Caps Lock"
+msgstr "Caps Lock"
+
+msgid "Key for extra characters"
+msgstr "Toets voor extra tekens"
+
+msgid "Alt and Meta keys"
+msgstr "Alt- en Meta-toetsen"
+
+msgid "Try your keys here"
+msgstr "Probeer je toetsen hier"
+
+msgid "Keyboard model"
+msgstr "Toetsenbordmodel"
+
+msgid "Special keys"
+msgstr "Speciale toetsen"
+
+msgid "All options"
+msgstr "Alle opties"
+
+msgid "One option is on."
+msgid_plural "%1 options are on."
+msgstr[0] "Eén optie staat aan."
+msgstr[1] "%1 opties staan aan."
+
+msgid "Turn off all options"
+msgstr "Alle opties uitzetten"
+
+msgid "Checking for updates…"
+msgstr "Zoeken naar updates…"
+
+msgid "Your system is up to date"
+msgstr "Je systeem is up-to-date"
+
+msgid "%1 update is available"
+msgid_plural "%1 updates are available"
+msgstr[0] "%1 update is beschikbaar"
+msgstr[1] "%1 updates zijn beschikbaar"
+
+msgid "Installing updates…"
+msgstr "Updates installeren…"
+
+msgid "Updates are installed"
+msgstr "Updates zijn geïnstalleerd"
+
+msgid "Updating did not work"
+msgstr "Bijwerken is niet gelukt"
+
+msgid "The update service is not available."
+msgstr "De updatedienst is niet beschikbaar."
+
+msgid "Restart the computer to finish."
+msgstr "Start de computer opnieuw op om af te ronden."
+
+msgid "Last checked %1"
+msgstr "Laatst gecontroleerd %1"
+
+msgid "Updates come with the installation"
+msgstr "Updates komen met de installatie"
+
+msgid "You are trying Lumo from the installation medium, and nothing installed here is kept. Install Lumo: when the computer is online, the installer brings the new system up to date by itself."
+msgstr "Je probeert Lumo vanaf het installatiemedium, en niets wat je hier installeert blijft bewaard. Installeer Lumo: als de computer online is, werkt het installatieprogramma het nieuwe systeem vanzelf bij."
+
+msgid "Install Lumo"
+msgstr "Lumo installeren"
+
+msgid "Install now"
+msgstr "Nu installeren"
+
+msgid "Restart"
+msgstr "Opnieuw opstarten"
+
+msgid "Check again"
+msgstr "Opnieuw controleren"
+
+msgid "What changes"
+msgstr "Wat er verandert"
+
+msgid "The first layout is used when you log in."
+msgstr "De eerste indeling wordt gebruikt als je inlogt."
+
+msgid "Main layout"
+msgstr "Hoofdindeling"
+
+msgid "Make main layout"
+msgstr "Als hoofdindeling instellen"
+
+msgid "Remove"
+msgstr "Verwijderen"
+
+msgid "Add a layout"
+msgstr "Een indeling toevoegen"
+
+msgid "Switch layouts with"
+msgstr "Indelingen wisselen met"
+
+msgid "Meta+Alt+K"
+msgstr "Meta+Alt+K"
+
+msgid "The desktop shortcut"
+msgstr "De sneltoets van het bureaublad"
+
+msgid "Alt+Shift"
+msgstr "Alt+Shift"
+
+msgid "Ctrl+Shift"
+msgstr "Ctrl+Shift"
+
+msgid "Super+Space (XKB)"
+msgstr "Super+Spatie (XKB)"
+
+msgid "Typing"
+msgstr "Typen"
+
+msgid "Repeat keys"
+msgstr "Toetsen herhalen"
+
+msgid "Holding a key down types it again and again"
+msgstr "Een ingedrukte toets wordt steeds opnieuw getypt"
+
+msgid "Delay before repeating"
+msgstr "Vertraging voor herhalen"
+
+msgid "%1 ms"
+msgstr "%1 ms"
+
+msgid "Repeat speed"
+msgstr "Herhaalsnelheid"
+
+msgid "%1 per second"
+msgstr "%1 per seconde"
+
+msgid "Num Lock at login"
+msgstr "Num Lock bij inloggen"
+
+msgid "On"
+msgstr "Aan"
+
+msgid "Leave as it is"
+msgstr "Laten zoals het is"
+
+msgid "The setting could not be changed."
+msgstr "De instelling kon niet worden gewijzigd."
+
+msgid "Mouse"
+msgstr "Muis"
+
+msgid "Content moves the way your fingers move"
+msgstr "De inhoud beweegt zoals je vingers bewegen"
+
+msgid "Ignore while typing"
+msgstr "Negeren tijdens typen"
+
+msgid "Right button is the primary one"
+msgstr "Rechterknop is de primaire knop"
+
+msgid "For the left hand"
+msgstr "Voor de linkerhand"
+
+msgid "Scrolling speed"
+msgstr "Scrollsnelheid"
+
+msgid "Scrolling, tapping, right click, acceleration"
+msgstr "Scrollen, tikken, rechtsklikken, versnelling"
+
+msgid "Compose key, special keys, keyboard model"
+msgstr "Compose-toets, speciale toetsen, toetsenbordmodel"
+
+msgid "These apps start when you log in."
+msgstr "Deze apps starten als je inlogt."
+
+msgid "Nothing starts at login"
+msgstr "Er start niets bij het inloggen"
+
+msgid "Add an app to have it ready as soon as you log in."
+msgstr "Voeg een app toe om hem klaar te hebben zodra je inlogt."
+
+msgid "Add an app"
+msgstr "Een app toevoegen"
+
+msgid "Start at login"
+msgstr "Starten bij inloggen"
+
+msgid "Warn about low battery at"
+msgstr "Waarschuwen bij lage batterij op"
+
+msgid "Critical battery level"
+msgstr "Kritiek batterijniveau"
+
+msgid "At the critical level"
+msgstr "Bij het kritieke niveau"
+
+msgid "Hibernate"
+msgstr "Slaapstand op schijf"
+
+msgid "Save everything to disk and turn off"
+msgstr "Alles op schijf opslaan en uitzetten"
+
+msgid "Shut down"
+msgstr "Afsluiten"
+
+msgid "Do nothing"
+msgstr "Niets doen"
+
+msgid "Other devices"
+msgstr "Andere apparaten"
+
+msgid "Wireless mice, keyboards, headphones and other devices with their own battery."
+msgstr "Draadloze muizen, toetsenborden, koptelefoons en andere apparaten met een eigen batterij."
+
+msgid "Warn about their low battery at"
+msgstr "Waarschuwen bij hun lage batterij op"
+
+msgid "Power mode for each state"
+msgstr "Energiestand per situatie"
+
+msgid "The power mode switches by itself when the computer changes between these states."
+msgstr "De energiestand wisselt vanzelf als de computer tussen deze situaties wisselt."
+
+msgid "Plugged in"
+msgstr "Aan het stroomnet"
+
+msgid "On battery"
+msgstr "Op batterij"
+
+msgid "Low battery"
+msgstr "Lage batterij"
+
+msgid "Power saver"
+msgstr "Energiebesparing"
+
+msgid "Balanced"
+msgstr "Gebalanceerd"
+
+msgid "Performance"
+msgstr "Prestaties"
+
+msgid "How to sleep"
+msgstr "Hoe te slapen"
+
+msgid "Keeps working in memory, wakes up at once"
+msgstr "Blijft in het geheugen werken, wordt meteen wakker"
+
+msgid "Hybrid sleep"
+msgstr "Hybride slaapstand"
+
+msgid "Also saves to disk in case the power runs out"
+msgstr "Slaat ook op schijf op voor het geval de stroom uitvalt"
+
+msgid "Sleep, then hibernate"
+msgstr "Slaapstand, daarna slaapstand op schijf"
+
+msgid "Hibernates after some time asleep"
+msgstr "Gaat na een tijdje slapen over op slaapstand op schijf"
+
+msgid "Pause media before sleep"
+msgstr "Media pauzeren voor de slaapstand"
+
+msgid "Music and videos stop when the computer goes to sleep"
+msgstr "Muziek en video's stoppen als de computer gaat slapen"
+
+msgid "Several can be on at once"
+msgstr "Er kunnen er meerdere tegelijk aan staan"
+
+msgid "Only one can be on"
+msgstr "Er kan er maar één aan staan"
+
+msgid "Play sound through"
+msgstr "Geluid afspelen via"
+
+msgid "Microphone volume"
+msgstr "Microfoonvolume"
+
+msgid "Record sound from"
+msgstr "Geluid opnemen van"
+
+msgid "Mute microphone"
+msgstr "Microfoon dempen"
+
+msgid "Apps appear here while they play sound."
+msgstr "Apps verschijnen hier terwijl ze geluid afspelen."
+
+msgid "Lumo"
+msgstr "Lumo"
+
+msgid "Ocean"
+msgstr "Oceaan"
+
+msgid "The KDE sounds"
+msgstr "De KDE-geluiden"
+
+msgid "Sounds"
+msgstr "Geluiden"
+
+msgid "Listen"
+msgstr "Luisteren"
+
+msgid "Sound at login"
+msgstr "Geluid bij inloggen"
+
+msgid "A short chime when the desktop is ready"
+msgstr "Een kort geluidje als het bureaublad klaar is"
+
+msgid "Volume change sound"
+msgstr "Geluid bij volumewijziging"
+
+msgid "Play a short sound when the volume changes"
+msgstr "Een kort geluid afspelen als het volume verandert"
+
+msgid "Advanced sound settings"
+msgstr "Geavanceerde geluidsinstellingen"
+
+msgid "Profiles, channel balance, every device"
+msgstr "Profielen, kanaalbalans, elk apparaat"
+
+msgid "Turned on by an app"
+msgstr "Aangezet door een app"
+
+msgid "On until you turn it off"
+msgstr "Aan tot je het uitzet"
+
+msgid "On until %1"
+msgstr "Aan tot %1"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "For one hour"
+msgstr "Een uur lang"
+
+msgid "Until tomorrow morning"
+msgstr "Tot morgenochtend"
+
+msgid "Show critical notifications"
+msgstr "Kritieke meldingen tonen"
+
+msgid "Even while Do Not Disturb is on"
+msgstr "Ook als Niet storen aan staat"
+
+msgid "Quiet while sharing the screen"
+msgstr "Stil tijdens scherm delen"
+
+msgid "Turn on Do Not Disturb while screens are mirrored or shared"
+msgstr "Niet storen aanzetten als schermen worden gespiegeld of gedeeld"
+
+msgid "Pop-ups"
+msgstr "Pop-ups"
+
+msgid "Position"
+msgstr "Positie"
+
+msgid "Near the notification bell"
+msgstr "Bij de meldingsbel"
+
+msgid "Top right"
+msgstr "Rechtsboven"
+
+msgid "Top centre"
+msgstr "Midden boven"
+
+msgid "Top left"
+msgstr "Linksboven"
+
+msgid "Bottom right"
+msgstr "Rechtsonder"
+
+msgid "Bottom centre"
+msgstr "Midden onder"
+
+msgid "Bottom left"
+msgstr "Linksonder"
+
+msgid "Hide pop-ups after"
+msgstr "Pop-ups verbergen na"
+
+msgid "%1 second"
+msgid_plural "%1 seconds"
+msgstr[0] "%1 seconde"
+msgstr[1] "%1 seconden"
+
+msgid "Low-priority notifications"
+msgstr "Meldingen met lage prioriteit"
+
+msgid "Show pop-ups for less important messages"
+msgstr "Pop-ups tonen voor minder belangrijke berichten"
+
+msgid "Progress of file transfers"
+msgstr "Voortgang van bestandsoverdrachten"
+
+msgid "Show copying and downloads as notifications"
+msgstr "Kopiëren en downloads als meldingen tonen"
+
+msgid "Badges on app icons"
+msgstr "Badges op app-iconen"
+
+msgid "Count unread notifications on the taskbar"
+msgstr "Ongelezen meldingen tellen op de taakbalk"
+
+msgid "App notifications"
+msgstr "Appmeldingen"
+
+msgid "Choose which apps may show notifications"
+msgstr "Kies welke apps meldingen mogen tonen"
+
+msgid "Browser: %1"
+msgstr "Browser: %1"
+
+msgid "Browser, email, files and media"
+msgstr "Browser, e-mail, bestanden en media"
+
+msgid "%1 app starts at login"
+msgid_plural "%1 apps start at login"
+msgstr[0] "%1 app start bij inloggen"
+msgstr[1] "%1 apps starten bij inloggen"
+
+msgid "Which apps may show pop-ups"
+msgstr "Welke apps pop-ups mogen tonen"
+
+msgid "File types"
+msgstr "Bestandstypen"
+
+msgid "Choose an app for any kind of file"
+msgstr "Kies een app voor elk soort bestand"
+
+msgid "Shortcuts for apps and the desktop"
+msgstr "Sneltoetsen voor apps en het bureaublad"
+
+msgid "The password was changed."
+msgstr "Het wachtwoord is gewijzigd."
+
+msgid "Administrator"
+msgstr "Beheerder"
+
+msgid "Can install software and change settings for everyone"
+msgstr "Kan software installeren en instellingen voor iedereen wijzigen"
+
+msgid "Set a new password"
+msgstr "Een nieuw wachtwoord instellen"
+
+msgid "When the password is forgotten"
+msgstr "Als het wachtwoord vergeten is"
+
+msgid "Delete the account"
+msgstr "Het account verwijderen"
+
+msgid "New password for %1"
+msgstr "Nieuw wachtwoord voor %1"
+
+msgid "Use at least 8 characters."
+msgstr "Gebruik minstens 8 tekens."
+
+msgid "Change"
+msgstr "Wijzigen"
+
+msgid "New password"
+msgstr "Nieuw wachtwoord"
+
+msgid "At least 8 characters"
+msgstr "Minstens 8 tekens"
+
+msgid "Repeat the new password"
+msgstr "Herhaal het nieuwe wachtwoord"
+
+msgid "The passwords are different"
+msgstr "De wachtwoorden zijn verschillend"
+
+msgid "Delete %1?"
+msgstr "%1 verwijderen?"
+
+msgid "The account can no longer log in."
+msgstr "Met het account kan niet meer worden ingelogd."
+
+msgid "Delete"
+msgstr "Verwijderen"
+
+msgid "Delete their files too"
+msgstr "Ook hun bestanden verwijderen"
+
+msgid "Documents, pictures and everything else in the home folder"
+msgstr "Documenten, afbeeldingen en al het andere in de persoonlijke map"
+
+msgid "No mouse or touchpad"
+msgstr "Geen muis of touchpad"
+
+msgid "Connect a mouse or a touchpad to set it up."
+msgstr "Sluit een muis of touchpad aan om die in te stellen."
+
+msgid "Use the touchpad"
+msgstr "Het touchpad gebruiken"
+
+msgid "Turn off while a mouse is connected"
+msgstr "Uitzetten als er een muis is aangesloten"
+
+msgid "Pointer acceleration"
+msgstr "Versnelling van de aanwijzer"
+
+msgid "Faster movements take the pointer further"
+msgstr "Snellere bewegingen brengen de aanwijzer verder"
+
+msgid "Scrolling"
+msgstr "Scrollen"
+
+msgid "With two fingers"
+msgstr "Met twee vingers"
+
+msgid "Along the right edge"
+msgstr "Langs de rechterrand"
+
+msgid "Scroll while holding a button"
+msgstr "Scrollen met een ingedrukte knop"
+
+msgid "Hold the middle button and move the mouse"
+msgstr "Houd de middelste knop ingedrukt en beweeg de muis"
+
+msgid "Right click"
+msgstr "Rechtsklikken"
+
+msgid "Press the bottom right corner"
+msgstr "Druk op de rechterbenedenhoek"
+
+msgid "Press with two fingers"
+msgstr "Druk met twee vingers"
+
+msgid "Tap and drag"
+msgstr "Tikken en slepen"
+
+msgid "Tap, then touch again and move to drag"
+msgstr "Tik, raak daarna opnieuw aan en beweeg om te slepen"
+
+msgid "Drag lock"
+msgstr "Sleepvergrendeling"
+
+msgid "Lifting the finger for a moment does not drop what you drag"
+msgstr "Als je je vinger even optilt, laat je niet los wat je sleept"
+
+msgid "Two-finger tap"
+msgstr "Tikken met twee vingers"
+
+msgid "Three fingers: middle click"
+msgstr "Drie vingers: middelklik"
+
+msgid "Middle click"
+msgstr "Middelklik"
+
+msgid "Three fingers: right click"
+msgstr "Drie vingers: rechtsklik"
+
+msgid "Middle click with both buttons"
+msgstr "Middelklik met beide knoppen"
+
+msgid "Press the left and right buttons together"
+msgstr "Druk de linker- en rechterknop tegelijk in"
+
+msgid "Restore defaults"
+msgstr "Standaardwaarden terugzetten"
+
+msgid "Your password was changed."
+msgstr "Je wachtwoord is gewijzigd."
+
+msgid "Administrator · %1"
+msgstr "Beheerder · %1"
+
+msgid "Your account"
+msgstr "Je account"
+
+msgid "Not set"
+msgstr "Niet ingesteld"
+
+msgid "Picture"
+msgstr "Foto"
+
+msgid "Choose a picture or a photo of your own"
+msgstr "Kies een afbeelding of een eigen foto"
+
+msgid "Used to log in, unlock the screen and install software"
+msgstr "Gebruikt om in te loggen, het scherm te ontgrendelen en software te installeren"
+
+msgid "Other accounts"
+msgstr "Andere accounts"
+
+msgid "Manage accounts"
+msgstr "Accounts beheren"
+
+msgid "Add people who use this computer"
+msgstr "Mensen toevoegen die deze computer gebruiken"
+
+msgid "Your name"
+msgstr "Je naam"
+
+msgid "Shown on the login screen and in the launcher."
+msgstr "Wordt getoond op het inlogscherm en in het startmenu."
+
+msgid "Save"
+msgstr "Opslaan"
+
+msgid "Full name"
+msgstr "Volledige naam"
+
+msgid "Choose a file…"
+msgstr "Een bestand kiezen…"
+
+msgid "Pictures (*.png *.jpg *.jpeg *.webp *.avif)"
+msgstr "Afbeeldingen (*.png *.jpg *.jpeg *.webp *.avif)"
+
+msgid "Change password"
+msgstr "Wachtwoord wijzigen"
+
+msgid "Use at least 8 characters. The system asks for your current password to confirm."
+msgstr "Gebruik minstens 8 tekens. Het systeem vraagt ter bevestiging om je huidige wachtwoord."
+
+msgid "Every option of the system, including the rarely used ones."
+msgstr "Elke optie van het systeem, ook de zelden gebruikte."
+
+msgid "Filter"
+msgstr "Filteren"
+
+msgid "Nothing matches."
+msgstr "Niets komt overeen."
+
+msgid "Lumo finds the drivers your hardware needs and installs them by itself."
+msgstr "Lumo vindt de stuurprogramma's die je hardware nodig heeft en installeert ze vanzelf."
+
+msgid "NVIDIA graphics card"
+msgstr "NVIDIA-videokaart"
+
+msgid "Looking at your hardware…"
+msgstr "Je hardware bekijken…"
+
+msgid "No extra drivers are needed"
+msgstr "Er zijn geen extra stuurprogramma's nodig"
+
+msgid "Installing the driver…"
+msgstr "Het stuurprogramma installeren…"
+
+msgid "Removing the driver…"
+msgstr "Het stuurprogramma verwijderen…"
+
+msgid "Restart to use the driver"
+msgstr "Start opnieuw op om het stuurprogramma te gebruiken"
+
+msgid "The driver is installed"
+msgstr "Het stuurprogramma is geïnstalleerd"
+
+msgid "The driver could not be installed"
+msgstr "Het stuurprogramma kon niet worden geïnstalleerd"
+
+msgid "Your graphics card works with the drivers built into Lumo."
+msgstr "Je videokaart werkt met de stuurprogramma's die in Lumo zitten."
+
+msgid "Lumo could not start this. Install the latest updates and try again."
+msgstr "Lumo kon dit niet starten. Installeer de nieuwste updates en probeer het opnieuw."
+
+msgid "The installer sets up the driver for %1 when the computer is online."
+msgstr "Het installatieprogramma stelt het stuurprogramma voor %1 in als de computer online is."
+
+msgid "NVIDIA no longer makes a driver for this card. It keeps working with the open driver built into Lumo."
+msgstr "NVIDIA maakt geen stuurprogramma meer voor deze kaart. Hij blijft werken met het open stuurprogramma dat in Lumo zit."
+
+msgid "Lumo is downloading the driver for %1 and installing it. It takes a few minutes, and you can keep working."
+msgstr "Lumo downloadt het stuurprogramma voor %1 en installeert het. Dat duurt een paar minuten, en je kunt gewoon doorwerken."
+
+msgid "Lumo is removing the NVIDIA driver."
+msgstr "Lumo verwijdert het NVIDIA-stuurprogramma."
+
+msgid "The driver for %1 is installed. It starts working after a restart."
+msgstr "Het stuurprogramma voor %1 is geïnstalleerd. Het werkt na een herstart."
+
+msgid "%1 uses the NVIDIA driver %2."
+msgstr "%1 gebruikt het NVIDIA-stuurprogramma %2."
+
+msgid "%1 uses the NVIDIA driver."
+msgstr "%1 gebruikt het NVIDIA-stuurprogramma."
+
+msgid "The NVIDIA driver cannot load while Secure Boot is on. Turn Secure Boot off in the computer's firmware settings, then try again."
+msgstr "Het NVIDIA-stuurprogramma kan niet laden zolang Secure Boot aan staat. Zet Secure Boot uit in de firmware-instellingen van de computer en probeer het opnieuw."
+
+msgid "Check the internet connection and try again."
+msgstr "Controleer de internetverbinding en probeer het opnieuw."
+
+msgid "There is no internet connection. The driver for %1 will be installed when the computer is online."
+msgstr "Er is geen internetverbinding. Het stuurprogramma voor %1 wordt geïnstalleerd als de computer online is."
+
+msgid "The NVIDIA driver is removed and stops being used after a restart."
+msgstr "Het NVIDIA-stuurprogramma is verwijderd en wordt na een herstart niet meer gebruikt."
+
+msgid "The NVIDIA driver will be installed automatically as soon as the computer is online."
+msgstr "Het NVIDIA-stuurprogramma wordt automatisch geïnstalleerd zodra de computer online is."
+
+msgid "Install the NVIDIA driver to get the full speed of this card."
+msgstr "Installeer het NVIDIA-stuurprogramma om de volledige snelheid van deze kaart te krijgen."
+
+msgid "Try again"
+msgstr "Opnieuw proberen"
+
+msgid "Remove the driver"
+msgstr "Het stuurprogramma verwijderen"
+
+msgid "Install drivers automatically"
+msgstr "Stuurprogramma's automatisch installeren"
+
+msgid "When a graphics card needs a driver, Lumo installs it and asks you to restart"
+msgstr "Als een videokaart een stuurprogramma nodig heeft, installeert Lumo het en vraagt je opnieuw op te starten"
+
+msgid "Copy your documents, pictures and more from a Windows drive or a USB stick. Nothing on the Windows drive is changed."
+msgstr "Kopieer je documenten, afbeeldingen en meer van een Windows-schijf of een USB-stick. Er verandert niets op de Windows-schijf."
+
+msgid "Documents"
+msgstr "Documenten"
+
+msgid "Pictures"
+msgstr "Afbeeldingen"
+
+msgid "Music"
+msgstr "Muziek"
+
+msgid "Videos"
+msgstr "Video's"
+
+msgid "Desktop"
+msgstr "Bureaublad"
+
+msgid "Downloads"
+msgstr "Downloads"
+
+msgid "Windows is still holding this drive. Shut Windows down fully, without Fast Startup, and try again."
+msgstr "Windows houdt deze schijf nog vast. Sluit Windows volledig af, zonder Snel opstarten, en probeer het opnieuw."
+
+msgid "Couldn't open %1"
+msgstr "%1 kon niet worden geopend"
+
+msgid "Your files are here"
+msgstr "Je bestanden staan klaar"
+
+msgid "Windows wallpaper"
+msgstr "Windows-achtergrond"
+
+msgid "Bookmarks from %1"
+msgstr "Bladwijzers uit %1"
+
+msgid "There is nothing to copy from this place"
+msgstr "Er is niets om van deze plek te kopiëren"
+
+msgid "Choose the folder with your files"
+msgstr "Kies de map met je bestanden"
+
+msgid "Where are your files?"
+msgstr "Waar staan je bestanden?"
+
+msgid "Looking for Windows drives…"
+msgstr "Windows-schijven zoeken…"
+
+msgid "No Windows drive or USB stick found. Connect one, or choose a folder."
+msgstr "Geen Windows-schijf of USB-stick gevonden. Sluit er een aan of kies een map."
+
+msgid "Drive %1"
+msgstr "Schijf %1"
+
+msgid "Not opened yet"
+msgstr "Nog niet geopend"
+
+msgid "Opening…"
+msgstr "Openen…"
+
+msgid "Open"
+msgstr "Openen"
+
+msgid "Selected"
+msgstr "Geselecteerd"
+
+msgid "Choose a folder"
+msgstr "Een map kiezen"
+
+msgid "For files you copied to a USB stick yourself"
+msgstr "Voor bestanden die je zelf op een USB-stick hebt gezet"
+
+msgid "Look again"
+msgstr "Opnieuw zoeken"
+
+msgid "What to bring"
+msgstr "Wat wil je meenemen?"
+
+msgid "Files you already have here are kept; nothing is overwritten. Bookmarks are saved in Documents: open them in LibreWolf with Bookmarks › Manage bookmarks › Import and Backup › Import Bookmarks from HTML."
+msgstr "Bestanden die je hier al hebt, blijven staan; er wordt niets overschreven. Bladwijzers worden in Documenten opgeslagen: open ze in LibreWolf via Bladwijzers › Bladwijzers beheren › Importeren en back-up › Bladwijzers importeren uit HTML."
+
+msgid "Browser bookmarks"
+msgstr "Bladwijzers van de browser"
+
+msgid "From Edge, Chrome and Brave"
+msgstr "Uit Edge, Chrome en Brave"
+
+msgid "Copying %1…"
+msgstr "%1 kopiëren…"
+
+msgid "Bring my files"
+msgstr "Mijn bestanden meenemen"
+
+msgid "Done"
+msgstr "Klaar"
+
+msgid "Copied"
+msgstr "Gekopieerd"
+
+msgid "Some files could not be copied"
+msgstr "Sommige bestanden konden niet worden gekopieerd"
+
+msgid "Open Files"
+msgstr "Bestanden openen"
+
+msgid "Never"
+msgstr "Nooit"
+
+msgid "After %1 minute"
+msgid_plural "After %1 minutes"
+msgstr[0] "Na %1 minuut"
+msgstr[1] "Na %1 minuten"
+
+msgid "After %1 hour"
+msgid_plural "After %1 hours"
+msgstr[0] "Na %1 uur"
+msgstr[1] "Na %1 uur"
+
+msgid "Fully charged"
+msgstr "Volledig opgeladen"
+
+msgid "Charging"
+msgstr "Opladen"
+
+msgid "On battery power"
+msgstr "Op batterijstroom"
+
+msgid "Faster, but uses more power and may run warmer."
+msgstr "Sneller, maar gebruikt meer stroom en kan warmer worden."
+
+msgid "Longer battery life; the computer may feel slower."
+msgstr "Langere batterijduur; de computer kan trager aanvoelen."
+
+msgid "A balance of speed and battery life."
+msgstr "Een balans tussen snelheid en batterijduur."
+
+msgid "Dim the screen"
+msgstr "Het scherm dimmen"
+
+msgid "Turn off the screen"
+msgstr "Het scherm uitzetten"
+
+msgid "Sleep when inactive"
+msgstr "Slaapstand bij inactiviteit"
+
+msgid "Power button"
+msgstr "Aan-uitknop"
+
+msgid "Ask what to do"
+msgstr "Vragen wat er moet gebeuren"
+
+msgid "Lock the screen"
+msgstr "Het scherm vergrendelen"
+
+msgid "When the lid is closed"
+msgstr "Als het deksel dicht gaat"
+
+msgid "Low battery, other devices, sleep"
+msgstr "Lage batterij, andere apparaten, slaapstand"
+
+msgid "The name could not be changed."
+msgstr "De naam kon niet worden gewijzigd."
+
+msgid "Based on Debian %1"
+msgstr "Gebaseerd op Debian %1"
+
+msgid "Processor: %1"
+msgstr "Processor: %1"
+
+msgid "Memory: %1"
+msgstr "Geheugen: %1"
+
+msgid "Graphics: %1"
+msgstr "Grafisch: %1"
+
+msgid "Kernel: %1"
+msgstr "Kernel: %1"
+
+msgid "Desktop: KDE Plasma %1, Frameworks %2, Qt %3"
+msgstr "Bureaublad: KDE Plasma %1, Frameworks %2, Qt %3"
+
+msgid "Version %1"
+msgstr "Versie %1"
+
+msgid "Running from the installation medium"
+msgstr "Draait vanaf het installatiemedium"
+
+msgid "This computer"
+msgstr "Deze computer"
+
+msgid "Model"
+msgstr "Model"
+
+msgid "Processor"
+msgstr "Processor"
+
+msgid "%2, %1 thread"
+msgid_plural "%2, %1 threads"
+msgstr[0] "%2, %1 thread"
+msgstr[1] "%2, %1 threads"
+
+msgid "Memory"
+msgstr "Geheugen"
+
+msgid "%1, %2 available"
+msgstr "%1, %2 beschikbaar"
+
+msgid "Graphics"
+msgstr "Grafisch"
+
+msgid "Software"
+msgstr "Software"
+
+msgid "Based on"
+msgstr "Gebaseerd op"
+
+msgid "Debian %1"
+msgstr "Debian %1"
+
+msgid "Kernel"
+msgstr "Kernel"
+
+msgid "KDE Plasma"
+msgstr "KDE Plasma"
+
+msgid "KDE Frameworks"
+msgstr "KDE Frameworks"
+
+msgid "Qt"
+msgstr "Qt"
+
+msgid "Graphics platform"
+msgstr "Grafisch platform"
+
+msgid "Licences, authors and copyrights of the software in Lumo"
+msgstr "Licenties, auteurs en auteursrechten van de software in Lumo"
+
+msgid "Copy system details"
+msgstr "Systeemgegevens kopiëren"
+
+msgid "For a bug report or a support request"
+msgstr "Voor een foutmelding of een hulpvraag"
+
+msgid "System details copied."
+msgstr "Systeemgegevens gekopieerd."
+
+msgid "Other devices on the network and Bluetooth see this computer by this name."
+msgstr "Andere apparaten op het netwerk en via Bluetooth zien deze computer onder deze naam."
+
+msgid "Nothing more to set up"
+msgstr "Niets meer in te stellen"
+
+msgid "Connect another screen to arrange them, or use Display & brightness for this one."
+msgstr "Sluit nog een scherm aan om ze te schikken, of gebruik Beeldscherm en helderheid voor dit scherm."
+
+msgid "Drag a screen to where it stands on your desk. Screens snap to each other's edges."
+msgstr "Sleep een scherm naar waar het op je bureau staat. Schermen klikken aan elkaars randen vast."
+
+msgid "Mirroring"
+msgstr "Spiegelen"
+
+msgid "What %1 shows"
+msgstr "Wat %1 laat zien"
+
+msgid "Its own picture"
+msgstr "Een eigen beeld"
+
+msgid "The same as %1"
+msgstr "Hetzelfde als %1"
+
+msgid "Adaptive sync"
+msgstr "Adaptive sync"
+
+msgid "In full-screen games and videos"
+msgstr "In games en video's op volledig scherm"
+
+msgid "Always"
+msgstr "Altijd"
+
+msgid "Colour range"
+msgstr "Kleurbereik"
+
+msgid "Automatic"
+msgstr "Automatisch"
+
+msgid "Full"
+msgstr "Volledig"
+
+msgid "For computer monitors"
+msgstr "Voor computermonitoren"
+
+msgid "Limited"
+msgstr "Beperkt"
+
+msgid "For TVs that show grey instead of black"
+msgstr "Voor tv's die grijs tonen in plaats van zwart"
+
+msgid "HDR"
+msgstr "HDR"
+
+msgid "Brighter highlights in apps and videos that support it"
+msgstr "Fellere hooglichten in apps en video's die dit ondersteunen"
+
+msgid "Overscan"
+msgstr "Overscan"
+
+msgid "Colour profile"
+msgstr "Kleurprofiel"
+
+msgid "Choose a colour profile"
+msgstr "Een kleurprofiel kiezen"
+
+msgid "Colour profiles (*.icc *.icm)"
+msgstr "Kleurprofielen (*.icc *.icm)"
+
+msgid "Remove the colour profile"
+msgstr "Het kleurprofiel verwijderen"
+
+msgid "Lock the screen automatically"
+msgstr "Het scherm automatisch vergrendelen"
+
+msgid "Lock after waking up"
+msgstr "Vergrendelen na ontwaken"
+
+msgid "Ask for the password when the computer wakes from sleep"
+msgstr "Om het wachtwoord vragen als de computer uit de slaapstand komt"
+
+msgid "Unlock without a password for"
+msgstr "Zonder wachtwoord ontgrendelen tot"
+
+msgid "No time"
+msgstr "Geen tijd"
+
+msgid "%1 second after locking"
+msgid_plural "%1 seconds after locking"
+msgstr[0] "%1 seconde na vergrendelen"
+msgstr[1] "%1 seconden na vergrendelen"
+
+msgid "Lock now"
+msgstr "Nu vergrendelen"
+
+msgid "The index stays on this computer. It lets search find files by name and by what they contain."
+msgstr "De index blijft op deze computer. Daarmee vindt zoeken bestanden op naam en op inhoud."
+
+msgid "Index files for search"
+msgstr "Bestanden indexeren voor zoeken"
+
+msgid "Only file names"
+msgstr "Alleen bestandsnamen"
+
+msgid "Don't look inside documents"
+msgstr "Niet in documenten kijken"
+
+msgid "The history of recent files was cleared."
+msgstr "De geschiedenis van recente bestanden is gewist."
+
+msgid "History"
+msgstr "Geschiedenis"
+
+msgid "Remember recently used files"
+msgstr "Recent gebruikte bestanden onthouden"
+
+msgid "Show them in the launcher, in Files and in apps"
+msgstr "Toon ze in het startmenu, in Bestanden en in apps"
+
+msgid "Clear history"
+msgstr "Geschiedenis wissen"
+
+msgid "Forget recently used files and folders"
+msgstr "Recent gebruikte bestanden en mappen vergeten"
+
+msgid "Clear history?"
+msgstr "Geschiedenis wissen?"
+
+msgid "Lists of recently used files and folders are emptied. The files themselves stay."
+msgstr "Lijsten met recent gebruikte bestanden en mappen worden leeggemaakt. De bestanden zelf blijven staan."
+
+msgid "Clear"
+msgstr "Wissen"
+
+msgid "More accessibility options"
+msgstr "Meer opties voor toegankelijkheid"
+
+msgid "Lock a key pressed twice"
+msgstr "Een toets vergrendelen die twee keer wordt ingedrukt"
+
+msgid "Press Shift twice and it stays on until you press it again"
+msgstr "Druk twee keer op Shift en hij blijft aan tot je hem weer indrukt"
+
+msgid "Turn off when two keys are pressed together"
+msgstr "Uitzetten als twee toetsen tegelijk worden ingedrukt"
+
+msgid "Sound when a modifier key is used"
+msgstr "Geluid als een aanpassingstoets wordt gebruikt"
+
+msgid "Key delays"
+msgstr "Toetsvertragingen"
+
+msgid "Hold a key for"
+msgstr "Een toets ingedrukt houden gedurende"
+
+msgid "Ignore repeated presses for"
+msgstr "Herhaalde aanslagen negeren gedurende"
+
+msgid "Keyboard"
+msgstr "Toetsenbord"
+
+msgid "Turn features on with the keyboard"
+msgstr "Functies aanzetten met het toetsenbord"
+
+msgid "Press Shift five times for sticky keys, or hold it for eight seconds for slow keys"
+msgstr "Druk vijf keer op Shift voor plaktoetsen, of houd hem acht seconden ingedrukt voor langzame toetsen"
+
+msgid "Sound for Caps Lock and Num Lock"
+msgstr "Geluid voor Caps Lock en Num Lock"
+
+msgid "Pointer"
+msgstr "Aanwijzer"
+
+msgid "Move the pointer with the number keys"
+msgstr "De aanwijzer bewegen met de cijfertoetsen"
+
+msgid "The keys around 5 move it, 5 clicks"
+msgstr "De toetsen rond de 5 bewegen hem, de 5 klikt"
+
+msgid "Pointer speed with the keys"
+msgstr "Aanwijzersnelheid met de toetsen"
+
+msgid "Slow"
+msgstr "Langzaam"
+
+msgid "Fast"
+msgstr "Snel"
+
+msgid "Shake the pointer to find it"
+msgstr "Schud de aanwijzer om hem te vinden"
+
+msgid "Shaking the mouse makes the pointer bigger for a moment"
+msgstr "Als je de muis schudt, wordt de aanwijzer even groter"
+
+msgid "Alerts"
+msgstr "Waarschuwingen"
+
+msgid "Play the system bell"
+msgstr "De systeembel laten klinken"
+
+msgid "A short sound when an app asks for attention"
+msgstr "Een kort geluid als een app om aandacht vraagt"
+
+msgid "%1% battery"
+msgstr "%1% batterij"
+
+msgid "No Bluetooth adapter"
+msgstr "Geen Bluetooth-adapter"
+
+msgid "This computer has no Bluetooth, or its adapter is switched off in hardware."
+msgstr "Deze computer heeft geen Bluetooth, of de adapter is in de hardware uitgeschakeld."
+
+msgid "Use Bluetooth"
+msgstr "Bluetooth gebruiken"
+
+msgid "Visible to nearby devices as “%1” while this page is open."
+msgstr "Zichtbaar voor apparaten in de buurt als “%1” zolang deze pagina open is."
+
+msgid "Your devices"
+msgstr "Je apparaten"
+
+msgid "No paired devices yet."
+msgstr "Nog geen gekoppelde apparaten."
+
+msgid "Device details"
+msgstr "Apparaatgegevens"
+
+msgid "Headphones, speakers, keyboards, mice, phones"
+msgstr "Koptelefoons, speakers, toetsenborden, muizen, telefoons"
+
+msgid "People who use this computer"
+msgstr "Mensen die deze computer gebruiken"
+
+msgid "The account “%1” was added."
+msgstr "Het account “%1” is toegevoegd."
+
+msgid "(you)"
+msgstr "(jij)"
+
+msgid "Standard account"
+msgstr "Standaardaccount"
+
+msgid "Add an account"
+msgstr "Een account toevoegen"
+
+msgid "Only an administrator can add accounts."
+msgstr "Alleen een beheerder kan accounts toevoegen."
+
+msgid "Add"
+msgstr "Toevoegen"
+
+msgid "User name"
+msgstr "Gebruikersnaam"
+
+msgid "Used to log in; small Latin letters and digits"
+msgstr "Gebruikt om in te loggen; kleine Latijnse letters en cijfers"
+
+msgid "Repeat the password"
+msgstr "Herhaal het wachtwoord"
+
+msgid "Seeing"
+msgstr "Zien"
+
+msgid "Magnify the screen with Meta and + or −; Meta and 0 goes back"
+msgstr "Vergroot het scherm met Meta en + of −; Meta en 0 zet het terug"
+
+msgid "Largest"
+msgstr "Grootst"
+
+msgid "Colour filter"
+msgstr "Kleurfilter"
+
+msgid "Red-green (protanopia)"
+msgstr "Rood-groen (protanopie)"
+
+msgid "Green-red (deuteranopia)"
+msgstr "Groen-rood (deuteranopie)"
+
+msgid "Blue-yellow (tritanopia)"
+msgstr "Blauw-geel (tritanopie)"
+
+msgid "Greyscale"
+msgstr "Grijstinten"
+
+msgid "Motion and sound"
+msgstr "Beweging en geluid"
+
+msgid "Turn off animations everywhere"
+msgstr "Animaties overal uitzetten"
+
+msgid "Flash the screen for alerts"
+msgstr "Het scherm laten flitsen bij waarschuwingen"
+
+msgid "Show the system bell instead of only playing it"
+msgstr "De systeembel tonen in plaats van alleen te laten klinken"
+
+msgid "Screen reader"
+msgstr "Schermlezer"
+
+msgid "Orca reads out what is on the screen"
+msgstr "Orca leest voor wat er op het scherm staat"
+
+msgid "Press Shift, Ctrl or Alt one after another instead of together"
+msgstr "Druk Shift, Ctrl of Alt na elkaar in in plaats van tegelijk"
+
+msgid "Slow keys"
+msgstr "Langzame toetsen"
+
+msgid "A key counts only when held down for a moment"
+msgstr "Een toets telt pas als hij even ingedrukt blijft"
+
+msgid "Bounce keys"
+msgstr "Stuitertoetsen"
+
+msgid "Ignore a key pressed again too quickly"
+msgstr "Een toets negeren die te snel opnieuw wordt ingedrukt"
+
+msgid "The apps that open links, folders and files."
+msgstr "De apps die links, mappen en bestanden openen."
+
+msgid "Project website"
+msgstr "Website van het project"
+
+msgid "The licence text is not installed."
+msgstr "De licentietekst is niet geïnstalleerd."
+
+msgid "Language"
+msgstr "Taal"
+
+msgid "Region"
+msgstr "Regio"
+
+msgid "Formats of region"
+msgstr "Notaties van regio"
+
+msgid "Examples"
+msgstr "Voorbeelden"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Time"
+msgstr "Tijd"
+
+msgid "Separate settings for numbers, time, currency and measurement units"
+msgstr "Aparte instellingen voor getallen, tijd, valuta en maateenheden"
+
+msgid "Saved network"
+msgstr "Opgeslagen netwerk"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Settings"
+msgstr "Instellingen"
+
+msgid "Edit connection"
+msgstr "Verbinding bewerken"
+
+msgid "Password, automatic connection, IP addresses, DNS"
+msgstr "Wachtwoord, automatisch verbinden, IP-adressen, DNS"
+
+msgid "Forget “%1”?"
+msgstr "“%1” vergeten?"
+
+msgid "The saved password is removed. You can connect again later by entering it."
+msgstr "Het opgeslagen wachtwoord wordt verwijderd. Je kunt later opnieuw verbinden door het in te voeren."
+
+msgid "The saved settings of this connection are removed."
+msgstr "De opgeslagen instellingen van deze verbinding worden verwijderd."
+
+msgid "Connecting…"
+msgstr "Verbinden…"
+
+msgid "Disconnecting…"
+msgstr "Verbinding verbreken…"
+
+msgid "Saved"
+msgstr "Opgeslagen"
+
+msgid "Open network"
+msgstr "Open netwerk"
+
+msgid "Available"
+msgstr "Beschikbaar"
+
+msgid "Use Wi-Fi"
+msgstr "Wifi gebruiken"
+
+msgid "Airplane mode is on"
+msgstr "Vliegtuigstand staat aan"
+
+msgid "Wi-Fi and Bluetooth are off until you turn airplane mode off."
+msgstr "Wifi en Bluetooth staan uit tot je de vliegtuigstand uitzet."
+
+msgid "Turn off"
+msgstr "Uitzetten"
+
+msgid "Wi-Fi networks"
+msgstr "Wifi-netwerken"
+
+msgid "Looking for networks…"
+msgstr "Netwerken zoeken…"
+
+msgid "Network details"
+msgstr "Netwerkgegevens"
+
+msgid "Wired"
+msgstr "Bekabeld"
+
+msgid "Turns off Wi-Fi, Bluetooth and mobile data"
+msgstr "Zet wifi, Bluetooth en mobiele data uit"
+
+msgid "Add a VPN or connection"
+msgstr "Een VPN of verbinding toevoegen"
+
+msgid "WireGuard, OpenVPN, hidden Wi-Fi, static addresses"
+msgstr "WireGuard, OpenVPN, verborgen wifi, vaste adressen"
+
+msgid "Advanced network settings"
+msgstr "Geavanceerde netwerkinstellingen"
+
+msgid "Addresses, DNS, proxy and every saved connection"
+msgstr "Adressen, DNS, proxy en elke opgeslagen verbinding"
+
+msgid "Connect to “%1”"
+msgstr "Verbinden met “%1”"
+
+msgid "Enter the network password."
+msgstr "Voer het netwerkwachtwoord in."
+
+msgid "%1 free of %2"
+msgstr "%1 vrij van %2"
+
+msgid "Trash"
+msgstr "Prullenbak"
+
+msgid "Takes %1"
+msgstr "Neemt %1 in beslag"
+
+msgctxt "the trash has nothing in it"
+msgid "Empty"
+msgstr "Leeg"
+
+msgid "Empty"
+msgstr "Legen"
+
+msgid "Empty the trash?"
+msgstr "Prullenbak legen?"
+
+msgid "Everything in the trash is deleted for good."
+msgstr "Alles in de prullenbak wordt definitief verwijderd."
+
+msgid "Trash emptied"
+msgstr "Prullenbak geleegd"
+
+msgid "Lumo is free software, made from the work of many open-source projects. Their authors and licences are listed here."
+msgstr "Lumo is vrije software, gemaakt van het werk van veel opensourceprojecten. Hun auteurs en licenties staan hier."
+
+msgid "The Lumo shell, apps and design: GNU General Public License 2.0 or later"
+msgstr "De Lumo-shell, apps en vormgeving: GNU General Public License 2.0 of later"
+
+msgid "GNU General Public License 2.0"
+msgstr "GNU General Public License 2.0"
+
+msgid "Built with"
+msgstr "Gemaakt met"
+
+msgid "All installed packages"
+msgstr "Alle geïnstalleerde pakketten"
+
+msgid "Show every package"
+msgstr "Elk pakket tonen"
+
+msgid "The copyright file of each of the installed packages"
+msgstr "Het copyrightbestand van elk geïnstalleerd pakket"
+
+msgid "Filter %1 package"
+msgid_plural "Filter %1 packages"
+msgstr[0] "%1 pakket filteren"
+msgstr[1] "%1 pakketten filteren"
+
+msgid "Apps are listed after they have sent a notification."
+msgstr "Apps verschijnen hier nadat ze een melding hebben gestuurd."
+
+msgid "No apps yet"
+msgstr "Nog geen apps"
+
+msgid "When an app sends a notification, you can choose here how it may notify you."
+msgstr "Als een app een melding stuurt, kun je hier kiezen hoe hij je mag waarschuwen."
+
+msgid "Pop-ups allowed"
+msgstr "Pop-ups toegestaan"
+
+msgid "Only in the history"
+msgstr "Alleen in de geschiedenis"
+
+msgid "Search settings"
+msgstr "Instellingen zoeken"

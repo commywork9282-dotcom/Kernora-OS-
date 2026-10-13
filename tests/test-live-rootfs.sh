@@ -292,8 +292,8 @@ lsinitramfs "$initrd" | grep -q 'usr/share/plymouth/themes/kernora/kernora.scrip
 command -v bsdtar >/dev/null || fail "bsdtar is missing; Files cannot handle archives"
 [[ -x /usr/bin/kernora-installer ]] || fail "the Kernora installer launcher is missing"
 [[ -s /etc/xdg/autostart/org.kernora.welcome.desktop ]] || fail "Welcome is not started at first login"
-# English and Russian are ready for the live session and the installer.
-for locale in en_US.utf8 ru_RU.utf8; do
+# English, Dutch and Russian are ready for the live session and the installer.
+for locale in en_US.utf8 nl_NL.utf8 ru_RU.utf8; do
   locale -a | grep -Fxq "$locale" || fail "locale is not generated: $locale"
 done
 [[ -x /usr/lib/kernora/live-language ]] || fail "the boot menu language cannot be applied"

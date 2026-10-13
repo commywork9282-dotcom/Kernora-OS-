@@ -2,8 +2,10 @@
 Type=Application
 Name=Terminal
 Name[ru]=Терминал
+Name[nl]=Terminal
 GenericName=Command line
 GenericName[ru]=Командная строка
+GenericName[nl]=Opdrachtregel
 Comment=Run commands
 Comment[ru]=Выполнение команд
 Icon=org.kernora.terminal

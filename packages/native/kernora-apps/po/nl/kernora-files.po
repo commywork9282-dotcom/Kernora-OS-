@@ -1,0 +1,308 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-files\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "@title application name"
+msgid "Files"
+msgstr "Bestanden"
+
+msgid "Devices"
+msgstr "Apparaten"
+
+msgid "Eject"
+msgstr "Uitwerpen"
+
+msgid "Trash"
+msgstr "Prullenbak"
+
+msgid "Home"
+msgstr "Persoonlijke map"
+
+msgid "Computer"
+msgstr "Computer"
+
+msgid "There is no folder “%1”."
+msgstr "Er is geen map “%1”."
+
+msgid "Restore the file to open it."
+msgstr "Zet het bestand terug om het te openen."
+
+msgid "Restore"
+msgstr "Terugzetten"
+
+msgid "%1 item will be moved"
+msgid_plural "%1 items will be moved"
+msgstr[0] "%1 item wordt verplaatst"
+msgstr[1] "%1 items worden verplaatst"
+
+msgid "%1 item copied"
+msgid_plural "%1 items copied"
+msgstr[0] "%1 item gekopieerd"
+msgstr[1] "%1 items gekopieerd"
+
+msgid "%1 item moved to the trash"
+msgid_plural "%1 items moved to the trash"
+msgstr[0] "%1 item naar de prullenbak verplaatst"
+msgstr[1] "%1 items naar de prullenbak verplaatst"
+
+msgid "Restored"
+msgstr "Teruggezet"
+
+msgid "Back"
+msgstr "Terug"
+
+msgid "Forward"
+msgstr "Vooruit"
+
+msgid "Up"
+msgstr "Omhoog"
+
+msgid "Find in this folder"
+msgstr "Zoeken in deze map"
+
+msgid "Show as grid"
+msgstr "Als raster tonen"
+
+msgid "Show as list"
+msgstr "Als lijst tonen"
+
+msgid "More"
+msgstr "Meer"
+
+msgid "Files in the trash can be restored until the trash is emptied."
+msgstr "Bestanden in de prullenbak kunnen worden teruggezet tot de prullenbak wordt geleegd."
+
+msgid "Empty the trash"
+msgstr "Prullenbak legen"
+
+msgid "Find in “%1”"
+msgstr "Zoeken in “%1”"
+
+msgid "%1 selected"
+msgid_plural "%1 selected"
+msgstr[0] "%1 geselecteerd"
+msgstr[1] "%1 geselecteerd"
+
+msgid "%1 item"
+msgid_plural "%1 items"
+msgstr[0] "%1 item"
+msgstr[1] "%1 items"
+
+msgid "The trash is empty"
+msgstr "De prullenbak is leeg"
+
+msgid "Nothing found"
+msgstr "Niets gevonden"
+
+msgid "This folder is empty"
+msgstr "Deze map is leeg"
+
+msgid "No names contain “%1”."
+msgstr "Geen namen bevatten “%1”."
+
+msgid "New folder"
+msgstr "Nieuwe map"
+
+msgid "Open"
+msgstr "Openen"
+
+msgid "Open with"
+msgstr "Openen met"
+
+msgid "Cut"
+msgstr "Knippen"
+
+msgid "Copy"
+msgstr "Kopiëren"
+
+msgid "Rename"
+msgstr "Naam wijzigen"
+
+msgid "Compress to ZIP"
+msgstr "Comprimeren tot ZIP"
+
+msgid "Extract here"
+msgstr "Hier uitpakken"
+
+msgid "Set as wallpaper"
+msgstr "Als achtergrond instellen"
+
+msgid "Wallpaper changed"
+msgstr "Achtergrond gewijzigd"
+
+msgid "Move to trash"
+msgstr "Naar prullenbak"
+
+msgid "Delete forever"
+msgstr "Definitief verwijderen"
+
+msgid "Properties"
+msgstr "Eigenschappen"
+
+msgid "Paste"
+msgstr "Plakken"
+
+msgid "Select all"
+msgstr "Alles selecteren"
+
+msgid "Open terminal here"
+msgstr "Terminal hier openen"
+
+msgid "Sort by"
+msgstr "Sorteren op"
+
+msgid "Name"
+msgstr "Naam"
+
+msgid "Date modified"
+msgstr "Gewijzigd op"
+
+msgid "Size"
+msgstr "Grootte"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Reverse order"
+msgstr "Omgekeerde volgorde"
+
+msgid "Show hidden files"
+msgstr "Verborgen bestanden tonen"
+
+msgid "Places"
+msgstr "Locaties"
+
+msgid "Documents"
+msgstr "Documenten"
+
+msgid "Downloads"
+msgstr "Downloads"
+
+msgid "Pictures"
+msgstr "Afbeeldingen"
+
+msgid "Create"
+msgstr "Maken"
+
+msgid "New name"
+msgstr "Nieuwe naam"
+
+msgid "A name cannot contain “/”."
+msgstr "Een naam mag geen “/” bevatten."
+
+msgid "Delete %1 item forever?"
+msgid_plural "Delete %1 items forever?"
+msgstr[0] "%1 item definitief verwijderen?"
+msgstr[1] "%1 items definitief verwijderen?"
+
+msgid "This cannot be undone."
+msgstr "Dit kan niet ongedaan worden gemaakt."
+
+msgid "Delete"
+msgstr "Verwijderen"
+
+msgid "Extract “%1”?"
+msgstr "“%1” uitpakken?"
+
+msgid "The contents go into a new folder next to the archive."
+msgstr "De inhoud komt in een nieuwe map naast het archief."
+
+msgid "Extract"
+msgstr "Uitpakken"
+
+msgid "“%1” is already here"
+msgstr "“%1” staat hier al"
+
+msgid "%1 item is already here"
+msgid_plural "%1 items are already here"
+msgstr[0] "%1 item staat hier al"
+msgstr[1] "%1 items staan hier al"
+
+msgid "Choose what to do with the files that have the same names."
+msgstr "Kies wat er moet gebeuren met de bestanden die dezelfde naam hebben."
+
+msgid "Replace"
+msgstr "Vervangen"
+
+msgid "The files here are overwritten"
+msgstr "De bestanden hier worden overschreven"
+
+msgid "Keep both"
+msgstr "Allebei houden"
+
+msgid "The new files get a number in their name"
+msgstr "De nieuwe bestanden krijgen een nummer in hun naam"
+
+msgid "Skip"
+msgstr "Overslaan"
+
+msgid "Only the other files are copied"
+msgstr "Alleen de andere bestanden worden gekopieerd"
+
+msgid "Nothing is copied"
+msgstr "Er wordt niets gekopieerd"
+
+msgid "Empty the trash?"
+msgstr "Prullenbak legen?"
+
+msgid "Everything in the trash is deleted forever."
+msgstr "Alles in de prullenbak wordt definitief verwijderd."
+
+msgid "Empty"
+msgstr "Legen"
+
+msgid "Trash emptied"
+msgstr "Prullenbak geleegd"
+
+msgid "Close"
+msgstr "Sluiten"
+
+msgid "Folder"
+msgstr "Map"
+
+msgid "Location"
+msgstr "Locatie"
+
+msgid "Modified"
+msgstr "Gewijzigd"
+
+msgid "From"
+msgstr "Van"
+
+msgid "Save As"
+msgstr "Opslaan als"
+
+msgid "Choose a Folder"
+msgstr "Een map kiezen"
+
+msgid "Open Files"
+msgstr "Bestanden openen"
+
+msgid "Open a File"
+msgstr "Een bestand openen"
+
+msgid "Save"
+msgstr "Opslaan"
+
+msgid "Choose"
+msgstr "Kiezen"
+
+msgid "No folders here"
+msgstr "Geen mappen hier"
+
+msgid "No suitable files here"
+msgstr "Geen geschikte bestanden hier"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "Replace “%1”?"
+msgstr "“%1” vervangen?"
+
+msgid "A file with this name already exists in this folder. Saving replaces its contents."
+msgstr "Er staat al een bestand met deze naam in deze map. Opslaan vervangt de inhoud ervan."

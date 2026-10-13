@@ -2,6 +2,7 @@
 Type=Application
 Name=Bluetooth pairing
 Name[ru]=Сопряжение Bluetooth
+Name[nl]=Bluetooth-koppeling
 Icon=preferences-system-bluetooth
 Exec=kernora-bluetooth-agent
 NoDisplay=true

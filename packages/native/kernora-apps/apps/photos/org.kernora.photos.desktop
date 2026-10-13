@@ -2,8 +2,10 @@
 Type=Application
 Name=Photos
 Name[ru]=Фото
+Name[nl]=Foto's
 GenericName=Image viewer
 GenericName[ru]=Просмотр изображений
+GenericName[nl]=Fotoweergave
 Icon=org.kernora.photos
 Exec=kernora-photos %U
 Categories=Qt;Graphics;Viewer;

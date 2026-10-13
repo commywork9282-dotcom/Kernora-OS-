@@ -1,0 +1,135 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-ui\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Back"
+msgstr "Terug"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Clear"
+msgstr "Wissen"
+
+msgid "Search"
+msgstr "Zoeken"
+
+msgid "Show password"
+msgstr "Wachtwoord tonen"
+
+msgid "Hide password"
+msgstr "Wachtwoord verbergen"
+
+msgctxt "a Material generation"
+msgid "Material Design 1"
+msgstr "Material Design 1"
+
+msgctxt "a Material generation"
+msgid "Material Design 2"
+msgstr "Material Design 2"
+
+msgctxt "a Material generation"
+msgid "Material 3"
+msgstr "Material 3"
+
+msgctxt "when Material Design 1 appeared"
+msgid "2014 · paper and ink"
+msgstr "2014 · papier en inkt"
+
+msgctxt "when Material Design 2 appeared"
+msgid "2018 · Material Theming"
+msgstr "2018 · Material Theming"
+
+msgctxt "when Material 3 appeared"
+msgid "2021 · Material You"
+msgstr "2021 · Material You"
+
+msgctxt "a button in the style preview"
+msgid "Done"
+msgstr "Klaar"
+
+msgid "Settings"
+msgstr "Instellingen"
+
+msgid "Desktop"
+msgstr "Bureaublad"
+
+msgid "Placement"
+msgstr "Plaatsing"
+
+msgid "Alignment"
+msgstr "Uitlijning"
+
+msgid "Sort by"
+msgstr "Sorteren op"
+
+msgid "Appearance"
+msgstr "Uiterlijk"
+
+msgid "%1 px"
+msgstr "%1 px"
+
+msgid "Place"
+msgstr "Locatie"
+
+msgid "Desktop folder"
+msgstr "Bureaubladmap"
+
+msgid "A place"
+msgstr "Een locatie"
+
+msgid "Choose from Places"
+msgstr "Kiezen uit Locaties"
+
+msgid "Another folder"
+msgstr "Een andere map"
+
+msgid "A path or a web address"
+msgstr "Een pad of een webadres"
+
+msgid "Choose a folder"
+msgstr "Een map kiezen"
+
+msgid "Remove"
+msgstr "Verwijderen"
+
+msgid "Change trigger"
+msgstr "Activering wijzigen"
+
+msgid "Action"
+msgstr "Actie"
+
+msgid "Click in the area with the mouse button you want, holding Ctrl, Shift, Alt or Meta if you like, or turn the wheel there."
+msgstr "Klik in het vlak met de muisknop die je wilt, eventueel met Ctrl, Shift, Alt of Meta ingedrukt, of draai daar aan het wieltje."
+
+msgid "Another action already starts this way."
+msgstr "Een andere actie start al op deze manier."
+
+msgid "Shortcut"
+msgstr "Sneltoets"
+
+msgid "Discard"
+msgstr "Weggooien"
+
+msgid "Close"
+msgstr "Sluiten"
+
+msgid "Search widgets"
+msgstr "Widgets zoeken"
+
+msgid "Other widgets"
+msgstr "Andere widgets"
+
+msgid "Wallpaper"
+msgstr "Achtergrond"
+
+msgid "Done"
+msgstr "Klaar"

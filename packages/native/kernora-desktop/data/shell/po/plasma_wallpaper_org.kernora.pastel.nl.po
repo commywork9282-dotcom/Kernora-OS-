@@ -1,0 +1,26 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma_wallpaper_org.kernora.pastel\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Motion"
+msgstr "Beweging"
+
+msgid "Calm"
+msgstr "Rustig"
+
+msgid "Moderate"
+msgstr "Gemiddeld"
+
+msgid "Lively"
+msgstr "Levendig"
+
+msgid "Save energy"
+msgstr "Energie besparen"
+
+msgid "Pause while a window covers the desktop"
+msgstr "Pauzeren als een venster het bureaublad bedekt"

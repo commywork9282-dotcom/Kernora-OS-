@@ -1,0 +1,213 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-welcome\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "@title application name"
+msgid "Welcome"
+msgstr "Welkom"
+
+msgid "Lumo restarted"
+msgstr "Lumo is opnieuw opgestart"
+
+msgid "What's new"
+msgstr "Wat is er nieuw"
+
+msgid "Welcome"
+msgstr "Welkom"
+
+msgid "Skip"
+msgstr "Overslaan"
+
+msgid "Back"
+msgstr "Terug"
+
+msgid "Start using Lumo"
+msgstr "Lumo gaan gebruiken"
+
+msgid "Next"
+msgstr "Volgende"
+
+msgid "Welcome to %1"
+msgstr "Welkom bij %1"
+
+msgid "You are trying Lumo from the installation medium. Look around, then install it when you are ready."
+msgstr "Je probeert Lumo vanaf het installatiemedium. Kijk rustig rond en installeer het als je er klaar voor bent."
+
+msgid "Let's make it yours. It takes a minute."
+msgstr "Laten we het van jou maken. Het duurt maar een minuutje."
+
+msgid "Install Lumo"
+msgstr "Lumo installeren"
+
+msgid "Light or dark"
+msgstr "Licht of donker"
+
+msgid "Choose how Lumo looks. You can change it any time in Settings."
+msgstr "Kies hoe Lumo eruitziet. Je kunt het altijd wijzigen in Instellingen."
+
+msgid "Light"
+msgstr "Licht"
+
+msgid "Dark"
+msgstr "Donker"
+
+msgid "Pick a style"
+msgstr "Kies een stijl"
+
+msgid "Three generations of Material, in the Lumo colours. You can change it any time in Settings."
+msgstr "Drie generaties Material, in de kleuren van Lumo. Je kunt het altijd wijzigen in Instellingen."
+
+msgid "2021 · Material You"
+msgstr "2021 · Material You"
+
+msgid "2018 · Material Theming"
+msgstr "2018 · Material Theming"
+
+msgid "2014 · paper and ink"
+msgstr "2014 · papier en inkt"
+
+msgid "Pick a wallpaper"
+msgstr "Kies een achtergrond"
+
+msgid "Lumo's wallpapers are alive: they move slowly and rest behind your windows."
+msgstr "De achtergronden van Lumo leven: ze bewegen langzaam en komen tot rust achter je vensters."
+
+msgid "Your apps"
+msgstr "Je apps"
+
+msgid "Everything you need is here. Open the launcher with the Meta key to find more."
+msgstr "Alles wat je nodig hebt staat klaar. Open het startmenu met de Meta-toets om meer te vinden."
+
+msgid "Web browser"
+msgstr "Webbrowser"
+
+msgid "Files"
+msgstr "Bestanden"
+
+msgid "Photos"
+msgstr "Foto's"
+
+msgid "Media Player"
+msgstr "Mediaspeler"
+
+msgid "Text Editor"
+msgstr "Teksteditor"
+
+msgid "Calculator"
+msgstr "Rekenmachine"
+
+msgid "Screenshot"
+msgstr "Schermafbeelding"
+
+msgid "Terminal"
+msgstr "Terminal"
+
+msgid "Settings"
+msgstr "Instellingen"
+
+msgid "Your computer, not ours"
+msgstr "Jouw computer, niet de onze"
+
+msgid "Lumo works for you and nobody else."
+msgstr "Lumo werkt voor jou en voor niemand anders."
+
+msgid "No ads, no accounts, no tracking"
+msgstr "Geen reclame, geen accounts, geen tracking"
+
+msgid "Lumo shows no adverts, needs no online account and sends nothing about you anywhere"
+msgstr "Lumo toont geen advertenties, heeft geen online account nodig en stuurt nergens iets over jou naartoe"
+
+msgid "Updates that don't get in the way"
+msgstr "Updates die je niet in de weg zitten"
+
+msgid "Security updates install quietly in the background. You choose when to restart, and Lumo never restarts by itself"
+msgstr "Beveiligingsupdates worden stil op de achtergrond geïnstalleerd. Jij kiest wanneer je opnieuw opstart, en Lumo start nooit vanzelf opnieuw op"
+
+msgid "Your Windows apps and games"
+msgstr "Je Windows-apps en games"
+
+msgid "Open .exe files with Wine, or get Steam, Bottles and Heroic in the Store"
+msgstr "Open .exe-bestanden met Wine, of haal Steam, Bottles en Heroic uit de Store"
+
+msgid "Coming from Windows?"
+msgstr "Kom je van Windows?"
+
+msgid "Bring your documents, pictures, wallpaper and bookmarks from a Windows drive or a USB stick"
+msgstr "Neem je documenten, afbeeldingen, achtergrond en bladwijzers mee van een Windows-schijf of een USB-stick"
+
+msgid "Free, for good"
+msgstr "Gratis, voorgoed"
+
+msgid "No licence keys and no paid upgrades. Lumo is free software you can share"
+msgstr "Geen licentiecodes en geen betaalde upgrades. Lumo is vrije software die je mag delen"
+
+msgid "You're all set"
+msgstr "Je bent er klaar voor"
+
+msgid "A few things worth knowing:"
+msgstr "Een paar dingen die handig zijn om te weten:"
+
+msgid "Meta opens the launcher"
+msgstr "Meta opent het startmenu"
+
+msgid "Start typing to find apps, files and settings"
+msgstr "Begin te typen om apps, bestanden en instellingen te vinden"
+
+msgid "Quick settings are on the right of the panel"
+msgstr "Snelle instellingen staan rechts in het paneel"
+
+msgid "Wi-Fi, sound, brightness, Do Not Disturb and more"
+msgstr "Wifi, geluid, helderheid, Niet storen en meer"
+
+msgid "Print or Meta+Shift+S takes a screenshot"
+msgstr "Print of Meta+Shift+S maakt een schermafbeelding"
+
+msgid "Choose an area, the screen or a window"
+msgstr "Kies een gebied, het scherm of een venster"
+
+msgid "Settings has everything else"
+msgstr "In Instellingen vind je al het andere"
+
+msgid "Lumo got even better"
+msgstr "Lumo is nog beter geworden"
+
+msgid "Here is what is new in the update of %1."
+msgstr "Dit is er nieuw in de update van %1."
+
+msgid "Here is what is new in the latest updates."
+msgstr "Dit is er nieuw in de laatste updates."
+
+msgid "Update of %1"
+msgstr "Update van %1"
+
+msgid "Great"
+msgstr "Top"
+
+msgid "Well, this is awkward."
+msgstr "Nou, dit is vervelend."
+
+msgid "Lumo encountered a critical kernel error and could no longer continue running. Your computer restarted automatically to recover from this problem."
+msgstr "Lumo kwam een kritieke fout in de kernel tegen en kon niet verder. Je computer is automatisch opnieuw opgestart om dit probleem op te lossen."
+
+msgid "It happened on %1."
+msgstr "Het gebeurde op %1."
+
+msgid "Only an administrator can read the full report."
+msgstr "Alleen een beheerder kan het volledige rapport lezen."
+
+msgid "Hide details"
+msgstr "Details verbergen"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Copy"
+msgstr "Kopiëren"
+
+msgid "Okay"
+msgstr "Oké"

@@ -2,8 +2,10 @@
 Type=Application
 Name=Calculator
 Name[ru]=Калькулятор
+Name[nl]=Rekenmachine
 GenericName=Calculator
 GenericName[ru]=Калькулятор
+GenericName[nl]=Rekenmachine
 Icon=org.kernora.calculator
 Exec=kernora-calculator
 Categories=Qt;Utility;Calculator;

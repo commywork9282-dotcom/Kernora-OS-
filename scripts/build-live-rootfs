@@ -130,7 +130,7 @@ trap cleanup EXIT
   --customize-hook="upload $live_config/kwalletrc /etc/xdg/kwalletrc" \
   --customize-hook='ln -s ../kernora-boot-ready.service "$1/etc/systemd/system/multi-user.target.wants/kernora-boot-ready.service"' \
   --customize-hook='mkdir -p "$1/etc/sddm.conf.d"' \
-  --customize-hook='printf "en_US.UTF-8 UTF-8\nru_RU.UTF-8 UTF-8\n" > "$1/etc/locale.gen"' \
+  --customize-hook='printf "en_US.UTF-8 UTF-8\nnl_NL.UTF-8 UTF-8\nru_RU.UTF-8 UTF-8\n" > "$1/etc/locale.gen"' \
   --customize-hook='chroot "$1" locale-gen' \
   --customize-hook='printf "LANG=en_US.UTF-8\n" > "$1/etc/default/locale"' \
   --customize-hook='mkdir -p "$1/usr/lib/kernora"' \

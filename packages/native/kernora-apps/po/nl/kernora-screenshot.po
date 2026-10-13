@@ -1,0 +1,63 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-screenshot\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "@title application name"
+msgid "Screenshot"
+msgstr "Schermafbeelding"
+
+msgid "Screenshot"
+msgstr "Schermafbeelding"
+
+msgid "The screen could not be captured."
+msgstr "Het scherm kon niet worden vastgelegd."
+
+msgid "The screenshot could not be saved."
+msgstr "De schermafbeelding kon niet worden opgeslagen."
+
+msgid "Take a screenshot"
+msgstr "Een schermafbeelding maken"
+
+msgid "Area"
+msgstr "Gebied"
+
+msgid "Screen"
+msgstr "Scherm"
+
+msgid "Window"
+msgstr "Venster"
+
+msgid "Take the screenshot"
+msgstr "Schermafbeelding maken"
+
+msgid "Take the screenshot (Enter)"
+msgstr "Schermafbeelding maken (Enter)"
+
+msgid "Cancel (Esc)"
+msgstr "Annuleren (Esc)"
+
+msgid "No screenshot"
+msgstr "Geen schermafbeelding"
+
+msgid "Saved and copied"
+msgstr "Opgeslagen en gekopieerd"
+
+msgid "Take another"
+msgstr "Nog een maken"
+
+msgid "Open"
+msgstr "Openen"
+
+msgid "Show in Files"
+msgstr "Tonen in Bestanden"
+
+msgid "Delete"
+msgstr "Verwijderen"
+
+msgid "Screenshot taken"
+msgstr "Schermafbeelding gemaakt"

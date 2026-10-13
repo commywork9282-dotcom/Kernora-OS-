@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-bluetooth-agent\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Bluetooth pairing"
+msgstr "Bluetooth-koppeling"
+
+msgid "Enter the pairing code"
+msgstr "Voer de koppelcode in"
+
+msgid "Type this code on %1"
+msgstr "Typ deze code op %1"
+
+msgid "Does the code match?"
+msgstr "Komt de code overeen?"
+
+msgid "Pair with %1?"
+msgstr "Koppelen met %1?"
+
+msgid "Allow %1 to connect?"
+msgstr "%1 toestaan om verbinding te maken?"
+
+msgid "%1 asks for a PIN. It is often 0000 or 1234, or it is shown on the device or in its manual."
+msgstr "%1 vraagt om een pincode. Vaak is dat 0000 of 1234, of hij staat op het apparaat of in de handleiding."
+
+msgid "Type the 6-digit code that %1 shows."
+msgstr "Typ de 6-cijferige code die %1 laat zien."
+
+msgid "Then press Enter on the device, if it asks."
+msgstr "Druk daarna op Enter op het apparaat, als dat gevraagd wordt."
+
+msgid "Make sure %1 shows the same code, then pair."
+msgstr "Controleer of %1 dezelfde code laat zien en koppel dan."
+
+msgid "%1 wants to pair with this computer."
+msgstr "%1 wil koppelen met deze computer."
+
+msgid "The device is not trusted yet."
+msgstr "Het apparaat wordt nog niet vertrouwd."
+
+msgid "Code"
+msgstr "Code"
+
+msgid "PIN"
+msgstr "Pincode"
+
+msgid "Cancel pairing"
+msgstr "Koppelen annuleren"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "Allow"
+msgstr "Toestaan"
+
+msgid "Pair"
+msgstr "Koppelen"

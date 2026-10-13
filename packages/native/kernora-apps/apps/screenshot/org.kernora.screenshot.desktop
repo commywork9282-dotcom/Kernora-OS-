@@ -2,8 +2,10 @@
 Type=Application
 Name=Screenshot
 Name[ru]=Снимок экрана
+Name[nl]=Schermafbeelding
 GenericName=Screen capture
 GenericName[ru]=Снимок экрана
+GenericName[nl]=Schermafbeelding
 Icon=org.kernora.screenshot
 Exec=/usr/bin/kernora-screenshot
 Categories=Qt;Utility;Graphics;

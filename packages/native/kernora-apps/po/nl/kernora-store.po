@@ -1,0 +1,394 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-store\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Downloading…"
+msgstr "Downloaden…"
+
+msgid "Waiting for your password…"
+msgstr "Wachten op je wachtwoord…"
+
+msgid "Waiting for another installation to finish…"
+msgstr "Wachten tot een andere installatie klaar is…"
+
+msgid "Removing…"
+msgstr "Verwijderen…"
+
+msgid "Installing…"
+msgstr "Installeren…"
+
+msgid "The package sources could not be read. Refresh the catalogue and try again."
+msgstr "De pakketbronnen konden niet worden gelezen. Vernieuw de catalogus en probeer het opnieuw."
+
+msgid "Preparing…"
+msgstr "Voorbereiden…"
+
+msgid "This app is not available from the Debian sources right now."
+msgstr "Deze app is nu niet beschikbaar uit de Debian-bronnen."
+
+msgid "The app could not be installed."
+msgstr "De app kon niet worden geïnstalleerd."
+
+msgid "The app could not be removed."
+msgstr "De app kon niet worden verwijderd."
+
+msgid "The package could not be installed."
+msgstr "Het pakket kon niet worden geïnstalleerd."
+
+msgid "Downloading %1 of %2"
+msgstr "%1 van %2 downloaden"
+
+msgid "Flatpak is not available."
+msgstr "Flatpak is niet beschikbaar."
+
+msgid "Downloading the Flathub catalogue…"
+msgstr "De Flathub-catalogus downloaden…"
+
+msgid "Downloading the Debian catalogue…"
+msgstr "De Debian-catalogus downloaden…"
+
+msgid "The catalogue could not be downloaded. Check the internet connection and try again."
+msgstr "De catalogus kon niet worden gedownload. Controleer de internetverbinding en probeer het opnieuw."
+
+msgid "Updating the catalogue…"
+msgstr "De catalogus bijwerken…"
+
+msgid "Loading the catalogue…"
+msgstr "De catalogus laden…"
+
+msgid "Games"
+msgstr "Games"
+
+msgid "Internet & chat"
+msgstr "Internet en chat"
+
+msgid "Music & video"
+msgstr "Muziek en video"
+
+msgid "Graphics & photos"
+msgstr "Grafisch en foto's"
+
+msgid "Office"
+msgstr "Kantoor"
+
+msgid "Learning & science"
+msgstr "Leren en wetenschap"
+
+msgid "Development"
+msgstr "Ontwikkeling"
+
+msgid "Tools"
+msgstr "Hulpmiddelen"
+
+msgid "Flatpak file"
+msgstr "Flatpak-bestand"
+
+msgid "Package file"
+msgstr "Pakketbestand"
+
+msgid "Proprietary"
+msgstr "Niet-vrij"
+
+msgid "Waiting…"
+msgstr "Wachten…"
+
+msgid "This package could not be read. Choose a valid Debian package and try again."
+msgstr "Dit pakket kon niet worden gelezen. Kies een geldig Debian-pakket en probeer het opnieuw."
+
+msgid "Cancelling…"
+msgstr "Annuleren…"
+
+msgid "%1 is installed"
+msgstr "%1 is geïnstalleerd"
+
+msgid "Open it from the app menu."
+msgstr "Open het vanuit het appmenu."
+
+msgid "%1 is removed"
+msgstr "%1 is verwijderd"
+
+msgid "All apps are up to date"
+msgstr "Alle apps zijn up-to-date"
+
+msgid "%1 is updated"
+msgstr "%1 is bijgewerkt"
+
+msgid "%1 could not be removed: %2"
+msgstr "%1 kon niet worden verwijderd: %2"
+
+msgid "The updates could not be installed: %1"
+msgstr "De updates konden niet worden geïnstalleerd: %1"
+
+msgid "%1 could not be updated: %2"
+msgstr "%1 kon niet worden bijgewerkt: %2"
+
+msgid "%1 could not be installed: %2"
+msgstr "%1 kon niet worden geïnstalleerd: %2"
+
+msgctxt "@title application name"
+msgid "Store"
+msgstr "Store"
+
+msgid "%1%"
+msgstr "%1%"
+
+msgid "Working…"
+msgstr "Bezig…"
+
+msgid "Update"
+msgstr "Bijwerken"
+
+msgid "Installed"
+msgstr "Geïnstalleerd"
+
+msgid "Back"
+msgstr "Terug"
+
+msgid "%1 rating"
+msgid_plural "%1 ratings"
+msgstr[0] "%1 beoordeling"
+msgstr[1] "%1 beoordelingen"
+
+msgid "Open"
+msgstr "Openen"
+
+msgid "Install"
+msgstr "Installeren"
+
+msgid "%1 is installed. Open it from the app menu."
+msgstr "%1 is geïnstalleerd. Open het vanuit het appmenu."
+
+msgid "Remove"
+msgstr "Verwijderen"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "From Flathub. App updates are available in Store."
+msgstr "Van Flathub. App-updates zijn beschikbaar in de Store."
+
+msgid "From Debian. Installing it asks for your password."
+msgstr "Van Debian. Bij het installeren wordt om je wachtwoord gevraagd."
+
+msgid "Only install packages you trust"
+msgstr "Installeer alleen pakketten die je vertrouwt"
+
+msgid "This package comes from a file, not from a checked source. It gets full access to your computer."
+msgstr "Dit pakket komt uit een bestand, niet uit een gecontroleerde bron. Het krijgt volledige toegang tot je computer."
+
+msgid "You are trying Lumo"
+msgstr "Je probeert Lumo uit"
+
+msgid "Apps you install now disappear after a restart."
+msgstr "Apps die je nu installeert, verdwijnen na een herstart."
+
+msgid "About this app"
+msgstr "Over deze app"
+
+msgid "Show less"
+msgstr "Minder tonen"
+
+msgid "Read more"
+msgstr "Meer lezen"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Version"
+msgstr "Versie"
+
+msgid "Unknown"
+msgstr "Onbekend"
+
+msgid "Source"
+msgstr "Bron"
+
+msgid "Size on disk"
+msgstr "Grootte op schijf"
+
+msgid "Licence"
+msgstr "Licentie"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "File"
+msgstr "Bestand"
+
+msgid "Remove %1?"
+msgstr "%1 verwijderen?"
+
+msgid "The app and its files in the sandbox are removed. Your documents stay."
+msgstr "De app en zijn bestanden in de sandbox worden verwijderd. Je documenten blijven staan."
+
+msgid "The app is removed from the computer. Your documents stay."
+msgstr "De app wordt van de computer verwijderd. Je documenten blijven staan."
+
+msgid "Previous"
+msgstr "Vorige"
+
+msgid "Next"
+msgstr "Volgende"
+
+msgid "Close"
+msgstr "Sluiten"
+
+msgid "Updates"
+msgstr "Updates"
+
+msgid "%1 app has a new version"
+msgid_plural "%1 apps have a new version"
+msgstr[0] "%1 app heeft een nieuwe versie"
+msgstr[1] "%1 apps hebben een nieuwe versie"
+
+msgid "App components have new versions"
+msgstr "Onderdelen van apps hebben nieuwe versies"
+
+msgid "Checking for updates…"
+msgstr "Zoeken naar updates…"
+
+msgid "Could not check for updates"
+msgstr "Kon niet zoeken naar updates"
+
+msgid "Your apps are up to date"
+msgstr "Je apps zijn up-to-date"
+
+msgid "Update all"
+msgstr "Alles bijwerken"
+
+msgid "Apps keep working while they update."
+msgstr "Apps blijven werken terwijl ze worden bijgewerkt."
+
+msgid "Apps"
+msgstr "Apps"
+
+msgid "A new version is ready"
+msgstr "Er staat een nieuwe versie klaar"
+
+msgid "App components"
+msgstr "Onderdelen van apps"
+
+msgid "%1 shared component used by your apps"
+msgid_plural "%1 shared components used by your apps"
+msgstr[0] "%1 gedeeld onderdeel dat je apps gebruiken"
+msgstr[1] "%1 gedeelde onderdelen die je apps gebruiken"
+
+msgid "Everything is up to date"
+msgstr "Alles is up-to-date"
+
+msgid "The store checks for new versions of your apps by itself."
+msgstr "De Store zoekt zelf naar nieuwe versies van je apps."
+
+msgid "Check your internet connection and try again. Your installed apps are still available."
+msgstr "Controleer je internetverbinding en probeer het opnieuw. Je geïnstalleerde apps blijven beschikbaar."
+
+msgid "Try again"
+msgstr "Opnieuw proberen"
+
+msgid "System"
+msgstr "Systeem"
+
+msgid "System updates"
+msgstr "Systeemupdates"
+
+msgid "Lumo and the apps that come with it update in Settings"
+msgstr "Lumo en de apps die erbij horen worden bijgewerkt in Instellingen"
+
+msgid "More"
+msgstr "Meer"
+
+msgid "See all"
+msgstr "Alles bekijken"
+
+msgid "Discover"
+msgstr "Ontdekken"
+
+msgid "Find your next favourite app"
+msgstr "Vind je nieuwe favoriete app"
+
+msgid "Apps you install now disappear after a restart. Install Lumo to keep them."
+msgstr "Apps die je nu installeert, verdwijnen na een herstart. Installeer Lumo om ze te houden."
+
+msgid "Popular choice"
+msgstr "Populaire keuze"
+
+msgid "Get it"
+msgstr "Downloaden"
+
+msgid "Featured app %1"
+msgstr "Uitgelichte app %1"
+
+msgid "Popular apps"
+msgstr "Populaire apps"
+
+msgid "Chat & calls"
+msgstr "Chatten en bellen"
+
+msgid "Create"
+msgstr "Maken"
+
+msgid "Work & study"
+msgstr "Werk en studie"
+
+msgid "Browse by category"
+msgstr "Bladeren per categorie"
+
+msgid "Store"
+msgstr "Store"
+
+msgid "Search"
+msgstr "Zoeken"
+
+msgid "Refreshing…"
+msgstr "Vernieuwen…"
+
+msgid "Refresh"
+msgstr "Vernieuwen"
+
+msgid "Search apps"
+msgstr "Apps zoeken"
+
+msgid "Categories"
+msgstr "Categorieën"
+
+msgid "The catalogue is not available"
+msgstr "De catalogus is niet beschikbaar"
+
+msgid "Getting the catalogue ready"
+msgstr "De catalogus klaarmaken"
+
+msgid "This takes a moment the first time."
+msgstr "De eerste keer duurt dit even."
+
+msgid "Results for “%1”"
+msgstr "Resultaten voor “%1”"
+
+msgid "%1 app installed"
+msgid_plural "%1 apps installed"
+msgstr[0] "%1 app geïnstalleerd"
+msgstr[1] "%1 apps geïnstalleerd"
+
+msgid "%1 app"
+msgid_plural "%1 apps"
+msgstr[0] "%1 app"
+msgstr[1] "%1 apps"
+
+msgid "No apps from the store yet"
+msgstr "Nog geen apps uit de Store"
+
+msgid "Nothing found"
+msgstr "Niets gevonden"
+
+msgid "This category is empty"
+msgstr "Deze categorie is leeg"
+
+msgid "Apps you install from the store appear here."
+msgstr "Apps die je uit de Store installeert, verschijnen hier."
+
+msgid "Try another name or a shorter word."
+msgstr "Probeer een andere naam of een korter woord."

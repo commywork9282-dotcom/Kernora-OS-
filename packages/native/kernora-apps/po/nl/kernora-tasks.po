@@ -1,0 +1,111 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-tasks\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "@title application name"
+msgid "Task Manager"
+msgstr "Taakbeheer"
+
+msgid "Task Manager"
+msgstr "Taakbeheer"
+
+msgid "B"
+msgstr "B"
+
+msgid "KB"
+msgstr "kB"
+
+msgid "MB"
+msgstr "MB"
+
+msgid "GB"
+msgstr "GB"
+
+msgid "TB"
+msgstr "TB"
+
+msgid "Ended %1"
+msgstr "%1 beëindigd"
+
+msgid "Couldn't end %1"
+msgstr "%1 kon niet worden beëindigd"
+
+msgid "Processes"
+msgstr "Processen"
+
+msgid "Performance"
+msgstr "Prestaties"
+
+msgid "Startup apps"
+msgstr "Opstartapps"
+
+msgid "CPU %1%  ·  Memory %2"
+msgstr "CPU %1%  ·  Geheugen %2"
+
+msgid "Search processes"
+msgstr "Processen zoeken"
+
+msgid "Show all users"
+msgstr "Alle gebruikers tonen"
+
+msgid "End task"
+msgstr "Taak beëindigen"
+
+msgid "Force"
+msgstr "Forceren"
+
+msgid "Name"
+msgstr "Naam"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "Memory"
+msgstr "Geheugen"
+
+msgid "Process %1"
+msgstr "Proces %1"
+
+msgid "Processor"
+msgstr "Processor"
+
+msgid "%1 threads"
+msgstr "%1 threads"
+
+msgid "Swap %1 / %2"
+msgstr "Wisselgeheugen %1 / %2"
+
+msgid "Graphics"
+msgstr "Grafisch"
+
+msgid "Not reported"
+msgstr "Niet gemeld"
+
+msgid "This graphics driver doesn't report how busy it is."
+msgstr "Dit grafische stuurprogramma meldt niet hoe druk het is."
+
+msgid "Disk"
+msgstr "Schijf"
+
+msgid "%1/s"
+msgstr "%1/s"
+
+msgid "Read and write"
+msgstr "Lezen en schrijven"
+
+msgid "Network"
+msgstr "Netwerk"
+
+msgid "↓ %1/s  ↑ %2/s"
+msgstr "↓ %1/s  ↑ %2/s"
+
+msgid "All connections"
+msgstr "Alle verbindingen"
+
+msgid "These apps start when you log in. Turning one off makes logging in faster."
+msgstr "Deze apps starten als je inlogt. Als je er een uitzet, ben je sneller ingelogd."

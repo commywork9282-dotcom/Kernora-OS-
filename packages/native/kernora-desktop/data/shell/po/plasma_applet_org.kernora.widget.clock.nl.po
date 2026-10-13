@@ -1,0 +1,26 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma_applet_org.kernora.widget.clock\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Appearance"
+msgstr "Uiterlijk"
+
+msgid "Style"
+msgstr "Stijl"
+
+msgid "Bold digits"
+msgstr "Dikke cijfers"
+
+msgid "Hours above minutes, in the colours of the theme"
+msgstr "Uren boven minuten, in de kleuren van het thema"
+
+msgid "Analog"
+msgstr "Analoog"
+
+msgid "Hands on a Material shape"
+msgstr "Wijzers op een Material-vorm"

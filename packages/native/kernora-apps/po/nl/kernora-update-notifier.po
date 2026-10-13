@@ -1,0 +1,54 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-update-notifier\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Updates are available"
+msgstr "Er zijn updates beschikbaar"
+
+msgid "%1 update is ready to install, with security fixes."
+msgid_plural "%1 updates are ready to install, among them security fixes."
+msgstr[0] "%1 update staat klaar om te installeren, met beveiligingsoplossingen."
+msgstr[1] "%1 updates staan klaar om te installeren, waaronder beveiligingsoplossingen."
+
+msgid "%1 update is ready to install."
+msgid_plural "%1 updates are ready to install."
+msgstr[0] "%1 update staat klaar om te installeren."
+msgstr[1] "%1 updates staan klaar om te installeren."
+
+msgid "Open Updates"
+msgstr "Updates openen"
+
+msgid "View"
+msgstr "Bekijken"
+
+msgid "Restart to finish updating"
+msgstr "Opnieuw opstarten om bijwerken af te ronden"
+
+msgid "Updates were installed. They take effect after a restart."
+msgstr "Er zijn updates geïnstalleerd. Ze werken na een herstart."
+
+msgid "Restart"
+msgstr "Opnieuw opstarten"
+
+msgid "your NVIDIA graphics card"
+msgstr "je NVIDIA-videokaart"
+
+msgid "Installing the graphics driver"
+msgstr "Het grafische stuurprogramma installeren"
+
+msgid "Lumo is installing the driver for %1. It takes a few minutes, and you can keep working."
+msgstr "Lumo installeert het stuurprogramma voor %1. Dat duurt een paar minuten, en je kunt gewoon doorwerken."
+
+msgid "Restart to use your graphics card"
+msgstr "Opnieuw opstarten om je videokaart te gebruiken"
+
+msgid "The driver for %1 is installed. It starts working after a restart."
+msgstr "Het stuurprogramma voor %1 is geïnstalleerd. Het werkt na een herstart."
+
+msgid "Update notifications"
+msgstr "Updatemeldingen"

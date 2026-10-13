@@ -1,0 +1,182 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-system\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Enter a user name."
+msgstr "Voer een gebruikersnaam in."
+
+msgid "Use small Latin letters, digits, “-” and “_”, starting with a letter."
+msgstr "Gebruik kleine Latijnse letters, cijfers, “-” en “_”, en begin met een letter."
+
+msgid "This user name is taken."
+msgstr "Deze gebruikersnaam is al bezet."
+
+msgid "The password could not be prepared."
+msgstr "Het wachtwoord kon niet worden voorbereid."
+
+msgid "The account service is not available."
+msgstr "De accountdienst is niet beschikbaar."
+
+msgid "This picture could not be read."
+msgstr "Deze afbeelding kon niet worden gelezen."
+
+msgid "The picture could not be saved."
+msgstr "De afbeelding kon niet worden opgeslagen."
+
+msgid "Web browser"
+msgstr "Webbrowser"
+
+msgid "Files"
+msgstr "Bestanden"
+
+msgid "Terminal"
+msgstr "Terminal"
+
+msgid "Text"
+msgstr "Tekst"
+
+msgid "Pictures"
+msgstr "Afbeeldingen"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "Music"
+msgstr "Muziek"
+
+msgid "Documents"
+msgstr "Documenten"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Downloading…"
+msgstr "Downloaden…"
+
+msgid "Installing…"
+msgstr "Installeren…"
+
+msgid "Checking for updates…"
+msgstr "Zoeken naar updates…"
+
+msgid "Waiting for authorisation…"
+msgstr "Wachten op toestemming…"
+
+msgid "Waiting for another installation to finish…"
+msgstr "Wachten tot een andere installatie klaar is…"
+
+msgid "Finishing…"
+msgstr "Afronden…"
+
+msgid "Working…"
+msgstr "Bezig…"
+
+msgid "The update sources could not be reached."
+msgstr "De updatebronnen konden niet worden bereikt."
+
+msgid "The updates could not be installed."
+msgstr "De updates konden niet worden geïnstalleerd."
+
+msgid "The operating system kernel"
+msgstr "De kernel van het besturingssysteem"
+
+msgid "The distribution Lumo is based on"
+msgstr "De distributie waarop Lumo is gebaseerd"
+
+msgid "The desktop technology under the Lumo shell"
+msgstr "De bureaubladtechniek onder de Lumo-shell"
+
+msgid "The window manager and compositor"
+msgstr "De vensterbeheerder en compositor"
+
+msgid "Libraries used by the desktop and the applications"
+msgstr "Bibliotheken die het bureaublad en de apps gebruiken"
+
+msgid "The application framework"
+msgstr "Het applicatieframework"
+
+msgid "Icons by Google, Apache License 2.0"
+msgstr "Iconen van Google, Apache License 2.0"
+
+msgid "The system typeface by Google, SIL Open Font License 1.1"
+msgstr "Het systeemlettertype van Google, SIL Open Font License 1.1"
+
+msgid "The boot menu typeface by Google"
+msgstr "Het lettertype van het opstartmenu, van Google"
+
+msgid "The engine that draws application widgets"
+msgstr "De engine die de onderdelen van apps tekent"
+
+msgid "The web browser, built from Firefox"
+msgstr "De webbrowser, gebouwd uit Firefox"
+
+msgid "The system installer"
+msgstr "Het installatieprogramma"
+
+msgid "The system and service manager"
+msgstr "De systeem- en dienstbeheerder"
+
+msgid "Network connections"
+msgstr "Netwerkverbindingen"
+
+msgid "Sound and screen sharing"
+msgstr "Geluid en scherm delen"
+
+msgid "Graphics drivers"
+msgstr "Grafische stuurprogramma's"
+
+msgid "The terminal"
+msgstr "De terminal"
+
+msgid "Metric: metres, kilograms, °C"
+msgstr "Metrisch: meters, kilogrammen, °C"
+
+msgid "Imperial: feet, pounds, °F"
+msgstr "Imperiaal: voet, ponden, °F"
+
+msgid "Letter"
+msgstr "Letter"
+
+msgid "A4"
+msgstr "A4"
+
+msgid "This file is not a text file."
+msgstr "Dit bestand is geen tekstbestand."
+
+msgid "A name cannot be empty or contain “/”."
+msgstr "Een naam mag niet leeg zijn of “/” bevatten."
+
+msgid "Where these files came from is not known."
+msgstr "Het is niet bekend waar deze bestanden vandaan kwamen."
+
+msgid "“%1” already exists."
+msgstr "“%1” bestaat al."
+
+msgid "The folder could not be created."
+msgstr "De map kon niet worden gemaakt."
+
+msgctxt "name of an archive of several files"
+msgid "Archive"
+msgstr "Archief"
+
+msgid "The screenshot could not be started."
+msgstr "De schermafbeelding kon niet worden gestart."
+
+msgid "The screenshot came back empty."
+msgstr "De schermafbeelding is leeg teruggekomen."
+
+msgctxt "folder name for screenshots"
+msgid "Screenshots"
+msgstr "Schermafbeeldingen"
+
+msgctxt "file name prefix"
+msgid "Screenshot"
+msgstr "Schermafbeelding"
+
+msgid "Built-in display"
+msgstr "Ingebouwd scherm"

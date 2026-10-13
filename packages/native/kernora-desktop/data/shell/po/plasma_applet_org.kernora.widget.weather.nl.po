@@ -1,0 +1,68 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma_applet_org.kernora.widget.weather\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Weather"
+msgstr "Weer"
+
+msgid "Choose a city"
+msgstr "Een stad kiezen"
+
+msgid "No connection to the weather service"
+msgstr "Geen verbinding met de weerdienst"
+
+msgid "Loading…"
+msgstr "Laden…"
+
+msgid "Location"
+msgstr "Locatie"
+
+msgid "Every Lumo weather widget uses this place. Forecasts come from Open-Meteo.com."
+msgstr "Elke weerwidget van Lumo gebruikt deze plaats. Voorspellingen komen van Open-Meteo.com."
+
+msgid "Remove"
+msgstr "Verwijderen"
+
+msgid "Choose another city"
+msgstr "Een andere stad kiezen"
+
+msgid "Search for a city"
+msgstr "Een stad zoeken"
+
+msgid "Searching…"
+msgstr "Zoeken…"
+
+msgid "The weather service could not be reached."
+msgstr "De weerdienst kon niet worden bereikt."
+
+msgid "No place with this name."
+msgstr "Geen plaats met deze naam."
+
+msgid "Sunny"
+msgstr "Zonnig"
+
+msgid "Clear"
+msgstr "Helder"
+
+msgid "Partly cloudy"
+msgstr "Half bewolkt"
+
+msgid "Fog"
+msgstr "Mist"
+
+msgid "Rain"
+msgstr "Regen"
+
+msgid "Snow"
+msgstr "Sneeuw"
+
+msgid "Thunderstorm"
+msgstr "Onweer"
+
+msgid "Cloudy"
+msgstr "Bewolkt"

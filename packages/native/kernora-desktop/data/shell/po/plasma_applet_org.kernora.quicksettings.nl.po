@@ -1,0 +1,156 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma_applet_org.kernora.quicksettings\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Quick Settings"
+msgstr "Snelle instellingen"
+
+msgctxt "battery charge"
+msgid "%1%"
+msgstr "%1%"
+
+msgid "System Settings"
+msgstr "Systeeminstellingen"
+
+msgid "Power"
+msgstr "Energie"
+
+msgid "Lock"
+msgstr "Vergrendelen"
+
+msgid "Sleep"
+msgstr "Slaapstand"
+
+msgid "Log Out"
+msgstr "Afmelden"
+
+msgid "Restart"
+msgstr "Opnieuw opstarten"
+
+msgid "Shut Down"
+msgstr "Afsluiten"
+
+msgid "Brightness"
+msgstr "Helderheid"
+
+msgid "Volume"
+msgstr "Volume"
+
+msgid "Wi-Fi"
+msgstr "Wifi"
+
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+msgid "Sound"
+msgstr "Geluid"
+
+msgid "Muted"
+msgstr "Gedempt"
+
+msgid "Microphone"
+msgstr "Microfoon"
+
+msgid "Do Not Disturb"
+msgstr "Niet storen"
+
+msgid "Night Light"
+msgstr "Nachtlicht"
+
+msgid "Airplane Mode"
+msgstr "Vliegtuigstand"
+
+msgid "Keep Awake"
+msgstr "Wakker houden"
+
+msgid "Sleep blocked"
+msgstr "Slaapstand geblokkeerd"
+
+msgid "Keep Awake is on in Quick Settings"
+msgstr "Wakker houden staat aan in Snelle instellingen"
+
+msgid "On"
+msgstr "Aan"
+
+msgid "Off"
+msgstr "Uit"
+
+msgid "Paused"
+msgstr "Gepauzeerd"
+
+msgid "Set up…"
+msgstr "Instellen…"
+
+msgid "Unavailable"
+msgstr "Niet beschikbaar"
+
+msgid "Connecting…"
+msgstr "Verbinden…"
+
+msgid "Not connected"
+msgstr "Niet verbonden"
+
+msgid "%1 device"
+msgid_plural "%1 devices"
+msgstr[0] "%1 apparaat"
+msgstr[1] "%1 apparaten"
+
+msgid "Clear search"
+msgstr "Zoekopdracht wissen"
+
+msgid "Play"
+msgstr "Afspelen"
+
+msgid "Pause"
+msgstr "Pauzeren"
+
+msgid "Previous"
+msgstr "Vorige"
+
+msgid "Next"
+msgstr "Volgende"
+
+msgid "Memory card connected"
+msgstr "Geheugenkaart aangesloten"
+
+msgid "USB drive connected"
+msgstr "USB-schijf aangesloten"
+
+msgctxt "drive name · size"
+msgid "%1 · %2"
+msgstr "%1 · %2"
+
+msgid "Open"
+msgstr "Openen"
+
+msgid "Dark Theme"
+msgstr "Donker thema"
+
+msgid "Switching…"
+msgstr "Wisselen…"
+
+msgid "Screenshot"
+msgstr "Schermafbeelding"
+
+msgid "Power Mode"
+msgstr "Energiestand"
+
+msgid "Gaming Mode"
+msgstr "Gamingmodus"
+
+msgid "Performance, no notifications"
+msgstr "Prestaties, geen meldingen"
+
+msgid "Performance"
+msgstr "Prestaties"
+
+msgid "Power saver"
+msgstr "Energiebesparing"
+
+msgid "Balanced"
+msgstr "Gebalanceerd"
