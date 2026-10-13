@@ -12,7 +12,7 @@ Depends:
  ${misc:Depends},
  debian-archive-keyring,
  unattended-upgrades
-Description: Kernora OS package archives and updates
+Description: Lumo package archives and updates
  Sets up APT for Kernora OS: the Debian archive with its security updates,
  the Kernora package archive and its signing key, and a preference for
  Kernora's own builds over Debian packages of the same name.

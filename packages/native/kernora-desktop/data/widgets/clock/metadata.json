@@ -12,7 +12,7 @@
         "Icon": "clock",
         "Id": "org.kernora.widget.clock",
         "License": "GPL-2.0+",
-        "Name": "Kernora Clock",
+        "Name": "Lumo Clock",
         "Name[ru]": "Часы"
     },
     "X-Plasma-API-Minimum-Version": "6.0",

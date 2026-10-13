@@ -158,8 +158,8 @@
           "ru": "Драйверы ставятся сами"
         },
         "text": {
-          "en": "If your computer has an NVIDIA graphics card, Kernora downloads its driver by itself, RTX 50 cards included, and asks you to restart. Without an NVIDIA card nothing is downloaded. See Settings › System › Drivers.",
-          "ru": "Если в компьютере видеокарта NVIDIA, Kernora сама скачает для неё драйвер, в том числе для RTX 50, и попросит перезагрузиться. Без видеокарты NVIDIA ничего не скачивается. Подробности — в «Настройки › Система › Драйверы»."
+          "en": "If your computer has an NVIDIA graphics card, Lumo downloads its driver by itself, RTX 50 cards included, and asks you to restart. Without an NVIDIA card nothing is downloaded. See Settings › System › Drivers.",
+          "ru": "Если в компьютере видеокарта NVIDIA, Lumo сама скачает для неё драйвер, в том числе для RTX 50, и попросит перезагрузиться. Без видеокарты NVIDIA ничего не скачивается. Подробности — в «Настройки › Система › Драйверы»."
         }
       }
     ]
@@ -341,8 +341,8 @@
           "ru": "Новый режим редактирования"
         },
         "text": {
-          "en": "Moving and resizing widgets, wallpapers and panels now looks like the rest of Kernora.",
-          "ru": "Перемещать виджеты, менять их размер, обои и панели теперь можно в том же стиле, что и вся Kernora."
+          "en": "Moving and resizing widgets, wallpapers and panels now looks like the rest of Lumo.",
+          "ru": "Перемещать виджеты, менять их размер, обои и панели теперь можно в том же стиле, что и вся Lumo."
         }
       }
     ]
@@ -357,8 +357,8 @@
           "ru": "Снова на ногах"
         },
         "text": {
-          "en": "If the system ever hits a critical kernel error, the computer restarts by itself, and Kernora tells you what happened when you are back.",
-          "ru": "Если в ядре когда-нибудь случится критическая ошибка, компьютер перезагрузится сам, а после перезагрузки Kernora расскажет, что произошло."
+          "en": "If the system ever hits a critical kernel error, the computer restarts by itself, and Lumo tells you what happened when you are back.",
+          "ru": "Если в ядре когда-нибудь случится критическая ошибка, компьютер перезагрузится сам, а после перезагрузки Lumo расскажет, что произошло."
         }
       }
     ]
@@ -373,8 +373,8 @@
           "ru": "Цветовые темы"
         },
         "text": {
-          "en": "Kernora now comes in every Material colour, from red to blue grey. Apps, the panel, windows and even the live wallpapers change with it. Pick one in Settings › Wallpaper & style.",
-          "ru": "Kernora теперь бывает во всех цветах Material — от красного до сине-серого. Вместе с цветом меняются приложения, панель, окна и даже живые обои. Выберите свой в Настройки › Обои и стиль."
+          "en": "Lumo now comes in every Material colour, from red to blue grey. Apps, the panel, windows and even the live wallpapers change with it. Pick one in Settings › Wallpaper & style.",
+          "ru": "Lumo теперь бывает во всех цветах Material — от красного до сине-серого. Вместе с цветом меняются приложения, панель, окна и даже живые обои. Выберите свой в Настройки › Обои и стиль."
         }
       }
     ]
@@ -389,8 +389,8 @@
           "ru": "Новые картинки профиля"
         },
         "text": {
-          "en": "Waves and ripples in Kernora's colours instead of KDE's pictures. Pick one in Settings › Account.",
-          "ru": "Волны и узоры в цветах Kernora вместо картинок KDE. Выберите любую в Настройки › Аккаунт."
+          "en": "Waves and ripples in Lumo's colours instead of KDE's pictures. Pick one in Settings › Account.",
+          "ru": "Волны и узоры в цветах Lumo вместо картинок KDE. Выберите любую в Настройки › Аккаунт."
         }
       }
     ]
@@ -421,15 +421,15 @@
           "ru": "Уведомления об обновлениях"
         },
         "text": {
-          "en": "Kernora tells you when updates are ready and reminds you to restart after a system update. After the restart, this window tells you what is new.",
-          "ru": "Kernora сама сообщает, когда готовы обновления, и напоминает перезагрузиться после обновления системы. А после перезагрузки рассказывает в этом окне, что нового."
+          "en": "Lumo tells you when updates are ready and reminds you to restart after a system update. After the restart, this window tells you what is new.",
+          "ru": "Lumo сама сообщает, когда готовы обновления, и напоминает перезагрузиться после обновления системы. А после перезагрузки рассказывает в этом окне, что нового."
         }
       },
       {
         "icon": "preferences-desktop-sound",
         "title": {
-          "en": "Kernora sounds",
-          "ru": "Звуки Kernora"
+          "en": "Lumo sounds",
+          "ru": "Звуки Lumo"
         },
         "text": {
           "en": "Soft new sounds for logging in, notifications, volume, screenshots and the trash. Choose and listen to them in Settings › Sound.",
@@ -476,8 +476,8 @@
           "ru": "Всё в одном стиле"
         },
         "text": {
-          "en": "Fewer windows from KDE: Files asks itself what to do with matching names, a short notification replaces the crash report, and the browser's dialogs look like Kernora.",
-          "ru": "Меньше окон от KDE: Файлы сами спрашивают, что делать с одинаковыми именами, вместо отчёта о сбое приходит короткое уведомление, а окна браузера выглядят как Kernora."
+          "en": "Fewer windows from KDE: Files asks itself what to do with matching names, a short notification replaces the crash report, and the browser's dialogs look like Lumo.",
+          "ru": "Меньше окон от KDE: Файлы сами спрашивают, что делать с одинаковыми именами, вместо отчёта о сбое приходит короткое уведомление, а окна браузера выглядят как Lumo."
         }
       }
     ]

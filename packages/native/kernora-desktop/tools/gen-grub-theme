@@ -56,7 +56,7 @@ terminal-box: "terminal_*.png"
     top = 14%+{LOGO_SIZE + 20}
     width = 100%
     align = "center"
-    text = "Kernora OS"
+    text = "Lumo"
     font = "Roboto Regular Regular 24"
     color = "{dark["onSurface"]}"
 }}

@@ -44,7 +44,7 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: logo.bottom
             anchors.topMargin: Math.round(root.height * 0.06)
-            text: "Kernora OS"
+            text: "Lumo"
             color: "#ede0dc"
             font.family: "Google Sans Flex"
             font.pixelSize: Math.round(root.height * 0.028)

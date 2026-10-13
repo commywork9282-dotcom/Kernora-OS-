@@ -17,14 +17,14 @@ assert_file_line() {
 
 # shellcheck disable=SC1091
 source "$project_root/configs/project.env"
-[[ "$DIST_NAME" == "Kernora OS" ]] || fail "unexpected DIST_NAME"
+[[ "$DIST_NAME" == "Lumo" ]] || fail "unexpected DIST_NAME"
 [[ "$DIST_ID" == "kernora" ]] || fail "unexpected DIST_ID"
 [[ "$DIST_CODENAME" == "ember" ]] || fail "unexpected DIST_CODENAME"
 [[ "$DIST_VERSION" == "1" ]] || fail "unexpected DIST_VERSION"
 
 os_release="$package_root/etc/os-release"
-assert_file_line "$os_release" 'PRETTY_NAME="Kernora OS 1 (Ember)"'
-assert_file_line "$os_release" 'NAME="Kernora OS"'
+assert_file_line "$os_release" 'PRETTY_NAME="Lumo 1 (Ember)"'
+assert_file_line "$os_release" 'NAME="Lumo"'
 assert_file_line "$os_release" 'VERSION_ID="1"'
 assert_file_line "$os_release" 'VERSION_CODENAME=ember'
 assert_file_line "$os_release" 'ID=kernora'

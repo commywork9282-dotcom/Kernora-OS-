@@ -112,7 +112,7 @@ SettingsPage {
     Group {
         title: i18n("Available devices")
         note: page.found.length === 0 ? i18n("No devices found yet.")
-            : i18n("If the device asks for a code, Kernora shows it or asks you to type it.")
+            : i18n("If the device asks for a code, Lumo shows it or asks you to type it.")
 
         Repeater {
             model: page.found

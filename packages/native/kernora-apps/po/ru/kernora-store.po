@@ -77,8 +77,8 @@ msgstr "Этот пакет взят из файла, а не из провер�
 
 #: packages/native/kernora-apps/apps/store/qml/AppPage.qml:255
 #: packages/native/kernora-apps/apps/store/qml/HomePage.qml:118
-msgid "You are trying Kernora"
-msgstr "Вы пробуете Kernora"
+msgid "You are trying Lumo"
+msgstr "Вы пробуете Lumo"
 
 #: packages/native/kernora-apps/apps/store/qml/AppPage.qml:256
 msgid "Apps you install now disappear after a restart."
@@ -162,8 +162,8 @@ msgid "See all"
 msgstr "Все"
 
 #: packages/native/kernora-apps/apps/store/qml/HomePage.qml:119
-msgid "Apps you install now disappear after a restart. Install Kernora to keep them."
-msgstr "Приложения, установленные сейчас, пропадут после перезагрузки. Установите Kernora на диск, чтобы они остались."
+msgid "Apps you install now disappear after a restart. Install Lumo to keep them."
+msgstr "Приложения, установленные сейчас, пропадут после перезагрузки. Установите Lumo на диск, чтобы они остались."
 
 #: packages/native/kernora-apps/apps/store/qml/HomePage.qml:214
 msgid "Popular choice"
@@ -380,8 +380,8 @@ msgid "System updates"
 msgstr "Обновления системы"
 
 #: packages/native/kernora-apps/apps/store/qml/UpdatesPage.qml:176
-msgid "Kernora and the apps that come with it update in Settings"
-msgstr "Kernora и встроенные приложения обновляются в Настройках"
+msgid "Lumo and the apps that come with it update in Settings"
+msgstr "Lumo и встроенные приложения обновляются в Настройках"
 
 #: packages/native/kernora-apps/src/store/debianbackend.cpp:23
 msgid "Downloading…"
@@ -556,8 +556,8 @@ msgstr "Магазин"
 
 #: packages/native/kernora-apps/src/apps/host.cpp:59
 msgctxt "@info:credit"
-msgid "© 2026 Kernora OS"
-msgstr "© 2026 Kernora OS"
+msgid "© 2026 Lumo"
+msgstr "© 2026 Lumo"
 
 #: packages/native/kernora-apps/src/apps/host.cpp:67
 msgid "Files or pages to open."

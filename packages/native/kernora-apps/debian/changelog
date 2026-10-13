@@ -6,6 +6,7 @@ kernora-apps (1.1.35) UNRELEASED; urgency=medium
   * Settings > Bluetooth: explain why pairing failed (wrong code, cancelled,
     timeout, out of range) and add Search again.
   * Settings: Google Sans Flex is the default interface font.
+  * Call the system Lumo in every app.
   * Windows-style shortcuts: Meta+E opens Files, Meta+I Settings and
     Meta+Shift+S takes a screenshot of an area.
 

@@ -38,7 +38,7 @@ class SystemInfo : public QObject
 public:
     explicit SystemInfo(QObject *parent = nullptr);
 
-    QString osName() const { return m_os.value(QStringLiteral("NAME"), QStringLiteral("Kernora OS")); }
+    QString osName() const { return m_os.value(QStringLiteral("NAME"), QStringLiteral("Lumo")); }
     QString osVersion() const { return m_os.value(QStringLiteral("VERSION")); }
     QString osPrettyName() const { return m_os.value(QStringLiteral("PRETTY_NAME"), osName()); }
     QString osCodename() const { return m_os.value(QStringLiteral("VERSION_CODENAME")); }

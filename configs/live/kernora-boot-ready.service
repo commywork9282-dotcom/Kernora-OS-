@@ -1,5 +1,5 @@
 [Unit]
-Description=Kernora live boot readiness marker
+Description=Lumo live boot readiness marker
 After=multi-user.target
 
 [Service]

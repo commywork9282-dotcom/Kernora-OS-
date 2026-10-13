@@ -119,8 +119,8 @@ msgstr "Медиафайлы (*.mp4 *.mkv *.webm *.avi *.mov *.m4v *.ogv *.mpg *
 
 #: src/apps/host.cpp:64
 msgctxt "@info:credit"
-msgid "© 2026 Kernora OS"
-msgstr "© 2026 Kernora OS"
+msgid "© 2026 Lumo"
+msgstr "© 2026 Lumo"
 
 #: src/apps/host.cpp:72
 msgid "Files or pages to open."

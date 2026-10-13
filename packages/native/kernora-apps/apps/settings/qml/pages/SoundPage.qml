@@ -224,7 +224,7 @@ SettingsPage {
     }
 
     readonly property var soundThemes: [
-        { value: "kernora", label: i18n("Kernora"), demo: "/usr/share/sounds/kernora/stereo/theme-demo.wav" },
+        { value: "kernora", label: i18n("Lumo"), demo: "/usr/share/sounds/kernora/stereo/theme-demo.wav" },
         { value: "ocean", label: i18n("Ocean"), description: i18n("The KDE sounds"), demo: "/usr/share/sounds/ocean/stereo/theme-demo.oga" }
     ]
 

@@ -265,7 +265,7 @@ Item {
                 width: parent.width
                 visible: Store.live && !page.installed
                 icon: "dialog-information"
-                title: i18n("You are trying Kernora")
+                title: i18n("You are trying Lumo")
                 text: i18n("Apps you install now disappear after a restart.")
             }
 

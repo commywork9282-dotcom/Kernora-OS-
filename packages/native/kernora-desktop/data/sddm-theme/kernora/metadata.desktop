@@ -1,8 +1,8 @@
 [SddmGreeterTheme]
-Name=Kernora
-Name[ru]=Kernora
-Description=The Material 3 login screen of Kernora OS
-Description[ru]=Экран входа Kernora OS в стиле Material 3
+Name=Lumo
+Name[ru]=Lumo
+Description=The Material 3 login screen of Lumo
+Description[ru]=Экран входа Lumo в стиле Material 3
 Author=Kernora Developers
 License=GPL-2.0-or-later
 Type=sddm-theme

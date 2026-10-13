@@ -17,7 +17,7 @@ SettingsPage {
     id: page
 
     title: i18n("Drivers")
-    subtitle: i18n("Kernora finds the drivers your hardware needs and installs them by itself.")
+    subtitle: i18n("Lumo finds the drivers your hardware needs and installs them by itself.")
 
     readonly property string tool: "/usr/libexec/kernora-drivers"
     property var info: ({})
@@ -109,22 +109,22 @@ SettingsPage {
             return "";
         }
         if (!hasCard) {
-            return i18n("Your graphics card works with the drivers built into Kernora.");
+            return i18n("Your graphics card works with the drivers built into Lumo.");
         }
         if (actionFailed) {
-            return i18n("Kernora could not start this. Install the latest updates and try again.");
+            return i18n("Lumo could not start this. Install the latest updates and try again.");
         }
         if (info.live === "yes") {
             return i18n("The installer sets up the driver for %1 when the computer is online.", page.card);
         }
         if (!supported) {
-            return i18n("NVIDIA no longer makes a driver for this card. It keeps working with the open driver built into Kernora.");
+            return i18n("NVIDIA no longer makes a driver for this card. It keeps working with the open driver built into Lumo.");
         }
         if (installing) {
-            return i18n("Kernora is downloading the driver for %1 and installing it. It takes a few minutes, and you can keep working.", page.card);
+            return i18n("Lumo is downloading the driver for %1 and installing it. It takes a few minutes, and you can keep working.", page.card);
         }
         if (removing) {
-            return i18n("Kernora is removing the NVIDIA driver.");
+            return i18n("Lumo is removing the NVIDIA driver.");
         }
         if (ready) {
             return i18n("The driver for %1 is installed. It starts working after a restart.", page.card);
@@ -237,7 +237,7 @@ SettingsPage {
 
         ListItem {
             title: i18n("Install drivers automatically")
-            subtitle: i18n("When a graphics card needs a driver, Kernora installs it and asks you to restart")
+            subtitle: i18n("When a graphics card needs a driver, Lumo installs it and asks you to restart")
             icon: "download"
             iconStyle: "plain"
             checkable: true

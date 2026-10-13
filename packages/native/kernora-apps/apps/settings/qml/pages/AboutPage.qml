@@ -16,7 +16,7 @@ import "../components"
 SettingsPage {
     id: page
 
-    title: i18n("About Kernora")
+    title: i18n("About Lumo")
 
     property string deviceName: ""
 
@@ -171,7 +171,7 @@ SettingsPage {
     Group {
         ListItem {
             title: i18n("Legal information")
-            subtitle: i18n("Licences, authors and copyrights of the software in Kernora")
+            subtitle: i18n("Licences, authors and copyrights of the software in Lumo")
             icon: "help-about"
             accent: 0
             chevron: true

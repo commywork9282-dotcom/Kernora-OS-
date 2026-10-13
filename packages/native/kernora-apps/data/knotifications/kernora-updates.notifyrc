@@ -2,8 +2,8 @@
 IconName=system-software-update
 Name=Updates
 Name[ru]=Обновления
-Comment=Kernora software updates
-Comment[ru]=Обновления Kernora
+Comment=Lumo software updates
+Comment[ru]=Обновления Lumo
 DesktopEntry=org.kernora.settings
 
 [Event/updatesAvailable]
@@ -26,8 +26,8 @@ Urgency=Normal
 [Event/driverInstalling]
 Name=Installing the graphics driver
 Name[ru]=Установка драйвера видеокарты
-Comment=Kernora is installing the driver your graphics card needs
-Comment[ru]=Kernora устанавливает драйвер, нужный вашей видеокарте
+Comment=Lumo is installing the driver your graphics card needs
+Comment[ru]=Lumo устанавливает драйвер, нужный вашей видеокарте
 Action=Popup
 Urgency=Normal
 

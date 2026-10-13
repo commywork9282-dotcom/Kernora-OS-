@@ -393,8 +393,8 @@ grep -q '<image' "$logo" && fail "logo embeds a raster image"
 grep -Eq 'stroke="(?!none)' "$logo" 2>/dev/null && fail "logo uses strokes"
 
 branding="$data_root/calamares/branding/kernora/branding.desc"
-grep -Fq 'productName:         Kernora OS' "$branding" \
-  || fail "installer branding does not name Kernora OS"
+grep -Fq 'productName:         Lumo' "$branding" \
+  || fail "installer branding does not name Lumo"
 [[ -s "$data_root/calamares/branding/kernora/kernora-welcome.png" ]] \
   || fail "installer welcome image is missing"
 grep -Fq 'productLogo:    "kernora-logo.png"' "$branding" \

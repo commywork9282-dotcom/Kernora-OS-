@@ -2,8 +2,8 @@
 IconName=org.kernora.screenshot
 Name=Screenshot
 Name[ru]=Снимок экрана
-Comment=Kernora Screenshot
-Comment[ru]=Снимок экрана Kernora
+Comment=Lumo Screenshot
+Comment[ru]=Снимок экрана Lumo
 DesktopEntry=org.kernora.screenshot
 
 [Event/captured]

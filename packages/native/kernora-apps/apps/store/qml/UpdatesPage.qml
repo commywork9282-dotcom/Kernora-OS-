@@ -173,7 +173,7 @@ Page {
 
         ListItem {
             title: i18n("System updates")
-            subtitle: i18n("Kernora and the apps that come with it update in Settings")
+            subtitle: i18n("Lumo and the apps that come with it update in Settings")
             icon: "system-software-update"
             accent: 0
             chevron: true

@@ -103,12 +103,12 @@ msgid "The operating system kernel"
 msgstr "Ядро операционной системы"
 
 #: src/system/licenses.cpp:60
-msgid "The distribution Kernora OS is based on"
-msgstr "Дистрибутив, на котором основана Kernora OS"
+msgid "The distribution Lumo is based on"
+msgstr "Дистрибутив, на котором основана Lumo"
 
 #: src/system/licenses.cpp:61
-msgid "The desktop technology under the Kernora shell"
-msgstr "Технология рабочего стола под оболочкой Kernora"
+msgid "The desktop technology under the Lumo shell"
+msgstr "Технология рабочего стола под оболочкой Lumo"
 
 #: src/system/licenses.cpp:62
 msgid "The window manager and compositor"

@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
-Name=Install Kernora
-Name[ru]=Установить Kernora
+Name=Install Lumo
+Name[ru]=Установить Lumo
 GenericName=Install on disk
 GenericName[ru]=Установка на диск
-Comment=Install Kernora OS on this computer
-Comment[ru]=Установить Kernora OS на этот компьютер
+Comment=Install Lumo on this computer
+Comment[ru]=Установить Lumo на этот компьютер
 Icon=org.kernora.installer
 Exec=/usr/bin/kernora-installer
 Categories=Qt;System;

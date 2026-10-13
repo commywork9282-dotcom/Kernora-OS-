@@ -22,8 +22,8 @@ msgstr "Загрузка…"
 msgid "Location"
 msgstr "Место"
 
-msgid "Every Kernora weather widget uses this place. Forecasts come from Open-Meteo.com."
-msgstr "Это место используют все виджеты погоды Kernora. Прогноз предоставляет Open-Meteo.com."
+msgid "Every Lumo weather widget uses this place. Forecasts come from Open-Meteo.com."
+msgstr "Это место используют все виджеты погоды Lumo. Прогноз предоставляет Open-Meteo.com."
 
 msgid "Remove"
 msgstr "Убрать"

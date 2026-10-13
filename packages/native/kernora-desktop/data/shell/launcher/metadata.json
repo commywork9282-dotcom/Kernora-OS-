@@ -12,8 +12,8 @@
         "Icon": "start-here-kde",
         "Id": "org.kernora.launcher",
         "License": "GPL-2.0+",
-        "Name": "Kernora Launcher",
-        "Name[ru]": "Меню приложений Kernora"
+        "Name": "Lumo Launcher",
+        "Name[ru]": "Меню приложений Lumo"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-Provides": [

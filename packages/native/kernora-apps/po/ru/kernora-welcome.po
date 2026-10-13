@@ -34,7 +34,7 @@ msgid "Next"
 msgstr "Далее"
 
 #: apps/welcome/qml/Main.qml:115
-msgid "Start using Kernora"
+msgid "Start using Lumo"
 msgstr "Начать работу"
 
 #: apps/welcome/qml/Main.qml:216
@@ -42,24 +42,24 @@ msgid "Welcome to %1"
 msgstr "Добро пожаловать в %1"
 
 #: apps/welcome/qml/Main.qml:225
-msgid "You are trying Kernora from the installation medium. Look around, then install it when you are ready."
-msgstr "Вы запустили Kernora с установочного носителя. Осмотритесь, а когда будете готовы, установите систему."
+msgid "You are trying Lumo from the installation medium. Look around, then install it when you are ready."
+msgstr "Вы запустили Lumo с установочного носителя. Осмотритесь, а когда будете готовы, установите систему."
 
 #: apps/welcome/qml/Main.qml:226
 msgid "Let's make it yours. It takes a minute."
 msgstr "Настроим систему под вас. Это займёт минуту."
 
 #: apps/welcome/qml/Main.qml:232
-msgid "Install Kernora"
-msgstr "Установить Kernora"
+msgid "Install Lumo"
+msgstr "Установить Lumo"
 
 #: apps/welcome/qml/Main.qml:245
 msgid "Light or dark"
 msgstr "Светлая или тёмная"
 
 #: apps/welcome/qml/Main.qml:246
-msgid "Choose how Kernora looks. You can change it any time in Settings."
-msgstr "Выберите оформление Kernora. Его можно изменить в любой момент в «Настройках»."
+msgid "Choose how Lumo looks. You can change it any time in Settings."
+msgstr "Выберите оформление Lumo. Его можно изменить в любой момент в «Настройках»."
 
 #: apps/welcome/qml/Main.qml:255
 msgid "Light"
@@ -74,12 +74,12 @@ msgid "Pick a wallpaper"
 msgstr "Выберите обои"
 
 #: apps/welcome/qml/Main.qml:281
-msgid "Kernora Shapes moves slowly and pauses behind your windows. Or choose a picture."
-msgstr "«Фигуры Kernora» медленно движутся и замирают за развёрнутыми окнами. Или выберите изображение."
+msgid "Lumo Shapes moves slowly and pauses behind your windows. Or choose a picture."
+msgstr "«Фигуры Lumo» медленно движутся и замирают за развёрнутыми окнами. Или выберите изображение."
 
 #: apps/welcome/qml/Main.qml:294
-msgid "Kernora Shapes"
-msgstr "Фигуры Kernora"
+msgid "Lumo Shapes"
+msgstr "Фигуры Lumo"
 
 #: apps/welcome/qml/Main.qml:325
 msgid "Your apps"
@@ -163,8 +163,8 @@ msgstr "Всё остальное — в «Настройках»"
 
 #: src/apps/host.cpp:64
 msgctxt "@info:credit"
-msgid "© 2026 Kernora OS"
-msgstr "© 2026 Kernora OS"
+msgid "© 2026 Lumo"
+msgstr "© 2026 Lumo"
 
 #: src/apps/host.cpp:72
 msgid "Files or pages to open."
@@ -178,8 +178,8 @@ msgstr "Добро пожаловать"
 msgid "Pick a style"
 msgstr "Выберите стиль"
 
-msgid "Three generations of Material, in the Kernora colours. You can change it any time in Settings."
-msgstr "Три поколения Material в цветах Kernora. Стиль можно сменить в любой момент в настройках."
+msgid "Three generations of Material, in the Lumo colours. You can change it any time in Settings."
+msgstr "Три поколения Material в цветах Lumo. Стиль можно сменить в любой момент в настройках."
 
 #: apps/welcome/qml/Main.qml
 msgid "2021 · Material You"
@@ -194,16 +194,16 @@ msgid "2014 · paper and ink"
 msgstr "2014 · бумага и чернила"
 
 #: apps/welcome/qml/Main.qml
-msgid "Kernora's wallpapers are alive: they move slowly and rest behind your windows."
-msgstr "Обои Kernora живые: они медленно движутся и замирают за вашими окнами."
+msgid "Lumo's wallpapers are alive: they move slowly and rest behind your windows."
+msgstr "Обои Lumo живые: они медленно движутся и замирают за вашими окнами."
 
 #: apps/welcome/qml/Main.qml:24
 msgid "What's new"
 msgstr "Что нового"
 
 #: apps/welcome/qml/Main.qml:575
-msgid "Kernora got even better"
-msgstr "Kernora стала ещё лучше"
+msgid "Lumo got even better"
+msgstr "Lumo стала ещё лучше"
 
 #: apps/welcome/qml/Main.qml:584
 msgid "Here is what is new in the update of %1."
@@ -222,16 +222,16 @@ msgid "Great"
 msgstr "Отлично"
 
 #: apps/welcome/qml/Main.qml:25
-msgid "Kernora restarted"
-msgstr "Kernora перезапустилась"
+msgid "Lumo restarted"
+msgstr "Lumo перезапустилась"
 
 #: apps/welcome/qml/Main.qml:762
 msgid "Well, this is awkward."
 msgstr "Что ж, неловко вышло."
 
 #: apps/welcome/qml/Main.qml:772
-msgid "Kernora encountered a critical kernel error and could no longer continue running. Your computer restarted automatically to recover from this problem."
-msgstr "В ядре Kernora произошла критическая ошибка, и система не могла продолжать работу. Компьютер автоматически перезагрузился, чтобы восстановиться после этой проблемы."
+msgid "Lumo encountered a critical kernel error and could no longer continue running. Your computer restarted automatically to recover from this problem."
+msgstr "В ядре Lumo произошла критическая ошибка, и система не могла продолжать работу. Компьютер автоматически перезагрузился, чтобы восстановиться после этой проблемы."
 
 #: apps/welcome/qml/Main.qml:783
 msgid "It happened on %1."

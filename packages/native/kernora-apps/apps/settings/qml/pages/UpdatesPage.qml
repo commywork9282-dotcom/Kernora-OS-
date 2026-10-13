@@ -92,14 +92,14 @@ SettingsPage {
                     MText {
                         Layout.fillWidth: true
                         role: "bodyMedium"
-                        text: i18n("You are trying Kernora from the installation medium, and nothing installed here is kept. Install Kernora: when the computer is online, the installer brings the new system up to date by itself.")
+                        text: i18n("You are trying Lumo from the installation medium, and nothing installed here is kept. Install Lumo: when the computer is online, the installer brings the new system up to date by itself.")
                         wrapMode: Text.Wrap
                         color: M3.surfaceVariantContent
                     }
                 }
             }
             QQC2.Button {
-                text: i18n("Install Kernora")
+                text: i18n("Install Lumo")
                 icon.name: "system-software-install"
                 highlighted: true
                 onClicked: Process.launchApplication("org.kernora.installer.desktop", [])

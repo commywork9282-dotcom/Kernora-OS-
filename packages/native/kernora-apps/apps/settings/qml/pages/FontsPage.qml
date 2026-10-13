@@ -155,7 +155,7 @@ SettingsPage {
 
     Group {
         ListItem {
-            title: i18n("Restore the Kernora fonts")
+            title: i18n("Restore the Lumo fonts")
             icon: "edit-undo"
             iconStyle: "plain"
             visible: page.family !== "Google Sans Flex" || page.size !== 10.5 || page.codeFamily !== "Hack" || page.codeSize !== 10

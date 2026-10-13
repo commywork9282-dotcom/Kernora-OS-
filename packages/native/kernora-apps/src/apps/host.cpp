@@ -56,7 +56,7 @@ int run(int &argc, char **argv, const Application &application, KLocalizedString
 
     KAboutData about(QString::fromLatin1(application.component), displayName().toString(),
                      QStringLiteral(KERNORA_APPS_VERSION), QString(), KAboutLicense::GPL_V2,
-                     i18nc("@info:credit", "© 2026 Kernora OS"));
+                     i18nc("@info:credit", "© 2026 Lumo"));
     about.setDesktopFileName(QString::fromLatin1(application.desktopFileName));
     about.setOrganizationDomain("kernora.invalid");
     KAboutData::setApplicationData(about);

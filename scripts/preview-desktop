@@ -35,7 +35,7 @@ build_base() {
   install -m 0644 "$rootfs_tar" "$temporary/rootfs.tar.xz"
   cat > "$temporary/overlay.service" <<'EOF'
 [Unit]
-Description=Kernora preview: apply the package overlay
+Description=Lumo preview: apply the package overlay
 DefaultDependencies=no
 After=local-fs.target
 Before=display-manager.service sddm.service

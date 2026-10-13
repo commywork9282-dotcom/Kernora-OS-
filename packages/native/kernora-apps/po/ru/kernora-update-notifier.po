@@ -64,8 +64,8 @@ msgstr "вашей видеокарты NVIDIA"
 msgid "Installing the graphics driver"
 msgstr "Установка драйвера видеокарты"
 
-msgid "Kernora is installing the driver for %1. It takes a few minutes, and you can keep working."
-msgstr "Kernora устанавливает драйвер для %1. Это займёт несколько минут, можно продолжать работать."
+msgid "Lumo is installing the driver for %1. It takes a few minutes, and you can keep working."
+msgstr "Lumo устанавливает драйвер для %1. Это займёт несколько минут, можно продолжать работать."
 
 msgid "Restart to use your graphics card"
 msgstr "Перезагрузите компьютер, чтобы заработала видеокарта"

@@ -11,7 +11,7 @@ Depends:
  ${misc:Depends},
  base-files (= 13.8+deb13u6+kernora1),
  kernora-archive (>= 1.0)
-Description: Kernora OS base system and hardware defaults
+Description: Lumo base system and hardware defaults
  This package depends on the Kernora-specific packages required by every
  Kernora OS installation: the system identity and the package archives
  that keep it updated.

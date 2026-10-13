@@ -12,8 +12,8 @@
         "Icon": "preferences-desktop-wallpaper",
         "Id": "org.kernora.shapes",
         "License": "GPL-2.0+",
-        "Name": "Kernora Shapes",
-        "Name[ru]": "Фигуры Kernora"
+        "Name": "Lumo Shapes",
+        "Name[ru]": "Фигуры Lumo"
     },
     "X-KDE-ParentApp": "org.kde.plasmashell",
     "X-Plasma-API-Minimum-Version": "6.0"

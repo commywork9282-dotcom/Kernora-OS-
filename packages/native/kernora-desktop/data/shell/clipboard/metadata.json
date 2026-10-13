@@ -12,8 +12,8 @@
         "Icon": "edit-paste",
         "Id": "org.kernora.clipboard",
         "License": "GPL-2.0+",
-        "Name": "Kernora Clipboard",
-        "Name[ru]": "Буфер обмена Kernora"
+        "Name": "Lumo Clipboard",
+        "Name[ru]": "Буфер обмена Lumo"
     },
     "X-Plasma-API-Minimum-Version": "6.0"
 }

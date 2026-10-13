@@ -59,8 +59,8 @@ QVariantList Licenses::components() const
     };
     const QList<Component> notable = {
         {"linux-image-amd64", QStringLiteral("Linux"), i18n("The operating system kernel"), "https://kernel.org"},
-        {"base-files", QStringLiteral("Debian"), i18n("The distribution Kernora OS is based on"), "https://www.debian.org"},
-        {"plasma-workspace", QStringLiteral("KDE Plasma"), i18n("The desktop technology under the Kernora shell"), "https://kde.org/plasma-desktop"},
+        {"base-files", QStringLiteral("Debian"), i18n("The distribution Lumo is based on"), "https://www.debian.org"},
+        {"plasma-workspace", QStringLiteral("KDE Plasma"), i18n("The desktop technology under the Lumo shell"), "https://kde.org/plasma-desktop"},
         {"kwin-common", QStringLiteral("KWin"), i18n("The window manager and compositor"), "https://kde.org"},
         {"libkf6coreaddons6", QStringLiteral("KDE Frameworks"), i18n("Libraries used by the desktop and the applications"), "https://develop.kde.org/products/frameworks"},
         {"libqt6core6t64", QStringLiteral("Qt"), i18n("The application framework"), "https://www.qt.io"},

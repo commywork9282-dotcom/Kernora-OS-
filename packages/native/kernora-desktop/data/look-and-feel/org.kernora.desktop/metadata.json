@@ -6,9 +6,9 @@
                 "Name": "Kernora Developers"
             }
         ],
-        "Description": "Default Kernora OS desktop appearance",
+        "Description": "Default Lumo desktop appearance",
         "Id": "org.kernora.desktop",
         "License": "LicenseRef-Kernora-Artwork",
-        "Name": "Kernora"
+        "Name": "Lumo"
     }
 }

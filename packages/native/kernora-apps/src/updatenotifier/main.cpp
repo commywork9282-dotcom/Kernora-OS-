@@ -316,7 +316,7 @@ private:
             notification->setComponentName(QStringLiteral("kernora-updates"));
             notification->setIconName(QStringLiteral("cpu"));
             notification->setTitle(i18n("Installing the graphics driver"));
-            notification->setText(i18n("Kernora is installing the driver for %1. It takes a few minutes, and you can keep working.", card));
+            notification->setText(i18n("Lumo is installing the driver for %1. It takes a few minutes, and you can keep working.", card));
             notification->sendEvent();
             return;
         }

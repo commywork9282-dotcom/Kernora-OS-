@@ -1,4 +1,10 @@
-# Kernora OS
+# Lumo
+
+Lumo is a fork of [Kernora OS](https://github.com/commywork9282-dotcom/Kernora-OS-)
+with its own name and logo, Google Sans Flex, a Bluetooth pairing agent and
+Windows-style shortcuts. Package and file names still say `kernora`.
+
+## Kernora OS
 
 Kernora OS is a desktop Linux distribution based on Debian 13 (trixie). It
 runs KDE Plasma 6 with its own shell, apps and themes, designed after

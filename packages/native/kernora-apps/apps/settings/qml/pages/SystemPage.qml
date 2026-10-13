@@ -100,7 +100,7 @@ SettingsPage {
             onClicked: page.open("ModulesPage.qml", {})
         }
         ListItem {
-            title: i18n("About Kernora")
+            title: i18n("About Lumo")
             icon: "help-about"
             iconStyle: "plain"
             chevron: true

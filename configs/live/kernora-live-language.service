@@ -1,5 +1,5 @@
 [Unit]
-Description=Kernora live session language from the boot menu
+Description=Lumo live session language from the boot menu
 DefaultDependencies=no
 After=local-fs.target
 Before=display-manager.service sddm.service systemd-user-sessions.service

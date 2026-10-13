@@ -17,7 +17,7 @@ Priority: required
 Replaces: base, miscutils, dpkg (<= 1.15.0)
 Breaks: debian-security-support (<< 2019.04.25), initscripts (<< 2.88dsf-13.3), sendfile (<< 2.1b.20080616-5.2~)
 Multi-Arch: foreign
-Description: Kernora OS base system miscellaneous files
+Description: Lumo base system miscellaneous files
  This package contains the basic filesystem hierarchy of a Kernora system, and
  several important miscellaneous files, such as /etc/debian_version,
  /etc/host.conf, /etc/issue, /etc/motd, /etc/profile, and others,

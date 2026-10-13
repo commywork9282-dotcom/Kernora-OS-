@@ -22,7 +22,7 @@ QtObject {
         { id: "accessibility", title: i18n("Accessibility"), subtitle: i18n("Zoom, larger text, motion, keys"), icon: "preferences-desktop-accessibility", accent: 5, page: "AccessibilityPage.qml" },
         { id: "privacy", title: i18n("Security & privacy"), subtitle: i18n("Screen lock, file search, history"), icon: "preferences-security", accent: 4, page: "PrivacyPage.qml" },
         { id: "system", title: i18n("System"), subtitle: i18n("Language, date & time, updates, storage"), icon: "applications-system", accent: 3, page: "SystemPage.qml" },
-        { id: "about", title: i18n("About Kernora"), subtitle: i18n("Device name, hardware, legal"), icon: "help-about", accent: 0, page: "AboutPage.qml" }
+        { id: "about", title: i18n("About Lumo"), subtitle: i18n("Device name, hardware, legal"), icon: "help-about", accent: 0, page: "AboutPage.qml" }
     ]
 
     function category(id: string): var {

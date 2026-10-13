@@ -12,8 +12,8 @@
         "Icon": "preferences-system",
         "Id": "org.kernora.quicksettings",
         "License": "GPL-2.0+",
-        "Name": "Kernora Quick Settings",
-        "Name[ru]": "Быстрые настройки Kernora"
+        "Name": "Lumo Quick Settings",
+        "Name[ru]": "Быстрые настройки Lumo"
     },
     "X-Plasma-API-Minimum-Version": "6.0"
 }

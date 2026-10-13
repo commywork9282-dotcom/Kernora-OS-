@@ -26,7 +26,7 @@ Depends:
 Recommends:
  plymouth,
  plymouth-label
-Description: Kernora OS desktop appearance and shell
+Description: Lumo desktop appearance and shell
  This package carries the Kernora OS desktop: a complete Material 3 design
  for Plasma, generated from one seed colour.
  .
@@ -54,7 +54,7 @@ Depends:
  kernora-desktop (= ${source:Version}),
  pkexec,
  polkitd
-Description: Kernora OS installer configuration
+Description: Lumo installer configuration
  This package configures Calamares to install Kernora OS from the live image
  onto a disk: the module sequence, the target clean-up of live-only settings
  and the Kernora installer branding.

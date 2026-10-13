@@ -17,7 +17,7 @@ SettingsPage {
     id: page
 
     title: i18n("Legal information")
-    subtitle: i18n("Kernora OS is free software, made from the work of many open-source projects. Their authors and licences are listed here.")
+    subtitle: i18n("Lumo is free software, made from the work of many open-source projects. Their authors and licences are listed here.")
 
     readonly property var components: Licenses.components()
     property var packages: []
@@ -28,15 +28,15 @@ SettingsPage {
     }
 
     Group {
-        title: i18n("Kernora OS")
+        title: i18n("Lumo")
 
         ListItem {
-            title: i18n("Kernora OS")
-            subtitle: i18n("The Kernora shell, apps and design: GNU General Public License 2.0 or later")
+            title: i18n("Lumo")
+            subtitle: i18n("The Lumo shell, apps and design: GNU General Public License 2.0 or later")
             icon: "kernora-logo"
             accent: 0
             chevron: true
-            onClicked: page.open("LicensePage.qml", { name: "Kernora OS", path: "/usr/share/doc/kernora-desktop/copyright" })
+            onClicked: page.open("LicensePage.qml", { name: "Lumo", path: "/usr/share/doc/kernora-desktop/copyright" })
         }
         ListItem {
             title: i18n("GNU General Public License 2.0")

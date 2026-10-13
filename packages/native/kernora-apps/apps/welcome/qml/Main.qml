@@ -22,7 +22,7 @@ AppWindow {
     minimumHeight: 520
     color: M3.surfaceContainer
     visible: !(firstRun && SystemInfo.live) && !(whatsNew && notes.length === 0) && !(kernelPanic && !panic.id)
-    title: kernelPanic ? i18n("Kernora restarted") : whatsNew ? i18n("What's new") : i18n("Welcome")
+    title: kernelPanic ? i18n("Lumo restarted") : whatsNew ? i18n("What's new") : i18n("Welcome")
 
     property int page: 0
     readonly property int pages: 6
@@ -177,7 +177,7 @@ AppWindow {
             }
             Item { Layout.fillWidth: true }
             QQC2.Button {
-                text: app.page === app.pages - 1 ? i18n("Start using Kernora") : i18n("Next")
+                text: app.page === app.pages - 1 ? i18n("Start using Lumo") : i18n("Next")
                 highlighted: true
                 onClicked: app.page === app.pages - 1 ? app.finish() : app.page += 1
             }
@@ -284,14 +284,14 @@ AppWindow {
                         wrapMode: Text.Wrap
                         color: M3.surfaceVariantContent
                         text: SystemInfo.live
-                            ? i18n("You are trying Kernora from the installation medium. Look around, then install it when you are ready.")
+                            ? i18n("You are trying Lumo from the installation medium. Look around, then install it when you are ready.")
                             : i18n("Let's make it yours. It takes a minute.")
                     }
                     QQC2.Button {
                         Layout.alignment: Qt.AlignHCenter
                         Layout.topMargin: 8
                         visible: SystemInfo.live
-                        text: i18n("Install Kernora")
+                        text: i18n("Install Lumo")
                         icon.name: "system-software-install"
                         highlighted: true
                         onClicked: Process.launchApplication("org.kernora.installer.desktop", [])
@@ -305,7 +305,7 @@ AppWindow {
         id: theme
         PageColumn {
             heading: i18n("Light or dark")
-            text: i18n("Choose how Kernora looks. You can change it any time in Settings.")
+            text: i18n("Choose how Lumo looks. You can change it any time in Settings.")
             Group {
                 Layout.preferredWidth: Math.min(520, parent.width - 96)
                 Layout.leftMargin: 48
@@ -337,7 +337,7 @@ AppWindow {
         id: style
         PageColumn {
             heading: i18n("Pick a style")
-            text: i18n("Three generations of Material, in the Kernora colours. You can change it any time in Settings.")
+            text: i18n("Three generations of Material, in the Lumo colours. You can change it any time in Settings.")
             Group {
                 Layout.preferredWidth: Math.min(520, parent.width - 96)
                 Layout.leftMargin: 48
@@ -372,7 +372,7 @@ AppWindow {
         PageColumn {
             id: wallpaperPage
             heading: i18n("Pick a wallpaper")
-            text: i18n("Kernora's wallpapers are alive: they move slowly and rest behind your windows.")
+            text: i18n("Lumo's wallpapers are alive: they move slowly and rest behind your windows.")
             property string chosen: "org.kernora.shapes"
             GridLayout {
                 Layout.fillWidth: true
@@ -605,7 +605,7 @@ AppWindow {
                         Layout.rightMargin: 48
                         role: "displaySmall"
                         wrapMode: Text.Wrap
-                        text: i18n("Kernora got even better")
+                        text: i18n("Lumo got even better")
                     }
                     MText {
                         Layout.fillWidth: true
@@ -780,7 +780,7 @@ AppWindow {
                         color: M3.surfaceVariantContent
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.Wrap
-                        text: i18n("Kernora encountered a critical kernel error and could no longer continue running. Your computer restarted automatically to recover from this problem.")
+                        text: i18n("Lumo encountered a critical kernel error and could no longer continue running. Your computer restarted automatically to recover from this problem.")
                     }
                     MText {
                         Layout.fillWidth: true

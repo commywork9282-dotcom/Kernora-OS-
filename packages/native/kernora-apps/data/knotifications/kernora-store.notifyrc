@@ -2,8 +2,8 @@
 IconName=org.kernora.store
 Name=Store
 Name[ru]=Магазин
-Comment=Kernora Store
-Comment[ru]=Магазин Kernora
+Comment=Lumo Store
+Comment[ru]=Магазин Lumo
 DesktopEntry=org.kernora.store
 
 [Event/done]

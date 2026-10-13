@@ -8,13 +8,13 @@ windowSize: 1040px,720px
 windowPlacement: center
 
 strings:
-    productName:         Kernora OS
-    shortProductName:    Kernora
+    productName:         Lumo
+    shortProductName:    Lumo
     version:             Ember
     shortVersion:        1
-    versionedName:       Kernora OS 1 "Ember"
-    shortVersionedName:  Kernora 1
-    bootloaderEntryName: Kernora
+    versionedName:       Lumo 1 "Ember"
+    shortVersionedName:  Lumo 1
+    bootloaderEntryName: Lumo
 
 sidebar: qml
 navigation: qml

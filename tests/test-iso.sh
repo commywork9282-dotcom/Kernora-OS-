@@ -53,7 +53,7 @@ done
 xorriso -osirrox on -indev "$iso" \
   -extract /boot/grub/grub.cfg "$temporary_root/grub.cfg" \
   > "$temporary_root/extract-grub.txt" 2>&1
-awk '/usr\/share\/kernora\/settings\/Main.qml/ && !found { found = NR } /^menuentry "Kernora OS · English"/ { live = NR }
+awk '/usr\/share\/kernora\/settings\/Main.qml/ && !found { found = NR } /^menuentry "Lumo · English"/ { live = NR }
      END { exit !(found && live && found < live) }' "$temporary_root/grub.cfg" \
   || fail "the ISO menu does not start an installed Kernora before the live session"
 [[ "$(grep -c ' quiet loglevel=3 splash ' "$temporary_root/grub.cfg")" == 2 ]] \

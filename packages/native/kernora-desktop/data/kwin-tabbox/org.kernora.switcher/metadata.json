@@ -6,13 +6,13 @@
                 "Name": "Kernora Developers"
             }
         ],
-        "Description": "Material 3 window cards, as Kernora shows recent apps",
-        "Description[ru]": "Карточки окон в стиле Material 3, как недавние приложения Kernora",
+        "Description": "Material 3 window cards, as Lumo shows recent apps",
+        "Description[ru]": "Карточки окон в стиле Material 3, как недавние приложения Lumo",
         "Icon": "preferences-system-windows-switcher-thumbnail-grid",
         "Id": "org.kernora.switcher",
         "License": "GPL-2.0-or-later",
-        "Name": "Kernora",
-        "Name[ru]": "Kernora"
+        "Name": "Lumo",
+        "Name[ru]": "Lumo"
     },
     "X-Plasma-API": "declarativeappletscript"
 }

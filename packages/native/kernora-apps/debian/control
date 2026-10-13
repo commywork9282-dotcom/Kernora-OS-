@@ -60,7 +60,7 @@ Depends:
  qml6-module-qtquick-shapes,
  xdg-desktop-portal,
  xdg-desktop-portal-kde
-Description: Kernora OS applications
+Description: Lumo applications
  The everyday applications of Kernora OS, drawn in its Material 3 design:
  .
   * Settings: network, Bluetooth, display, sound, notifications, wallpaper

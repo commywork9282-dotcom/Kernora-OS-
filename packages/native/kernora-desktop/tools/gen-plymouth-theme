@@ -234,7 +234,7 @@ def main(argv: list[str]) -> int:
     (output / f"{THEME}.plymouth").write_text(
         "[Plymouth Theme]\n"
         "Name=Kernora\n"
-        "Description=The Kernora mark and Material 3's loading indicator\n"
+        "Description=The Lumo mark and Material 3's loading indicator\n"
         "ModuleName=script\n"
         "\n"
         "[script]\n"

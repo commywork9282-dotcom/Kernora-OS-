@@ -3,7 +3,7 @@ count=1
 rules=org.kernora.filechooser
 
 [org.kernora.filechooser]
-Description=Kernora file chooser
+Description=Lumo file chooser
 wmclass=org.kernora.filechooser
 wmclassmatch=1
 skiptaskbar=true
