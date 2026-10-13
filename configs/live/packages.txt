@@ -16,6 +16,11 @@ procps
 plasma-desktop
 plasma-workspace
 power-profiles-daemon
+cups
+ipp-usb
+sane-airscan
+print-manager
+skanpage
 systemsettings
 sddm
 sudo

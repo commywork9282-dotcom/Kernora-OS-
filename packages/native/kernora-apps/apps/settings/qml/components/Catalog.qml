@@ -17,6 +17,7 @@ QtObject {
         { id: "notifications", title: i18n("Notifications"), subtitle: i18n("Do Not Disturb, pop-ups, history"), icon: "preferences-desktop-notification", accent: 4, page: "NotificationsPage.qml" },
         { id: "appearance", title: i18n("Wallpaper & style"), subtitle: i18n("Dark theme, colour, wallpaper, text size"), icon: "preferences-desktop-wallpaper", accent: 5, page: "AppearancePage.qml" },
         { id: "apps", title: i18n("Apps"), subtitle: i18n("Default apps, startup apps"), icon: "view-app-grid", accent: 2, page: "AppsPage.qml" },
+        { id: "printers", title: i18n("Printers & scanners"), subtitle: i18n("Printers, scanners, test page"), icon: "printer", accent: 2, page: "PrintersPage.qml" },
         { id: "power", title: i18n("Battery & power"), subtitle: i18n("Power mode, screen timeout, sleep"), icon: "preferences-system-power-management", accent: 3, page: "PowerPage.qml" },
         { id: "input", title: i18n("Keyboard, mouse & touchpad"), subtitle: i18n("Layouts, pointer speed, scrolling"), icon: "input-keyboard", accent: 2, page: "InputPage.qml" },
         { id: "accessibility", title: i18n("Accessibility"), subtitle: i18n("Zoom, larger text, motion, keys"), icon: "preferences-desktop-accessibility", accent: 5, page: "AccessibilityPage.qml" },
@@ -91,7 +92,7 @@ QtObject {
             [i18n("Software updates"), "system", "UpdatesPage.qml", i18n("upgrade packages install security")],
             [i18n("Drivers"), "system", "DriversPage.qml", i18n("graphics card video nvidia gpu driver")],
             [i18n("Storage"), "system", "StoragePage.qml", i18n("disk space free trash")],
-            [i18n("More settings"), "system", "ModulesPage.qml", i18n("advanced kde modules printers shortcuts fonts")],
+            [i18n("More settings"), "system", "ModulesPage.qml", i18n("advanced kde modules shortcuts fonts")],
             [i18n("Device name"), "about", "", i18n("hostname computer name")],
             [i18n("System information"), "about", "", i18n("version hardware processor memory graphics kernel")],
             [i18n("Legal information"), "about", "LegalPage.qml", i18n("licenses copyright authors credits open source")]
@@ -143,6 +144,7 @@ QtObject {
         "kcm_regionandlang": ["system", "LanguagePage.qml"],
         "kcm_updates": ["system", "UpdatesPage.qml"],
         "kcm_about-distro": ["about", ""],
+        "kcm_printer_manager": ["printers", ""],
         "kcm_landingpage": ["network", ""]
     })
 
