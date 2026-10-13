@@ -384,6 +384,26 @@ Item {
                 }
                 MTile {
                     Layout.fillWidth: true
+                    icon: root.backend.powerIcon
+                    title: i18n("Power Mode")
+                    subtitle: root.backend.powerSubtitle
+                    available: root.backend.powerAvailable && !root.backend.gamingOn
+                    checked: root.backend.powerProfile === "performance"
+                    hasDetails: true
+                    onToggled: root.backend.nextPowerProfile()
+                    onDetailsRequested: { root.backend.openSettings("kcm_powerdevilprofilesconfig"); root.requestClose(); }
+                }
+                MTile {
+                    Layout.fillWidth: true
+                    icon: "applications-games"
+                    title: i18n("Gaming Mode")
+                    subtitle: root.backend.gamingOn ? i18n("Performance, no notifications") : i18n("Off")
+                    available: root.backend.powerAvailable
+                    checked: root.backend.gamingOn
+                    onToggled: root.backend.toggleGaming()
+                }
+                MTile {
+                    Layout.fillWidth: true
                     icon: "applets-screenshooter"
                     title: i18n("Screenshot")
                     checked: false

@@ -23,6 +23,7 @@ Item {
     Loader { id: mediaLoader; source: "sources/MediaSource.qml" }
     Loader { id: deviceLoader; source: "sources/DeviceSource.qml" }
     Loader { id: themeLoader; source: "sources/ThemeSource.qml" }
+    Loader { id: powerLoader; source: "sources/PowerSource.qml" }
 
     readonly property var network: networkLoader.item
     readonly property var bluetooth: bluetoothLoader.item
@@ -34,6 +35,7 @@ Item {
     readonly property var notifications: notificationLoader.item
     readonly property var media: mediaLoader.item
     readonly property var theme: themeLoader.item
+    readonly property var power: powerLoader.item
 
     property date now: new Date()
     Timer {
@@ -124,6 +126,45 @@ Item {
     readonly property bool darkOn: theme ? theme.dark : true
     readonly property bool themeBusy: theme ? theme.busy : false
     function toggleDark(): void { theme?.toggle(); }
+
+    readonly property bool powerAvailable: power ? power.available : false
+    readonly property string powerProfile: power ? power.profile : ""
+    readonly property string powerSubtitle: powerProfile === "performance" ? i18n("Performance")
+        : powerProfile === "power-saver" ? i18n("Power saver")
+        : powerProfile === "balanced" ? i18n("Balanced") : i18n("Unavailable")
+    readonly property string powerIcon: powerProfile === "performance" ? "power-profile-performance"
+        : powerProfile === "power-saver" ? "battery-profile-powersave" : "preferences-system-power-management"
+    function nextPowerProfile(): void { power?.next(); }
+
+    readonly property bool gamingOn: power ? power.gaming : false
+    property bool gamingSetDnd: false
+    property bool gamingSetAwake: false
+    function toggleGaming(): void {
+        if (!power) {
+            return;
+        }
+        if (power.gaming) {
+            power.stopGaming();
+            if (gamingSetDnd && dndOn) {
+                toggleDnd();
+            }
+            if (gamingSetAwake && awakeOn) {
+                toggleAwake();
+            }
+            gamingSetDnd = false;
+            gamingSetAwake = false;
+            return;
+        }
+        power.startGaming();
+        gamingSetDnd = dndAvailable && !dndOn;
+        if (gamingSetDnd) {
+            toggleDnd();
+        }
+        gamingSetAwake = awakeAvailable && !awakeOn;
+        if (gamingSetAwake) {
+            toggleAwake();
+        }
+    }
 
     function takeScreenshot(): void {
         screenshotTimer.restart();

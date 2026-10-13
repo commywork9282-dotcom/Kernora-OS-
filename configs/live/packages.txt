@@ -15,6 +15,7 @@ procps
 
 plasma-desktop
 plasma-workspace
+power-profiles-daemon
 systemsettings
 sddm
 sudo
