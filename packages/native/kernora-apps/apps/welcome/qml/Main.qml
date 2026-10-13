@@ -25,7 +25,7 @@ AppWindow {
     title: kernelPanic ? i18n("Lumo restarted") : whatsNew ? i18n("What's new") : i18n("Welcome")
 
     property int page: 0
-    readonly property int pages: 6
+    readonly property int pages: 7
 
     ConfigEntry {
         id: showOnLogin
@@ -130,7 +130,7 @@ AppWindow {
             visible: !app.special
 
             Repeater {
-                model: app.special ? [] : [hello, theme, style, wallpaper, apps, done]
+                model: app.special ? [] : [hello, yours, theme, style, wallpaper, apps, done]
                 delegate: Loader {
                     id: pageLoader
                     required property var modelData
@@ -480,6 +480,54 @@ AppWindow {
     }
 
     Component {
+        id: yours
+        PageColumn {
+            heading: i18n("Your computer, not ours")
+            text: i18n("Lumo works for you and nobody else.")
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.leftMargin: 40
+                Layout.rightMargin: 40
+                Layout.topMargin: 8
+                spacing: 2
+                ListItem {
+                    Layout.fillWidth: true
+                    title: i18n("No ads, no accounts, no tracking")
+                    subtitle: i18n("Lumo shows no adverts, needs no online account and sends nothing about you anywhere")
+                    icon: "preferences-security"
+                    accent: 0
+                    interactive: false
+                }
+                ListItem {
+                    Layout.fillWidth: true
+                    title: i18n("Updates that don't get in the way")
+                    subtitle: i18n("Security updates install quietly in the background. You choose when to restart, and Lumo never restarts by itself")
+                    icon: "system-software-update"
+                    accent: 1
+                    interactive: false
+                }
+                ListItem {
+                    Layout.fillWidth: true
+                    title: i18n("Your Windows apps and games")
+                    subtitle: i18n("Open .exe files with Wine, or get Steam, Bottles and Heroic in the Store")
+                    icon: "applications-games"
+                    accent: 4
+                    interactive: false
+                }
+                ListItem {
+                    Layout.fillWidth: true
+                    title: i18n("Free, for good")
+                    subtitle: i18n("No licence keys and no paid upgrades. Lumo is free software you can share")
+                    icon: "help-about"
+                    accent: 3
+                    interactive: false
+                }
+            }
+            Item { Layout.fillHeight: true }
+        }
+    }
+
+    Component {
         id: done
         PageColumn {
             heading: i18n("You're all set")
@@ -508,7 +556,7 @@ AppWindow {
                 }
                 ListItem {
                     Layout.fillWidth: true
-                    title: i18n("Print takes a screenshot")
+                    title: i18n("Print or Meta+Shift+S takes a screenshot")
                     subtitle: i18n("Choose an area, the screen or a window")
                     icon: "kernora-select-region"
                     accent: 4
