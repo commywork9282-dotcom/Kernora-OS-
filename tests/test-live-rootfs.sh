@@ -108,8 +108,8 @@ grep -q '^font=Google Sans Flex,' /etc/xdg/kdeglobals \
 for tool in wine gamemoderun mangohud; do
   command -v "$tool" >/dev/null || fail "$tool is not installed"
 done
-[[ -s /usr/share/applications/wine.desktop ]] || fail "Windows programs have no desktop entry to open them"
-grep -q '^application/x-ms-dos-executable=wine.desktop;' /etc/xdg/mimeapps.list   || fail ".exe files do not open with Wine"
+[[ -s /usr/share/applications/org.kernora.wine.desktop ]] || fail "Windows programs have no desktop entry to open them"
+grep -q '^application/x-ms-dos-executable=org.kernora.wine.desktop;' /etc/xdg/mimeapps.list   || fail ".exe files do not open with Wine"
 # Every QML module the shell imports must resolve in the image, or the applet
 # (or one of its tiles) fails to load at runtime.
 qml_root=/usr/lib/x86_64-linux-gnu/qt6/qml

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Windows program
+Name[nl]=Windows-programma
+Name[ru]=Программа Windows
+Comment=Run Windows programs with Wine
+Comment[nl]=Windows-programma's uitvoeren met Wine
+Icon=wine
+Exec=wine start /unix %f
+TryExec=wine
+MimeType=application/x-ms-dos-executable;application/x-msdownload;application/x-msi;application/x-ms-shortcut;application/x-wine-extension-msp;
+NoDisplay=true
+StartupNotify=true

@@ -52,6 +52,7 @@ generated/terminal/alacritty.toml etc/alacritty
 generated/terminal/terminal usr/share/kernora
 generated/palettes usr/share/kernora
 data/applications/org.kernora.terminal.desktop usr/share/applications
+data/applications/org.kernora.wine.desktop usr/share/applications
 generated/sddm/kernora usr/share/sddm/themes
 data/lockscreen/LockScreen.qml usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen
 data/lockscreen/KernoraMediaControls.qml usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen
