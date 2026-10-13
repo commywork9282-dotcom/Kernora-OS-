@@ -2901,10 +2901,6 @@ msgstr "%1. %2"
 msgid "Sounds"
 msgstr "Звуки"
 
-#: apps/settings/qml/pages/SoundPage.qml:227
-msgid "Lumo"
-msgstr "Lumo"
-
 #: apps/settings/qml/pages/SoundPage.qml:228
 msgid "Ocean"
 msgstr "Ocean"
