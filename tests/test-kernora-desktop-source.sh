@@ -265,8 +265,8 @@ KERNORA_COLOUR=blue python3 "$tools_root/gen-icon-theme" "$package_root/data/sym
   || fail "gen-icon-theme fails for a colour"
 grep -Fxq 'Inherits=Kernora,breeze-dark,breeze,hicolor' "$icons/Kernora-blue/index.theme" \
   || fail "a colour's icons do not fall back to Kernora's"
-[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 11 ]] \
-  || fail "a colour's icon theme should hold only the eleven app icons"
+[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 12 ]] \
+  || fail "a colour's icon theme should hold only the twelve app icons"
 find "$icons/Kernora-blue" -name 'preferences-system*' | grep -q . \
   && fail "a colour's icons would shadow preferences-system-* through KDE's generic fallback"
 rm -rf "$icons"
