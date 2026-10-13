@@ -46,7 +46,8 @@ mapfile -t requested_packages < <(
 (( ${#requested_packages[@]} > 0 )) || die "live package manifest is empty"
 include=$(IFS=,; printf '%s' "${requested_packages[*]}")
 
-temporary_root=$(mktemp -d /tmp/kernora-live-rootfs.XXXXXX)
+work_tmp=${KERNORA_TMPDIR:-/var/tmp}
+temporary_root=$(mktemp -d "$work_tmp/kernora-live-rootfs.XXXXXX")
 chmod 0777 "$temporary_root"
 rootfs="$temporary_root/rootfs"
 temporary_archive="$temporary_root/archive"
@@ -97,7 +98,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-"$tool" \
+TMPDIR="$work_tmp" "$tool" \
   --mode=unshare \
   --variant=minbase \
   --architectures="$BASE_ARCH" \
