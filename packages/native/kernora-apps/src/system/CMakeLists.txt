@@ -19,6 +19,7 @@ target_sources(kernorasystem PRIVATE
     process.cpp process.h
     screenshot.cpp screenshot.h
     systeminfo.cpp systeminfo.h
+    tasks.cpp tasks.h
     updates.cpp updates.h
 )
 

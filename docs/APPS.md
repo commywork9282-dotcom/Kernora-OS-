@@ -24,6 +24,7 @@ of the shell: the same tokens, components, symbols and motion.
 | Media Player (`kernora-player`) | Elisa, Dragon | Qt Multimedia over FFmpeg; video with auto-hiding controls, music with a queue from the folder. |
 | Calculator (`kernora-calculator`) | KCalc | Own expression parser (no `eval`), scientific functions, history. |
 | Screenshot (`kernora-screenshot`) | Spectacle | KWin ScreenShot2 (the desktop entry must name `/usr/bin/kernora-screenshot`), area/screen/window, saved and copied. Bound to Print. |
+| Task Manager (`kernora-tasks`) | System Monitor | Processes with their processor and memory use, End task and Force (SIGTERM, SIGKILL, own processes only); processor, memory, graphics (`gpu_busy_percent`), disk and network over the last 90 seconds; startup apps. Reads `/proc` and `/sys` through `Tasks` in `org.kernora.system`. Ctrl+Shift+Esc opens it. |
 | Terminal | Konsole | Alacritty started as `org.kernora.terminal`, with colours generated from the tokens and switched with the theme. Ctrl+Alt+T opens it (the entry is linked into `/usr/share/kglobalaccel`). |
 | Welcome (`kernora-welcome`) | Plasma Welcome | Runs at the first logins of an installed system (`--first-run`, closes in the live session) until finished. |
 | File chooser (`kernora-filechooser`) | KDE's file dialog | Every program's open, save and folder dialogs; see below. |

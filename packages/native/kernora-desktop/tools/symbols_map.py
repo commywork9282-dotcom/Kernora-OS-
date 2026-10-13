@@ -312,6 +312,7 @@ APP_ICONS: list[tuple[str, bool, list[str]]] = [
     ("terminal", True, ["org.kernora.terminal"]),
     ("install_desktop", True, ["org.kernora.installer", "calamares"]),
     ("storefront", True, ["org.kernora.store"]),
+    ("monitor_heart", True, ["org.kernora.tasks", "utilities-system-monitor", "org.kde.plasma-systemmonitor"]),
 ]
 
 

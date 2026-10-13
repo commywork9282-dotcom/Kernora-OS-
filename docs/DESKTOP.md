@@ -704,6 +704,7 @@ accounts by `/etc/skel/.config/kglobalshortcutsrc` and the panel layout.
 | Meta | App launcher |
 | Meta+E | Files |
 | Meta+I | Settings |
+| Ctrl+Shift+Esc | Task Manager |
 | Meta+R, Alt+F2 | Run a command (KRunner) |
 | Meta+A | Quick settings |
 | Meta+N | Notifications |

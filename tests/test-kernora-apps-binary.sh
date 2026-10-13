@@ -56,7 +56,7 @@ grep -qx 'Exec=kernora-welcome --first-run' \
 grep -qx 'Exec=kernora-update-notifier' \
   "$temporary_root/etc/xdg/autostart/org.kernora.update-notifier.desktop" \
   || fail "the update notifier is not started at login"
-for entry in files:Meta+E settings:Meta+I screenshot:Print,Meta+Shift+S; do
+for entry in files:Meta+E settings:Meta+I screenshot:Print,Meta+Shift+S tasks:Ctrl+Shift+Esc; do
   grep -Fxq "X-KDE-Shortcuts=${entry#*:}" "$temporary_root/usr/share/kglobalaccel/org.kernora.${entry%%:*}.desktop"     || fail "kglobalaccel does not see the ${entry%%:*} shortcut"
 done
 [[ -x "$temporary_root/usr/bin/kernora-bluetooth-agent" ]] || fail "missing kernora-bluetooth-agent"

@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=Task Manager
+Name[ru]=Диспетчер задач
+Name[nl]=Taakbeheer
+GenericName=Task Manager
+GenericName[ru]=Диспетчер задач
+GenericName[nl]=Taakbeheer
+Comment=See and end running apps, and watch the processor, memory and graphics
+Icon=org.kernora.tasks
+Exec=kernora-tasks
+Categories=Qt;System;Monitor;
+Keywords=task manager;process;cpu;memory;ram;gpu;kill;end task;system monitor;taakbeheer;процессы;
+StartupNotify=true
+X-KDE-Shortcuts=Ctrl+Shift+Esc
