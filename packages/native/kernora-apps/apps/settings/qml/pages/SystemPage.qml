@@ -70,6 +70,14 @@ SettingsPage {
             chevron: true
             onClicked: page.open("StoragePage.qml", {})
         }
+        ListItem {
+            title: i18n("Bring files from Windows")
+            subtitle: i18n("Documents, pictures, wallpaper, bookmarks")
+            icon: "folder-download"
+            accent: 2
+            chevron: true
+            onClicked: page.open("MigratePage.qml", {})
+        }
     }
 
     Group {

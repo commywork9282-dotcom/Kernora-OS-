@@ -516,6 +516,15 @@ AppWindow {
                 }
                 ListItem {
                     Layout.fillWidth: true
+                    title: i18n("Coming from Windows?")
+                    subtitle: i18n("Bring your documents, pictures, wallpaper and bookmarks from a Windows drive or a USB stick")
+                    icon: "folder-download"
+                    accent: 2
+                    chevron: true
+                    onClicked: Process.startDetached("kernora-settings", ["migrate"])
+                }
+                ListItem {
+                    Layout.fillWidth: true
                     title: i18n("Free, for good")
                     subtitle: i18n("No licence keys and no paid upgrades. Lumo is free software you can share")
                     icon: "help-about"

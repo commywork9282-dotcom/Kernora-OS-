@@ -92,6 +92,7 @@ QtObject {
             [i18n("Software updates"), "system", "UpdatesPage.qml", i18n("upgrade packages install security")],
             [i18n("Drivers"), "system", "DriversPage.qml", i18n("graphics card video nvidia gpu driver")],
             [i18n("Storage"), "system", "StoragePage.qml", i18n("disk space free trash")],
+            [i18n("Bring files from Windows"), "system", "MigratePage.qml", i18n("windows migrate move transfer copy documents pictures wallpaper bookmarks usb old computer")],
             [i18n("More settings"), "system", "ModulesPage.qml", i18n("advanced kde modules shortcuts fonts")],
             [i18n("Device name"), "about", "", i18n("hostname computer name")],
             [i18n("System information"), "about", "", i18n("version hardware processor memory graphics kernel")],
@@ -145,6 +146,7 @@ QtObject {
         "kcm_updates": ["system", "UpdatesPage.qml"],
         "kcm_about-distro": ["about", ""],
         "kcm_printer_manager": ["printers", ""],
+        "migrate": ["system", "MigratePage.qml"],
         "kcm_landingpage": ["network", ""]
     })
 
