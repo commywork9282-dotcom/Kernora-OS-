@@ -1,17 +1,17 @@
 [
   {
-    "id": "2026-10-13-6",
+    "id": "2026-10-13-7",
     "date": "2026-10-12",
     "items": [
       {
         "icon": "network-wireless",
         "title": {
-          "en": "RTL8852CE Wi-Fi compatibility",
-          "ru": "Совместимость Wi-Fi RTL8852CE"
+          "en": "Wi-Fi power setting rolled back",
+          "ru": "Откат настройки питания Wi-Fi"
         },
         "text": {
-          "en": "A compatibility adjustment for Realtek RTL8852CE turns off Wi-Fi power saving by default to address a possible cause of intermittent disconnects. Reconnect Wi-Fi or restart to apply it. Explicit connection preferences are preserved. Other Wi-Fi adapters keep their existing settings.",
-          "ru": "Для Realtek RTL8852CE по умолчанию отключено энергосбережение Wi-Fi: оно может быть одной из причин случайных обрывов связи. Переподключитесь к Wi-Fi или перезагрузитесь, чтобы применить настройку. Явно заданные параметры подключения сохраняются. Настройки других адаптеров не меняются."
+          "en": "Following a report of packet loss and lag spikes in CS2 after the last update, the automatic RTL8852CE power-saving change has been withdrawn. Restart after updating to restore the previous Wi-Fi defaults. Your saved connection settings are preserved. The cause of the network delays is still being investigated.",
+          "ru": "После сообщения о потере пакетов и скачках задержки в CS2 после предыдущего обновления автоматическая настройка энергосбережения RTL8852CE отменена. Перезагрузитесь после обновления, чтобы вернуть прежнее поведение Wi-Fi. Сохранённые параметры подключений остаются на месте. Причина сетевых задержек ещё выясняется."
         }
       }
     ]

@@ -1,5 +1,68 @@
 # Realtek RTL8852CE intermittent disconnects
 
+## Current status: automatic workaround withdrawn in 1.4
+
+After the 1.3 update, the reporter described packet loss and lag spikes in
+CS2. This is a network-latency report, not a confirmed rendering freeze.
+There is no hardware trace establishing that the Kernora power-saving change
+caused it. Version 1.4 withdraws that unvalidated automatic default to allow
+comparison with the previous Wi-Fi behavior, without adding further driver
+parameters. The original disconnect report remains unresolved.
+
+Upgrade to `kernora-base` 1.4 and `kernora-apps` 1.1.34, then **reboot**.
+The old vendor policy in `/usr/lib/NetworkManager/conf.d` is removed by dpkg.
+The package reloads configuration but does not restart the network, rewrite
+saved profiles, remove administrator overrides or change Steam/CS2 launch
+options. A reboot is needed for a clean comparison: removing a configuration
+default does not necessarily reset an already running radio's power state.
+
+The rollback is a diagnostic and recovery step, not a proven fix for packet
+loss. Compare the same match conditions after reboot. If the loss persists,
+compare Wi-Fi with Ethernet on the same machine, and capture the kernel
+messages after a spike using the command below. Game-server or Internet
+route loss, local radio loss and rendering stalls require different evidence.
+
+The optional example is now installed at
+`/usr/share/kernora/workarounds/20-kernora-rtl8852ce.conf`, outside every
+NetworkManager configuration directory. It has no automatic effect. To opt
+in deliberately when investigating low-power failures, copy it into
+`/etc/NetworkManager/conf.d` without overwriting an existing administrator
+configuration:
+
+```sh
+sudo cp --no-clobber /usr/share/kernora/workarounds/20-kernora-rtl8852ce.conf /etc/NetworkManager/conf.d/
+sudo nmcli general reload conf
+```
+
+Reconnect or reboot after opting in. Existing administrator files take
+precedence; inspect them instead of assuming the example replaced them.
+Only remove an administrator file that you created for this test when
+reverting the opt-in change. Updating the package preserves those files.
+
+## Rollback validation
+
+Source review of the 1.3/1.1.33 update found no changes in Steam launching,
+graphics settings or kernel packages. Other Debian or Flatpak updates that
+the reporter may have installed at the same time are unknown.
+
+The 1.4/1.1.34 source checks, binary checks, `make verify` and local signed
+archive checks passed. In a disposable Kernora guest with NetworkManager
+1.52.1, the 1.3 policy was installed and parsed before upgrading to 1.4.
+The upgrade removed the vendor file and its effective configuration section,
+while keeping the inactive example. A second upgrade preserved a byte-exact
+administrator override. Default and explicit saved profiles, the running
+NetworkManager PID and the active Ethernet connection were unchanged.
+The actual installed native Qt module loaded the corrected What's New entry
+in English and Russian. Superseded automatic-enablement advice was removed
+from What's New.
+
+Logs are in `out/test-logs/cs2-network-rollback/`. No RTL8852CE radio or real
+CS2 connection was available for testing. Successful rollback installation
+is not evidence that the packet loss is resolved; that needs comparison on
+the reporter's machine after reboot.
+
+## Historical 1.3 implementation and validation
+
 `kernora-base` 1.3 provides a conservative power-saving workaround for the
 in-kernel `rtw89_8852ce` driver (PCI ID `10ec:c852`). This is a candidate
 mitigation for a user report, not a confirmed diagnosis of that machine.
@@ -62,10 +125,13 @@ only on this report.
 
 ## Reverting the default
 
-Create an empty administrator override with the same filename:
+On 1.3, an empty administrator override with the same filename masks the
+vendor file. Do not overwrite an existing administrator policy; upgrading
+to 1.4 removes the vendor default while preserving administrator files.
+For a new empty override:
 
 ```sh
-sudo install -m 0644 /dev/null /etc/NetworkManager/conf.d/20-kernora-rtl8852ce.conf
+sudo cp --no-clobber /dev/null /etc/NetworkManager/conf.d/20-kernora-rtl8852ce.conf
 sudo nmcli general reload conf
 ```
 

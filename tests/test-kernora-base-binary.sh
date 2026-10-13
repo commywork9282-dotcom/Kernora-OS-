@@ -37,13 +37,15 @@ trap 'find "$temporary_root" -depth -delete' EXIT
 dpkg-deb --extract "$deb" "$temporary_root/root"
 if find "$temporary_root/root" -type f \
   ! -path "$temporary_root/root/usr/share/doc/kernora-base/*" \
-  ! -path "$temporary_root/root/usr/lib/NetworkManager/conf.d/20-kernora-rtl8852ce.conf" \
+  ! -path "$temporary_root/root/usr/share/kernora/workarounds/20-kernora-rtl8852ce.conf" \
   -print -quit | grep -q .; then
   fail "base package contains an unexpected file"
 fi
 cmp "$package_root/data/NetworkManager/20-kernora-rtl8852ce.conf" \
-  "$temporary_root/root/usr/lib/NetworkManager/conf.d/20-kernora-rtl8852ce.conf" \
-  || fail "RTL8852CE policy is missing or changed during packaging"
+  "$temporary_root/root/usr/share/kernora/workarounds/20-kernora-rtl8852ce.conf" \
+  || fail "optional RTL8852CE example is missing or changed during packaging"
+[[ ! -e "$temporary_root/root/usr/lib/NetworkManager/conf.d/20-kernora-rtl8852ce.conf" ]] \
+  || fail "withdrawn RTL8852CE policy is still automatically enabled"
 
 dpkg-deb --control "$deb" "$temporary_root/control"
 [[ -x "$temporary_root/control/postinst" ]] || fail "root ownership migration is missing"

@@ -52,11 +52,11 @@ in `configs/live/packages.txt`.
 ## Implemented native package
 
 `packages/native/kernora-base` is a native Debian `3.0 (native)` package,
-version `1.3` and architecture `all`. It has an exact dependency on
+version `1.4` and architecture `all`. It has an exact dependency on
 `base-files (= 13.8+deb13u6+kernora1)`, making the Kernora identity package an
 explicit part of the distribution base. Its source-to-binary path is exercised
 by `make kernora-base-source` and `make kernora-base-binary`. It also supplies
-hardware-specific defaults; see [the RTL8852CE workaround](WIFI_REALTEK.md).
+optional hardware workarounds; see [the RTL8852CE workaround](WIFI_REALTEK.md).
 
 ## Desktop package
 

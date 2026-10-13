@@ -1,1 +1,1 @@
-data/NetworkManager/*.conf usr/lib/NetworkManager/conf.d
+data/NetworkManager/*.conf usr/share/kernora/workarounds

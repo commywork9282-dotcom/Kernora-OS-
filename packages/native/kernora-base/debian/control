@@ -16,7 +16,8 @@ Description: Kernora OS base system and hardware defaults
  Kernora OS installation: the system identity and the package archives
  that keep it updated.
  .
- It also provides hardware-specific defaults, including a NetworkManager
- power-saving workaround for the Realtek RTL8852CE wireless adapter.
+ It also provides optional hardware workarounds, including a NetworkManager
+ power-saving example for the Realtek RTL8852CE wireless adapter. Examples
+ are not automatically enabled.
  Removing it does not remove its dependencies, but may prevent future
  base-system additions from being installed automatically.
