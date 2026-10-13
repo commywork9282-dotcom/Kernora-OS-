@@ -49,6 +49,10 @@ for domain in settings files editor photos player calculator screenshot welcome 
   [[ -s "$temporary_root/usr/share/locale/ru/LC_MESSAGES/kernora-$domain.mo" ]] \
     || fail "Russian translation is missing: kernora-$domain"
 done
+for domain in settings files editor photos player calculator screenshot welcome system update-notifier store tasks bluetooth-agent; do
+  [[ -s "$temporary_root/usr/share/locale/nl/LC_MESSAGES/kernora-$domain.mo" ]] \
+    || fail "Dutch translation is missing: kernora-$domain"
+done
 grep -qx 'Exec=kernora-welcome --first-run' \
   "$temporary_root/etc/xdg/autostart/org.kernora.welcome.desktop" \
   || fail "Welcome is not started at login"
