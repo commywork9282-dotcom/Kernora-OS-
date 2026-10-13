@@ -15,7 +15,7 @@ QDBusObjectPath PairingAgent::objectPath() const
 
 BluezQt::Agent::Capability PairingAgent::capability() const
 {
-    return KeyboardDisplay;
+    return DisplayYesNo;
 }
 
 void PairingAgent::requestPinCode(BluezQt::DevicePtr device, const BluezQt::Request<QString> &request)
