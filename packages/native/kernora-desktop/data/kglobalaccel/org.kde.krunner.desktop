@@ -67,7 +67,7 @@ DBusActivatable=True
 X-DBUS-StartupType=Unique
 X-DBUS-ServiceName=org.kde.krunner
 StartupNotify=false
-X-KDE-Shortcuts=Alt+F2,Search
+X-KDE-Shortcuts=Alt+F2,Search,Meta+R
 Actions=RunClipboard
 X-KDE-Wayland-Interfaces=org_kde_plasma_window_management
 

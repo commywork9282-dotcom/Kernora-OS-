@@ -6,6 +6,7 @@ GenericName=System settings
 GenericName[ru]=Параметры системы
 Icon=org.kernora.settings
 Exec=kernora-settings %u
+X-KDE-Shortcuts=Meta+I
 Categories=Qt;Settings;System;
 Keywords=system;preferences;configure;wifi;bluetooth;display;sound;wallpaper;параметры;настройки;
 StartupNotify=true

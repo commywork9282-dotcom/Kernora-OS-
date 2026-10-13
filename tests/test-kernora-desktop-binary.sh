@@ -352,7 +352,7 @@ grep -Fxq 'Theme=kernora' "$temporary_root/desktop/usr/share/plymouth/plymouthd.
   || fail "Plymouth does not default to the Kernora boot splash"
 find "$temporary_root/desktop/usr/share/plymouth/themes/kernora" -name '*.svg' | grep -q . \
   && fail "the boot splash still carries SVGs Plymouth cannot read"
-grep -Fxq 'X-KDE-Shortcuts=Alt+F2,Search' "$temporary_root/desktop/usr/share/kglobalaccel/org.kde.krunner.desktop" \
+grep -Fxq 'X-KDE-Shortcuts=Alt+F2,Search,Meta+R' "$temporary_root/desktop/usr/share/kglobalaccel/org.kde.krunner.desktop" \
   || fail "KRunner still takes Alt+Space from the Kernora launcher"
 grep -Fq 'launcher.globalShortcut = "Alt+Space"' \
   "$temporary_root/desktop/usr/share/plasma/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \

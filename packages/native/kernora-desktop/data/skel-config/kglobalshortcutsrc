@@ -1,2 +1,11 @@
+[kwin]
+MinimizeAll=Meta+M,Meta+Shift+D,Minimize All Windows
+Overview=Meta+W\tMeta+Tab,Meta+W,Toggle Overview
+Window Maximize=Meta+Up\tMeta+PgUp,Meta+PgUp,Maximize Window
+Window Minimize=Meta+Down\tMeta+PgDown,Meta+PgDown,Minimize Window
+Window Quick Tile Bottom=none,Meta+Down,Quick Tile Window to the Bottom
+Window Quick Tile Top=none,Meta+Up,Quick Tile Window to the Top
+
 [plasmashell]
+next activity=none,Meta+Tab,Walk through activities
 show-on-mouse-pos=none,Meta+V,Show Clipboard Items at Mouse Position

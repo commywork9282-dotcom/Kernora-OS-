@@ -45,7 +45,8 @@ if (trayContainmentId) {
     trayContainment.writeConfig("scaleIconsToFit", false);
 }
 
-panel.addWidget("org.kde.plasma.notifications");
+var notifications = panel.addWidget("org.kde.plasma.notifications");
+notifications.globalShortcut = "Meta+N";
 
 var quickSettings = panel.addWidget("org.kernora.quicksettings");
 quickSettings.globalShortcut = "Meta+A";

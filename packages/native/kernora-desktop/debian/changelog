@@ -7,6 +7,9 @@ kernora-desktop (1.4.28) UNRELEASED; urgency=medium
   * Faster boot and shutdown: GRUB waits 2 seconds instead of 5 unless the
     timeout was changed, NetworkManager-wait-online is disabled, and
     services get 15 seconds to stop.
+  * Windows-style shortcuts for new accounts: Meta+R runs a command,
+    Meta+N opens notifications, Meta+Tab the overview, Meta+Up and
+    Meta+Down maximise and minimise, Meta+M minimises all windows.
 
  -- Kernora Developers <developers@kernora.invalid>  Tue, 13 Oct 2026 18:00:00 +0200
 

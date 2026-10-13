@@ -10,4 +10,4 @@ Categories=Qt;Utility;Graphics;
 Keywords=screenshot;capture;print;снимок;скриншот;экран;
 StartupNotify=true
 X-KDE-DBUS-Restricted-Interfaces=org.kde.KWin.ScreenShot2
-X-KDE-Shortcuts=Print
+X-KDE-Shortcuts=Print,Meta+Shift+S

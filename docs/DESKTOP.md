@@ -691,3 +691,34 @@ Aurorae themes and icons on the host, refreshes the look-and-feel defaults in
 about twenty seconds; `sync --reset` also re-runs the panel layout script.
 The preview keeps the screen from dimming between screenshots. Screen coordinates are those of the
 1440×900 preview display.
+
+## Shortcuts
+
+Kernora keeps Plasma's shortcuts and adds the ones people know from Windows.
+App shortcuts come from `X-KDE-Shortcuts` in the desktop entries, linked into
+`/usr/share/kglobalaccel`; the window and panel ones are written for new
+accounts by `/etc/skel/.config/kglobalshortcutsrc` and the panel layout.
+
+| Keys | Action |
+| --- | --- |
+| Meta | App launcher |
+| Meta+E | Files |
+| Meta+I | Settings |
+| Meta+R, Alt+F2 | Run a command (KRunner) |
+| Meta+A | Quick settings |
+| Meta+N | Notifications |
+| Meta+V | Clipboard history |
+| Meta+. | Emoji |
+| Print, Meta+Shift+S | Screenshot |
+| Meta+L | Lock the screen |
+| Meta+D | Show the desktop |
+| Meta+M | Minimise all windows |
+| Meta+Tab, Meta+W | Overview |
+| Meta+Up / Meta+Down | Maximise / minimise the window |
+| Meta+Left / Meta+Right | Snap the window to a half of the screen |
+| Meta+Shift+Left / Right | Move the window to the other screen |
+| Meta+1…9 | Open or switch to the app pinned at that place |
+| Meta+Ctrl+Left / Right | Previous / next virtual desktop |
+| Meta+P | Display layout |
+| Ctrl+Alt+T | Terminal |
+| Ctrl+Alt+Del | Log out, restart or shut down |
