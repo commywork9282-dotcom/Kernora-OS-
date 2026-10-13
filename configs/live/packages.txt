@@ -30,6 +30,10 @@ polkit-kde-agent-1=4:6.3.6-1kernora1
 plymouth
 plymouth-label
 fonts-roboto-unhinted
+wine
+wine64
+gamemode
+mangohud
 
 firmware-linux-free
 firmware-amd-graphics
