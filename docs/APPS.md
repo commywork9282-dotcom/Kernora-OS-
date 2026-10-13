@@ -173,7 +173,7 @@ After installation the live-only pieces are removed (autologin, the boot
 marker, the boot-menu language service), and Welcome opens at the first
 login of the new account.
 
-The boot menu starts the live session in Russian or English
+The boot menu starts the live session in English (the default) or Russian
 (`kernora.lang=`), which the installer inherits.
 
 ## Translations
