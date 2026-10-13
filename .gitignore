@@ -1,8 +1,8 @@
 /_build/
-/_cache/
+/_cache
 /_state/
 /out/
-/downloads/
+/downloads
 
 *.build
 *.buildinfo

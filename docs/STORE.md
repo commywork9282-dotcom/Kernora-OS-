@@ -56,3 +56,18 @@ The test does not install or remove apps.
 
 The Flatpak launch retains exported command options (including `--command`),
 GPU preference and startup metadata. The installed desktop file is not rewritten.
+
+## Installation completion test
+
+In a disposable desktop VM with working Debian/Flathub sources, close
+Store and run:
+
+```sh
+KERNORA_TEST_DISPOSABLE_SESSION=1 tests/store-install-smoke/run.sh
+```
+
+This test removes and reinstalls galculator and GNOME Calculator. It logs
+transaction progress, installed source/version, event-loop heartbeats and
+long timer gaps, and requires `STORE_INSTALL_OK` after both installations.
+Normal authorization is still required. Do not run it in a personal session.
+For full-VM freezes caused by exhausted host storage, see `VM_INSTALLATION.md`.
