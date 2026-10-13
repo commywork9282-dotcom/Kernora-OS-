@@ -347,7 +347,7 @@ for directory in (
     for path in directory.glob('*.desktop'):
         entries[path.name] = path
 
-allowed = {'systemsettings.desktop', 'kdesystemsettings.desktop'}
+allowed = {'systemsettings.desktop', 'kdesystemsettings.desktop', 'org.kde.skanpage.desktop'}
 unexpected = []
 for name, path in sorted(entries.items()):
     parser = configparser.ConfigParser(interpolation=None, strict=False)
