@@ -87,7 +87,7 @@ and run in a Kernora desktop session:
 KERNORA_QML_STORE=/absolute/path/to/packages/native/kernora-apps/apps/store/qml kernora-store
 ```
 
-The owner approved the October 12 Material 3 changes for delivery in
+The owner-approved October 12 Material 3 changes shipped in
 `kernora-apps 1.1.32` through the existing APT channel and the existing
 `v1-ember-5` release. What's New describes the changes in English and Russian.
 The release tag stays unchanged; the attached ISO still contains 1.1.30 and
@@ -98,3 +98,12 @@ apps, updates, and 440-pixel window checks in dark and light themes. The catalog
 350 video results, 1121 games, and `STORE_SMOKE_OK`. Local screenshots,
 UI state reports, and the animation recording are in
 `_build/preview/store-material3/`; they are review artifacts, not release assets.
+
+Delivery of 1.1.32 was verified against the public signed APT index and by
+APT in QEMU (candidate 1.1.32, priority 900). The package and checksum
+attached to the existing release were downloaded and matched the build.
+The installed package passed the catalogue smoke test and English/Russian
+release-note checks; the actual What's New window was inspected in QEMU.
+Logs are in `out/test-logs/store/material3/`. The catalogue smoke test waits
+for deferred search results within a 10-second bound and exits with a
+nonzero status on failure.
