@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-13-6",
+    "date": "2026-10-12",
+    "items": [
+      {
+        "icon": "network-wireless",
+        "title": {
+          "en": "RTL8852CE Wi-Fi compatibility",
+          "ru": "Совместимость Wi-Fi RTL8852CE"
+        },
+        "text": {
+          "en": "A compatibility adjustment for Realtek RTL8852CE turns off Wi-Fi power saving by default to address a possible cause of intermittent disconnects. Reconnect Wi-Fi or restart to apply it. Explicit connection preferences are preserved. Other Wi-Fi adapters keep their existing settings.",
+          "ru": "Для Realtek RTL8852CE по умолчанию отключено энергосбережение Wi-Fi: оно может быть одной из причин случайных обрывов связи. Переподключитесь к Wi-Fi или перезагрузитесь, чтобы применить настройку. Явно заданные параметры подключения сохраняются. Настройки других адаптеров не меняются."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-13-5",
     "date": "2026-10-12",
     "items": [

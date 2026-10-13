@@ -1,1 +1,1 @@
-kernora-base=1.2
+kernora-base=1.3

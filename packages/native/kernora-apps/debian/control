@@ -36,6 +36,7 @@ Depends:
  appstream,
  flatpak,
  kde-cli-tools,
+ kernora-base (>= 1.3),
  kernora-desktop (>= 1.4.27),
  libarchive-tools,
  packagekit,

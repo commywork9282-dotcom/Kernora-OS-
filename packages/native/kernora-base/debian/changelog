@@ -1,3 +1,13 @@
+kernora-base (1.3) UNRELEASED; urgency=medium
+
+  * Disable NetworkManager Wi-Fi power saving by default for RTL8852CE only
+    to avoid a possible source of intermittent disconnects. Preserve explicit
+    connection preferences and other adapters' power policies.
+  * Reload configuration without restarting NetworkManager on upgrade.
+    The default takes effect on the next connection or reboot.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 12 Oct 2026 13:30:00 -0700
+
 kernora-base (1.2) UNRELEASED; urgency=high
 
   * Repair the root directory ownership on upgrade from affected live ISOs.

@@ -1,5 +1,5 @@
 Source: kernora-base
-Section: metapackages
+Section: admin
 Maintainer: Kernora Developers <developers@kernora.invalid>
 Standards-Version: 4.7.4
 Build-Depends: debhelper-compat (= 13)
@@ -11,11 +11,12 @@ Depends:
  ${misc:Depends},
  base-files (= 13.8+deb13u6+kernora1),
  kernora-archive (>= 1.0)
-Description: Kernora OS base-system metapackage
+Description: Kernora OS base system and hardware defaults
  This package depends on the Kernora-specific packages required by every
  Kernora OS installation: the system identity and the package archives
  that keep it updated.
  .
- It contains no programs or configuration files. Removing it does not remove
- its dependencies, but may prevent future base-system additions from being
- installed automatically.
+ It also provides hardware-specific defaults, including a NetworkManager
+ power-saving workaround for the Realtek RTL8852CE wireless adapter.
+ Removing it does not remove its dependencies, but may prevent future
+ base-system additions from being installed automatically.

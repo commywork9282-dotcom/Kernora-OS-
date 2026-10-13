@@ -11,7 +11,7 @@ fail() {
   exit 1
 }
 
-for dependency in dpkg-deb find grep; do
+for dependency in cmp dpkg-deb find grep; do
   command -v "$dependency" >/dev/null 2>&1 \
     || fail "required command not found: $dependency"
 done
@@ -23,23 +23,27 @@ done
   || fail "wrong package version"
 [[ "$(dpkg-deb --field "$deb" Architecture)" == "all" ]] \
   || fail "wrong package architecture"
-[[ "$(dpkg-deb --field "$deb" Section)" == "metapackages" ]] \
+[[ "$(dpkg-deb --field "$deb" Section)" == "admin" ]] \
   || fail "wrong package section"
 depends=$(dpkg-deb --field "$deb" Depends)
 [[ "$depends" == "base-files (= 13.8+deb13u6+kernora1), kernora-archive (>= 1.0)" ]] \
   || fail "wrong binary dependency: $depends"
 essential=$(dpkg-deb --field "$deb" Essential)
 [[ "$essential" == "no" || -z "$essential" ]] \
-  || fail "metapackage must not be Essential"
+  || fail "base package must not be Essential"
 
 temporary_root=$(mktemp -d /tmp/kernora-base-test.XXXXXX)
 trap 'find "$temporary_root" -depth -delete' EXIT
 dpkg-deb --extract "$deb" "$temporary_root/root"
 if find "$temporary_root/root" -type f \
   ! -path "$temporary_root/root/usr/share/doc/kernora-base/*" \
+  ! -path "$temporary_root/root/usr/lib/NetworkManager/conf.d/20-kernora-rtl8852ce.conf" \
   -print -quit | grep -q .; then
-  fail "metapackage contains a file outside its documentation directory"
+  fail "base package contains an unexpected file"
 fi
+cmp "$package_root/data/NetworkManager/20-kernora-rtl8852ce.conf" \
+  "$temporary_root/root/usr/lib/NetworkManager/conf.d/20-kernora-rtl8852ce.conf" \
+  || fail "RTL8852CE policy is missing or changed during packaging"
 
 dpkg-deb --control "$deb" "$temporary_root/control"
 [[ -x "$temporary_root/control/postinst" ]] || fail "root ownership migration is missing"

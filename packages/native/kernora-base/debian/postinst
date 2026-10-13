@@ -4,6 +4,9 @@ set -e
 if [ "$1" = configure ]; then
     chown 0:0 /
     chmod 0755 /
+    if command -v nmcli >/dev/null 2>&1; then
+        nmcli --wait 5 general reload conf >/dev/null 2>&1 || true
+    fi
 fi
 
 #DEBHELPER#
