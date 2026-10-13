@@ -98,3 +98,24 @@ for subsequent builds; the published ISO itself is unchanged.
 Logs are in `out/test-logs/wifi-rtl8852ce/`. These checks validate packaging,
 configuration loading and update behavior. They do not demonstrate that the
 reporter's disconnects are fixed; RTL8852CE hardware validation is pending.
+
+## Delivery
+
+Published `kernora-base` 1.3 and `kernora-apps` 1.1.33 through the existing
+signed [APT channel](https://commywork9282-dotcom.github.io/kernora-updates),
+archive commit `370093a7b894925f24e4681af02c3ae1e366b915`. GitHub Pages
+reported a successful build. An actual guest APT refresh verified the
+public signature and selected these versions at archive priority 900.
+Public package bytes match the locally tested artifacts and the signed
+index:
+
+| Package | SHA256 |
+| --- | --- |
+| kernora-base 1.3 | `fa084678d308958aafb1128c39a8a2b400dd54045b5ef410b56cbc0039f3c605` |
+| kernora-apps 1.1.33 | `5ab75a355ae323b85ee6178b06d1a6f41d0899a74eb9909084b3388126744764` |
+
+The [existing v1-ember-5 release](https://github.com/commywork9282-dotcom/Kernora-OS-/releases/tag/v1-ember-5)
+has updated notes, both `.deb` files and their SHA256 attachments. No release
+or tag was created. The main implementation commit is `66cbd18`; the ISO and
+previously published package attachments are unchanged. What's New uses
+entry `2026-10-13-6` with display date 12 October 2026.
