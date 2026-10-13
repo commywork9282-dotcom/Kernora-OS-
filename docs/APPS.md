@@ -192,3 +192,22 @@ scripts/preview-desktop apps --qml-only
 scripts/preview-desktop launch kernora-settings network
 scripts/preview-desktop sync           # the shell, themes, icons and installer files
 ```
+
+## Bluetooth pairing
+
+`kernora-bluetooth-agent` (kernora-apps, started at login from
+`/etc/xdg/autostart`) is the session's BlueZ agent. It registers with the
+`KeyboardDisplay` capability and asks to be the default agent, again whenever
+`bluetoothd` restarts. Pairing requests open a small Material 3 window
+(`/usr/share/kernora/bluetoothagent/Main.qml`):
+
+- a PIN or 6-digit passkey the device asks for is typed in;
+- a passkey to compare is shown with Pair and Cancel;
+- a code to type on a keyboard is shown with a dot for every key pressed;
+- a device that pairs by itself, or an untrusted device that wants to use a
+  service, has to be allowed. Paired and trusted devices are let through.
+
+The bluedevil KDED module is turned off in `/etc/xdg/kded6rc`
+(kernora-desktop), so its agent does not take the requests. Settings >
+Bluetooth > Pair a new device starts the pairing; when it fails, the row says
+why (wrong code, cancelled, no answer, out of reach).

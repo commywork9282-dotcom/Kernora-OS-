@@ -1,3 +1,14 @@
+kernora-apps (1.1.35) UNRELEASED; urgency=medium
+
+  * Add kernora-bluetooth-agent: a BlueZ pairing agent started at login that
+    shows pairing codes, asks for PINs and passkeys and confirms incoming
+    pairing and service requests in a Material 3 window.
+  * Settings > Bluetooth: explain why pairing failed (wrong code, cancelled,
+    timeout, out of range) and add Search again.
+  * Settings: Google Sans Flex is the default interface font.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 13 Oct 2026 18:00:00 +0200
+
 kernora-apps (1.1.34) UNRELEASED; urgency=high
 
   * What's new: announce withdrawal of the automatic RTL8852CE power-saving

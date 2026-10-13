@@ -315,7 +315,7 @@ SHAPE = {
 }
 
 
-TYPEFACE = "Roboto"
+TYPEFACE = "Google Sans Flex"
 TYPEFACE_FALLBACK = "Noto Sans"
 
 TYPE_SCALE = {

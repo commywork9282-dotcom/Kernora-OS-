@@ -56,6 +56,9 @@ grep -qx 'Exec=kernora-welcome --first-run' \
 grep -qx 'Exec=kernora-update-notifier' \
   "$temporary_root/etc/xdg/autostart/org.kernora.update-notifier.desktop" \
   || fail "the update notifier is not started at login"
+[[ -x "$temporary_root/usr/bin/kernora-bluetooth-agent" ]] || fail "missing kernora-bluetooth-agent"
+[[ -s "$temporary_root/usr/share/kernora/bluetoothagent/Main.qml" ]] || fail "the Bluetooth pairing window is missing"
+grep -qx 'Exec=kernora-bluetooth-agent'   "$temporary_root/etc/xdg/autostart/org.kernora.bluetooth-agent.desktop"   || fail "the Bluetooth pairing agent is not started at login"
 grep -qx 'DesktopEntry=org.kernora.settings' "$temporary_root/usr/share/knotifications6/kernora-updates.notifyrc" \
   || fail "update notifications would not come from Settings"
 python3 - "$temporary_root/usr/share/kernora/whatsnew.json" <<'PYTHON_TEST' || fail "the release notes for What's new are missing or broken"

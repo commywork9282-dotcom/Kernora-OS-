@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Bluetooth pairing
+Name[ru]=Сопряжение Bluetooth
+Icon=preferences-system-bluetooth
+Exec=kernora-bluetooth-agent
+NoDisplay=true
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=1

@@ -344,7 +344,7 @@ SettingsPage {
         file: "kdeglobals"
         group: "General"
         key: "font"
-        defaultValue: "Roboto,10.5,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+        defaultValue: "Google Sans Flex,10.5,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
     }
     readonly property real fontSize: {
         const size = parseFloat(String(fontEntry.value).split(",")[1]);
@@ -352,7 +352,7 @@ SettingsPage {
     }
 
     function fontString(size: real, weight: int): string {
-        const family = String(fontEntry.value).split(",")[0] || "Roboto";
+        const family = String(fontEntry.value).split(",")[0] || "Google Sans Flex";
         return family + "," + size + ",-1,5," + weight + ",0,0,0,0,0,0,0,0,0,0,1";
     }
     function setFontSize(size: real): void {

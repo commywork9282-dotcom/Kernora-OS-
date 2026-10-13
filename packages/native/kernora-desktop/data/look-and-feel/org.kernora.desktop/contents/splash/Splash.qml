@@ -46,7 +46,7 @@ Rectangle {
             anchors.topMargin: Math.round(root.height * 0.06)
             text: "Kernora OS"
             color: "#ede0dc"
-            font.family: "Roboto"
+            font.family: "Google Sans Flex"
             font.pixelSize: Math.round(root.height * 0.028)
         }
     }

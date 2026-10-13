@@ -31,6 +31,17 @@ Comment: Material Symbols Rounded, weight 400, optical size 24, from
  The Kernora icon theme and the icon sheets of the Kernora Plasma theme are
  generated from these drawings.
 
+Files: data/fonts/google-sans-flex/*
+Copyright: 2025 The Google Sans Flex Project Authors (https://github.com/googlefonts/googlesans-flex)
+License: OFL-1.1
+Comment: Google Sans Flex, the variable font from
+ https://github.com/google/fonts/tree/main/ofl/googlesansflex at commit
+ bd8f81ddb5c74d5c8897b36ad88b440266245103 (SHA-256 of GoogleSansFlex.ttf:
+ a9ac770798857d5e8ac593ced42b22e40a7c08cec98319f92b0eccc2783a77ba). The
+ licence text is in data/fonts/google-sans-flex/OFL.txt. "Google Sans Flex"
+ is a trademark of Google LLC (see TRADEMARKS.md there); the font is shipped
+ unmodified.
+
 Files: data/shell/clipboard/contents/ui/emoji.js
 Copyright: 1991-2024 Unicode, Inc.
 License: Unicode-License-V3
@@ -85,3 +96,8 @@ License: Apache-2.0
  .
  On Debian systems, the complete text of the Apache License, Version 2.0 can
  be found in `/usr/share/common-licenses/Apache-2.0`.
+
+License: OFL-1.1
+ This Font Software is licensed under the SIL Open Font License, Version 1.1.
+ The full text is in /usr/share/doc/kernora-desktop/google-sans-flex/OFL.txt
+ and at https://openfontlicense.org.

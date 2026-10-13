@@ -1,12 +1,15 @@
 data/look-and-feel/org.kernora.desktop usr/share/plasma/look-and-feel
 data/sddm.conf.d/kernora-theme.conf etc/sddm.conf.d
 data/icons/kernora-logo.svg usr/share/icons/hicolor/scalable/apps
+data/fonts/google-sans-flex/GoogleSansFlex.ttf usr/share/fonts/truetype/google-sans-flex
+data/fonts/google-sans-flex/OFL.txt usr/share/doc/kernora-desktop/google-sans-flex
 generated/icon-theme/index.theme usr/share/icons/Kernora
 generated/icon-theme/scalable usr/share/icons/Kernora
 generated/icon-themes/Kernora-* usr/share/icons
 generated/kernora_cursors usr/share/icons
 data/xdg-kcminputrc/kcminputrc etc/xdg
 data/xdg-klaunchrc/klaunchrc etc/xdg
+data/xdg-kded/kded6rc etc/xdg
 generated/hicolor usr/share/icons
 generated/skel/.face etc/skel
 generated/avatars/*.png usr/share/kernora/avatars
@@ -100,6 +103,7 @@ data/taskmanager/KernoraWindowThumbnail.qml usr/share/plasma/plasmoids/org.kde.p
 generated/plymouth/kernora usr/share/plymouth/themes
 data/plymouth/plymouthd.defaults usr/share/plymouth
 data/grub/kernora.cfg etc/default/grub.d
+data/boot/kernora-timeouts.conf usr/lib/systemd/system.conf.d
 generated/grub/kernora usr/share/grub/themes
 data/plymouth/plymouth-quit-kernora.conf usr/lib/systemd/system/plymouth-quit.service.d
 data/plymouth/sddm-plymouth.conf usr/lib/systemd/system/sddm.service.d

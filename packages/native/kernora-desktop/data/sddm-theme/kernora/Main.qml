@@ -99,7 +99,7 @@ Rectangle {
             Layout.alignment: Qt.AlignHCenter
             text: root.now.toLocaleTimeString(Qt.locale(), Qt.locale().name === "C" ? "HH:mm" : Locale.ShortFormat)
             color: P.surfaceContent
-            font.family: "Roboto"
+            font.family: "Google Sans Flex"
             font.weight: Font.Light
             font.pixelSize: 112
             renderType: Text.QtRendering
@@ -108,7 +108,7 @@ Rectangle {
             Layout.alignment: Qt.AlignHCenter
             text: root.now.toLocaleDateString(Qt.locale(), "dddd, d MMMM")
             color: P.surfaceContent
-            font.family: "Roboto"
+            font.family: "Google Sans Flex"
             font.pixelSize: 22
             renderType: Text.QtRendering
         }
@@ -165,7 +165,7 @@ Rectangle {
                         visible: face.status !== Image.Ready
                         text: parent.parent.user ? parent.parent.user.displayName.charAt(0).toUpperCase() : ""
                         color: P.primaryContainerContent
-                        font.family: "Roboto"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 44
                         font.weight: Font.Medium
                     }
@@ -199,7 +199,7 @@ Rectangle {
                 horizontalAlignment: Text.AlignHCenter
                 text: root.user ? root.user.displayName : ""
                 color: P.surfaceContent
-                font.family: "Roboto"
+                font.family: "Google Sans Flex"
                 font.pixelSize: 24
                 elide: Text.ElideRight
                 renderType: Text.QtRendering
@@ -231,7 +231,7 @@ Rectangle {
                         enabled: !root.busy
                         color: P.surfaceContent
                         selectionColor: P.primaryContainer
-                        font.family: "Roboto"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 18
                         renderType: Text.QtRendering
                         clip: true
@@ -277,7 +277,7 @@ Rectangle {
                 text: root.failure.length > 0 ? root.failure
                     : keyboard.capsLock ? root.tr("Caps Lock is on", "Включён Caps Lock") : ""
                 color: root.failure.length > 0 ? P.error : P.surfaceVariantContent
-                font.family: "Roboto"
+                font.family: "Google Sans Flex"
                 font.pixelSize: 14
                 wrapMode: Text.Wrap
             }
@@ -303,7 +303,7 @@ Rectangle {
                             anchors.centerIn: parent
                             text: realName.length > 0 ? realName : name
                             color: index === root.userIndex ? P.secondaryContainerContent : P.surfaceVariantContent
-                            font.family: "Roboto"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 14
                         }
                         MouseArea {
@@ -352,7 +352,7 @@ Rectangle {
         Text {
             text: sddm.hostName
             color: P.surfaceVariantContent
-            font.family: "Roboto"
+            font.family: "Google Sans Flex"
             font.pixelSize: 14
             Layout.rightMargin: 8
         }
@@ -375,7 +375,7 @@ Rectangle {
             anchors.centerIn: parent
             spacing: 8
             Image { source: chip.icon; sourceSize: Qt.size(40, 40); Layout.preferredWidth: 20; Layout.preferredHeight: 20 }
-            Text { text: chip.label; color: P.surfaceContent; font.family: "Roboto"; font.pixelSize: 14 }
+            Text { text: chip.label; color: P.surfaceContent; font.family: "Google Sans Flex"; font.pixelSize: 14 }
         }
         MouseArea {
             id: chipMouse
@@ -416,7 +416,7 @@ Rectangle {
                 anchors.centerIn: parent
                 text: button.label
                 color: P.inverseOnSurface
-                font.family: "Roboto"
+                font.family: "Google Sans Flex"
                 font.pixelSize: 13
             }
         }

@@ -16,7 +16,7 @@ tools/kernora_design.py    seed #ff6a1e, shape, type, motion, state tokens
 tools/m3color.py           HCT / CAM16 -> Material 3 tonal palettes and roles
         |
         +-- gen-color-schemes   KernoraDark.colors, KernoraLight.colors
-        +-- gen-kdeglobals      /etc/xdg/kdeglobals: scheme, Roboto, icon theme
+        +-- gen-kdeglobals      /etc/xdg/kdeglobals: scheme, Google Sans Flex, icon theme
         +-- gen-plasma-theme    Plasma desktop theme "kernora" (SVG + colors)
         +-- gen-icon-theme      icon theme "Kernora" from Material Symbols
         +-- gen-qml-tokens      M3.qml, the singleton the shell's QML reads
@@ -646,10 +646,17 @@ otherwise recompute the selection as the accent blended into the background.
 ## Typography
 
 The shell sets text in the Material type scale (`M3.bodyMedium`,
-`M3.titleSmall`, …) in Roboto, which the image installs from Debian
-(`fonts-roboto-unhinted`). The scale follows the user's font size through
-`Kirigami.Units.gridUnit`. System-wide, `/etc/xdg/kdeglobals` sets Roboto
-10.5pt, Material's 14dp body size, for Qt applications.
+`M3.titleSmall`, …) in Google Sans Flex. It is not in Debian, so
+kernora-desktop carries the variable font itself
+(`data/fonts/google-sans-flex`, installed to
+`/usr/share/fonts/truetype/google-sans-flex`); its weights come from the
+`wght` axis. The scale follows the user's font size through
+`Kirigami.Units.gridUnit`. System-wide, `/etc/xdg/kdeglobals` sets Google
+Sans Flex 10.5pt, Material's 14dp body size, for Qt applications, and the
+login screen and splash use it too. The typeface is set in one place,
+`TYPEFACE` in `tools/kernora_design.py`. GRUB keeps Roboto
+(`fonts-roboto-unhinted`), because `grub-mkfont` cannot render a variable
+font's named weights.
 
 ## Motion
 

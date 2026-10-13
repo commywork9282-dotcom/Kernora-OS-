@@ -91,8 +91,8 @@ done
   || fail "sddm is not installed"
 
 # The Kernora Material 3 shell and what it is set in.
-[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.27" ]] \
-  || fail "kernora-desktop 1.4.27 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.28" ]] \
+  || fail "kernora-desktop 1.4.28 is not installed"
 for applet in org.kernora.launcher org.kernora.quicksettings; do
   [[ -s "/usr/share/plasma/plasmoids/$applet/contents/ui/main.qml" ]] \
     || fail "Kernora shell applet is missing: $applet"
@@ -100,7 +100,11 @@ done
 [[ -s /usr/share/plasma/desktoptheme/kernora/widgets/panel-background.svg ]] \
   || fail "Kernora Plasma theme is missing"
 find /usr/share/fonts -name 'Roboto-Regular.ttf' -print -quit | grep -q . \
-  || fail "Roboto, the shell typeface, is not installed"
+  || fail "Roboto, the boot menu typeface, is not installed"
+[[ -s /usr/share/fonts/truetype/google-sans-flex/GoogleSansFlex.ttf ]] \
+  || fail "Google Sans Flex, the shell typeface, is not installed"
+grep -q '^font=Google Sans Flex,' /etc/xdg/kdeglobals \
+  || fail "kdeglobals does not set Google Sans Flex"
 # Every QML module the shell imports must resolve in the image, or the applet
 # (or one of its tiles) fails to load at runtime.
 qml_root=/usr/lib/x86_64-linux-gnu/qt6/qml
@@ -151,8 +155,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.34" ]] \
-  || fail "kernora-apps 1.1.34 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.35" ]] \
+  || fail "kernora-apps 1.1.35 is not installed"
 for package in flatpak appstream; do
   [[ "$(dpkg-query -W -f='${Status}' "$package")" == 'install ok installed' ]] || fail "Store dependency missing: $package"
 done

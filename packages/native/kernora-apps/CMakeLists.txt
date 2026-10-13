@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 cmake_minimum_required(VERSION 3.25)
-project(kernora-apps VERSION 1.1.34 LANGUAGES CXX)
+project(kernora-apps VERSION 1.1.35 LANGUAGES CXX)
 
 set(QT_MIN_VERSION 6.8)
 set(KF_MIN_VERSION 6.13)
@@ -23,6 +23,7 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
     Core Gui Qml Quick QuickControls2 Widgets DBus Network)
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
     Config CoreAddons DBusAddons I18n KIO Notifications Service WindowSystem)
+find_package(KF6BluezQt ${KF_MIN_VERSION} REQUIRED)
 find_package(KF6Screen REQUIRED)
 find_package(PackageKitQt6 REQUIRED)
 find_package(Plasma REQUIRED)
@@ -38,6 +39,7 @@ add_subdirectory(src/store)
 add_subdirectory(src/apps)
 add_subdirectory(src/filechooser)
 add_subdirectory(src/updatenotifier)
+add_subdirectory(src/bluetoothagent)
 
 set(KERNORA_APPS settings files welcome editor photos player calculator screenshot store)
 foreach(app ${KERNORA_APPS})
@@ -46,6 +48,7 @@ foreach(app ${KERNORA_APPS})
 endforeach()
 
 install(DIRECTORY apps/filechooser/qml/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/filechooser)
+install(DIRECTORY apps/bluetoothagent/qml/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/bluetoothagent)
 
 install(FILES apps/welcome/org.kernora.welcome-autostart.desktop
         DESTINATION ${KDE_INSTALL_AUTOSTARTDIR} RENAME org.kernora.welcome.desktop)
@@ -53,7 +56,7 @@ install(PROGRAMS data/systemsettings DESTINATION ${KDE_INSTALL_BINDIR})
 install(FILES data/copyright/librewolf DESTINATION ${KDE_INSTALL_DATADIR}/kernora/copyright)
 install(FILES data/knotifications/kernora-screenshot.notifyrc data/knotifications/kernora-updates.notifyrc data/knotifications/kernora-store.notifyrc
         DESTINATION ${KDE_INSTALL_KNOTIFYRCDIR})
-install(FILES data/autostart/org.kernora.update-notifier.desktop DESTINATION ${KDE_INSTALL_AUTOSTARTDIR})
+install(FILES data/autostart/org.kernora.update-notifier.desktop data/autostart/org.kernora.bluetooth-agent.desktop DESTINATION ${KDE_INSTALL_AUTOSTARTDIR})
 install(FILES data/whatsnew.json DESTINATION ${KDE_INSTALL_DATADIR}/kernora)
 install(FILES data/store/featured.json DESTINATION ${KDE_INSTALL_DATADIR}/kernora/store)
 install(FILES data/store/flathub.flatpakrepo DESTINATION ${KDE_INSTALL_DATADIR}/flatpak/remotes.d)

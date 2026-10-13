@@ -22,7 +22,7 @@ SettingsPage {
         file: "kdeglobals"
         group: "General"
         key: "font"
-        defaultValue: "Roboto,10.5,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+        defaultValue: "Google Sans Flex,10.5,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
     }
     ConfigEntry {
         id: codeFont
@@ -32,7 +32,7 @@ SettingsPage {
         defaultValue: "Hack,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
     }
 
-    readonly property string family: String(interfaceFont.value).split(",")[0] || "Roboto"
+    readonly property string family: String(interfaceFont.value).split(",")[0] || "Google Sans Flex"
     readonly property real size: {
         const value = parseFloat(String(interfaceFont.value).split(",")[1]);
         return isNaN(value) ? 10.5 : value;
@@ -158,9 +158,9 @@ SettingsPage {
             title: i18n("Restore the Kernora fonts")
             icon: "edit-undo"
             iconStyle: "plain"
-            visible: page.family !== "Roboto" || page.size !== 10.5 || page.codeFamily !== "Hack" || page.codeSize !== 10
+            visible: page.family !== "Google Sans Flex" || page.size !== 10.5 || page.codeFamily !== "Hack" || page.codeSize !== 10
             onClicked: {
-                page.setInterface("Roboto", 10.5);
+                page.setInterface("Google Sans Flex", 10.5);
                 page.setCode("Hack", 10);
             }
         }

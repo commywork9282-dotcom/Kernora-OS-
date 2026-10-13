@@ -1,3 +1,15 @@
+kernora-desktop (1.4.28) UNRELEASED; urgency=medium
+
+  * Ship Google Sans Flex (SIL OFL 1.1) and make it the typeface of the
+    shell, the apps, the login screen and the splash. GRUB keeps Roboto.
+  * Turn off the bluedevil KDED module, so the Kernora pairing agent is the
+    only Bluetooth agent of the session.
+  * Faster boot and shutdown: GRUB waits 2 seconds instead of 5 unless the
+    timeout was changed, NetworkManager-wait-online is disabled, and
+    services get 15 seconds to stop.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 13 Oct 2026 18:00:00 +0200
+
 kernora-desktop (1.4.27) UNRELEASED; urgency=medium
 
   * Store icon and verification/licence symbols in all icon variants.
