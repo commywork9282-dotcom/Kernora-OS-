@@ -61,6 +61,21 @@ CS2 connection was available for testing. Successful rollback installation
 is not evidence that the packet loss is resolved; that needs comparison on
 the reporter's machine after reboot.
 
+The rollback was published through the existing signed APT channel, archive
+commit `55f9c3d4ecd9e3087605859600909009f83055e5`, with GitHub Pages reporting
+a successful build. The public InRelease signature, Packages digest and
+downloaded package bytes verified against the tested artifacts. The existing
+guest APT client accepted the public signature and selected 1.4/1.1.34 at
+priority 900. The existing
+`v1-ember-5` release has corrected notes and 1.4/1.1.34 package attachments;
+GitHub's asset digests match the local packages. No release or tag was created.
+The original ISO is unchanged. Implementation commit: `3926e85`.
+
+| Rollback package | SHA256 |
+| --- | --- |
+| kernora-base 1.4 | `ce3737841b63d7a23082a7f2da0e7fc5793175a24e787f308a133573c987ef19` |
+| kernora-apps 1.1.34 | `5f601718cf5df8c9b9d6c9b30f6041fdebcd1b26dac5e9000eb92e74452ed883` |
+
 ## Historical 1.3 implementation and validation
 
 `kernora-base` 1.3 provides a conservative power-saving workaround for the
