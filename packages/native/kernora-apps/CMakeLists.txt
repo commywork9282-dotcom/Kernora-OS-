@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 cmake_minimum_required(VERSION 3.25)
-project(kernora-apps VERSION 1.1.31 LANGUAGES CXX)
+project(kernora-apps VERSION 1.1.32 LANGUAGES CXX)
 
 set(QT_MIN_VERSION 6.8)
 set(KF_MIN_VERSION 6.13)

@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-13-5",
+    "date": "2026-10-12",
+    "items": [
+      {
+        "icon": "org.kernora.store",
+        "title": {
+          "en": "A more expressive Store",
+          "ru": "Больше Material 3 в магазине"
+        },
+        "text": {
+          "en": "Store has softer tonal surfaces, clearer navigation and a refreshed app page. Cards appear smoothly and respond to hovering and pressing, while screenshots fade in as they load. The layout adapts to smaller windows, and animations follow your desktop speed setting.",
+          "ru": "В магазине появились мягкие тональные поверхности, более чёткая навигация и обновлённая страница приложения. Карточки плавно появляются и реагируют на наведение и нажатие, а снимки экрана проявляются после загрузки. Интерфейс подстраивается под узкое окно, а анимации учитывают выбранную в системе скорость."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-13-4",
     "date": "2026-10-12",
     "items": [

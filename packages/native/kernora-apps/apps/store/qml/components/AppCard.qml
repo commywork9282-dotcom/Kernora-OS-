@@ -36,20 +36,18 @@ Item {
     Keys.onReturnPressed: clicked()
     Keys.onSpacePressed: clicked()
 
-    Rectangle {
+    scale: mouse.pressed ? 0.975 : 1
+    Behavior on scale {
+        NumberAnimation { duration: M3.durationShort4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
+    }
+
+    StoreSurface {
         id: card
         anchors.fill: parent
-        radius: M3.classic ? M3.cornerCard : 24
-        color: M3.surfaceContainerLow
-
-        MStateLayer {
-            radius: card.radius
-            color: M3.surfaceContent
-            hovered: mouse.containsMouse
-            pressed: mouse.pressed
-            focused: root.activeFocus
-            pressPoint: Qt.point(mouse.mouseX, mouse.mouseY)
-        }
+        hovered: mouse.containsMouse
+        pressed: mouse.pressed
+        focused: root.activeFocus
+        pressPoint: Qt.point(mouse.mouseX, mouse.mouseY)
     }
 
     RowLayout {
@@ -60,6 +58,10 @@ Item {
         AppIcon {
             Layout.alignment: Qt.AlignVCenter
             size: 64
+            scale: mouse.containsMouse ? 1.06 : 1
+            Behavior on scale {
+                NumberAnimation { duration: M3.durationMedium2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
+            }
             name: root.iconSource
         }
 

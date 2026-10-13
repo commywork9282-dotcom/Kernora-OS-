@@ -5,13 +5,14 @@ Window {
     visible: false
     property int attempts: 0
     property int stage: 0
+    property double stageStartedAt: 0
     AppModel { id: results; search: "video" }
     AppModel { id: installed; filter: Store.Installed }
     AppModel { id: games; category: "games" }
     function require(condition, message) {
         if (!condition) {
             console.error("STORE_SMOKE_FAILED: " + message);
-            Qt.quit();
+            Qt.exit(1);
             return false;
         }
         return true;
@@ -31,13 +32,17 @@ Window {
                 if (!require(games.count > 10, "games catalogue missing")) return;
                 if (!require(installed.count === Store.installedCount, "installed count mismatch")) return;
                 console.log("STORE_SMOKE: video=" + results.count + " games=" + games.count + " installed=" + installed.count);
+                stageStartedAt = Date.now();
                 results.search = "kernora-this-app-does-not-exist-791827";
                 stage = 1;
             } else if (stage === 1) {
+                if (results.count !== 0 && Date.now() - stageStartedAt < 10000) return;
                 if (!require(results.count === 0, "search did not reset")) return;
+                stageStartedAt = Date.now();
                 results.search = "telegram";
                 stage = 2;
             } else {
+                if (results.count === 0 && Date.now() - stageStartedAt < 10000) return;
                 if (!require(results.count > 0, "Telegram search missing")) return;
                 const id = results.idAt(0);
                 const details = Store.details(id);

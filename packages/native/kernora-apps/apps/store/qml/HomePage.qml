@@ -23,6 +23,8 @@ Item {
         return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
     }
 
+    EntranceMotion { item: column }
+
     component Shelf: Column {
         id: shelf
 
@@ -73,7 +75,7 @@ Item {
         ListView {
             id: list
             width: parent.width
-            height: 232
+            height: 248
             orientation: ListView.Horizontal
             spacing: 12
             clip: true
@@ -83,6 +85,8 @@ Item {
                 NumberAnimation { duration: M3.durationLong2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasized }
             }
             delegate: AppTile {
+                id: tile
+                required property int index
                 required appId
                 required name
                 required summary
@@ -93,6 +97,7 @@ Item {
                 required progress
                 required rating
                 onClicked: page.app.openApp(appId)
+                EntranceMotion { item: tile; delay: Math.min(tile.index, 6) * 35 }
             }
         }
     }
@@ -109,7 +114,34 @@ Item {
             x: (flick.width - page.contentWidth) / 2
             y: 28
             width: page.contentWidth
-            spacing: 32
+            spacing: 28
+
+            RowLayout {
+                width: parent.width
+                spacing: 16
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 4
+                    MText {
+                        Layout.fillWidth: true
+                        role: "headlineLarge"
+                        text: i18n("Discover")
+                    }
+                    MText {
+                        Layout.fillWidth: true
+                        role: "bodyLarge"
+                        text: i18n("Find your next favourite app")
+                        color: M3.surfaceVariantContent
+                        wrapMode: Text.Wrap
+                    }
+                }
+                MIconButton {
+                    visible: page.app && page.app.narrow
+                    icon: "go-previous"
+                    text: i18n("Back")
+                    onClicked: page.app.goBack()
+                }
+            }
 
             Banner {
                 width: parent.width
@@ -122,8 +154,10 @@ Item {
             Item {
                 id: hero
                 width: parent.width
-                height: 280
+                height: 248
                 visible: heroModel.count > 0
+
+                HoverHandler { id: heroHover }
 
                 AppModel {
                     id: heroModel
@@ -164,22 +198,32 @@ Item {
                             anchors.fill: parent
                             radius: M3.classic ? M3.cornerCard : 32
                             color: slide.background
-
-                            Rectangle {
-                                width: parent.height * 1.3
-                                height: width
-                                radius: width / 2
-                                x: parent.width - width * 0.62
-                                y: -height * 0.18
-                                color: Qt.alpha(slide.ink, 0.08)
+                            clip: true
+                            scale: slideMouse.pressed ? 0.985 : 1
+                            Behavior on scale {
+                                NumberAnimation { duration: M3.durationShort4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
                             }
-                            Rectangle {
-                                width: parent.height * 0.7
-                                height: width
-                                radius: width / 2
-                                x: parent.width - width * 1.55
-                                y: parent.height - height * 0.45
-                                color: Qt.alpha(slide.ink, 0.06)
+
+                            RoundedClip {
+                                anchors.fill: parent
+                                radius: slideCard.radius
+                                Rectangle {
+                                    width: parent.height * 1.3
+                                    height: width
+                                    radius: width / 2
+                                    x: parent.width - width * 0.62
+                                    y: -height * 0.18
+                                    color: Qt.alpha(slide.ink, 0.08)
+                                }
+                                Rectangle {
+                                    width: parent.height * 0.7
+                                    height: width
+                                    radius: width / 2
+                                    x: parent.width - width * 1.55
+                                    y: parent.height - height * 0.45
+                                    color: Qt.alpha(slide.ink, 0.06)
+                                }
+
                             }
 
                             MStateLayer {
@@ -201,7 +245,7 @@ Item {
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.margins: 40
+                            anchors.margins: hero.width < 480 ? 24 : 36
                             spacing: 32
 
                             ColumnLayout {
@@ -265,7 +309,12 @@ Item {
                                 Layout.preferredWidth: 152
                                 Layout.preferredHeight: 152
                                 visible: hero.width > 560
-                                radius: 44
+                                radius: slideMouse.containsMouse ? 52 : 40
+                                rotation: slideMouse.containsMouse ? -4 : 0
+                                scale: slideMouse.containsMouse ? 1.04 : 1
+                                Behavior on radius { NumberAnimation { duration: M3.durationMedium4 } }
+                                Behavior on rotation { NumberAnimation { duration: M3.durationMedium4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate } }
+                                Behavior on scale { NumberAnimation { duration: M3.durationMedium4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate } }
                                 color: Qt.alpha("#ffffff", M3.dark ? 0.08 : 0.85)
 
                                 AppIcon {
@@ -287,14 +336,32 @@ Item {
                     Repeater {
                         model: heroModel.count
                         delegate: Rectangle {
+                            id: indicator
                             required property int index
                             width: index === heroList.currentIndex ? 20 : 8
                             height: 8
                             radius: 4
-                            color: M3.dark ? M3.primaryContainerContent : "#ffffff"
+                            Accessible.role: Accessible.PageTab
+                            Accessible.name: i18n("Featured app %1", index + 1)
+                            Accessible.selected: index === heroList.currentIndex
+                            activeFocusOnTab: true
+                            Keys.onReturnPressed: heroList.currentIndex = index
+                            Keys.onSpacePressed: heroList.currentIndex = index
+                            Accessible.onPressAction: heroList.currentIndex = index
+                            color: heroList.currentItem ? heroList.currentItem.ink : M3.primaryContainerContent
                             opacity: index === heroList.currentIndex ? 0.95 : 0.5
+                            Behavior on color { ColorAnimation { duration: M3.durationMedium2 } }
                             Behavior on width {
                                 NumberAnimation { duration: M3.durationMedium2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasized }
+                            }
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: -4
+                                radius: height / 2
+                                color: "transparent"
+                                border.width: 1
+                                border.color: indicator.color
+                                visible: indicator.activeFocus
                             }
                             MouseArea {
                                 anchors.fill: parent
@@ -309,7 +376,7 @@ Item {
                 Timer {
                     interval: 7000
                     repeat: true
-                    running: page.visible && heroModel.count > 1 && !heroList.moving
+                    running: page.visible && M3.motionScale > 0 && heroModel.count > 1 && !heroList.moving && !heroHover.hovered
                     onTriggered: heroList.currentIndex = (heroList.currentIndex + 1) % heroModel.count
                 }
             }
@@ -367,18 +434,19 @@ Item {
                             height: 72
                             readonly property int columns: Math.max(2, Math.floor((page.contentWidth + 12) / 260))
 
-                            Rectangle {
-                                id: chipCard
+                            activeFocusOnTab: true
+                            Accessible.role: Accessible.Button
+                            Accessible.name: modelData.name
+                            Accessible.onPressAction: page.app.showSection("category:" + modelData.id)
+                            Keys.onReturnPressed: page.app.showSection("category:" + modelData.id)
+                            Keys.onSpacePressed: page.app.showSection("category:" + modelData.id)
+                            StoreSurface {
                                 anchors.fill: parent
-                                radius: M3.classic ? M3.cornerCard : 20
-                                color: M3.surfaceContainerLow
-                                MStateLayer {
-                                    radius: chipCard.radius
-                                    color: M3.surfaceContent
-                                    hovered: chipMouse.containsMouse
-                                    pressed: chipMouse.pressed
-                                    pressPoint: Qt.point(chipMouse.mouseX, chipMouse.mouseY)
-                                }
+                                corner: 20
+                                hovered: chipMouse.containsMouse
+                                pressed: chipMouse.pressed
+                                focused: chip.activeFocus
+                                pressPoint: Qt.point(chipMouse.mouseX, chipMouse.mouseY)
                             }
                             RowLayout {
                                 anchors.fill: parent

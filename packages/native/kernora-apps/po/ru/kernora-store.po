@@ -562,3 +562,9 @@ msgstr "© 2026 Kernora OS"
 #: packages/native/kernora-apps/src/apps/host.cpp:67
 msgid "Files or pages to open."
 msgstr "Файлы или страницы, которые нужно открыть."
+
+msgid "Find your next favourite app"
+msgstr "Найдите новое любимое приложение"
+
+msgid "Featured app %1"
+msgstr "Рекомендуемое приложение %1"

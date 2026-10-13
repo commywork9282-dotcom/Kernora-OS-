@@ -24,7 +24,7 @@ Item {
     signal clicked()
 
     implicitWidth: 176
-    implicitHeight: 232
+    implicitHeight: 248
     activeFocusOnTab: true
 
     Accessible.role: Accessible.Button
@@ -34,20 +34,18 @@ Item {
     Keys.onReturnPressed: clicked()
     Keys.onSpacePressed: clicked()
 
-    Rectangle {
+    scale: mouse.pressed ? 0.975 : 1
+    Behavior on scale {
+        NumberAnimation { duration: M3.durationShort4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
+    }
+
+    StoreSurface {
         id: card
         anchors.fill: parent
-        radius: M3.classic ? M3.cornerCard : 24
-        color: M3.surfaceContainerLow
-
-        MStateLayer {
-            radius: card.radius
-            color: M3.surfaceContent
-            hovered: mouse.containsMouse
-            pressed: mouse.pressed
-            focused: root.activeFocus
-            pressPoint: Qt.point(mouse.mouseX, mouse.mouseY)
-        }
+        hovered: mouse.containsMouse
+        pressed: mouse.pressed
+        focused: root.activeFocus
+        pressPoint: Qt.point(mouse.mouseX, mouse.mouseY)
     }
 
     ColumnLayout {
@@ -59,7 +57,7 @@ Item {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 4
             Layout.bottomMargin: 6
-            size: 80
+            size: 88
             name: root.iconSource
             scale: mouse.containsMouse ? 1.05 : 1
             Behavior on scale {
@@ -68,7 +66,7 @@ Item {
         }
         MText {
             Layout.fillWidth: true
-            role: "titleSmall"
+            role: "titleMedium"
             text: root.name
             horizontalAlignment: Text.AlignHCenter
             elide: Text.ElideRight

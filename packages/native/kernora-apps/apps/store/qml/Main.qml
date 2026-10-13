@@ -11,6 +11,7 @@ import QtQuick.Controls as QQC2
 import org.kernora.m3
 import org.kernora.ui
 import org.kernora.store
+import "components"
 
 AppWindow {
     id: app
@@ -159,14 +160,57 @@ AppWindow {
         width: parent ? parent.width : 300
         height: item.implicitHeight
 
-        NavigationItem {
+        readonly property bool current: app.section === name && !app.narrow
+        activeFocusOnTab: true
+        Accessible.role: Accessible.PageTab
+        Accessible.name: title
+        Accessible.selected: current
+        Accessible.onPressAction: app.showSection(name)
+        Keys.onReturnPressed: app.showSection(name)
+        Keys.onSpacePressed: app.showSection(name)
+
+        StoreSurface {
             id: item
             width: parent.width
-            title: destination.title
-            icon: destination.icon
-            accent: 0
-            current: app.section === destination.name && !app.narrow
-            onClicked: app.showSection(destination.name)
+            implicitHeight: 52
+            height: implicitHeight
+            corner: 26
+            restingColor: destination.current ? M3.secondaryContainer : M3.surfaceContainer
+            activeColor: M3.secondaryContainer
+            hovered: destinationMouse.containsMouse
+            pressed: destinationMouse.pressed
+            focused: destination.activeFocus
+            pressPoint: Qt.point(destinationMouse.mouseX, destinationMouse.mouseY)
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 20
+                anchors.rightMargin: destination.badge > 0 ? 48 : 20
+                spacing: 18
+                MIcon {
+                    size: 24
+                    source: destination.icon
+                    color: destination.current ? M3.secondaryContainerContent : M3.surfaceVariantContent
+                    scale: destination.current ? 1.12 : 1
+                    Behavior on scale {
+                        NumberAnimation { duration: M3.durationMedium2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
+                    }
+                }
+                MText {
+                    Layout.fillWidth: true
+                    role: destination.current ? "titleSmall" : "bodyLarge"
+                    text: destination.title
+                    elide: Text.ElideRight
+                    color: destination.current ? M3.secondaryContainerContent : M3.surfaceContent
+                }
+            }
+            MouseArea {
+                id: destinationMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: app.showSection(destination.name)
+            }
         }
 
         Rectangle {
@@ -197,7 +241,7 @@ AppWindow {
             id: navigation
 
             Layout.fillHeight: true
-            Layout.preferredWidth: app.narrow ? app.width : 320
+            Layout.preferredWidth: app.narrow ? app.width : 280
             visible: !app.narrow || !app.pageShown
 
             ColumnLayout {
@@ -206,13 +250,35 @@ AppWindow {
                 anchors.rightMargin: app.narrow ? 12 : 4
                 spacing: 12
 
-                MText {
+                RowLayout {
                     Layout.fillWidth: true
                     Layout.leftMargin: 16
-                    Layout.topMargin: 12
-                    role: "headlineMedium"
-                    text: i18n("Store")
-                    visible: app.narrow
+                    Layout.topMargin: 20
+                    Layout.bottomMargin: 8
+                    spacing: 12
+                    Rectangle {
+                        width: 44
+                        height: 44
+                        radius: 16
+                        color: M3.primaryContainer
+                        MIcon {
+                            anchors.centerIn: parent
+                            source: "view-app-grid"
+                            size: 28
+                            color: M3.primaryContainerContent
+                        }
+                    }
+                    MText {
+                        Layout.fillWidth: true
+                        role: "headlineSmall"
+                        text: i18n("Store")
+                    }
+                    MIconButton {
+                        icon: "view-refresh"
+                        text: Store.loading ? i18n("Refreshing…") : i18n("Refresh")
+                        enabled: !Store.loading && !Store.checkingUpdates
+                        onClicked: Store.refresh()
+                    }
                 }
 
                 SearchField {
@@ -220,6 +286,8 @@ AppWindow {
                     Layout.fillWidth: true
                     Layout.topMargin: app.narrow ? 0 : 8
                     placeholderText: i18n("Search apps")
+                    color: input.activeFocus ? M3.surfaceContainerHighest : M3.surfaceContainerHigh
+                    Behavior on color { ColorAnimation { duration: M3.durationMedium2 } }
                     onTextChanged: {
                         if (text.trim().length > 0 && (app.section !== "search" || stack.depth > 1)) {
                             app.showSection("search");
@@ -232,15 +300,6 @@ AppWindow {
                             app.showSection("search");
                         }
                     }
-                }
-
-                MButton {
-                    Layout.fillWidth: true
-                    variant: "text"
-                    icon: "view-refresh"
-                    text: Store.loading ? i18n("Refreshing…") : i18n("Refresh")
-                    enabled: !Store.loading && !Store.checkingUpdates
-                    onClicked: Store.refresh()
                 }
 
                 QQC2.ScrollView {
@@ -354,7 +413,10 @@ AppWindow {
 
             Item {
                 anchors.fill: parent
-                visible: !Store.ready
+                visible: opacity > 0
+                enabled: !Store.ready
+                opacity: Store.ready ? 0 : 1
+                Behavior on opacity { NumberAnimation { duration: M3.durationMedium4 } }
                 z: 10
 
                 Rectangle {

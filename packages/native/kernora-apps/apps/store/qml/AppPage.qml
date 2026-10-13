@@ -51,6 +51,8 @@ Item {
         }
     }
 
+    EntranceMotion { item: column; distance: 24 }
+
     Flickable {
         id: flick
 
@@ -79,75 +81,87 @@ Item {
                 }
             }
 
-            RowLayout {
+            Rectangle {
                 width: parent.width
-                spacing: 24
+                height: introduction.implicitHeight + 48
+                radius: M3.classic ? M3.cornerCard : 28
+                color: M3.surfaceContainerLow
 
-                Rectangle {
-                    Layout.alignment: Qt.AlignTop
-                    Layout.preferredWidth: 128
-                    Layout.preferredHeight: 128
-                    radius: 36
-                    color: M3.surfaceContainerLow
+                RowLayout {
+                    id: introduction
+                    anchors.fill: parent
+                    anchors.margins: 24
+                    spacing: page.width < 600 ? 16 : 24
 
-                    AppIcon {
-                        anchors.centerIn: parent
-                        size: 96
-                        name: page.info.icon || ""
+                    Rectangle {
+                        Layout.alignment: Qt.AlignTop
+                        Layout.preferredWidth: page.width < 600 ? 72 : 112
+                        Layout.preferredHeight: Layout.preferredWidth
+                        radius: page.width < 600 ? 24 : 32
+                        color: M3.secondaryContainer
+
+                        AppIcon {
+                            anchors.centerIn: parent
+                            size: page.width < 600 ? 56 : 88
+                            name: page.info.icon || ""
+                        }
                     }
-                }
 
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignVCenter
-                    spacing: 6
-
-                    MText {
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        role: "headlineLarge"
-                        text: page.info.name || ""
-                        wrapMode: Text.Wrap
-                    }
-                    RowLayout {
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: 6
-                        visible: (page.info.developer || "").length > 0
+
                         MText {
-                            role: "titleMedium"
-                            text: page.info.developer || ""
-                            color: M3.primary
+                            Layout.fillWidth: true
+                            role: page.width < 600 ? "headlineSmall" : "headlineLarge"
+                            text: page.info.name || ""
+                            wrapMode: Text.Wrap
                         }
-                        MIcon {
-                            size: 18
-                            visible: page.info.verified === true
-                            source: "kernora-verified"
-                            color: M3.primary
-                        }
-                    }
-                    MText {
-                        Layout.fillWidth: true
-                        role: "bodyLarge"
-                        text: page.info.summary || ""
-                        color: M3.surfaceVariantContent
-                        wrapMode: Text.Wrap
-                    }
-                    RowLayout {
-                        spacing: 8
-                        visible: (page.info.ratingCount || 0) > 0
-                        MText {
-                            role: "titleSmall"
-                            text: Number(page.info.rating || 0).toLocaleString(Qt.locale(), "f", 1)
-                        }
-                        Stars {
-                            value: page.info.rating || 0
-                            size: 16
+                        RowLayout {
+                            spacing: 6
+                            visible: (page.info.developer || "").length > 0
+                            MText {
+                                Layout.maximumWidth: Math.max(80, introduction.width - (page.width < 600 ? 72 : 112) - introduction.spacing - 30)
+                                elide: Text.ElideRight
+                                role: "titleMedium"
+                                text: page.info.developer || ""
+                                color: M3.primary
+                            }
+                            MIcon {
+                                size: 18
+                                visible: page.info.verified === true
+                                source: "kernora-verified"
+                                color: M3.primary
+                            }
                         }
                         MText {
-                            role: "bodySmall"
+                            Layout.fillWidth: true
+                            role: "bodyLarge"
+                            text: page.info.summary || ""
                             color: M3.surfaceVariantContent
-                            text: i18np("%1 rating", "%1 ratings", page.info.ratingCount || 0)
+                            wrapMode: Text.Wrap
+                        }
+                        RowLayout {
+                            spacing: 8
+                            visible: (page.info.ratingCount || 0) > 0
+                            MText {
+                                role: "titleSmall"
+                                text: Number(page.info.rating || 0).toLocaleString(Qt.locale(), "f", 1)
+                            }
+                            Stars {
+                                value: page.info.rating || 0
+                                size: 16
+                            }
+                            MText {
+                                role: "bodySmall"
+                                color: M3.surfaceVariantContent
+                                text: i18np("%1 rating", "%1 ratings", page.info.ratingCount || 0)
+                            }
                         }
                     }
                 }
+
             }
 
             ColumnLayout {
@@ -293,6 +307,8 @@ Item {
                             source: shot.modelData.thumb
                             fillMode: Image.PreserveAspectFit
                             asynchronous: true
+                            opacity: status === Image.Ready ? 1 : 0
+                            Behavior on opacity { NumberAnimation { duration: M3.durationMedium4 } }
                             cache: true
                             sourceSize.height: 600
                         }

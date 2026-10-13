@@ -91,6 +91,7 @@ Item {
         delegate: Item {
             id: cell
 
+            required property int index
             required property string appId
             required property string name
             required property string summary
@@ -105,6 +106,8 @@ Item {
 
             width: grid.cellWidth
             height: grid.cellHeight
+
+            EntranceMotion { item: cell; delay: Math.min(cell.index % (page.columns * 3), 8) * 28 }
 
             AppCard {
                 anchors.fill: parent

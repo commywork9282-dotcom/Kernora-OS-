@@ -21,6 +21,11 @@ Rectangle {
     visible: installed || busy || hasUpdate
     color: hasUpdate && !busy ? M3.tertiaryContainer : M3.secondaryContainer
 
+    Behavior on color { ColorAnimation { duration: M3.durationMedium2 } }
+    Behavior on implicitWidth {
+        NumberAnimation { duration: M3.durationShort4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingStandard }
+    }
+
     RowLayout {
         id: row
         anchors.centerIn: parent

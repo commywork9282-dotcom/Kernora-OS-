@@ -1,3 +1,12 @@
+kernora-apps (1.1.32) UNRELEASED; urgency=medium
+
+  * Refine Store navigation, cards and app details with Material 3 surfaces.
+  * Animate card feedback, content entrances and screenshot loading.
+  * Respect desktop animation speed and improve keyboard navigation.
+  * What's new: Store design and animations, in English and Russian.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 12 Oct 2026 18:10:00 -0700
+
 kernora-apps (1.1.31) UNRELEASED; urgency=medium
 
   * Launch the installed Flatpak scope and ref instead of a native launcher.

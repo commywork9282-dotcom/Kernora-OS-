@@ -71,3 +71,30 @@ transaction progress, installed source/version, event-loop heartbeats and
 long timer gaps, and requires `STORE_INSTALL_OK` after both installations.
 Normal authorization is still required. Do not run it in a personal session.
 For full-VM freezes caused by exhausted host storage, see `VM_INSTALLATION.md`.
+
+## Material 3 interface
+
+The Store uses tonal navigation, responsive app headers, animated card state
+layers and shape changes, and staggered entrances. Motion uses the desktop's
+animation speed; the featured carousel pauses under the pointer and stops
+advancing when animations are disabled. Category cards and carousel selectors
+support keyboard activation.
+
+To preview the QML with an installed Kernora Store backend, close Store first
+and run in a Kernora desktop session:
+
+```sh
+KERNORA_QML_STORE=/absolute/path/to/packages/native/kernora-apps/apps/store/qml kernora-store
+```
+
+The owner approved the October 12 Material 3 changes for delivery in
+`kernora-apps 1.1.32` through the existing APT channel and the existing
+`v1-ember-5` release. What's New describes the changes in English and Russian.
+The release tag stays unchanged; the attached ISO still contains 1.1.30 and
+installed systems receive the newer package through Settings > Updates.
+
+The disposable QEMU preview passed navigation, search, details/back, installed
+apps, updates, and 440-pixel window checks in dark and light themes. The catalogue smoke test reported
+350 video results, 1121 games, and `STORE_SMOKE_OK`. Local screenshots,
+UI state reports, and the animation recording are in
+`_build/preview/store-material3/`; they are review artifacts, not release assets.
