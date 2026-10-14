@@ -1,3 +1,10 @@
+kernora-desktop (1.4.29) UNRELEASED; urgency=medium
+
+  * Reserve desktop icon cells occupied by widgets and reflow on geometry changes.
+  * Keep sorted and manual layouts, selected icons and keyboard focus coherent.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 13 Oct 2026 19:25:00 -0700
+
 kernora-desktop (1.4.28) UNRELEASED; urgency=medium
 
   * Require Calamares with live QML language switching and synchronized

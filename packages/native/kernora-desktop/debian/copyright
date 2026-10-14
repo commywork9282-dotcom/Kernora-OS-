@@ -16,6 +16,12 @@ License: GPL-2+
  On Debian systems, the complete text of version 2 of the GNU General Public
  License can be found in `/usr/share/common-licenses/GPL-2`.
 
+Files: data/folderview/FolderView.qml
+Copyright: 2014-2015 Eike Hein <hein@kde.org>
+           2023 Harald Sitter <sitter@kde.org>
+           2026 Kernora Developers
+License: GPL-2+
+
 Files: data/wallpapers/* data/calamares/branding/kernora/*.png
 Copyright: 2026 Kernora Developers
 License: LicenseRef-Kernora-Artwork

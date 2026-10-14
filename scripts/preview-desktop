@@ -284,7 +284,8 @@ sync() {
   local folder_ui="$tree/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui"
   mkdir -p "$folder_ui"
   cp "$package_root/data/folderview/ConfigLocation.qml" "$package_root/data/folderview/ConfigIcons.qml" \
-    "$package_root/data/folderview/ConfigFilter.qml" "$folder_ui/"
+    "$package_root/data/folderview/ConfigFilter.qml" "$package_root/data/folderview/FolderView.qml" \
+    "$package_root/data/folderview/KernoraIconLayout.qml" "$package_root/data/folderview/IconPlacement.js" "$folder_ui/"
   local notifications="$tree/usr/share/plasma/plasmoids/org.kde.plasma.notifications/contents/ui"
   mkdir -p "$notifications"
   cp -a "$package_root/data/notifications/." "$notifications/"

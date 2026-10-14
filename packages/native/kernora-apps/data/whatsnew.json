@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-13-9",
+    "date": "2026-10-13",
+    "items": [
+      {
+        "icon": "preferences-desktop",
+        "title": {
+          "en": "Room for your widgets",
+          "ru": "Место для виджетов"
+        },
+        "text": {
+          "en": "Desktop icons now leave room for widgets. Moving or resizing a widget shifts overlapping shortcuts to free cells, while automatic sorting also respects widget areas. Sign out and back in after updating to apply the desktop change.",
+          "ru": "Иконки рабочего стола теперь оставляют место для виджетов. При переносе или изменении размера виджета перекрытые ярлыки сдвигаются в свободные ячейки. Автоматическая сортировка тоже учитывает виджеты. После обновления выйдите из системы и войдите снова, чтобы применить изменение."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-13-8",
     "date": "2026-10-13",
     "items": [

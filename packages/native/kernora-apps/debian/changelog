@@ -1,3 +1,10 @@
+kernora-apps (1.1.36) UNRELEASED; urgency=medium
+
+  * Describe desktop icon placement around widgets in English and Russian.
+  * Require the desktop package with widget-aware icon placement.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 13 Oct 2026 19:25:00 -0700
+
 kernora-apps (1.1.35) UNRELEASED; urgency=medium
 
   * What's new: English-first Live boot and immediate installer language

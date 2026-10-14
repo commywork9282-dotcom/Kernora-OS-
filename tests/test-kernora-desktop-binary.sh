@@ -464,12 +464,17 @@ clipboard_ui="$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.cli
   || fail "the clipboard sheet has no emoji tab"
 grep -Fq '"😀","grinning face","широко улыбается"' "$clipboard_ui/emoji.js" \
   || fail "the emoji data lacks English and Russian names"
+for file in FolderView.qml KernoraIconLayout.qml IconPlacement.js; do
+  cmp "$project_root/packages/native/kernora-desktop/data/folderview/$file" \
+    "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/$file" \
+    || fail "the packaged desktop icon layout differs from source: $file"
+done
 desktop_control=$(mktemp -d /tmp/kernora-desktop-control.XXXXXX)
 dpkg-deb --control "$desktop_deb" "$desktop_control"
 for file in lockscreen/LockScreen.qml osd/Osd.qml configuration/AppletConfiguration.qml \
     configuration/ConfigurationContainmentAppearance.qml configuration/ConfigurationContainmentActions.qml \
     configuration/AboutPlugin.qml configuration/ConfigurationShortcuts.qml \
-    org.kde.desktopcontainment/contents/ui ConfigLocation.qml ConfigIcons.qml ConfigFilter.qml ConfigOverlay.qml \
+    org.kde.desktopcontainment/contents/ui ConfigLocation.qml ConfigIcons.qml ConfigFilter.qml ConfigOverlay.qml FolderView.qml \
     explorer/WidgetExplorer.qml views/DesktopEditMode.qml panelconfiguration/PanelRepresentation.qml \
     org.kde.plasma.panelspacer/contents/ui/main.qml \
     org.kde.plasma.notifications/contents/ui main.qml \

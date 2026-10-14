@@ -18,7 +18,7 @@ if [ "$1" = remove ] || [ "$1" = abort-install ] || [ "$1" = disappear ]; then
             "$shell/explorer/WidgetExplorer.qml" "$shell/views/DesktopEditMode.qml" \
             "$shell/configuration/panelconfiguration/PanelRepresentation.qml" \
             "$folder/ConfigLocation.qml" "$folder/ConfigIcons.qml" "$folder/ConfigFilter.qml" \
-            "$folder/ConfigOverlay.qml" \
+            "$folder/ConfigOverlay.qml" "$folder/FolderView.qml" \
             /usr/share/plasma/plasmoids/org.kde.plasma.panelspacer/contents/ui/main.qml \
             "$notifications/main.qml" "$tasks/Badge.qml" "$tasks/ToolTipInstance.qml" "$tasks/AudioStream.qml" \
             /usr/share/kglobalaccel/org.kde.krunner.desktop \
