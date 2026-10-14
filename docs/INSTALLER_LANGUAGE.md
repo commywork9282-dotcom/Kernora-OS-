@@ -60,3 +60,19 @@ for this language change.
 
 ISO SHA256:
 `bf90195b5c07de1a4e932105915dba55278426cc9538a0874e40c4e859e53bec`.
+
+Delivery used the existing `v1-ember-5` release, with no new release or tag.
+The ISO and its checksum were replaced there, and the four updated binary
+packages and their checksums were attached. GitHub's asset digests match the
+local build. What's New is included in `kernora-apps 1.1.35` in both languages.
+
+The production APT archive was published as commit
+`04960f98a66837ee39d5b948316ee984bd7e7f9d`. Its public InRelease signature,
+Packages hash and all four downloaded package hashes were verified against
+the shipped public key and local packages. An isolated APT refresh inside
+QEMU accepted the signature and selected the expected versions at priority
+900. Logs are in `out/test-logs/installer-language/`.
+
+The project ISO path now points to the tested artifact on HDD. The previous
+local image is preserved as
+`out/iso/kernora-1-ember-live-amd64-before-language.iso`.
