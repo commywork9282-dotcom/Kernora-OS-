@@ -53,9 +53,17 @@ done
 xorriso -osirrox on -indev "$iso" \
   -extract /boot/grub/grub.cfg "$temporary_root/grub.cfg" \
   > "$temporary_root/extract-grub.txt" 2>&1
-awk '/usr\/share\/kernora\/settings\/Main.qml/ && !found { found = NR } /^menuentry "Kernora OS · Русский"/ { live = NR }
+awk '/usr\/share\/kernora\/settings\/Main.qml/ && !found { found = NR } /^menuentry .*--id live-en/ { live = NR }
      END { exit !(found && live && found < live) }' "$temporary_root/grub.cfg" \
   || fail "the ISO menu does not start an installed Kernora before the live session"
+grep -Fxq 'set default=live-en' "$temporary_root/grub.cfg" \
+  || fail "the default live session is not English"
+awk '/^menuentry .*--id live-/ { exit !($0 ~ /--id live-en/) }' "$temporary_root/grub.cfg" \
+  || fail "English is not the first live entry"
+grep -Fq 'menuentry "Kernora OS · Русский" --id live-ru {' "$temporary_root/grub.cfg" \
+  || fail "the Russian live session is missing"
+grep -Fq '    set default=installed' "$temporary_root/grub.cfg" \
+  || fail "an installed system no longer takes boot priority"
 [[ "$(grep -c ' quiet loglevel=3 splash ' "$temporary_root/grub.cfg")" == 2 ]] \
   || fail "the live session prints kernel errors over the boot splash"
 

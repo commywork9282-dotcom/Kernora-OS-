@@ -1,0 +1,164 @@
+Description: Synchronize installer language selectors and refresh translated models
+Author: Kernora Developers <developers@kernora.invalid>
+Forwarded: no
+Last-Update: 2026-10-13
+
+--- a/src/modules/welcome/Config.cpp
++++ b/src/modules/welcome/Config.cpp
+@@ -41,6 +41,13 @@
+ void
+ Config::retranslate()
+ {
++    const int activeIndex = m_languages->find( Calamares::translatorLocaleName() );
++    if ( activeIndex >= 0 && activeIndex != m_localeIndex )
++    {
++        m_localeIndex = activeIndex;
++        emit localeIndexChanged( m_localeIndex );
++    }
++
+     const auto* branding = Calamares::Branding::instance();
+     const auto* settings = Calamares::Settings::instance();
+     m_genericWelcomeMessage = genericWelcomeMessage().arg( branding ? branding->versionedName() : QString() );
+--- a/src/modules/locale/Config.cpp
++++ b/src/modules/locale/Config.cpp
+@@ -9,6 +9,8 @@
+ 
+ #include "Config.h"
+ 
++#include "Branding.h"
++
+ #include "SetTimezoneJob.h"
+ 
+ #include "GlobalStorage.h"
+@@ -16,9 +18,11 @@
+ #include "Settings.h"
+ #include "locale/Global.h"
+ #include "locale/Translation.h"
++#include "locale/TranslationsModel.h"
+ #include "modulesystem/ModuleManager.h"
+ #include "network/Manager.h"
+ #include "utils/Logger.h"
++#include "utils/Retranslator.h"
+ #include "utils/Variant.h"
+ 
+ #include <QFile>
+@@ -224,6 +228,24 @@
+     connect( this, &Config::currentLanguageStatusChanged, prettyStatusNotify );
+     connect( this, &Config::currentLCStatusChanged, prettyStatusNotify );
+     connect( this, &Config::currentLocationStatusChanged, prettyStatusNotify );
++    connect( Calamares::Retranslator::instance(),
++             &Calamares::Retranslator::languageChanged,
++             this,
++             [ this ]()
++             {
++                 const QLocale selected( m_selectedLocaleConfiguration.language() );
++                 const QLocale active;
++                 if ( currentLocation() && !m_selectedLocaleConfiguration.isEmpty()
++                      && ( selected.language() != active.language() || selected.script() != active.script() ) )
++                 {
++                     m_selectedLocaleConfiguration.explicit_lang = false;
++                     setLanguage( automaticLocaleConfiguration().language() );
++                 }
++                 emit currentLanguageStatusChanged( currentLanguageStatus() );
++                 emit currentLCStatusChanged( currentLCStatus() );
++                 emit currentLocationStatusChanged( currentLocationStatus() );
++                 emit currentTimezoneNameChanged( currentTimezoneName() );
++             } );
+ }
+ 
+ Config::~Config() {}
+@@ -340,6 +362,28 @@
+ {
+     m_selectedLocaleConfiguration.explicit_lang = true;
+     setLanguage( language );
++
++    const QLocale selected( language );
++    auto* translations = Calamares::Locale::availableTranslations();
++    int index = translations->find( selected );
++    if ( index < 0 )
++    {
++        index = translations->find( [ &selected ]( const QLocale& candidate )
++                                    {
++                                        return candidate.language() == selected.language()
++                                            && candidate.script() == selected.script();
++                                    } );
++    }
++    if ( index < 0 )
++    {
++        index = translations->find( [ &selected ]( const QLocale& candidate )
++                                    { return candidate.language() == selected.language(); } );
++    }
++    const auto translation = index >= 0 ? translations->locale( index ).id()
++                                        : Calamares::Locale::Translation::Id { selected.name() };
++    QLocale::setDefault( selected );
++    const auto* branding = Calamares::Branding::instance();
++    Calamares::installTranslator( translation, branding ? branding->translationsDirectory() : QString() );
+ }
+ 
+ void
+--- a/src/libcalamares/locale/TimeZone.cpp
++++ b/src/libcalamares/locale/TimeZone.cpp
+@@ -12,6 +12,7 @@
+ 
+ #include "locale/TranslatableString.h"
+ #include "utils/Logger.h"
++#include "utils/Retranslator.h"
+ #include "utils/String.h"
+ 
+ #include <QFile>
+@@ -255,6 +256,17 @@
+     : QAbstractListModel( parent )
+     , m_private( privateInstance() )
+ {
++    connect( Calamares::Retranslator::instance(),
++             &Calamares::Retranslator::languageChanged,
++             this,
++             [ this ]()
++             {
++                 const int count = rowCount( QModelIndex() );
++                 if ( count > 0 )
++                 {
++                     emit dataChanged( index( 0, 0 ), index( count - 1, 0 ), { NameRole } );
++                 }
++             } );
+ }
+ 
+ RegionsModel::~RegionsModel() {}
+@@ -308,6 +320,17 @@
+     : QAbstractListModel( parent )
+     , m_private( privateInstance() )
+ {
++    connect( Calamares::Retranslator::instance(),
++             &Calamares::Retranslator::languageChanged,
++             this,
++             [ this ]()
++             {
++                 const int count = rowCount( QModelIndex() );
++                 if ( count > 0 )
++                 {
++                     emit dataChanged( index( 0, 0 ), index( count - 1, 0 ), { NameRole } );
++                 }
++             } );
+ }
+ 
+ ZonesModel::~ZonesModel() {}
+--- a/src/libcalamaresui/ViewManager.cpp
++++ b/src/libcalamaresui/ViewManager.cpp
+@@ -85,6 +85,17 @@
+     connect( JobQueue::instance(), &JobQueue::finished, this, &ViewManager::next );
+ 
+     CALAMARES_RETRANSLATE_SLOT( &ViewManager::updateButtonLabels );
++    connect( Calamares::Retranslator::instance(),
++             &Calamares::Retranslator::languageChanged,
++             this,
++             [ this ]()
++             {
++                 const int count = rowCount( QModelIndex() );
++                 if ( count > 0 )
++                 {
++                     emit dataChanged( index( 0, 0 ), index( count - 1, 0 ), { Qt::DisplayRole, Qt::ToolTipRole } );
++                 }
++             } );
+ 
+ #ifdef PRESERVE_FOR_TRANSLATION_PURPOSES
+     tr( "&Yes" );

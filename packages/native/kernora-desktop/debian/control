@@ -50,7 +50,7 @@ Package: kernora-calamares
 Architecture: all
 Depends:
  ${misc:Depends},
- calamares (>= 3.3.14-1kernora1),
+ calamares (>= 3.3.14-1kernora2),
  kernora-desktop (= ${source:Version}),
  pkexec,
  polkitd

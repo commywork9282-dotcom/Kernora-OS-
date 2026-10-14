@@ -1,3 +1,11 @@
+kernora-desktop (1.4.28) UNRELEASED; urgency=medium
+
+  * Require Calamares with live QML language switching and synchronized
+    welcome/location language selectors.
+  * Refresh the translated city list when its model changes language.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 13 Oct 2026 10:00:00 -0700
+
 kernora-desktop (1.4.27) UNRELEASED; urgency=medium
 
   * Store icon and verification/licence symbols in all icon variants.

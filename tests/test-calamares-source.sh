@@ -25,9 +25,12 @@ dsc="$source_dir/calamares_${version}.dsc"
 if [[ -s "$dsc" ]]; then
   grep -Fxq "Version: $version" "$dsc" || fail "source package has the wrong version"
   grep -q "calamares_${version}.debian.tar.xz" "$dsc" || fail "source package lacks its Debian tarball"
-  tar -tJf "$source_dir/calamares_${version}.debian.tar.xz" \
-    | grep -Fxq 'debian/patches/kernora-material-partitions.patch' \
-    || fail "the Kernora patch is not in the source package"
+  while read -r patch; do
+    [[ -n "$patch" && "$patch" != \#* ]] || continue
+    tar -tJf "$source_dir/calamares_${version}.debian.tar.xz" \
+      | grep -Fx "debian/patches/$patch" > /dev/null \
+      || fail "the Kernora patch is not in the source package: $patch"
+  done < "$package_root/patches/series"
 fi
 
 printf 'calamares source test: OK\n'

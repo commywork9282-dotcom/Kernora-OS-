@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-13-8",
+    "date": "2026-10-13",
+    "items": [
+      {
+        "icon": "preferences-desktop-locale",
+        "title": {
+          "en": "Choose your installer language",
+          "ru": "Выбор языка установщика"
+        },
+        "text": {
+          "en": "New Live images start in English by default. Choose Russian in GRUB if you prefer. Selecting a language in the installer now updates its pages immediately and sets the language for your installed system.",
+          "ru": "Новые Live-образы по умолчанию запускаются на английском. Русский можно выбрать в GRUB. Выбор языка в установщике теперь сразу переводит его страницы и задаёт язык устанавливаемой системы."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-13-7",
     "date": "2026-10-12",
     "items": [

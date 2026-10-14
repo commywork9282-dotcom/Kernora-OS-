@@ -23,6 +23,10 @@ Item {
     property string region: config.currentLocation ? config.currentLocation.region : ""
     Component.onCompleted: config.regionalZonesModel.region = region
     onRegionChanged: config.regionalZonesModel.region = region
+    Connections {
+        target: config.regionalZonesModel
+        function onDataChanged() { sortCities.restart(); }
+    }
 
     property var cities: []
     Instantiator {
