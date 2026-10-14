@@ -1,3 +1,41 @@
+kernora-desktop (1.4.30) UNRELEASED; urgency=medium
+
+  * Reduce motion no longer breaks the shell. With animations off Kirigami
+    reports a 1 ms long duration, so M3.motionScale was 0.005 rather than 0:
+    the springs behind the quick settings shade, switches and the volume OSD
+    ran with a 2 ms response and diverged. The shade then stayed an invisible
+    full-screen window that swallowed every click. motionScale is now 0 at
+    1 ms or less, springs pick a stable step for any stiffness and stop on
+    non-finite values, and live wallpapers treat 1 ms as reduced motion.
+  * A widget's toolbar closes when the pointer leaves the widget and its
+    toolbar, and whenever edit mode ends. Plasma 6.3 does not reset an item's
+    edit mode when the layout leaves edit mode, so a toolbar opened before a
+    settings dialog or a move to another window could stay up.
+  * The weather widget scales its reading to the room inside its shape. The
+    cloud shape for overcast skies is a fifth shorter than the others, so
+    the text overflowed it and the widget looked squashed.
+  * Live wallpapers pause only for maximised or full-screen windows on their
+    own screen. The task model's exact screen match failed with mixed
+    scaling; each window's centre is now tested against the screen instead.
+  * Album art in the media widget and the quick settings card is retried
+    when a download fails, instead of staying on the placeholder.
+  * System monitor widgets follow theme changes. Their sensor colours are
+    generated from the accent once and stored; a diverted applet main.qml
+    recolours the generated ones when the accent changes and keeps colours
+    picked by hand.
+  * Restart is in the launcher next to Shut Down, and the shut down dialog
+    offers Restart too.
+  * htop, now part of the base system, gets a Kernora app icon.
+  * The lock screen shows the wallpaper set for it instead of always drawing
+    Shapes over it; Kernora Shapes stays the default through
+    /usr/share/kernora/xdg, added to XDG_CONFIG_DIRS. The login screen shows
+    the wallpaper an administrator last chose: kernora-greeter-background,
+    run through polkit without a password for members of sudo, records it in
+    the theme's theme.conf.user and copies a picture to
+    /var/lib/kernora/greeter.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 14 Oct 2026 18:00:00 -0700
+
 kernora-desktop (1.4.29) UNRELEASED; urgency=medium
 
   * Reserve desktop icon cells occupied by widgets and reflow on geometry changes.

@@ -117,13 +117,17 @@ Item {
         }
     }
 
+    readonly property bool ownBackground: typeof wallpaper === "undefined" || !wallpaper
+
     Rectangle {
         anchors.fill: parent
         color: M3.darkScheme.surface
+        visible: root.ownBackground
     }
     Loader {
         id: scene
         anchors.fill: parent
+        active: root.ownBackground
         source: "file:///usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/Scene.qml"
         property real phase: 0.4
         NumberAnimation on phase {

@@ -95,22 +95,32 @@ SettingsPage {
         key: "WallpaperPlugin"
         defaultValue: ""
     }
-    property bool lockScreenToo: lockPlugin.value === "org.kde.image"
+    readonly property bool lockScreenToo: live ? lockPlugin.value === wallpaperPlugin : lockPlugin.value === "org.kde.image"
+
+    function syncGreeter(): void {
+        if (Accounts.administrator) {
+            Files.syncGreeterBackground(live ? wallpaperPlugin : "org.kde.image", live ? "" : wallpaperImage);
+        }
+    }
 
     function chooseImage(url: url): void {
+        const follow = lockScreenToo;
         Files.setWallpaper(url);
         wallpaperPlugin = "org.kde.image";
         wallpaperImage = String(url);
-        if (lockScreenToo) {
+        if (follow) {
             Files.setLockScreenWallpaper(url);
         }
+        syncGreeter();
     }
     function chooseLive(plugin: string): void {
+        const follow = lockScreenToo;
         Files.setLiveWallpaper(plugin);
         wallpaperPlugin = plugin;
-        if (lockScreenToo) {
-            Files.setLockScreenWallpaper("");
+        if (follow) {
+            Files.setLockScreenPlugin(plugin);
         }
+        syncGreeter();
     }
 
     function setLiveOption(key: string, value: var): void {
@@ -289,8 +299,13 @@ SettingsPage {
             checkable: true
             checked: page.lockScreenToo
             onToggled: on => {
-                page.lockScreenToo = on;
-                Files.setLockScreenWallpaper(on && !page.live ? page.wallpaperImage : "");
+                if (!on) {
+                    Files.setLockScreenWallpaper("");
+                } else if (page.live) {
+                    Files.setLockScreenPlugin(page.wallpaperPlugin);
+                } else {
+                    Files.setLockScreenWallpaper(page.wallpaperImage);
+                }
             }
         }
     }

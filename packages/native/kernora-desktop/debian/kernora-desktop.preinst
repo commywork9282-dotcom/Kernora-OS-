@@ -17,6 +17,8 @@ if [ "$1" = install ] || [ "$1" = upgrade ]; then
             "$folder/ConfigOverlay.qml" "$folder/FolderView.qml" \
             /usr/share/plasma/plasmoids/org.kde.plasma.panelspacer/contents/ui/main.qml \
             "$notifications/main.qml" "$tasks/Badge.qml" "$tasks/ToolTipInstance.qml" "$tasks/AudioStream.qml" \
+            /usr/share/plasma/plasmoids/org.kde.plasma.systemmonitor/contents/ui/main.qml \
+            /usr/share/plasma/plasmoids/org.kde.plasma.systemmonitor/contents/config/main.xml \
             /usr/share/kglobalaccel/org.kde.krunner.desktop \
             /usr/share/kglobalaccel/org.kde.plasma.emojier.desktop \
             /usr/share/plymouth/plymouthd.defaults; do

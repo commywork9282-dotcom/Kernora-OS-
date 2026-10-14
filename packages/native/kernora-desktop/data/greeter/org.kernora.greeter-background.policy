@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<!-- SPDX-FileCopyrightText: 2026 Kernora Developers
+     SPDX-License-Identifier: GPL-2.0-or-later -->
+<policyconfig>
+  <vendor>Kernora OS</vendor>
+  <action id="org.kernora.greeter-background">
+    <description>Show the wallpaper on the login screen</description>
+    <description xml:lang="ru">Показывать обои на экране входа</description>
+    <message>Using your wallpaper on the login screen changes a system setting</message>
+    <message xml:lang="ru">Обои на экране входа — это системная настройка</message>
+    <icon_name>preferences-desktop-wallpaper</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-greeter-background</annotate>
+  </action>
+</policyconfig>

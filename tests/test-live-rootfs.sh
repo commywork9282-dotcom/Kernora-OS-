@@ -43,7 +43,7 @@ fail() {
 }
 
 grep -Fxq 'ID=kernora' /usr/lib/os-release || fail "wrong OS identity"
-[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.4" ]] \
+[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.5" ]] \
   || fail "kernora-base is not installed"
 [[ "$(dpkg-query -W -f='${Version}' linux-image-amd64)" == "6.12.107-1" ]] \
   || fail "wrong kernel metapackage version"
@@ -91,8 +91,8 @@ done
   || fail "sddm is not installed"
 
 # The Kernora Material 3 shell and what it is set in.
-[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.29" ]] \
-  || fail "kernora-desktop 1.4.29 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.30" ]] \
+  || fail "kernora-desktop 1.4.30 is not installed"
 for applet in org.kernora.launcher org.kernora.quicksettings; do
   [[ -s "/usr/share/plasma/plasmoids/$applet/contents/ui/main.qml" ]] \
     || fail "Kernora shell applet is missing: $applet"
@@ -151,8 +151,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.36" ]] \
-  || fail "kernora-apps 1.1.36 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.37" ]] \
+  || fail "kernora-apps 1.1.37 is not installed"
 for package in flatpak appstream; do
   [[ "$(dpkg-query -W -f='${Status}' "$package")" == 'install ok installed' ]] || fail "Store dependency missing: $package"
 done

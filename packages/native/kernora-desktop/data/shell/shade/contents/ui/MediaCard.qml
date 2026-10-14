@@ -63,12 +63,35 @@ Item {
         }
         Image {
             id: art
+            property int attempt: 0
             anchors.fill: parent
             source: card.backend.mediaArtUrl
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
             sourceSize.width: 480
             visible: status === Image.Ready
+            onStatusChanged: {
+                if (status === Image.Error && attempt < 6) {
+                    artRetry.restart();
+                } else if (status === Image.Ready) {
+                    attempt = 0;
+                }
+            }
+            Timer {
+                id: artRetry
+                interval: 1500 * (art.attempt + 1)
+                onTriggered: {
+                    art.attempt += 1;
+                    art.source = "";
+                    art.source = Qt.binding(() => card.backend.mediaArtUrl);
+                }
+            }
+            Connections {
+                target: card.backend
+                function onMediaArtUrlChanged(): void {
+                    art.attempt = 0;
+                }
+            }
         }
         Rectangle {
             anchors.fill: parent

@@ -1,0 +1,49 @@
+#!/bin/bash
+set -eu
+
+theme=/usr/share/sddm/themes/kernora
+state=/var/lib/kernora/greeter
+plugin=${1:-}
+source=${2:-}
+
+(( EUID == 0 )) || { echo "kernora-greeter-background: run as root" >&2; exit 1; }
+[[ -d $theme ]] || exit 0
+
+case $plugin in
+  org.kde.image) ;;
+  org.kernora.*)
+    [[ $plugin =~ ^org\.kernora\.[a-z]+$ && -f /usr/share/plasma/wallpapers/$plugin/contents/ui/Scene.qml ]] || exit 2
+    ;;
+  *) exit 2 ;;
+esac
+
+install -d -m 0755 /var/lib/kernora "$state"
+image=
+if [[ $plugin == org.kde.image ]]; then
+  [[ -n $source ]] || exit 2
+  caller=$(id -nu "${PKEXEC_UID:-0}")
+  copy=$(mktemp "$state/.background.XXXXXX")
+  trap 'rm -f "$copy"' EXIT
+  runuser -u "$caller" -- head -c 67108865 -- "$source" > "$copy"
+  size=$(stat -c %s "$copy")
+  (( size > 0 && size <= 67108864 )) || exit 3
+  magic=$(head -c 12 "$copy" | od -An -tx1 | tr -d ' \n')
+  case $magic in
+    89504e470d0a1a0a*) extension=png ;;
+    ffd8ff*) extension=jpg ;;
+    52494646????????57454250) extension=webp ;;
+    *) exit 3 ;;
+  esac
+  chmod 0644 "$copy"
+  rm -f "$state"/background.*
+  mv "$copy" "$state/background.$extension"
+  trap - EXIT
+  image=$state/background.$extension
+else
+  rm -f "$state"/background.*
+fi
+
+settings=$(mktemp "$theme/.theme.conf.user.XXXXXX")
+printf '[General]\nwallpaper=%s\nwallpaperImage=%s\n' "$plugin" "$image" > "$settings"
+chmod 0644 "$settings"
+mv "$settings" "$theme/theme.conf.user"

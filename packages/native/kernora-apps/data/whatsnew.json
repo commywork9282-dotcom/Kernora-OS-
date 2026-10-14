@@ -1,5 +1,66 @@
 [
   {
+    "id": "2026-10-14-1",
+    "date": "2026-10-14",
+    "items": [
+      {
+        "icon": "preferences-desktop-effects",
+        "title": {
+          "en": "Reduce motion is safe to use",
+          "ru": "«Уменьшить движение» снова можно включать"
+        },
+        "text": {
+          "en": "Turning off animations no longer leaves an invisible layer over the desktop. Quick settings, switches and the volume indicator simply appear without moving.",
+          "ru": "Отключение анимаций больше не оставляет невидимый слой поверх рабочего стола. Быстрые настройки, переключатели и индикатор громкости просто появляются без движения."
+        }
+      },
+      {
+        "icon": "system-lock-screen",
+        "title": {
+          "en": "Your wallpaper on the lock and login screens",
+          "ru": "Ваши обои на экранах блокировки и входа"
+        },
+        "text": {
+          "en": "\"Use on the lock screen too\" now works with live wallpapers, and the login screen shows the wallpaper you chose.",
+          "ru": "«Использовать и на экране блокировки» теперь работает с живыми обоями, а экран входа показывает выбранные вами обои."
+        }
+      },
+      {
+        "icon": "preferences-desktop-widgets",
+        "title": {
+          "en": "Calmer widgets",
+          "ru": "Виджеты аккуратнее"
+        },
+        "text": {
+          "en": "Widget toolbars close when you move away or leave edit mode, the weather fits every sky, system monitors follow your theme colour and album art loads again if the first try fails.",
+          "ru": "Панель настроек виджета закрывается, когда вы уводите мышь или выходите из редактирования, погода помещается в любую фигуру, системные мониторы перекрашиваются вместе с темой, а обложка альбома загружается повторно, если первая попытка не удалась."
+        }
+      },
+      {
+        "icon": "system-reboot",
+        "title": {
+          "en": "Restart from the app menu",
+          "ru": "Перезагрузка из меню приложений"
+        },
+        "text": {
+          "en": "The app menu has a Restart button next to Shut Down, and the shut down window offers Restart as well. Live wallpapers pause only for windows on their own screen.",
+          "ru": "В меню приложений рядом с выключением появилась кнопка перезагрузки, и в окне выключения тоже есть «Перезагрузить». Живые обои останавливаются только из-за окон на своём экране."
+        }
+      },
+      {
+        "icon": "utilities-terminal",
+        "title": {
+          "en": "Everyday terminal tools",
+          "ru": "Привычные инструменты терминала"
+        },
+        "text": {
+          "en": "git, curl, wget, htop, fastfetch (the successor of neofetch), zip and 7zip come with the system.",
+          "ru": "git, curl, wget, htop, fastfetch (преемник neofetch), zip и 7zip теперь есть в системе сразу."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-13-9",
     "date": "2026-10-13",
     "items": [

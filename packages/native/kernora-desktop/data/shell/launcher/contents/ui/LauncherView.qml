@@ -32,6 +32,7 @@ FocusScope {
     signal lockScreen()
     signal logOut()
     signal shutDown()
+    signal restart()
 
     readonly property int columns: Math.max(4, Math.floor((width - 16) / 116))
 
@@ -296,6 +297,12 @@ FocusScope {
                 text: i18n("Log Out")
                 visible: root.canLogout
                 onClicked: root.logOut()
+            }
+            MIconButton {
+                icon: "system-reboot"
+                text: i18n("Restart")
+                visible: root.canShutdown
+                onClicked: root.restart()
             }
             MIconButton {
                 icon: "system-shutdown"

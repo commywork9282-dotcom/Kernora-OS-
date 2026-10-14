@@ -1,3 +1,13 @@
+kernora-base (1.5) UNRELEASED; urgency=medium
+
+  * Depend on everyday command-line tools, so a fresh install and an updated
+    one have them without the terminal: git, curl, wget, htop, fastfetch
+    (the maintained successor of neofetch, which Debian 13 dropped), zip,
+    unzip, 7zip, tree, rsync, lsof, man-db, bash-completion and the SSH
+    client.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 14 Oct 2026 18:00:00 -0700
+
 kernora-base (1.4) UNRELEASED; urgency=high
 
   * Withdraw the automatic RTL8852CE power-saving override after a report of

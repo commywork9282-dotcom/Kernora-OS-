@@ -18,6 +18,42 @@ ContainmentLayoutManager.ConfigOverlay {
     readonly property real frameRadius: M3.classic ? M3.cornerCard + 4 : 28
     readonly property bool onRight: overlay.rightAvailableSpace > toolbar.width + 20
     property QtObject appletSettings: null
+    readonly property bool pointerNear: frameHover.hovered || toolbarHover.hovered || gapArea.containsMouse
+        || dragArea.pressed || rotateHandle.pressed
+
+    function handlePressed(): bool {
+        for (const child of overlay.children) {
+            if (child.resizeCorner !== undefined && child.pressed) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function dismiss(): void {
+        if (overlay.itemContainer && !overlay.handlePressed()) {
+            overlay.itemContainer.editMode = false;
+        }
+    }
+
+    HoverHandler {
+        id: frameHover
+    }
+
+    Timer {
+        interval: 900
+        running: overlay.visible && overlay.open && !overlay.touchInteraction && !overlay.pointerNear
+        onTriggered: overlay.dismiss()
+    }
+
+    Connections {
+        target: appletsLayout
+        function onEditModeChanged(): void {
+            if (!appletsLayout.editMode) {
+                overlay.dismiss();
+            }
+        }
+    }
 
     Component.onCompleted: {
         try {
@@ -263,7 +299,12 @@ ContainmentLayoutManager.ConfigOverlay {
             }
         }
 
+        HoverHandler {
+            id: toolbarHover
+        }
+
         MouseArea {
+            id: gapArea
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             z: -1

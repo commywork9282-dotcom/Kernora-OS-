@@ -1,3 +1,13 @@
+kernora-apps (1.1.37) UNRELEASED; urgency=medium
+
+  * Wallpaper & style: "Use on the lock screen too" works for live
+    wallpapers, and turning it off returns the lock screen to Kernora Shapes.
+    Choosing a wallpaper also puts it on the login screen when the user is
+    an administrator.
+  * What's new: the October fixes from the tester's list.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 14 Oct 2026 18:00:00 -0700
+
 kernora-apps (1.1.36) UNRELEASED; urgency=medium
 
   * Describe desktop icon placement around widgets in English and Russian.

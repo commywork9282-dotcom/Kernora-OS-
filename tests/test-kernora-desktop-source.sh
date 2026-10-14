@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.29" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.30" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -265,8 +265,8 @@ KERNORA_COLOUR=blue python3 "$tools_root/gen-icon-theme" "$package_root/data/sym
   || fail "gen-icon-theme fails for a colour"
 grep -Fxq 'Inherits=Kernora,breeze-dark,breeze,hicolor' "$icons/Kernora-blue/index.theme" \
   || fail "a colour's icons do not fall back to Kernora's"
-[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 11 ]] \
-  || fail "a colour's icon theme should hold only the eleven app icons"
+[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 12 ]] \
+  || fail "a colour's icon theme should hold only the twelve app icons"
 find "$icons/Kernora-blue" -name 'preferences-system*' | grep -q . \
   && fail "a colour's icons would shadow preferences-system-* through KDE's generic fallback"
 rm -rf "$icons"
@@ -414,5 +414,35 @@ PYTHON_TEST
 grep -Fq 'import org.kernora.shell' "$package_root/data/editmode/ConfigOverlay.qml" \
   && grep -Fq 'overlay.appletSettings.open(applet.plasmoid, overlay)' "$package_root/data/editmode/ConfigOverlay.qml" \
   || fail "a widget's settings end edit mode"
+
+grep -Fq 'motionScale: Kirigami.Units.longDuration > 1 ? Kirigami.Units.longDuration / 200 : 0' "$package_root/tools/gen-qml-tokens" \
+  && grep -Fq '!isFinite(x) || !isFinite(v)' "$package_root/data/shell/m3/MSpring.qml" \
+  && ! grep -rFq 'Kirigami.Units.longDuration === 0' "$package_root/data/wallpaper" \
+  || fail "Reduce motion breaks the shell"
+grep -Fq 'function dismiss()' "$package_root/data/editmode/ConfigOverlay.qml" \
+  && grep -Fq 'if (!appletsLayout.editMode)' "$package_root/data/editmode/ConfigOverlay.qml" \
+  || fail "widget toolbars stay open outside edit mode"
+grep -Fq 'readonly property real room:' "$package_root/data/widgets/weather/contents/ui/main.qml" \
+  || fail "weather text overflows narrow shapes"
+! grep -rFq 'filterByScreen: true' "$package_root/data/wallpaper" \
+  && grep -Fq 'x >= screen.x && x < screen.x + screen.width' "$package_root/data/wallpaper/org.kernora.starfall/contents/ui/main.qml" \
+  || fail "live wallpapers pause for windows on other screens"
+grep -Fq 'coverRetry.restart()' "$package_root/data/widgets/media/contents/ui/main.qml" \
+  && grep -Fq 'artRetry.restart()' "$package_root/data/shell/shade/contents/ui/MediaCard.qml" \
+  || fail "album art is not retried"
+grep -Fq 'function kernoraRecolor()' "$package_root/data/systemmonitor/main.qml" \
+  && grep -Fq 'name="kernoraColorBase"' "$package_root/data/systemmonitor/main.xml" \
+  && grep -Fq 'org.kde.plasma.systemmonitor/contents/ui/main.qml' "$package_root/debian/kernora-desktop.preinst" \
+  && grep -Fq 'org.kde.plasma.systemmonitor/contents/config/main.xml' "$package_root/debian/kernora-desktop.postrm" \
+  || fail "system monitor colours ignore the theme"
+grep -Fq 'session.requestReboot()' "$package_root/data/shell/launcher/contents/ui/main.qml" \
+  && grep -Fq 'if (maysd && (reboot || halt || showAllOptions))' "$package_root/data/look-and-feel/org.kernora.desktop/contents/logout/Logout.qml" \
+  || fail "the power menu has no restart"
+grep -Fq 'org.freedesktop.policykit.exec.path">/usr/libexec/kernora-greeter-background' "$package_root/data/greeter/org.kernora.greeter-background.policy" \
+  && grep -Fq 'config.wallpaper' "$package_root/data/sddm-theme/kernora/Main.qml" \
+  && grep -Fq 'readonly property bool ownBackground' "$package_root/data/lockscreen/LockScreen.qml" \
+  && grep -Fxq 'WallpaperPlugin=org.kernora.shapes' "$package_root/data/xdg-kscreenlockerrc/kscreenlockerrc" \
+  && grep -Fq '/usr/share/kernora/xdg:' "$package_root/data/plasma-env/kernora-config-dirs.sh" \
+  || fail "lock and login screens ignore the wallpaper"
 
 printf 'kernora-desktop source test: OK\n'

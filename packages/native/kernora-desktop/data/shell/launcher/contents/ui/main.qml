@@ -130,6 +130,10 @@ PlasmoidItem {
                 root.expanded = false;
                 session.requestShutdown();
             }
+            onRestart: {
+                root.expanded = false;
+                session.requestReboot();
+            }
         }
 
         Connections {

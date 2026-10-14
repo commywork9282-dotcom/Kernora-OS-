@@ -57,13 +57,18 @@ Rectangle {
             width: geometry.width
             height: geometry.height
 
+            readonly property string wallpaper: /^org\.kernora\.[a-z]+$/.test(config.wallpaper || "") ? config.wallpaper : "org.kernora.shapes"
+            readonly property bool picture: config.wallpaper === "org.kde.image" && (config.wallpaperImage || "").length > 0
+
             Loader {
                 id: scene
                 anchors.fill: parent
-                source: "file:///usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/Scene.qml"
+                active: !parent.picture || backdrop.status === Image.Error
+                source: "file:///usr/share/plasma/wallpapers/" + (parent.picture ? "org.kernora.shapes" : parent.wallpaper) + "/contents/ui/Scene.qml"
                 property real phase: 0.4
                 NumberAnimation on phase {
-                    running: config.background !== "still"
+                    id: drift
+                    running: config.background !== "still" && scene.status === Loader.Ready
                     from: 0.4
                     to: 1.4
                     duration: 420000
@@ -72,7 +77,24 @@ Rectangle {
                 onLoaded: {
                     item.intro = 1;
                     item.phase = Qt.binding(() => scene.phase % 1);
+                    if (item.loopSeconds > 0) {
+                        drift.duration = item.loopSeconds * 1000;
+                    }
                 }
+                onStatusChanged: {
+                    if (status === Loader.Error && source.toString().indexOf("org.kernora.shapes") < 0) {
+                        source = "file:///usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/Scene.qml";
+                    }
+                }
+            }
+            Image {
+                id: backdrop
+                anchors.fill: parent
+                visible: parent.picture && status === Image.Ready
+                source: parent.picture ? "file://" + config.wallpaperImage : ""
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+                sourceSize.width: parent.width
             }
             Rectangle {
                 anchors.fill: parent

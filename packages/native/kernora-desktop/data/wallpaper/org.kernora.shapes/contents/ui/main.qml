@@ -15,7 +15,7 @@ WallpaperItem {
     id: root
 
     readonly property real speed: Math.max(0.1, root.configuration.Speed)
-    readonly property bool reducedMotion: Kirigami.Units.longDuration === 0
+    readonly property bool reducedMotion: Kirigami.Units.longDuration <= 1
     readonly property bool covered: root.configuration.PauseWhenCovered && coveringWindows.count > 0
     readonly property bool running: !reducedMotion && !covered && root.visible
 
@@ -62,10 +62,8 @@ WallpaperItem {
         id: tasks
         filterByVirtualDesktop: true
         filterByActivity: true
-        filterByScreen: true
         filterMinimized: true
         filterHidden: true
-        screenGeometry: Qt.rect(Screen.virtualX, Screen.virtualY, Screen.width, Screen.height)
         virtualDesktop: virtualDesktopInfo.currentDesktop
         activity: activityInfo.currentActivity
         groupMode: TaskManager.TasksModel.GroupDisabled
@@ -74,11 +72,20 @@ WallpaperItem {
     KItemModels.KSortFilterProxyModel {
         id: coveringWindows
         sourceModel: tasks
-        filterRowCallback: (row, parent) => {
-            const index = sourceModel.index(row, 0, parent);
-            const maximized = sourceModel.data(index, TaskManager.AbstractTasksModel.IsMaximized);
-            const fullScreen = sourceModel.data(index, TaskManager.AbstractTasksModel.IsFullScreen);
-            return maximized === true || fullScreen === true;
+        filterRowCallback: {
+            const screen = Qt.rect(Screen.virtualX, Screen.virtualY, Screen.width, Screen.height);
+            return (row, parent) => {
+                const index = sourceModel.index(row, 0, parent);
+                const maximized = sourceModel.data(index, TaskManager.AbstractTasksModel.IsMaximized);
+                const fullScreen = sourceModel.data(index, TaskManager.AbstractTasksModel.IsFullScreen);
+                if (maximized !== true && fullScreen !== true) {
+                    return false;
+                }
+                const geometry = sourceModel.data(index, TaskManager.AbstractTasksModel.Geometry);
+                const x = geometry.x + geometry.width / 2;
+                const y = geometry.y + geometry.height / 2;
+                return x >= screen.x && x < screen.x + screen.width && y >= screen.y && y < screen.y + screen.height;
+            };
         }
     }
 }

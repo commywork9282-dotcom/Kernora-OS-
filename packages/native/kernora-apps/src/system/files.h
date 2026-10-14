@@ -54,6 +54,8 @@ public:
     Q_INVOKABLE void setLiveWallpaper(const QString &plugin = QStringLiteral("org.kernora.shapes"));
     Q_INVOKABLE QVariantList liveWallpapers() const;
     Q_INVOKABLE void setLockScreenWallpaper(const QUrl &image);
+    Q_INVOKABLE void setLockScreenPlugin(const QString &plugin);
+    Q_INVOKABLE void syncGreeterBackground(const QString &plugin, const QUrl &image = QUrl());
     Q_INVOKABLE QVariantList wallpapers() const;
 
 private:

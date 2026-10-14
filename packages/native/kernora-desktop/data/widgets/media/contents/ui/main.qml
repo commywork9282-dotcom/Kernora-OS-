@@ -85,11 +85,34 @@ PlasmoidItem {
                 }
                 Image {
                     id: cover
+                    property int attempt: 0
                     anchors.fill: parent
                     source: media.artUrl
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
                     sourceSize: Qt.size(256, 256)
+                    onStatusChanged: {
+                        if (status === Image.Error && attempt < 6) {
+                            coverRetry.restart();
+                        } else if (status === Image.Ready) {
+                            attempt = 0;
+                        }
+                    }
+                    Timer {
+                        id: coverRetry
+                        interval: 1500 * (cover.attempt + 1)
+                        onTriggered: {
+                            cover.attempt += 1;
+                            cover.source = "";
+                            cover.source = Qt.binding(() => media.artUrl);
+                        }
+                    }
+                    Connections {
+                        target: media
+                        function onArtUrlChanged(): void {
+                            cover.attempt = 0;
+                        }
+                    }
                 }
             }
 

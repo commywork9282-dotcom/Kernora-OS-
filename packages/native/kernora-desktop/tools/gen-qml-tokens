@@ -263,7 +263,7 @@ def motion_lines() -> list[str]:
     lines.append("    // Material durations, scaled by the user's animation speed setting so")
     lines.append("    // that turning animations down in System Settings is respected.")
     lines.append(
-        "    readonly property real motionScale: Kirigami.Units.longDuration / 200"
+        "    readonly property real motionScale: Kirigami.Units.longDuration > 1 ? Kirigami.Units.longDuration / 200 : 0"
     )
     for name, value in design.MOTION_DURATION.items():
         prop = "duration" + name[0].upper() + name[1:]

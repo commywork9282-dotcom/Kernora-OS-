@@ -99,6 +99,8 @@ data/notifications/kernora usr/share/plasma/plasmoids/org.kde.plasma.notificatio
 data/taskmanager/Badge.qml usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui
 data/taskmanager/ToolTipInstance.qml usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui
 data/taskmanager/AudioStream.qml usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui
+data/systemmonitor/main.qml usr/share/plasma/plasmoids/org.kde.plasma.systemmonitor/contents/ui
+data/systemmonitor/main.xml usr/share/plasma/plasmoids/org.kde.plasma.systemmonitor/contents/config
 data/taskmanager/KernoraWindowThumbnail.qml usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui
 generated/plymouth/kernora usr/share/plymouth/themes
 data/plymouth/plymouthd.defaults usr/share/plymouth
@@ -112,3 +114,8 @@ data/drivers/kernora-drivers.service usr/lib/systemd/system
 data/drivers/kernora-drivers.timer usr/lib/systemd/system
 data/drivers/kernora-drivers@.service usr/lib/systemd/system
 data/drivers/org.kernora.drivers.policy usr/share/polkit-1/actions
+data/greeter/kernora-greeter-background usr/libexec
+data/greeter/org.kernora.greeter-background.policy usr/share/polkit-1/actions
+data/greeter/50-kernora-greeter-background.rules usr/share/polkit-1/rules.d
+data/xdg-kscreenlockerrc/kscreenlockerrc usr/share/kernora/xdg
+data/plasma-env/kernora-config-dirs.sh etc/xdg/plasma-workspace/env

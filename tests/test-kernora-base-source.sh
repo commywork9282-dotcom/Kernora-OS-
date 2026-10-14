@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4" ]] || fail "unexpected source version"
+[[ "$version" == "1.5" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -32,10 +32,14 @@ grep -Fxq 'Standards-Version: 4.7.4' "$control" \
   || fail "wrong Standards-Version"
 grep -Fxq ' base-files (= 13.8+deb13u6+kernora1),' "$control" \
   || fail "base-files dependency is not pinned to the Kernora build"
-grep -Fxq ' kernora-archive (>= 1.0)' "$control" \
+grep -Eq '^ kernora-archive \(>= 1\.0\),?$' "$control" \
   || fail "the package archives are not part of the base system"
 if grep -Eq '^(Essential|Protected|Pre-Depends|Priority):' "$control"; then
   fail "base package declares an inappropriate control field"
 fi
+
+for tool in git curl wget htop fastfetch unzip zip 7zip; do
+  grep -Fxq " $tool," "$package_root/debian/control" || grep -Fxq " $tool" "$package_root/debian/control" || fail "kernora-base does not bring $tool"
+done
 
 printf 'kernora-base source test: OK\n'

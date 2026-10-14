@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.36" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.37" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -90,5 +90,9 @@ assert any(i['icon'] == 'org.kernora.store' for r in notes for i in r['items'])
 for release in notes:
     datetime.date.fromisoformat(release.get('date', release['id'][:10]))
 PY
+
+grep -Fq 'void Files::setLockScreenPlugin' "$package_root/src/system/files.cpp" \
+  && grep -Fq 'Files.syncGreeterBackground' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
+  || fail "live wallpapers cannot reach the lock and login screens"
 
 printf 'kernora-apps source test: OK\n'

@@ -78,7 +78,7 @@ Item {
         if (spdMethods.HibernateState && showAllOptions) {
             all.push({ icon: "system-suspend-hibernate", text: tr("&Hibernate"), run: () => root.suspendRequested(4) });
         }
-        if (maysd && (reboot || showAllOptions)) {
+        if (maysd && (reboot || halt || showAllOptions)) {
             all.push({
                 icon: softwareUpdatePending ? "system-reboot-update" : "system-reboot",
                 text: softwareUpdatePending ? trc("@action:button Keep short", "Install Updates and Restart")

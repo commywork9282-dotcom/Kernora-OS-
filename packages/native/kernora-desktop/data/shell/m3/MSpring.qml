@@ -53,7 +53,8 @@ Item {
             const response = spring.response * Math.max(M3.motionScale, 0.05);
             const stiffness = Math.pow(2 * Math.PI / response, 2);
             const damping = 4 * Math.PI * spring.dampingRatio / response;
-            const steps = Math.max(1, Math.ceil(dt / 0.004));
+            const stable = Math.min(0.004, 0.25 / Math.sqrt(stiffness), 0.5 / Math.max(damping, 1));
+            const steps = Math.min(400, Math.max(1, Math.ceil(dt / stable)));
             const h = dt / steps;
 
             let x = spring.value;
@@ -64,7 +65,7 @@ Item {
                 x += v * h;
             }
 
-            if (Math.abs(x - spring.target) < 0.0005 && Math.abs(v) < 0.005) {
+            if (!isFinite(x) || !isFinite(v) || (Math.abs(x - spring.target) < 0.0005 && Math.abs(v) < 0.005)) {
                 frames.stop();
                 spring.velocity = 0;
                 spring.value = spring.target;

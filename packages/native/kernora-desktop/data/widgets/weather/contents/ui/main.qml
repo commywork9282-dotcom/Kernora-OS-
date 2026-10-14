@@ -40,6 +40,7 @@ PlasmoidItem {
         Layout.minimumHeight: 120
 
         readonly property real side: Math.min(width, height)
+        readonly property real room: ({ puffy: 0.56, pill: 0.62, sunny: 0.64, softBurst: 0.66 })[backdrop.shape] || 0.72
 
         MaterialShape {
             id: backdrop
@@ -56,10 +57,12 @@ PlasmoidItem {
         }
 
         ColumnLayout {
+            id: reading
             anchors.centerIn: parent
             width: card.side * 0.6
             spacing: 0
             visible: weather.ready
+            scale: implicitHeight > 0 ? Math.min(1, card.side * card.room / implicitHeight) : 1
 
             Text {
                 Layout.fillWidth: true

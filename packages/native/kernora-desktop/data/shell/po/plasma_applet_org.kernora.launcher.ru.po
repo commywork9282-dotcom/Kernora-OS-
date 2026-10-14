@@ -43,3 +43,6 @@ msgstr "Закрепить в меню"
 
 msgid "Unpin"
 msgstr "Открепить"
+
+msgid "Restart"
+msgstr "Перезагрузить"
