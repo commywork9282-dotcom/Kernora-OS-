@@ -1,78 +1,57 @@
 # Live and installer language
 
-The Live GRUB menu uses stable identifiers: `live-en`, `live-ru` and
-`live-safe`. English is the first Live entry and the default. Russian stays
-available by explicit selection. Safe graphics also selects English. If the
-ISO finds an installed Kernora system, the existing `installed` entry still
-takes boot priority.
+## Boot menu
 
-The existing Live language service applies the chosen kernel argument before
-login, including the system locale and Plasma translation settings. Both
-English and Russian locales are generated in the image.
+The Live GRUB menu has stable entry ids: `live-en`, `live-ru` and
+`live-safe`. English is first and it's the default, Russian is right under
+it. Safe graphics boots in English too. If the ISO finds an installed Kernora
+on the disk, the `installed` entry still wins.
 
-Calamares's welcome language selector already translated the interface. The
-location page's language selector only changed the target system language.
-The derived `calamares` package now also selects the application translator
-there. The welcome selector follows that choice when returning to it, and
-changing language there again updates a previously explicit target language.
-Explicit regional formats remain independent. Region and timezone models
-notify their views after a language change, and the custom city list refreshes
-and sorts its translated names. The view-step model also refreshes sidebar
-labels when the translator changes.
+The Live language service applies the chosen kernel argument before login,
+so the system locale and Plasma's translation settings are right from the
+start. Both English and Russian locales are generated in the image.
 
-The full selected target locale is retained even when Calamares uses a more
-general available translation, for example `ru_RU.UTF-8` with the `ru`
-translation. Missing translations fall back according to Calamares's normal
-translation loader; this change does not add new translations.
+## Calamares
+
+The welcome page language picker always translated the installer. The one on
+the location page only changed the language of the system being installed,
+which was confusing. Now the patched `calamares` package switches the
+installer's translation there too, and the welcome picker follows it when
+you go back. Picking a language on the welcome page again also updates the
+target language. Regional formats you chose separately stay as they are.
+
+To make that work, the region and timezone models tell their views when the
+language changes, the city list refreshes and re-sorts its translated names,
+and the sidebar labels refresh when the translator changes.
+
+The full target locale is kept even when Calamares uses a more general
+translation, like `ru_RU.UTF-8` with the `ru` translation. Missing
+translations fall back the normal Calamares way, this doesn't add any new
+ones.
 
 Packages:
 
-- `calamares 3.3.14-1kernora2`: language integration and translated models.
-- `kernora-desktop` and `kernora-calamares 1.4.28`: configuration dependency
-  and translated city-list refresh.
-- `kernora-apps 1.1.35`: What's New, entry `2026-10-13-8`, dated 13 October
-  2026, in English and Russian.
+- `calamares 3.3.14-1kernora2`: language switching and translated models
+- `kernora-desktop` / `kernora-calamares 1.4.28`: config dependency and the
+  city list refresh
+- `kernora-apps 1.1.35`: What's New entry `2026-10-13-8`, English and Russian
 
-The old Calamares package failed the actual installer regression at the
-location-page language change. The new packages passed English → Russian →
-German → English switching, a Russian choice on the location page, hidden
-welcome-page synchronization and back navigation, translated city names,
-sidebar labels, and the final target `LANG` with independently preserved
-`LC_*` formats. The sidebar regression also failed before the model
-notification was added and passed with the completed patch.
-The test loads native Calamares modules with temporary branding and has no
-installation jobs. See [the test instructions](../tests/installer-language/README.md).
+## Testing
 
-Native source and binary checks, `make verify`, local archive checks and
-Live rootfs checks passed. The Live rootfs's Calamares core, UI library and
-locale module were compared byte-for-byte with the final tested binary package. Test logs
-and boot screenshots belong in `out/test-logs/installer-language/`.
+There's a regression test in [tests/installer-language](../tests/installer-language/README.md).
+It loads the real Calamares modules with temporary branding and no install
+jobs. The old package failed it right at the location page language change.
+The new one passes EN → RU → DE → EN switching, Russian picked on the
+location page, going back to the welcome page, city names, sidebar labels,
+and the final `LANG` with separate `LC_*` formats kept. The sidebar check
+also failed before I added the model notification, so it actually catches
+that bug.
 
-The Live default is part of the ISO boot menu. Updating an already installed
-system does not replace an older USB image; use the updated ISO to get the
-English default on that medium.
-The final ISO passed static checks and QEMU/KVM BIOS and UEFI boot tests.
-A default boot reached Plasma with `LANG=en_US.UTF-8` and English translation
-settings. Selecting the second GRUB entry reached Plasma with
-`LANG=ru_RU.UTF-8` and Russian translation settings. Both sessions contained
-the package versions listed above. Installation to disk was not repeated
-for this language change.
+Besides that: package checks, `make verify`, archive and live rootfs checks,
+and BIOS/UEFI boot in QEMU. A default boot got to Plasma with
+`LANG=en_US.UTF-8` and English translations, the second GRUB entry got to
+Plasma in Russian. I didn't redo a full install to disk for this change.
 
-ISO SHA256:
-`bf90195b5c07de1a4e932105915dba55278426cc9538a0874e40c4e859e53bec`.
-
-Delivery used the existing `v1-ember-5` release, with no new release or tag.
-The ISO and its checksum were replaced there, and the four updated binary
-packages and their checksums were attached. GitHub's asset digests match the
-local build. What's New is included in `kernora-apps 1.1.35` in both languages.
-
-The production APT archive was published as commit
-`04960f98a66837ee39d5b948316ee984bd7e7f9d`. Its public InRelease signature,
-Packages hash and all four downloaded package hashes were verified against
-the shipped public key and local packages. An isolated APT refresh inside
-QEMU accepted the signature and selected the expected versions at priority
-900. Logs are in `out/test-logs/installer-language/`.
-
-The project ISO path now points to the tested artifact on HDD. The previous
-local image is preserved as
-`out/iso/kernora-1-ember-live-amd64-before-language.iso`.
+Note that the Live default is part of the ISO boot menu, so updating an
+installed system obviously can't change an old USB stick. Reflash it with a
+newer ISO to get the English default.

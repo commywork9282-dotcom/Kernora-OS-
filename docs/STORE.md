@@ -1,109 +1,90 @@
 # Store
 
-Store finds graphical applications in the Debian AppStream catalogue and
-Flatpak remotes. Flathub is configured by the packaged remote definition;
-existing remotes and installed apps are kept. Where both formats exist,
-the app page offers a source choice before installation. Existing apps use
-their installed source for removal and updates.
+The Store finds apps in Debian's AppStream catalogue and in Flatpak remotes.
+Flathub comes preconfigured through a packaged remote file, remotes and apps
+you already have are left alone. If an app exists in both, the app page lets
+you pick the source before installing. Apps you already have get removed and
+updated from wherever they were installed from.
 
-Flatpak work runs outside the GUI thread, with progress and cancellation.
-Closing the window during an installation hides it until the operation
-finishes. Debian actions go through PackageKit and the session's normal
-authentication agent. Local `.deb` and `.flatpakref` files open in Store;
-`appstream:` links open an app page. No package is installed just by opening
-a file or visiting a page.
+Flatpak stuff runs off the UI thread, with progress and a cancel button.
+Closing the window during an install just hides it until it's done. Debian
+packages go through PackageKit and the normal password prompt. Local `.deb`
+and `.flatpakref` files open in the Store, and `appstream:` links open an
+app page. Nothing gets installed just from opening a file or a page.
 
-The Installed page includes apps installed outside Store when their
-metadata is available. Flatpak apps and runtimes update in Store; Debian
-and Kernora updates stay in Settings. A failed update check keeps the last
-known update list and displays a retry action instead of claiming success.
+The Installed page also lists apps you installed some other way, as long as
+there's metadata for them. Flatpak apps and runtimes update in the Store,
+Debian and Kernora updates stay in Settings. If checking for updates fails,
+the Store keeps the last list and shows a retry button instead of pretending
+everything is fine.
 
-Descriptions and screenshots come from the repositories. Star ratings
-come from ODRS, are cached for three days, and are omitted when unavailable.
-Artwork is cached on disk. Without a connection the cached catalogue and
-installed apps remain usable; new downloads still need a connection.
+Descriptions and screenshots come from the repos. Star ratings come from
+ODRS, get cached for three days and just don't show if ODRS is down. Artwork
+is cached on disk. Offline, the cached catalogue and your installed apps
+still work, downloading new stuff obviously needs a connection.
 
-## Validation
+## Look
 
-Build and check packages using `scripts/build-kernora-apps-binary` and
-`scripts/build-kernora-desktop-binary`. Their tests verify the Store module,
-launcher, runtime dependencies, remote definition and Russian translation.
+Material 3: tonal navigation, an app header that adapts to the window size,
+cards with state layers and shape changes, and content that slides in one
+after another. Animations follow the desktop animation speed. The featured
+carousel pauses when you hover it and stops completely if animations are
+off. Category cards and the carousel work with the keyboard.
 
-In a disposable Kernora desktop session with both catalogues downloaded:
-
-```sh
-KERNORA_QML_STORE=/path/to/tests/store-smoke kernora-store
-```
-
-The smoke test checks broad search results, categories, installed counts,
-empty results and changing search queries. It logs `STORE_SMOKE_OK` on
-success and does not install or remove apps. Also exercise installation,
-launch, removal, cancellation and refresh in the graphical interface before
-publishing a release.
-
-What's New IDs are stable release identifiers. An optional `date` field
-sets the displayed publication date independently; older entries continue
-to derive their date from the ID. Keep the newest entry first.
-
-## Launch regression
-
-`tests/store-launch-smoke/run.sh` runs in a disposable desktop session with
-Telegram installed as a Flatpak and Store closed. It puts conflicting native
-launchers in a temporary data directory and records the command instead of
-starting Telegram. The check requires the installed Flatpak scope and full
-ref, so a Debian launcher or another Flatpak branch cannot silently win.
-The test does not install or remove apps.
-
-The Flatpak launch retains exported command options (including `--command`),
-GPU preference and startup metadata. The installed desktop file is not rewritten.
-
-## Installation completion test
-
-In a disposable desktop VM with working Debian/Flathub sources, close
-Store and run:
-
-```sh
-KERNORA_TEST_DISPOSABLE_SESSION=1 tests/store-install-smoke/run.sh
-```
-
-This test removes and reinstalls galculator and GNOME Calculator. It logs
-transaction progress, installed source/version, event-loop heartbeats and
-long timer gaps, and requires `STORE_INSTALL_OK` after both installations.
-Normal authorization is still required. Do not run it in a personal session.
-For full-VM freezes caused by exhausted host storage, see `VM_INSTALLATION.md`.
-
-## Material 3 interface
-
-The Store uses tonal navigation, responsive app headers, animated card state
-layers and shape changes, and staggered entrances. Motion uses the desktop's
-animation speed; the featured carousel pauses under the pointer and stops
-advancing when animations are disabled. Category cards and carousel selectors
-support keyboard activation.
-
-To preview the QML with an installed Kernora Store backend, close Store first
-and run in a Kernora desktop session:
+To preview QML changes against an installed Store backend, close the Store
+and run this in a Kernora session:
 
 ```sh
 KERNORA_QML_STORE=/absolute/path/to/packages/native/kernora-apps/apps/store/qml kernora-store
 ```
 
-The owner-approved October 12 Material 3 changes shipped in
-`kernora-apps 1.1.32` through the existing APT channel and the existing
-`v1-ember-5` release. What's New describes the changes in English and Russian.
-The release tag stays unchanged; the attached ISO still contains 1.1.30 and
-installed systems receive the newer package through Settings > Updates.
+## Testing
 
-The disposable QEMU preview passed navigation, search, details/back, installed
-apps, updates, and 440-pixel window checks in dark and light themes. The catalogue smoke test reported
-350 video results, 1121 games, and `STORE_SMOKE_OK`. Local screenshots,
-UI state reports, and the animation recording are in
-`_build/preview/store-material3/`; they are review artifacts, not release assets.
+`scripts/build-kernora-apps-binary` and `scripts/build-kernora-desktop-binary`
+build the packages and check the Store module, launcher, dependencies, remote
+file and the Russian translation.
 
-Delivery of 1.1.32 was verified against the public signed APT index and by
-APT in QEMU (candidate 1.1.32, priority 900). The package and checksum
-attached to the existing release were downloaded and matched the build.
-The installed package passed the catalogue smoke test and English/Russian
-release-note checks; the actual What's New window was inspected in QEMU.
-Logs are in `out/test-logs/store/material3/`. The catalogue smoke test waits
-for deferred search results within a 10-second bound and exits with a
-nonzero status on failure.
+Catalogue smoke test, in a throwaway Kernora session with both catalogues
+downloaded:
+
+```sh
+KERNORA_QML_STORE=/path/to/tests/store-smoke kernora-store
+```
+
+It checks search results, categories, installed counts, empty results and
+changing the search. It prints `STORE_SMOKE_OK` when it's happy, waits up to
+10 seconds for search results and exits with an error otherwise. It doesn't
+install or remove anything, so also click through installing, launching,
+removing, cancelling and refreshing by hand before a release.
+
+### Launching
+
+`tests/store-launch-smoke/run.sh` runs in a throwaway session with Telegram
+installed as a Flatpak and the Store closed. It adds conflicting native
+launchers in a temp folder and records the command instead of actually
+starting Telegram. It makes sure the installed Flatpak scope and full ref
+are used, so a Debian launcher or another Flatpak branch can't win by
+accident. Launching keeps the exported command options (`--command` too),
+GPU preference and startup info. The installed desktop file isn't changed.
+
+### Installing
+
+In a throwaway VM with working Debian and Flathub sources, close the Store
+and run:
+
+```sh
+KERNORA_TEST_DISPOSABLE_SESSION=1 tests/store-install-smoke/run.sh
+```
+
+It removes and reinstalls galculator and GNOME Calculator, logs progress,
+installed source and version, and checks the UI stays responsive. It needs
+`STORE_INSTALL_OK` after both installs. You still have to type your password.
+Don't run it in your normal session. If the whole VM freezes, check
+[VM_INSTALLATION.md](VM_INSTALLATION.md) first, it was the host's disk last
+time.
+
+## What's New ids
+
+What's New ids are stable release ids. An optional `date` field sets the date
+that's shown, older entries just take it from the id. Newest entry goes
+first.

@@ -1,103 +1,108 @@
 # Kernora OS
 
-Kernora OS is a desktop Linux distribution based on Debian 13 (trixie). It
-runs KDE Plasma 6 with its own shell, apps and themes, designed after
-Material 3.
+Kernora is a desktop Linux distro based on Debian 13 (trixie). It runs KDE
+Plasma 6, but with its own shell, apps and themes, all done in Material 3
+style. Basically I wanted Plasma to look and feel like Material You, so I
+made it.
 
-This repository has everything needed to build the live ISO: Kernora's own
-packages, the changes made to a few Debian packages, the image configuration,
-and the build scripts and tests.
+This repo has everything to build the live ISO: Kernora's own packages, the
+few Debian packages I patch, the image config, and the build scripts and
+tests.
 
-The project is in early development. Test builds are published under
-Releases. Packages are signed with a development key for now; there is no
-release key yet.
+It's still early. Test builds are in [Releases](https://github.com/commywork9282-dotcom/Kernora-OS-/releases).
+Packages are signed with a dev key for now, there's no release key yet.
 
-If an older image leaves an installed system at a black screen, see
-[boot recovery](docs/BOOT-RECOVERY.md). The current image and package updates
-repair the root directory ownership that caused this failure.
+If an older image left your installed system on a black screen, see
+[boot recovery](docs/BOOT-RECOVERY.md). Current images and updates fix the
+root folder ownership that caused it.
 
-## What's in the image
+## What's in it
 
-- Debian 13.6 from a fixed snapshot (2026-09-01), Linux 6.12, KDE Plasma 6.3.
-- A Kernora shell on top of Plasma: panel, app launcher, quick settings,
-  notifications, lock screen, Alt+Tab and power menu. All colours come from
-  one seed colour, `#ff6a1e`. Settings can switch the look between Material
-  Design 1, 2 and 3.
-- Kernora apps in place of KDE's: Settings, Files, Text Editor, Photos, Media
-  Player, Calculator, Screenshot, Terminal (Alacritty) and Welcome, plus a
-  file chooser that every program uses.
-- Live wallpapers: Kernora Shapes, Tower, Rhythm, Starfall and Pastel.
-- LibreWolf as the browser. It isn't in Debian, so the build installs one
-  pinned version from the LibreWolf repository, and the installed system
-  gets updates from there.
-- Calamares as the installer, restyled to match.
-- English and Russian. The live session language is chosen in the boot menu.
-- Updates: Debian security updates, the kernel's among them, and LibreWolf
-  updates install by themselves once a day. Debian point releases and
-  Kernora's own packages, which come from the Kernora package archive, are
-  offered in Settings > Updates. See [docs/UPDATES.md](docs/UPDATES.md).
+- Debian 13.6 from a fixed snapshot (2026-09-01), Linux 6.12, KDE Plasma 6.3
+- a Kernora shell on top of Plasma: panel, app launcher, quick settings,
+  notifications, lock screen, Alt+Tab and power menu. Every colour comes
+  from one seed colour, `#ff6a1e`, and you can switch the whole look between
+  Material Design 1, 2 and 3 in Settings
+- Kernora apps instead of the KDE ones: Settings, Store, Files, Text Editor,
+  Photos, Media Player, Calculator, Screenshot, Terminal (Alacritty) and
+  Welcome, plus a file chooser every app uses
+- Store for apps and games from Flathub and Debian, so you don't need the
+  terminal to install stuff (see [docs/STORE.md](docs/STORE.md))
+- Material 3 desktop widgets and live wallpapers: Shapes, Tower, Rhythm,
+  Starfall and Pastel
+- the usual terminal tools out of the box: git, curl, htop, fastfetch and co
+- LibreWolf as the browser. It's not in Debian, so the build installs one
+  pinned version from the LibreWolf repo and installed systems update from
+  there
+- NVIDIA drivers install by themselves on PCs with an NVIDIA card
+  ([docs/DRIVERS.md](docs/DRIVERS.md))
+- Calamares as the installer, restyled to match
+- English and Russian. You pick the live session language in the boot menu
+- updates: Debian security updates (kernel too) and LibreWolf install by
+  themselves once a day. Debian point releases and Kernora's own packages
+  show up in Settings > Updates. More in [docs/UPDATES.md](docs/UPDATES.md)
 
-KDE's standalone apps (Dolphin, Konsole, Kate, Discover, Spectacle and others)
-are left out; the list is in `configs/live/excluded-packages.txt`.
+KDE's standalone apps (Dolphin, Konsole, Kate, Discover, Spectacle and so on)
+are left out, the list is in `configs/live/excluded-packages.txt`.
 
 ## Building
 
 You need a Debian-based machine with:
 
-- unprivileged user namespaces and subuid/subgid mappings (everything builds
-  without root);
-- `apt-get`, `dpkg-dev`, `curl`, `gpg` and `gpgv`;
+- unprivileged user namespaces and subuid/subgid mappings (nothing builds as
+  root)
+- `apt-get`, `dpkg-dev`, `curl`, `gpg` and `gpgv`
 - `grub-common`, `grub-pc-bin`, `grub-efi-amd64-bin`, `xorriso`,
-  `squashfs-tools` and `xz-utils` for the ISO;
-- `qemu-system-x86` for the boot tests;
-- about 10 GB of free disk space.
+  `squashfs-tools` and `xz-utils` for the ISO
+- `qemu-system-x86` for the boot tests
+- around 10 GB free disk space
 
-The host's own APT setup is not touched. Keyrings, tools and caches live in
+Your host's APT setup isn't touched. Keyrings, tools and caches all live in
 the working tree.
 
-Build the ISO and check that it boots in QEMU (BIOS and UEFI):
+Build the ISO and check it boots in QEMU (BIOS and UEFI):
 
 ```sh
 make iso-smoke
 ```
 
-The result is `out/iso/kernora-1-ember-live-amd64.iso` with a `.sha256`
-file next to it. `make iso` builds the ISO without the boot tests.
+You get `out/iso/kernora-1-ember-live-amd64.iso` with a `.sha256` file next
+to it. `make iso` builds it without the boot tests.
 
-Steps can also be run one at a time, for example `make local-archive` (all
-packages and the signed APT archive) or `make live-rootfs`. See the
-`Makefile` for the full list.
+You can also run steps one by one, like `make local-archive` (all packages
+plus the signed APT archive) or `make live-rootfs`. The `Makefile` has the
+full list.
 
-The ISO build stages its squashfs in `_build/`. On a tight disk, set
-`KERNORA_SCRATCH_DIR` (for example to `/tmp`) to stage it elsewhere; the
+The ISO build puts its squashfs in `_build/`. If your disk is tight, set
+`KERNORA_SCRATCH_DIR` (to `/tmp` for example) to put it somewhere else, the
 finished ISO still lands in `out/iso/`.
 
 Builds are reproducible: the Debian snapshot, tool versions and every
-downloaded file are pinned by SHA-256, and archives are written with fixed
-file order, times and owners. Build outputs (`_build/`, `_cache/`, `out/`,
-`_state/`) stay out of Git.
+downloaded file are pinned by SHA-256, and archives get a fixed file order,
+times and owners. Build output (`_build/`, `_cache/`, `out/`, `_state/`)
+stays out of Git.
 
-To try changes to the shell or the apps without rebuilding the ISO,
-`scripts/preview-desktop` boots the desktop in QEMU and syncs files into it.
+To try shell or app changes without rebuilding the whole ISO,
+`scripts/preview-desktop` boots the desktop in QEMU and syncs your files
+into it.
 
 ## Layout
 
 - `packages/native/`: Kernora's own packages (`kernora-base`,
-  `kernora-archive`, `kernora-desktop`, `kernora-apps`).
-- `packages/derived/`: changes to Debian's `base-files`, Calamares and
-  `polkit-kde-agent-1`.
-- `configs/`: the upstream pins, the live image and the system identity.
-- `scripts/`: build steps. `tests/`: checks for every package and image.
+  `kernora-archive`, `kernora-desktop`, `kernora-apps`)
+- `packages/derived/`: patched Debian packages (`base-files`, Calamares and
+  `polkit-kde-agent-1`)
+- `configs/`: upstream pins, the live image and the system identity
+- `scripts/`: build steps. `tests/`: checks for every package and the image
 - `docs/`: how it all works. Start with
   [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), then
   [docs/DESKTOP.md](docs/DESKTOP.md) for the shell and design system,
-  [docs/APPS.md](docs/APPS.md) for the apps and
-  [docs/UPDATES.md](docs/UPDATES.md) for updates and publishing them,
-  [docs/DRIVERS.md](docs/DRIVERS.md) for the graphics drivers Kernora installs
-  by itself.
+  [docs/APPS.md](docs/APPS.md) for the apps,
+  [docs/UPDATES.md](docs/UPDATES.md) for updates and publishing them, and
+  [docs/DRIVERS.md](docs/DRIVERS.md) for the graphics drivers
 
 ## License
 
-Kernora OS is released under the GNU GPL version 3 (`LICENSE`). Kernora's own
-files are GPL-2.0-or-later. `NOTICE` lists the parts that come from others
+Kernora OS is under the GNU GPL version 3 (`LICENSE`). Kernora's own files
+are GPL-2.0-or-later. `NOTICE` lists the parts that come from other people
 and their licenses.
