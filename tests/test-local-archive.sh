@@ -116,8 +116,8 @@ apt-cache "${apt_options[@]}" show kernora-base \
   || fail "APT cannot read kernora-base from the archive"
 grep -Fxq "Version: $meta_version" "$temporary_root/kernora-base.txt" \
   || fail "APT selected the wrong kernora-base version"
-grep -Fxq "Depends: base-files (= $package_version), kernora-archive (>= 1.0)" \
-  "$temporary_root/kernora-base.txt" \
+grep -E '^Depends: ' "$temporary_root/kernora-base.txt" \
+  | grep -Fq "Depends: base-files (= $package_version), kernora-archive (>= 1.0)" \
   || fail "APT sees the wrong Kernora identity dependency"
 
 printf 'local archive test: OK\n'
