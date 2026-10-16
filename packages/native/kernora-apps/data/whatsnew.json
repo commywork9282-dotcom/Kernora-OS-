@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-16-3",
+    "date": "2026-10-16",
+    "items": [
+      {
+        "icon": "download",
+        "title": {
+          "en": "Wavy progress",
+          "ru": "Волнистый прогресс"
+        },
+        "text": {
+          "en": "Downloads in Store, updates and other progress bars now show the wavy Material 3 Expressive line, and loading spinners became wavy rings. The wave calms down when the job is almost done.",
+          "ru": "Загрузки в Магазине, обновления и другие полоски прогресса теперь показывают волнистую линию Material 3 Expressive, а значки ожидания стали волнистыми кольцами. Под конец работы волна успокаивается."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-16-2",
     "date": "2026-10-16",
     "items": [

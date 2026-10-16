@@ -10,6 +10,7 @@ Menu 1.0 Menu.qml
 MenuItem 1.0 MenuItem.qml
 MenuSeparator 1.0 MenuSeparator.qml
 Popup 1.0 Popup.qml
+ProgressBar 1.0 ProgressBar.qml
 RadioDelegate 1.0 RadioDelegate.qml
 Switch 1.0 Switch.qml
 SwitchDelegate 1.0 SwitchDelegate.qml

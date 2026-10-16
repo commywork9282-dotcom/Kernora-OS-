@@ -73,7 +73,8 @@ SettingsPage {
                 }
                 LinearProgress {
                     Layout.fillWidth: true
-                    implicitHeight: 8
+                    wavy: false
+                    thickness: 8
                     value: volume.share
                 }
             }

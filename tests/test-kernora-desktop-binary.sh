@@ -257,6 +257,11 @@ for path in \
   usr/share/kernora/faces/light-blue.png \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MShapeEcho.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/materialshapes.js \
+  usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MLinearProgress.qml \
+  usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MCircularProgress.qml \
+  usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/MLinearProgress.qml \
+  usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/MCircularProgress.qml \
+  usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/ProgressBar.qml \
   usr/share/plymouth/themes/kernora/wave-0.png \
   usr/share/plymouth/themes/kernora/wave-89.png; do
   [[ -e "$temporary_root/desktop/$path" ]] \
@@ -265,6 +270,10 @@ done
 [[ ! -e "$temporary_root/desktop/usr/share/sddm/themes/kernora/palette.js" ]] || fail "the login screen still ships a fixed palette"
 grep -Fxq 'MShapeEcho MShapeEcho.qml' "$temporary_root/desktop/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/qmldir" \
   || fail "the shape echo is not part of org.kernora.m3"
+grep -Fxq 'MLinearProgress MLinearProgress.qml' "$temporary_root/desktop/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/qmldir" \
+  && grep -Fxq 'MCircularProgress MCircularProgress.qml' "$temporary_root/desktop/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/qmldir" \
+  && grep -Fxq 'ProgressBar 1.0 ProgressBar.qml' "$temporary_root/desktop/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/qmldir" \
+  || fail "the wavy progress indicators are not registered"
 cmp -s "$temporary_root/desktop/usr/share/kernora/faces/kernora.png" "$temporary_root/desktop/usr/share/kernora/avatars/00-kernora.png" \
   || fail "the Kernora face and the stock Kernora avatar differ"
 cmp -s "$temporary_root/desktop/usr/share/kernora/faces/kernora.png" "$temporary_root/desktop/usr/share/kernora/faces/light-blue.png" \

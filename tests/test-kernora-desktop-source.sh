@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.33" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.34" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -488,6 +488,13 @@ grep -Fq 'import org.kernora.m3' "$greeter_qml" && grep -Fq 'MShapeEcho {' "$gre
   && grep -Fq 'M3.colourOverride' "$greeter_qml" && ! grep -Fq 'palette.js' "$greeter_qml" \
   || fail "the login screen does not follow the synced colour and theme"
 grep -Fq 'MShapeEcho MShapeEcho.qml' "$package_root/data/shell/m3/qmldir" || fail "MShapeEcho is not registered"
+grep -Fq 'MLinearProgress {' "$package_root/data/ui/LinearProgress.qml" \
+  && grep -Fq 'MCircularProgress {' "$package_root/data/style/org.kernora.desktop/BusyIndicator.qml" \
+  && grep -Fq 'contentItem: MLinearProgress {' "$package_root/data/style/org.kernora.desktop/ProgressBar.qml" \
+  || fail "progress bars and spinners are not the wavy expressive ones"
+grep -Fq 'readonly property bool waving: wavy && !M3.classic' "$package_root/data/shell/m3/MLinearProgress.qml" \
+  && grep -Fq 'shown > 0.1 && shown < 0.95' "$package_root/data/shell/m3/MLinearProgress.qml" \
+  || fail "the wave does not flatten for md1/md2 or at the ends of the progress"
 grep -Fq 'source: parent.user ? parent.user.picture : ""' "$greeter_qml" \
   && ! grep -Fq '"file://" + parent.user.picture' "$greeter_qml" \
   || fail "the login screen breaks the avatar url sddm already gives it"

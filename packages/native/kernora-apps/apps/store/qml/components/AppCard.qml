@@ -117,7 +117,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.leftMargin: 88
         anchors.rightMargin: 12
-        anchors.bottomMargin: 6
+        anchors.bottomMargin: 3
         visible: root.busy
         indeterminate: root.progress < 0
         value: Math.max(0, root.progress) / 100
