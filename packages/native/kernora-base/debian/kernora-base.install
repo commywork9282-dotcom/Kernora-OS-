@@ -1,1 +1,5 @@
 data/NetworkManager/*.conf usr/share/kernora/workarounds
+data/fastfetch/kernora.txt usr/share/kernora/fastfetch
+data/fastfetch/kernora-small.txt usr/share/kernora/fastfetch
+data/fastfetch/config.jsonc etc/xdg/fastfetch
+data/fastfetch/kernora-small.jsonc usr/share/fastfetch/presets

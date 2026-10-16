@@ -43,8 +43,11 @@ fail() {
 }
 
 grep -Fxq 'ID=kernora' /usr/lib/os-release || fail "wrong OS identity"
-[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.6" ]] \
+[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.6.1" ]] \
   || fail "kernora-base is not installed"
+fastfetch_out=$(fastfetch --pipe true 2>/dev/null)
+grep -Fq ',o000000000oo,,' <<<"$fastfetch_out" && grep -Fq 'Kernel' <<<"$fastfetch_out" \
+  || fail "fastfetch does not show the Kernora logo with the system info"
 [[ "$(dpkg-query -W -f='${Version}' linux-image-amd64)" == "6.12.111-1" ]] \
   || fail "wrong kernel metapackage version"
 [[ "$(dpkg-query -W -f='${Version}' live-boot)" == "1:20250815~deb13u1" ]] \
@@ -151,8 +154,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.41" ]] \
-  || fail "kernora-apps 1.1.41 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.42" ]] \
+  || fail "kernora-apps 1.1.42 is not installed"
 for package in flatpak appstream; do
   [[ "$(dpkg-query -W -f='${Status}' "$package")" == 'install ok installed' ]] || fail "Store dependency missing: $package"
 done

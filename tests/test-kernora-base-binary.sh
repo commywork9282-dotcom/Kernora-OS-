@@ -38,6 +38,10 @@ dpkg-deb --extract "$deb" "$temporary_root/root"
 if find "$temporary_root/root" -type f \
   ! -path "$temporary_root/root/usr/share/doc/kernora-base/*" \
   ! -path "$temporary_root/root/usr/share/kernora/workarounds/20-kernora-rtl8852ce.conf" \
+  ! -path "$temporary_root/root/usr/share/kernora/fastfetch/kernora.txt" \
+  ! -path "$temporary_root/root/usr/share/kernora/fastfetch/kernora-small.txt" \
+  ! -path "$temporary_root/root/etc/xdg/fastfetch/config.jsonc" \
+  ! -path "$temporary_root/root/usr/share/fastfetch/presets/kernora-small.jsonc" \
   -print -quit | grep -q .; then
   fail "base package contains an unexpected file"
 fi
@@ -47,7 +51,17 @@ cmp "$package_root/data/NetworkManager/20-kernora-rtl8852ce.conf" \
 [[ ! -e "$temporary_root/root/usr/lib/NetworkManager/conf.d/20-kernora-rtl8852ce.conf" ]] \
   || fail "withdrawn RTL8852CE policy is still automatically enabled"
 
+for logo in kernora.txt kernora-small.txt; do
+  cmp "$package_root/data/fastfetch/$logo" "$temporary_root/root/usr/share/kernora/fastfetch/$logo" \
+    || fail "fastfetch logo $logo is missing or changed during packaging"
+done
+cmp "$package_root/data/fastfetch/config.jsonc" "$temporary_root/root/etc/xdg/fastfetch/config.jsonc" \
+  && cmp "$package_root/data/fastfetch/kernora-small.jsonc" "$temporary_root/root/usr/share/fastfetch/presets/kernora-small.jsonc" \
+  || fail "fastfetch config is missing or changed during packaging"
+
 dpkg-deb --control "$deb" "$temporary_root/control"
+grep -Fxq '/etc/xdg/fastfetch/config.jsonc' "$temporary_root/control/conffiles" \
+  || fail "the fastfetch config is not a conffile"
 [[ -x "$temporary_root/control/postinst" ]] || fail "root ownership migration is missing"
 grep -Fq 'chown 0:0 /' "$temporary_root/control/postinst" \
   || fail "upgrade does not repair root ownership"

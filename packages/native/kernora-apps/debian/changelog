@@ -1,3 +1,9 @@
+kernora-apps (1.1.42) UNRELEASED; urgency=medium
+
+  * What's new: the Kernora logo in fastfetch.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 16 Oct 2026 08:30:00 -0700
+
 kernora-apps (1.1.41) UNRELEASED; urgency=medium
 
   * The Kernora profile picture follows the colour: when the user still

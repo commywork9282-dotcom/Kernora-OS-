@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-16-2",
+    "date": "2026-10-16",
+    "items": [
+      {
+        "icon": "utilities-terminal",
+        "title": {
+          "en": "Kernora in fastfetch",
+          "ru": "Kernora в fastfetch"
+        },
+        "text": {
+          "en": "Run fastfetch in the terminal and you get the Kernora spiral instead of the Debian one. The ASCII art was drawn by milanrudis from the community. For narrow windows there is a compact version: fastfetch -c kernora-small.",
+          "ru": "Запустите fastfetch в терминале, и вместо логотипа Debian появится спираль Kernora. ASCII-арт нарисовал milanrudis из сообщества. Для узких окон есть компактная версия: fastfetch -c kernora-small."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-16-1",
     "date": "2026-10-16",
     "items": [

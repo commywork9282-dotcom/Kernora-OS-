@@ -1,3 +1,10 @@
+kernora-base (1.6.1) UNRELEASED; urgency=medium
+
+  * fastfetch shows the Kernora logo, ascii art by milanrudis. The compact
+    one is there as a preset: fastfetch -c kernora-small.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 16 Oct 2026 08:30:00 -0700
+
 kernora-base (1.6) UNRELEASED; urgency=medium
 
   * Debian 13.7: depend on base-files 13.8+deb13u7+kernora1.
