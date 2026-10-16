@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Kernora Developers
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "greetersync.h"
+
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDateTime>
@@ -362,5 +364,6 @@ int main(int argc, char **argv)
         showWhatsNew();
     }
     Notifier notifier;
+    GreeterSync greeter;
     return app.exec();
 }

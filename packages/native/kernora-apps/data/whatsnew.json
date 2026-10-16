@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-10-15-2",
+    "date": "2026-10-15",
+    "items": [
+      {
+        "icon": "system-lock-screen",
+        "title": {
+          "en": "Your wallpaper on the login screen",
+          "ru": "Ваши обои на экране входа"
+        },
+        "text": {
+          "en": "The screen you see when the computer starts now shows your wallpaper, also when you picked it in Welcome or from the desktop menu. It catches up the first time you log in after this update.",
+          "ru": "Экран, который появляется при включении компьютера, теперь показывает ваши обои, даже если вы выбрали их в «Добро пожаловать» или в меню рабочего стола. Он подхватит их при первом входе после этого обновления."
+        }
+      },
+      {
+        "icon": "video-x-generic",
+        "title": {
+          "en": "No more green bars in VLC",
+          "ru": "В VLC больше нет зелёных полос"
+        },
+        "text": {
+          "en": "On computers with an NVIDIA graphics card, VLC now decodes video without hardware acceleration, which drew green bars at the bottom of videos. You can turn it back on in VLC's settings.",
+          "ru": "На компьютерах с видеокартой NVIDIA VLC теперь декодирует видео без аппаратного ускорения, из-за которого внизу видео появлялись зелёные полосы. Его можно снова включить в настройках VLC."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-15-1",
     "date": "2026-10-15",
     "items": [

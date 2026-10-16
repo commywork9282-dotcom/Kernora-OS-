@@ -79,3 +79,16 @@ mount --bind /tmp/fakepci /sys/bus/pci/devices
 
 The driver installs and DKMS builds the module. The system still boots
 normally, because without the card the module never loads.
+
+## VLC on NVIDIA
+
+VLC 3 draws video through XWayland, and with the NVIDIA driver its hardware
+decoding (VDPAU/VA-API) shows green bars along the bottom of videos. So on
+PCs where the `nvidia` module is loaded, the session script
+`/etc/xdg/plasma-workspace/env/kernora-video-decoding.sh` adds
+`avcodec-hw=none` to VLC's config once, for the Debian VLC
+(`~/.config/vlc/vlcrc`) and the Flathub one
+(`~/.var/app/org.videolan.VLC/config/vlc/vlcrc`). If you already picked a
+decoder yourself it's left alone, and a marker in
+`~/.local/state/kernora/vlc-decoding/` makes sure it never overrides a later
+change in VLC's preferences. Without an NVIDIA driver nothing happens.

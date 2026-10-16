@@ -1,3 +1,15 @@
+kernora-apps (1.1.39) UNRELEASED; urgency=medium
+
+  * The login screen follows the desktop wallpaper. The update notifier
+    watches the Plasma desktop config and, for administrators, passes the
+    current picture or live wallpaper to kernora-greeter-background at
+    login and whenever it changes. Before, only Settings did this at the
+    moment of the choice, so a wallpaper picked in Welcome, from the
+    desktop menu or before the update never reached the login screen.
+  * Require kernora-desktop 1.4.32.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 15 Oct 2026 20:00:00 -0700
+
 kernora-apps (1.1.38) UNRELEASED; urgency=medium
 
   * Store: new layout with Apps, Games and Categories tabs in a top bar,

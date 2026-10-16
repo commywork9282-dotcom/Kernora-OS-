@@ -118,6 +118,7 @@ for path in \
   usr/share/kconf_update/kernora-marbles-to-pastel.upd \
   usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/kernora_marbles_to_pastel.js \
   usr/share/kconf_update/kernora-tower-to-shapes.upd \
+  etc/xdg/plasma-workspace/env/kernora-video-decoding.sh \
   usr/share/kconf_update/kernora-tower-to-shapes.sh \
   usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/kernora_tower_to_shapes.js \
   usr/share/plasma/wallpapers/org.kernora.pastel/contents/ui/palettes/kernora.qml \

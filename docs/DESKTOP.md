@@ -384,9 +384,18 @@ reach. `kernora-desktop` puts Kernora's in place with `dpkg-divert`
 the package and live-image tests.
 
 * **Lock screen** (`data/lockscreen`, over the shell package's
-  `lockscreen/LockScreen.qml`): Kernora Shapes behind a large clock, the
-  account card, power actions, and the playing media's controls at the
-  bottom, usable without unlocking.
+  `lockscreen/LockScreen.qml`): the lock screen's wallpaper behind a large
+  clock, the account card, power actions, and the playing media's controls
+  at the bottom, usable without unlocking.
+* **Login screen wallpaper.** SDDM runs before anyone logs in and can't read
+  home folders, so the wallpaper gets copied over. `kernora-update-notifier`
+  watches `plasma-org.kde.plasma.desktop-appletsrc` and, for members of
+  `sudo`, runs `pkexec /usr/libexec/kernora-greeter-background` with the
+  desktop's live wallpaper or picture at login and whenever it changes
+  (Settings, Welcome, the desktop menu, anything). The helper writes
+  `theme.conf.user` of the SDDM theme and copies a picture to
+  `/var/lib/kernora/greeter`. The polkit rule lets local admins do that
+  without a password.
 * **On-screen display** (`data/osd`, over `osd/Osd.qml`): volume and
   brightness as a thick slider, messages as a pill.
 * **Notifications** (`data/notifications`): Plasma's notification applet is

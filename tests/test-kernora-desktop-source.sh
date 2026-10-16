@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.31" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.32" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -67,6 +67,24 @@ grep -Fq '"org.kernora.shapes"' "$package_root/data/shell-updates/kernora_tower_
 grep -Fq 'wallpaper=org.kernora.shapes' "$package_root/debian/kernora-desktop.postinst" \
   || fail "a login screen with Tower does not move to Shapes"
 rm -rf "$tower_home"
+sh -n "$package_root/data/plasma-env/kernora-video-decoding.sh" || fail "the VLC decoding script does not parse"
+video_home=$(mktemp -d)
+mkdir -p "$video_home/sys/module/nvidia" "$video_home/.var/app/org.videolan.VLC/config/vlc"
+printf '[avcodec]\navcodec-hw=vaapi_drm\n' > "$video_home/.var/app/org.videolan.VLC/config/vlc/vlcrc"
+for run in 1 2; do
+  HOME="$video_home" XDG_CONFIG_HOME="$video_home/.config" XDG_STATE_HOME="$video_home/.local/state" KERNORA_SYSFS="$video_home/sys" \
+    sh -c ". '$package_root/data/plasma-env/kernora-video-decoding.sh'"
+done
+[[ "$(grep -c '^avcodec-hw=none$' "$video_home/.config/vlc/vlcrc")" == 1 ]] || fail "VLC keeps hardware decoding on NVIDIA"
+grep -Fxq 'avcodec-hw=vaapi_drm' "$video_home/.var/app/org.videolan.VLC/config/vlc/vlcrc" \
+  && ! grep -q 'avcodec-hw=none' "$video_home/.var/app/org.videolan.VLC/config/vlc/vlcrc" \
+  || fail "a VLC decoder chosen by the user is overridden"
+rm -rf "$video_home/.config" "$video_home/.local"
+rm -rf "$video_home/sys/module/nvidia"
+HOME="$video_home" XDG_CONFIG_HOME="$video_home/.config" XDG_STATE_HOME="$video_home/.local/state" KERNORA_SYSFS="$video_home/sys" \
+  sh -c ". '$package_root/data/plasma-env/kernora-video-decoding.sh'"
+[[ ! -e "$video_home/.config/vlc/vlcrc" ]] || fail "VLC decoding changes without an NVIDIA driver"
+rm -rf "$video_home"
 assets=$(mktemp -d)
 python3 "$package_root/tools/gen-wallpaper-assets" "$assets" pastel >/dev/null \
   || fail "gen-wallpaper-assets cannot write Pastel's assets"

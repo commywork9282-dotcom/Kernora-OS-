@@ -1,3 +1,13 @@
+kernora-desktop (1.4.32) UNRELEASED; urgency=medium
+
+  * VLC turns hardware decoding off on computers with the NVIDIA driver.
+    VLC 3 draws video through XWayland there, and VDPAU/VA-API decoding
+    showed green bars at the bottom of videos. A session script adds
+    avcodec-hw=none once to the Debian and Flatpak VLC configs; a decoder
+    the user picked is kept, and so is a later change in VLC's settings.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 15 Oct 2026 20:00:00 -0700
+
 kernora-desktop (1.4.31) UNRELEASED; urgency=medium
 
   * Remove the Tower live wallpaper. Desktops that used it move to Kernora

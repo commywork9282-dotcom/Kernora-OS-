@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.38" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.39" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -94,5 +94,10 @@ PY
 grep -Fq 'void Files::setLockScreenPlugin' "$package_root/src/system/files.cpp" \
   && grep -Fq 'Files.syncGreeterBackground' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
   || fail "live wallpapers cannot reach the lock and login screens"
+
+grep -Fq 'GreeterSync greeter;' "$package_root/src/updatenotifier/main.cpp" \
+  && grep -Fq '/usr/libexec/kernora-greeter-background' "$package_root/src/updatenotifier/greetersync.cpp" \
+  && grep -Fq 'plasma-org.kde.plasma.desktop-appletsrc' "$package_root/src/updatenotifier/greetersync.cpp" \
+  || fail "the login screen does not follow wallpapers chosen outside Settings"
 
 printf 'kernora-apps source test: OK\n'
