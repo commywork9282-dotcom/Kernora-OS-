@@ -46,8 +46,7 @@ GreeterSync::GreeterSync()
     connect(&m_timer, &QTimer::timeout, this, &GreeterSync::sync);
     connect(&m_watcher, &QFileSystemWatcher::fileChanged, this, &GreeterSync::schedule);
     connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, [this]() {
-        const QDateTime modified = QFileInfo(m_appletsrc).lastModified();
-        if (modified != m_seen) {
+        if (signature() != m_seen) {
             schedule();
         }
     });
@@ -61,6 +60,17 @@ void GreeterSync::watch()
     if (QFileInfo::exists(m_appletsrc) && !m_watcher.files().contains(m_appletsrc)) {
         m_watcher.addPath(m_appletsrc);
     }
+}
+
+QString GreeterSync::signature() const
+{
+    const QString config = QFileInfo(m_appletsrc).absolutePath();
+    QStringList stamps;
+    for (const QString &name : {QStringLiteral("plasma-org.kde.plasma.desktop-appletsrc"), QStringLiteral("kernorarc"), QStringLiteral("kdeglobals"),
+                                 QStringLiteral("kdedefaults/kdeglobals")}) {
+        stamps.append(QString::number(QFileInfo(config + QLatin1Char('/') + name).lastModified().toMSecsSinceEpoch()));
+    }
+    return stamps.join(QLatin1Char(':'));
 }
 
 void GreeterSync::schedule()
@@ -100,6 +110,24 @@ GreeterSync::Wallpaper GreeterSync::desktopWallpaper() const
         }
     }
     Wallpaper found = primary.plugin.isEmpty() ? first : primary;
+    const QString configDir = QFileInfo(m_appletsrc).absolutePath();
+    KConfig style(configDir + QStringLiteral("/kernorarc"), KConfig::SimpleConfig);
+    found.colour = style.group(QStringLiteral("Style")).readEntry("colour", QStringLiteral("kernora"));
+    static const QRegularExpression colourName(QStringLiteral("^[a-z]+(-[a-z]+)*$"));
+    if (!colourName.match(found.colour).hasMatch()) {
+        found.colour = QStringLiteral("kernora");
+    }
+    QString scheme;
+    for (const QString &path : {configDir + QStringLiteral("/kdeglobals"), configDir + QStringLiteral("/kdedefaults/kdeglobals")}) {
+        KConfig globals(path, KConfig::SimpleConfig);
+        scheme = globals.group(QStringLiteral("General")).readEntry("ColorScheme");
+        if (!scheme.isEmpty()) {
+            break;
+        }
+    }
+    static const QRegularExpression kernoraScheme(QStringLiteral("^Kernora[A-Za-z0-9]*(Dark|Light)$"));
+    const QRegularExpressionMatch schemeMatch = kernoraScheme.match(scheme);
+    found.mode = schemeMatch.hasMatch() && schemeMatch.captured(1) == QLatin1String("Light") ? QStringLiteral("light") : QStringLiteral("dark");
     if (found.plugin == QLatin1String("org.kde.image")) {
         const QFileInfo picture(found.image);
         if (found.image.isEmpty() || !picture.isFile()) {
@@ -125,14 +153,18 @@ bool GreeterSync::alreadySynced(const Wallpaper &wallpaper) const
     if (wallpaper.plugin == QLatin1String("org.kde.image") && general.readEntry("wallpaperImage").isEmpty()) {
         return false;
     }
+    if (general.readEntry("colour") != wallpaper.colour || general.readEntry("mode") != wallpaper.mode) {
+        return false;
+    }
     const KConfigGroup state = KSharedConfig::openStateConfig()->group(QStringLiteral("Greeter"));
     return state.readEntry("plugin") == wallpaper.plugin && state.readEntry("image") == wallpaper.image
-        && state.readEntry("stamp", qint64(0)) == wallpaper.stamp;
+        && state.readEntry("stamp", qint64(0)) == wallpaper.stamp && state.readEntry("colour") == wallpaper.colour
+        && state.readEntry("mode") == wallpaper.mode;
 }
 
 void GreeterSync::sync()
 {
-    m_seen = QFileInfo(m_appletsrc).lastModified();
+    m_seen = signature();
     if (m_process) {
         m_again = true;
         return;
@@ -141,10 +173,7 @@ void GreeterSync::sync()
     if (wallpaper.plugin.isEmpty() || alreadySynced(wallpaper) || !administrator() || !QFileInfo::exists(GreeterHelper)) {
         return;
     }
-    QStringList arguments{GreeterHelper, wallpaper.plugin};
-    if (!wallpaper.image.isEmpty()) {
-        arguments.append(wallpaper.image);
-    }
+    const QStringList arguments{GreeterHelper, wallpaper.plugin, wallpaper.image, wallpaper.colour, wallpaper.mode};
     QProcess *process = new QProcess(this);
     m_process = process;
     connect(process, &QProcess::finished, this, [this, process, wallpaper](int code, QProcess::ExitStatus status) {
@@ -153,6 +182,8 @@ void GreeterSync::sync()
             state.writeEntry("plugin", wallpaper.plugin);
             state.writeEntry("image", wallpaper.image);
             state.writeEntry("stamp", wallpaper.stamp);
+            state.writeEntry("colour", wallpaper.colour);
+            state.writeEntry("mode", wallpaper.mode);
             state.sync();
         }
         process->deleteLater();

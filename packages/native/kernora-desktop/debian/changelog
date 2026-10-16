@@ -1,3 +1,25 @@
+kernora-desktop (1.4.33) UNRELEASED; urgency=medium
+
+  * The lock screen follows the light and dark theme. Its card, password
+    field, buttons and media pill used the dark palette whatever the theme;
+    only the clock and date stay light over the dimmed wallpaper. M3 now
+    reads light or dark from the Kernora colour scheme name in kdeglobals,
+    with overrides for the login screen.
+  * The login screen takes its colours from M3 with the colour and theme
+    the update notifier syncs; kernora-greeter-background records colour
+    and mode next to the wallpaper and keeps them when called without.
+    Its icons are tinted at run time and the fixed palette.js is gone.
+  * Password entry on the lock and login screens shows Material shapes
+    (MShapeEcho in org.kernora.m3): each character pops in as a circle and
+    turns into the next shape; deleting one shrinks it away, a wrong
+    password shakes them. The boot passphrase prompt uses the same shapes.
+  * The Kernora face is built in every colour (/usr/share/kernora/faces).
+  * Boot splash: Material 3 Expressive's wavy loading indicator, 90
+    pre-rendered frames of a wavy arc that grows, shrinks and turns over a
+    gapped track, instead of the cross-fading shapes.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 16 Oct 2026 01:00:00 -0700
+
 kernora-desktop (1.4.32) UNRELEASED; urgency=medium
 
   * VLC turns hardware decoding off on computers with the NVIDIA driver.

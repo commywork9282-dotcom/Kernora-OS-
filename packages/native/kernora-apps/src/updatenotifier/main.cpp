@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Kernora Developers
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "avatarsync.h"
 #include "greetersync.h"
 
 #include <QDBusConnection>
@@ -365,5 +366,6 @@ int main(int argc, char **argv)
     }
     Notifier notifier;
     GreeterSync greeter;
+    AvatarSync avatar;
     return app.exec();
 }

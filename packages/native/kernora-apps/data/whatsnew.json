@@ -1,5 +1,44 @@
 [
   {
+    "id": "2026-10-16-1",
+    "date": "2026-10-16",
+    "items": [
+      {
+        "icon": "system-lock-screen",
+        "title": {
+          "en": "Lock screen in your colours",
+          "ru": "Экран блокировки в ваших цветах"
+        },
+        "text": {
+          "en": "The lock screen and the login screen follow your light or dark theme and colour, and the Kernora profile picture changes colour with the rest of the system.",
+          "ru": "Экран блокировки и экран входа следуют вашей светлой или тёмной теме и цвету, а картинка профиля Kernora меняет цвет вместе с системой."
+        }
+      },
+      {
+        "icon": "preferences-desktop-effects",
+        "title": {
+          "en": "Shapes instead of dots",
+          "ru": "Фигуры вместо точек"
+        },
+        "text": {
+          "en": "When you type your password, every character pops in as a little Material shape: a cookie, a sun, a clover, a flower.",
+          "ru": "Когда вы вводите пароль, каждый символ появляется маленькой фигурой Material: печенькой, солнышком, клевером, цветком."
+        }
+      },
+      {
+        "icon": "system-reboot",
+        "title": {
+          "en": "A softer start",
+          "ru": "Мягкий запуск"
+        },
+        "text": {
+          "en": "While Kernora starts, a wavy Material 3 Expressive ring spins under the logo.",
+          "ru": "Пока Kernora загружается, под логотипом крутится волнистое кольцо Material 3 Expressive."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-15-2",
     "date": "2026-10-15",
     "items": [

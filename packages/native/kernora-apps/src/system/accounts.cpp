@@ -11,12 +11,15 @@
 #include <QDBusPendingReply>
 #include <QDBusMetaType>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
 #include <QRegularExpression>
 #include <QImage>
 #include <QStandardPaths>
 #include <QTemporaryFile>
 
+#include <KConfig>
+#include <KConfigGroup>
 #include <KLocalizedString>
 
 #include <crypt.h>
@@ -263,6 +266,25 @@ void Accounts::setRealName(const QString &name)
 
 void Accounts::setAvatar(const QUrl &image)
 {
+    const QString stock = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("kernora/avatars/00-kernora.png"));
+    if (!stock.isEmpty() && QFileInfo(image.toLocalFile()).canonicalFilePath() == QFileInfo(stock).canonicalFilePath()) {
+        KConfig style(QStringLiteral("kernorarc"));
+        const QString colour = style.group(QStringLiteral("Style")).readEntry("colour", QStringLiteral("kernora"));
+        QString themed = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("kernora/faces/%1.png").arg(colour));
+        if (themed.isEmpty()) {
+            themed = stock;
+        }
+        const QString path = QDir::homePath() + QStringLiteral("/.face");
+        QFile::remove(path);
+        if (!QFile::copy(themed, path)) {
+            Q_EMIT failed(i18n("The picture could not be saved."));
+            return;
+        }
+        ++m_avatarVersion;
+        Q_EMIT changed();
+        callUser(QStringLiteral("SetIconFile"), {path});
+        return;
+    }
     QImage source(image.toLocalFile());
     if (source.isNull()) {
         Q_EMIT failed(i18n("This picture could not be read."));

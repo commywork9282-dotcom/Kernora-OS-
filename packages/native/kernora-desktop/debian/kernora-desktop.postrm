@@ -1,6 +1,10 @@
 #!/bin/sh
 set -e
 
+if [ "$1" = purge ]; then
+    rm -f /var/lib/kernora/plymouth-theme
+fi
+
 if [ "$1" = remove ]; then
     update-alternatives --remove x-cursor-theme /usr/share/icons/kernora_cursors/cursor.theme || true
 fi

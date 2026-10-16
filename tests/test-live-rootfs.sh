@@ -91,8 +91,8 @@ done
   || fail "sddm is not installed"
 
 # The Kernora Material 3 shell and what it is set in.
-[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.32" ]] \
-  || fail "kernora-desktop 1.4.32 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.33" ]] \
+  || fail "kernora-desktop 1.4.33 is not installed"
 for applet in org.kernora.launcher org.kernora.quicksettings; do
   [[ -s "/usr/share/plasma/plasmoids/$applet/contents/ui/main.qml" ]] \
     || fail "Kernora shell applet is missing: $applet"
@@ -151,8 +151,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.40" ]] \
-  || fail "kernora-apps 1.1.40 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.41" ]] \
+  || fail "kernora-apps 1.1.41 is not installed"
 for package in flatpak appstream; do
   [[ "$(dpkg-query -W -f='${Status}' "$package")" == 'install ok installed' ]] || fail "Store dependency missing: $package"
 done
@@ -299,7 +299,7 @@ done
 # The Kernora login screen, and what it is drawn with.
 grep -Fxq 'Current=kernora' /etc/sddm.conf.d/kernora-theme.conf \
   || fail "SDDM does not use the Kernora login screen"
-[[ -s /usr/share/sddm/themes/kernora/Main.qml && -s /usr/share/sddm/themes/kernora/palette.js ]] \
+[[ -s /usr/share/sddm/themes/kernora/Main.qml && -s /usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MShapeEcho.qml ]] \
   || fail "the Kernora login screen is incomplete"
 grep -Fxq "User=${LIVE_USER:?}" /etc/sddm.conf.d/kernora-autologin.conf \
   || fail "SDDM autologin does not use the live account"

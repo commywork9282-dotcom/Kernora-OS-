@@ -11,3 +11,4 @@ MStateLayer MStateLayer.qml
 MSwitch MSwitch.qml
 MText MText.qml
 MTile MTile.qml
+MShapeEcho MShapeEcho.qml

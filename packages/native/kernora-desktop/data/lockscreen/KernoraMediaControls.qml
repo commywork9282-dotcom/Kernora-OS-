@@ -27,7 +27,7 @@ Rectangle {
     implicitWidth: 420
     implicitHeight: 72
     radius: M3.classic ? M3.cornerCard : 36
-    color: Qt.alpha(M3.darkScheme.surfaceContainerHigh, 0.94)
+    color: Qt.alpha(M3.surfaceContainerHigh, 0.94)
 
     RowLayout {
         anchors.fill: parent
@@ -42,13 +42,13 @@ Rectangle {
             Rectangle {
                 anchors.fill: parent
                 radius: 24
-                color: M3.darkScheme.secondaryContainer
+                color: M3.secondaryContainer
                 visible: art.status !== Image.Ready
                 MIcon {
                     anchors.centerIn: parent
                     size: 24
                     source: "audio-x-generic"
-                    color: M3.darkScheme.secondaryContainerContent
+                    color: M3.secondaryContainerContent
                 }
             }
             Image {
@@ -84,7 +84,7 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 text: pill.track || (pill.player?.identity ?? "")
-                color: M3.darkScheme.surfaceContent
+                color: M3.surfaceContent
                 font.family: M3.typeface
                 font.pixelSize: 16
                 font.weight: Font.Medium
@@ -95,7 +95,7 @@ Rectangle {
                 Layout.fillWidth: true
                 visible: text.length > 0
                 text: pill.artist
-                color: M3.darkScheme.surfaceVariantContent
+                color: M3.surfaceVariantContent
                 font.family: M3.typeface
                 font.pixelSize: 14
                 elide: Text.ElideRight
@@ -114,7 +114,7 @@ Rectangle {
             implicitWidth: 48
             implicitHeight: 48
             radius: pill.playing && !M3.classic ? 14 : 24
-            color: M3.darkScheme.primary
+            color: M3.primary
             opacity: pill.canControl ? 1 : 0.38
             Behavior on radius {
                 NumberAnimation {
@@ -127,12 +127,12 @@ Rectangle {
                 anchors.centerIn: parent
                 size: 24
                 source: pill.playing ? "media-playback-pause" : "media-playback-start"
-                color: M3.darkScheme.primaryContent
+                color: M3.primaryContent
             }
             Rectangle {
                 anchors.fill: parent
                 radius: parent.radius
-                color: M3.darkScheme.primaryContent
+                color: M3.primaryContent
                 opacity: playMouse.pressed ? 0.12 : (playMouse.containsMouse ? 0.08 : 0)
             }
             MouseArea {
@@ -162,14 +162,14 @@ Rectangle {
         Rectangle {
             anchors.fill: parent
             radius: 20
-            color: M3.darkScheme.surfaceContent
+            color: M3.surfaceContent
             opacity: buttonMouse.pressed ? 0.12 : (buttonMouse.containsMouse ? 0.08 : 0)
         }
         MIcon {
             anchors.centerIn: parent
             size: 24
             source: button.icon
-            color: M3.darkScheme.surfaceContent
+            color: M3.surfaceContent
         }
         MouseArea {
             id: buttonMouse

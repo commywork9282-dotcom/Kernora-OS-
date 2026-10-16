@@ -252,11 +252,23 @@ for path in \
   usr/share/icons/Kernora/scalable/apps/org.kernora.files.svg \
   usr/share/sddm/themes/kernora/Main.qml \
   usr/share/sddm/themes/kernora/metadata.desktop \
-  usr/share/sddm/themes/kernora/palette.js \
-  usr/share/sddm/themes/kernora/icons/login.svg; do
+  usr/share/sddm/themes/kernora/icons/login.svg \
+  usr/share/kernora/faces/kernora.png \
+  usr/share/kernora/faces/light-blue.png \
+  usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MShapeEcho.qml \
+  usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/materialshapes.js \
+  usr/share/plymouth/themes/kernora/wave-0.png \
+  usr/share/plymouth/themes/kernora/wave-89.png; do
   [[ -e "$temporary_root/desktop/$path" ]] \
     || fail "desktop package is missing $path"
 done
+[[ ! -e "$temporary_root/desktop/usr/share/sddm/themes/kernora/palette.js" ]] || fail "the login screen still ships a fixed palette"
+grep -Fxq 'MShapeEcho MShapeEcho.qml' "$temporary_root/desktop/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/qmldir" \
+  || fail "the shape echo is not part of org.kernora.m3"
+cmp -s "$temporary_root/desktop/usr/share/kernora/faces/kernora.png" "$temporary_root/desktop/usr/share/kernora/avatars/00-kernora.png" \
+  || fail "the Kernora face and the stock Kernora avatar differ"
+cmp -s "$temporary_root/desktop/usr/share/kernora/faces/kernora.png" "$temporary_root/desktop/usr/share/kernora/faces/light-blue.png" \
+  && fail "the Kernora face does not change with the colour"
 
 shell=usr/share/plasma/shells/org.kde.plasma.desktop/contents
 notifications=usr/share/plasma/plasmoids/org.kde.plasma.notifications/contents/ui

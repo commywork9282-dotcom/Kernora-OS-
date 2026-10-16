@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.32" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.33" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -130,6 +130,9 @@ grep -Fxq 'Theme=org.kernora.desktop' "$defaults" \
 grep -Fq 'loglevel=3' "$package_root/data/grub/kernora.cfg" \
   && grep -Fq 'update-grub' "$package_root/debian/kernora-desktop.postinst" \
   || fail "installed systems print kernel errors over the boot splash"
+grep -Fq 'dpkg-trigger --no-await update-initramfs' "$package_root/debian/kernora-desktop.postinst" \
+  && grep -Fq '/var/lib/kernora/plymouth-theme' "$package_root/debian/kernora-desktop.postrm" \
+  || fail "a changed boot splash does not reach the initramfs on upgrade"
 grep -Fq 'Keys.onReturnPressed: event => event.accepted = true' "$package_root/data/widgets/common/CityPicker.qml" \
   || fail "Enter in the city search closes the widget settings"
 grep -Fq 'property Timer watch' "$package_root/data/widgets/common/WeatherModel.qml" \
@@ -475,5 +478,34 @@ grep -Fq 'org.freedesktop.policykit.exec.path">/usr/libexec/kernora-greeter-back
   && grep -Fxq 'WallpaperPlugin=org.kernora.shapes' "$package_root/data/xdg-kscreenlockerrc/kscreenlockerrc" \
   && grep -Fq '/usr/share/kernora/xdg:' "$package_root/data/plasma-env/kernora-config-dirs.sh" \
   || fail "lock and login screens ignore the wallpaper"
+
+lockscreen="$package_root/data/lockscreen/LockScreen.qml"
+grep -Fq 'MShapeEcho {' "$lockscreen" && grep -Fq 'echoMode: TextInput.NoEcho' "$lockscreen" \
+  || fail "the lock screen still shows plain password dots"
+[[ "$(grep -c 'M3.darkScheme' "$lockscreen")" -le 4 ]] || fail "the lock screen card ignores the light theme"
+greeter_qml="$package_root/data/sddm-theme/kernora/Main.qml"
+grep -Fq 'import org.kernora.m3' "$greeter_qml" && grep -Fq 'MShapeEcho {' "$greeter_qml" \
+  && grep -Fq 'M3.colourOverride' "$greeter_qml" && ! grep -Fq 'palette.js' "$greeter_qml" \
+  || fail "the login screen does not follow the synced colour and theme"
+grep -Fq 'MShapeEcho MShapeEcho.qml' "$package_root/data/shell/m3/qmldir" || fail "MShapeEcho is not registered"
+grep -Fq 'source: parent.user ? parent.user.picture : ""' "$greeter_qml" \
+  && ! grep -Fq '"file://" + parent.user.picture' "$greeter_qml" \
+  || fail "the login screen breaks the avatar url sddm already gives it"
+tokens_out=$(mktemp)
+python3 "$package_root/tools/gen-qml-tokens" "$tokens_out" >/dev/null
+grep -Fq 'tokens.darkOverride !== null ? tokens.darkOverride : tokens.schemeDark' "$tokens_out" \
+  && grep -Fq '"/kdeglobals"' "$tokens_out" && grep -Fq '"/kdedefaults/kdeglobals"' "$tokens_out" \
+  || fail "M3 does not read light or dark from the colour scheme"
+rm -f "$tokens_out"
+helper="$package_root/data/greeter/kernora-greeter-background"
+grep -Fq 'colour=%s' "$helper" && grep -Fq 'mode=%s' "$helper" || fail "the greeter helper does not record colour and mode"
+plymouth_out=$(mktemp -d)
+(cd "$package_root/tools" && python3 gen-plymouth-theme ../data/icons/kernora-logo.svg ../data/symbols "$plymouth_out") >/dev/null
+[[ -s "$plymouth_out/wave-0.svg" && -s "$plymouth_out/wave-89.svg" && ! -e "$plymouth_out/bullet.svg" ]] \
+  && grep -Fq 'waves[tick % wave_count]' "$plymouth_out/kernora.script" \
+  || fail "the boot splash has no wavy indicator"
+rm -rf "$plymouth_out"
+grep -Fq 'generated/faces/*.png usr/share/kernora/faces' "$package_root/debian/kernora-desktop.install" \
+  || fail "the Kernora face is not built in every colour"
 
 printf 'kernora-desktop source test: OK\n'

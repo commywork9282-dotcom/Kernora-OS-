@@ -37,7 +37,7 @@ Depends:
  flatpak,
  kde-cli-tools,
  kernora-base (>= 1.6),
- kernora-desktop (>= 1.4.32),
+ kernora-desktop (>= 1.4.33),
  libarchive-tools,
  packagekit,
  pkexec,

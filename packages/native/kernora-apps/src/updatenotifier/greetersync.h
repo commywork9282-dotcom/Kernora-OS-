@@ -20,9 +20,12 @@ private:
         QString plugin;
         QString image;
         qint64 stamp = 0;
+        QString colour;
+        QString mode;
     };
 
     void watch();
+    QString signature() const;
     void schedule();
     void sync();
     Wallpaper desktopWallpaper() const;
@@ -32,6 +35,6 @@ private:
     QFileSystemWatcher m_watcher;
     QTimer m_timer;
     QPointer<QProcess> m_process;
-    QDateTime m_seen;
+    QString m_seen;
     bool m_again = false;
 };

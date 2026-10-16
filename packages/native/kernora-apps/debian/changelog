@@ -1,3 +1,16 @@
+kernora-apps (1.1.41) UNRELEASED; urgency=medium
+
+  * The Kernora profile picture follows the colour: when the user still
+    has the stock Kernora face, the update notifier swaps ~/.face for the
+    face in the current colour and updates AccountsService, and picking
+    the Kernora face in Settings uses the current colour too.
+  * The login screen gets the colour and the light or dark theme along
+    with the wallpaper.
+  * What's new: lock screen theme, password shapes, wavy boot animation.
+  * Require kernora-desktop 1.4.33.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 16 Oct 2026 01:00:00 -0700
+
 kernora-apps (1.1.40) UNRELEASED; urgency=medium
 
   * What's new uses a symbol for Store items. The colour app icon was drawn

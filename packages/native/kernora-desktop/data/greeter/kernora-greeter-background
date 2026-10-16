@@ -5,6 +5,8 @@ theme=/usr/share/sddm/themes/kernora
 state=/var/lib/kernora/greeter
 plugin=${1:-}
 source=${2:-}
+colour=${3:-}
+mode=${4:-}
 
 (( EUID == 0 )) || { echo "kernora-greeter-background: run as root" >&2; exit 1; }
 [[ -d $theme ]] || exit 0
@@ -14,6 +16,19 @@ case $plugin in
   org.kernora.*)
     [[ $plugin =~ ^org\.kernora\.[a-z]+$ && -f /usr/share/plasma/wallpapers/$plugin/contents/ui/Scene.qml ]] || exit 2
     ;;
+  *) exit 2 ;;
+esac
+
+previous() {
+  sed -n "s/^$1=//p" "$theme/theme.conf.user" 2>/dev/null | head -n 1
+}
+[[ -n $colour ]] || colour=$(previous colour)
+[[ -n $mode ]] || mode=$(previous mode)
+if [[ -n $colour ]]; then
+  [[ $colour == kernora || ( $colour =~ ^[a-z]+(-[a-z]+)*$ && -f /usr/share/kernora/palettes/$colour.conf ) ]] || exit 2
+fi
+case $mode in
+  ''|light|dark) ;;
   *) exit 2 ;;
 esac
 
@@ -44,6 +59,6 @@ else
 fi
 
 settings=$(mktemp "$theme/.theme.conf.user.XXXXXX")
-printf '[General]\nwallpaper=%s\nwallpaperImage=%s\n' "$plugin" "$image" > "$settings"
+printf '[General]\nwallpaper=%s\nwallpaperImage=%s\ncolour=%s\nmode=%s\n' "$plugin" "$image" "$colour" "$mode" > "$settings"
 chmod 0644 "$settings"
 mv "$settings" "$theme/theme.conf.user"

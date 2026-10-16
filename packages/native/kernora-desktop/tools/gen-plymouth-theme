@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import math
 import pathlib
 import re
 import sys
@@ -18,6 +19,16 @@ SHAPE_CANVAS = 56
 LOGO_SIZE = 128
 ENTRY_WIDTH = 320
 ENTRY_HEIGHT = 56
+WAVE_FRAMES = 90
+WAVE_CANVAS = 72
+WAVE_RADIUS = 27
+WAVE_STROKE = 5
+WAVE_AMPLITUDE = 2.4
+WAVE_COUNT = 10
+WAVE_TRAVEL = 3
+WAVE_MIN = 18.0
+WAVE_MAX = 270.0
+WAVE_GAP = 16.0
 
 
 def rgb(hex_colour: str) -> tuple[float, float, float]:
@@ -35,6 +46,44 @@ def shape_svg(name: str, colour: str) -> str:
     offset = (SHAPE_CANVAS - SHAPE_SIZE) / 2
     return svg(SHAPE_CANVAS, SHAPE_CANVAS,
                f'<path transform="translate({offset} {offset})" fill="{colour}" d="{paths[name]}"/>')
+
+
+def ease_in_out(t: float) -> float:
+    t = min(max(t, 0.0), 1.0)
+    return 4 * t * t * t if t < 0.5 else 1 - (-2 * t + 2) ** 3 / 2
+
+
+def wave_svg(frame: int, active: str, track: str) -> str:
+    u = frame / WAVE_FRAMES
+    span = WAVE_MAX - WAVE_MIN
+    base = u * (360.0 - span) - 90.0
+    head = base + WAVE_MIN + span * ease_in_out(min(u * 2, 1.0))
+    tail = base + span * ease_in_out(max(u * 2 - 1, 0.0))
+    phase = 2 * math.pi * WAVE_TRAVEL * u
+    centre = WAVE_CANVAS / 2
+
+    def point(angle: float, radius: float) -> tuple[float, float]:
+        rad = math.radians(angle)
+        return centre + radius * math.cos(rad), centre + radius * math.sin(rad)
+
+    steps = max(2, int((head - tail) / 1.5))
+    points = []
+    for i in range(steps + 1):
+        angle = tail + (head - tail) * i / steps
+        radius = WAVE_RADIUS + WAVE_AMPLITUDE * math.sin(WAVE_COUNT * math.radians(angle) + phase)
+        points.append(point(angle, radius))
+    arc = "M " + " L ".join(f"{x:.2f} {y:.2f}" for x, y in points)
+    body = (f'<path d="{arc}" fill="none" stroke="{active}" stroke-width="{WAVE_STROKE}" '
+            f'stroke-linecap="round" stroke-linejoin="round"/>')
+    start = head + WAVE_GAP
+    end = tail + 360.0 - WAVE_GAP
+    if end - start > 4:
+        x1, y1 = point(start, WAVE_RADIUS)
+        x2, y2 = point(end, WAVE_RADIUS)
+        large = 1 if end - start > 180 else 0
+        body = (f'<path d="M {x1:.2f} {y1:.2f} A {WAVE_RADIUS} {WAVE_RADIUS} 0 {large} 1 {x2:.2f} {y2:.2f}" '
+                f'fill="none" stroke="{track}" stroke-width="{WAVE_STROKE}" stroke-linecap="round"/>') + body
+    return svg(WAVE_CANVAS, WAVE_CANVAS, body)
 
 
 def logo_svg(source: str, colour: str) -> str:
@@ -73,51 +122,26 @@ shape_count = %(count)d;
 for (i = 0; i < shape_count; i++)
     shapes[i] = Image("shape-" + i + ".png");
 
+wave_count = %(frames)d;
+for (i = 0; i < wave_count; i++)
+    waves[i] = Image("wave-" + i + ".png");
+
 indicator.x = screen.x + screen.w / 2;
 indicator.y = screen.y + screen.h * 0.42 + logo.image.GetHeight() / 2 + 72;
-indicator.a = Sprite();
-indicator.b = Sprite();
-indicator.a.SetZ(10);
-indicator.b.SetZ(11);
-
-// Frames per shape at Plymouth's 50 Hz, and the share of it spent handing
-// over to the next one.
-hold = 36;
-blend = 14;
+indicator.sprite = Sprite();
+indicator.sprite.SetZ(10);
+indicator.sprite.SetX(indicator.x - waves[0].GetWidth() / 2);
+indicator.sprite.SetY(indicator.y - waves[0].GetHeight() / 2);
+indicator.sprite.SetOpacity(0);
 tick = 0;
-
-fun ease(t) {
-    // Material's emphasized curve, near enough: fast out, slow in.
-    return 1 - (1 - t) * (1 - t) * (1 - t);
-}
-
-fun place(sprite, image) {
-    sprite.SetImage(image);
-    sprite.SetX(indicator.x - image.GetWidth() / 2);
-    sprite.SetY(indicator.y - image.GetHeight() / 2);
-}
 
 fun refresh_callback() {
     tick++;
-    // The mark fades in over the first half second.
-    if (tick <= 25)
+    if (tick <= 25) {
         logo.sprite.SetOpacity(tick / 25);
-
-    current = Math.Int(tick / hold) %% shape_count;
-    next = (current + 1) %% shape_count;
-    phase = tick %% hold;
-    // A steady turn, a little faster during a hand-over.
-    angle = tick * 0.07;
-    place(indicator.a, shapes[current].Rotate(angle));
-    if (phase >= hold - blend) {
-        f = ease((phase - (hold - blend)) / blend);
-        place(indicator.b, shapes[next].Rotate(angle));
-        indicator.a.SetOpacity(1 - f);
-        indicator.b.SetOpacity(f);
-    } else {
-        indicator.a.SetOpacity(1);
-        indicator.b.SetOpacity(0);
+        indicator.sprite.SetOpacity(tick / 25);
     }
+    indicator.sprite.SetImage(waves[tick %% wave_count]);
 }
 Plymouth.SetRefreshFunction(refresh_callback);
 
@@ -139,7 +163,9 @@ lock.sprite.SetY(entry.y + entry.image.GetHeight() / 2 - lock.image.GetHeight() 
 lock.sprite.SetOpacity(0);
 lock.sprite.SetZ(21);
 
-bullet.image = Image("bullet.png");
+bullet.size = 26;
+for (i = 0; i < shape_count; i++)
+    bullet_shapes[i] = shapes[i].Scale(bullet.size, bullet.size);
 prompt.sprite = Sprite();
 prompt.sprite.SetZ(21);
 answer.sprite = Sprite();
@@ -167,14 +193,15 @@ fun display_password_callback(text, count) {
     answer.sprite.SetOpacity(0);
     hide_bullets();
     // As many dots as fit the field.
-    fit = Math.Int((entry.image.GetWidth() - 72) / (bullet.image.GetWidth() + 6));
+    fit = Math.Int((entry.image.GetWidth() - 72) / (bullet.size + 2));
     if (count > fit)
         count = fit;
     for (i = 0; i < count; i++) {
         if (!bullets[i])
-            bullets[i] = Sprite(bullet.image);
-        bullets[i].SetX(entry.x + 56 + i * (bullet.image.GetWidth() + 6));
-        bullets[i].SetY(entry.y + entry.image.GetHeight() / 2 - bullet.image.GetHeight() / 2);
+            bullets[i] = Sprite();
+        bullets[i].SetImage(bullet_shapes[i %% shape_count]);
+        bullets[i].SetX(entry.x + 52 + i * (bullet.size + 2));
+        bullets[i].SetY(entry.y + entry.image.GetHeight() / 2 - bullet.size / 2);
         bullets[i].SetZ(22);
         bullets[i].SetOpacity(1);
     }
@@ -234,7 +261,7 @@ def main(argv: list[str]) -> int:
     (output / f"{THEME}.plymouth").write_text(
         "[Plymouth Theme]\n"
         "Name=Kernora\n"
-        "Description=The Kernora mark and Material 3's loading indicator\n"
+        "Description=The Kernora mark and Material 3 Expressive's wavy loading indicator\n"
         "ModuleName=script\n"
         "\n"
         "[script]\n"
@@ -244,6 +271,7 @@ def main(argv: list[str]) -> int:
     (output / f"{THEME}.script").write_text(SCRIPT % {
         "bg": triple(dark["surface"]),
         "count": len(SEQUENCE),
+        "frames": WAVE_FRAMES,
         "text": triple(dark["onSurface"]),
         "soft": triple(dark["onSurfaceVariant"]),
     }, encoding="utf-8")
@@ -255,8 +283,9 @@ def main(argv: list[str]) -> int:
     (output / "entry.svg").write_text(svg(ENTRY_WIDTH, ENTRY_HEIGHT,
         f'<rect x="1" y="1" width="{ENTRY_WIDTH - 2}" height="{ENTRY_HEIGHT - 2}" rx="{radius - 1}" '
         f'fill="{dark["surfaceContainerHighest"]}" stroke="{dark["primary"]}" stroke-width="2"/>'), encoding="utf-8")
-    (output / "bullet.svg").write_text(svg(12, 12, f'<circle cx="6" cy="6" r="5" fill="{dark["onSurface"]}"/>'),
-                                       encoding="utf-8")
+    for frame in range(WAVE_FRAMES):
+        (output / f"wave-{frame}.svg").write_text(wave_svg(frame, dark["primary"], dark["secondaryContainer"]),
+                                                  encoding="utf-8")
     (output / "lock.svg").write_text(symbol_svg(symbols / "lock_24px.svg", 24, dark["onSurfaceVariant"]),
                                      encoding="utf-8")
     print(f"Plymouth theme: {output}")

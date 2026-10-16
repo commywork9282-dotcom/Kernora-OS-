@@ -47,6 +47,12 @@ override_dh_auto_build:
 	  rm $$image; \
 	done
 	rm generated/skel/face.svg
+	install -d generated/faces
+	set -e; for colour in $(COLOURS); do \
+	  KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-avatar $(LOGO) generated/faces/$$colour.svg; \
+	  rsvg-convert --width=512 --height=512 --output=generated/faces/$$colour.png generated/faces/$$colour.svg; \
+	  rm generated/faces/$$colour.svg; \
+	done
 	rsvg-convert --width=512 --height=512 \
 	  --output=generated/splash/kernora.png $(LOGO)
 	python3 $(TOOLS)/fetch-symbols --check
@@ -130,6 +136,7 @@ override_dh_auto_build:
 	cp -a data/shell/m3 generated/style/org/kernora/m3
 	sed -i '1i module org.kernora.m3' generated/style/org/kernora/m3/qmldir
 	python3 $(TOOLS)/gen-qml-tokens generated/style/org/kernora/m3/M3.qml
+	cp generated/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js generated/style/org/kernora/m3/
 	cp -a data/ui generated/style/org/kernora/ui
 	python3 $(TOOLS)/gen-translations data/shell/po generated/locale
 	set -e; for colour in $(COLOURS); do \

@@ -60,6 +60,7 @@ Item {
             graceLockTimer.restart();
             notificationRemoveTimer.restart();
             shake.restart();
+            echo.shake();
         }
         function onSucceeded() {
             if (authenticator.hadPrompt) {
@@ -248,7 +249,7 @@ Item {
             width: 56
             height: 56
             radius: 28
-            color: Qt.alpha(M3.darkScheme.surfaceContainerHigh, 0.9)
+            color: Qt.alpha(M3.surfaceContainerHigh, 0.9)
             opacity: lockScreen.uiVisible ? 0 : 1
             visible: opacity > 0
             Behavior on opacity { NumberAnimation { duration: M3.durationMedium2 } }
@@ -256,7 +257,7 @@ Item {
                 anchors.centerIn: parent
                 size: 24
                 source: "system-lock-screen"
-                color: M3.darkScheme.surfaceContent
+                color: M3.surfaceContent
             }
         }
 
@@ -267,7 +268,7 @@ Item {
             width: 400
             height: cardColumn.implicitHeight + 64
             radius: M3.classic ? M3.cornerDialog : 36
-            color: Qt.alpha(M3.darkScheme.surfaceContainer, 0.94)
+            color: Qt.alpha(M3.surfaceContainer, 0.94)
             opacity: lockScreen.uiVisible ? 1 : 0
             visible: opacity > 0
             Behavior on opacity { NumberAnimation { duration: M3.durationMedium4 } }
@@ -294,12 +295,12 @@ Item {
                     Rectangle {
                         anchors.fill: parent
                         radius: width / 2
-                        color: M3.darkScheme.primaryContainer
+                        color: M3.primaryContainer
                         Text {
                             anchors.centerIn: parent
                             visible: face.status !== Image.Ready
                             text: kscreenlocker_userName.charAt(0).toUpperCase()
-                            color: M3.darkScheme.primaryContainerContent
+                            color: M3.primaryContainerContent
                             font.family: M3.typeface
                             font.pixelSize: 44
                             font.weight: Font.Medium
@@ -334,7 +335,7 @@ Item {
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignHCenter
                     text: kscreenlocker_userName
-                    color: M3.darkScheme.surfaceContent
+                    color: M3.surfaceContent
                     font.family: M3.typeface
                     font.pixelSize: 24
                     elide: Text.ElideRight
@@ -351,9 +352,9 @@ Item {
                         Layout.fillWidth: true
                         implicitHeight: 56
                         radius: M3.radius("field", 56)
-                        color: M3.darkScheme.surfaceContainerHighest
+                        color: M3.surfaceContainerHighest
                         border.width: password.activeFocus ? 2 : 0
-                        border.color: root.notification.length > 0 ? M3.darkScheme.error : M3.darkScheme.primary
+                        border.color: root.notification.length > 0 ? M3.error : M3.primary
 
                         TextInput {
                             id: password
@@ -362,12 +363,12 @@ Item {
                             anchors.leftMargin: 24
                             anchors.rightMargin: 20
                             anchors.verticalCenter: parent.verticalCenter
-                            echoMode: TextInput.Password
-                            passwordCharacter: "•"
+                            echoMode: TextInput.NoEcho
+                            cursorDelegate: Item {}
                             focus: true
                             enabled: !authenticator.graceLocked && !graceLockTimer.running
-                            color: M3.darkScheme.surfaceContent
-                            selectionColor: M3.darkScheme.primaryContainer
+                            color: M3.surfaceContent
+                            selectionColor: M3.primaryContainer
                             font.family: M3.typeface
                             font.pixelSize: 18
                             renderType: Text.QtRendering
@@ -379,23 +380,35 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 visible: password.text.length === 0
                                 text: root.tr("Password")
-                                color: M3.darkScheme.surfaceVariantContent
+                                color: M3.surfaceVariantContent
                                 font: password.font
                             }
+                        }
+                        MShapeEcho {
+                            id: echo
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: 20
+                            anchors.rightMargin: 16
+                            anchors.verticalCenter: parent.verticalCenter
+                            count: password.text.length
+                            color: M3.primary
+                            size: 24
+                            spacing: 9
                         }
                     }
                     Rectangle {
                         implicitWidth: 56
                         implicitHeight: 56
                         radius: loginMouse.pressed && !M3.classic ? 16 : 28
-                        color: M3.darkScheme.primary
+                        color: M3.primary
                         opacity: password.enabled ? 1 : 0.5
                         Behavior on radius { NumberAnimation { duration: M3.durationShort3 } }
                         MIcon {
                             anchors.centerIn: parent
                             size: 26
                             source: "go-next"
-                            color: M3.darkScheme.primaryContent
+                            color: M3.primaryContent
                         }
                         MouseArea {
                             id: loginMouse
@@ -413,7 +426,7 @@ Item {
                     implicitWidth: unlockLabel.implicitWidth + 48
                     implicitHeight: 48
                     radius: M3.radius("button", 48)
-                    color: M3.darkScheme.primary
+                    color: M3.primary
                     activeFocusOnTab: true
                     Keys.onReturnPressed: Qt.quit()
                     Keys.onEnterPressed: Qt.quit()
@@ -421,7 +434,7 @@ Item {
                         id: unlockLabel
                         anchors.centerIn: parent
                         text: root.tr("Unlock")
-                        color: M3.darkScheme.primaryContent
+                        color: M3.primaryContent
                         font.family: M3.typeface
                         font.pixelSize: 15
                         font.weight: Font.Medium
@@ -447,7 +460,7 @@ Item {
                         }
                         return parts.join(" • ");
                     }
-                    color: root.notification.length > 0 ? M3.darkScheme.error : M3.darkScheme.surfaceVariantContent
+                    color: root.notification.length > 0 ? M3.error : M3.surfaceVariantContent
                     font.family: M3.typeface
                     font.pixelSize: 14
                     wrapMode: Text.Wrap
@@ -509,13 +522,13 @@ Item {
         implicitWidth: chipRow.implicitWidth + 28
         implicitHeight: 40
         radius: 20
-        color: chipMouse.containsMouse ? Qt.alpha(M3.darkScheme.surfaceContainerHigh, 0.95) : Qt.alpha(M3.darkScheme.surfaceContainer, 0.85)
+        color: chipMouse.containsMouse ? Qt.alpha(M3.surfaceContainerHigh, 0.95) : Qt.alpha(M3.surfaceContainer, 0.85)
         RowLayout {
             id: chipRow
             anchors.centerIn: parent
             spacing: 8
-            MIcon { size: 20; source: chip.icon; color: M3.darkScheme.surfaceVariantContent }
-            Text { text: chip.label; color: M3.darkScheme.surfaceContent; font.family: M3.typeface; font.pixelSize: 14 }
+            MIcon { size: 20; source: chip.icon; color: M3.surfaceVariantContent }
+            Text { text: chip.label; color: M3.surfaceContent; font.family: M3.typeface; font.pixelSize: 14 }
         }
         MouseArea {
             id: chipMouse
@@ -534,14 +547,14 @@ Item {
         implicitWidth: 48
         implicitHeight: 48
         radius: 24
-        color: buttonMouse.containsMouse ? Qt.alpha(M3.darkScheme.surfaceContainerHighest, 0.95) : Qt.alpha(M3.darkScheme.surfaceContainerHigh, 0.85)
+        color: buttonMouse.containsMouse ? Qt.alpha(M3.surfaceContainerHighest, 0.95) : Qt.alpha(M3.surfaceContainerHigh, 0.85)
         Accessible.role: Accessible.Button
         Accessible.name: label
         MIcon {
             anchors.centerIn: parent
             size: 22
             source: button.icon
-            color: M3.darkScheme.surfaceContent
+            color: M3.surfaceContent
         }
         MouseArea {
             id: buttonMouse
@@ -557,7 +570,7 @@ Item {
             width: tipText.implicitWidth + 16
             height: 28
             radius: 4
-            color: M3.darkScheme.surfaceContent
+            color: M3.inverseSurface
             opacity: buttonMouse.containsMouse ? 1 : 0
             visible: opacity > 0
             Behavior on opacity { NumberAnimation { duration: M3.durationShort3 } }
@@ -565,7 +578,7 @@ Item {
                 id: tipText
                 anchors.centerIn: parent
                 text: button.label
-                color: M3.darkScheme.surface
+                color: M3.inverseOnSurface
                 font.family: M3.typeface
                 font.pixelSize: 12
             }
