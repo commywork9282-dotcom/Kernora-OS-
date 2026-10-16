@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.39" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.40" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -86,7 +86,8 @@ p = pathlib.Path(sys.argv[1])
 featured = json.loads((p / 'data/store/featured.json').read_text())
 assert all(isinstance(ids, list) and ids and len(ids) == len(set(ids)) for ids in featured.values())
 notes = json.loads((p / 'data/whatsnew.json').read_text())
-assert any(i['icon'] == 'org.kernora.store' for r in notes for i in r['items'])
+assert any('Store' in i['title']['en'] for r in notes for i in r['items'])
+assert not any(i['icon'].startswith('org.kernora.') for r in notes for i in r['items'])
 for release in notes:
     datetime.date.fromisoformat(release.get('date', release['id'][:10]))
 PY

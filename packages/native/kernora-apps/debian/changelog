@@ -1,3 +1,11 @@
+kernora-apps (1.1.40) UNRELEASED; urgency=medium
+
+  * What's new uses a symbol for Store items. The colour app icon was drawn
+    as a mask there and showed up as a plain circle.
+  * Store: My apps > Updates no longer says "up to date" twice.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 15 Oct 2026 23:00:00 -0700
+
 kernora-apps (1.1.39) UNRELEASED; urgency=medium
 
   * The login screen follows the desktop wallpaper. The update notifier

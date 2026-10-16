@@ -54,7 +54,7 @@ Item {
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 16
-                visible: !page.updatingAll
+                visible: !page.updatingAll && Store.pendingUpdates > 0
 
                 MText {
                     Layout.fillWidth: true
