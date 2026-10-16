@@ -1,3 +1,14 @@
+kernora-desktop (1.4.35) UNRELEASED; urgency=medium
+
+  * Segmented buttons became the expressive connected button group: the
+    chosen button turns into a pill, the pressed one grows a bit and
+    pushes its neighbours. md1 and md2 keep the outlined segments.
+  * New MLoadingIndicator in org.kernora.m3, the shape morphing loading
+    indicator (soft burst, cookie, gem, pill, sun, cookie, oval).
+  * IconButton changes shape when pressed or checked.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 16 Oct 2026 17:00:00 -0700
+
 kernora-desktop (1.4.34) UNRELEASED; urgency=medium
 
   * Progress bars and spinners are the Material 3 Expressive wavy ones:

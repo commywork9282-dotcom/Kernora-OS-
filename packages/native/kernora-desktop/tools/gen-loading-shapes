@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""usage: gen-loading-shapes OUTPUT_FILE
+"""
+
+import json
+import math
+import pathlib
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import material_shapes
+
+SEQUENCE = ["softBurst", "cookie9", "gem", "pill", "sunny", "cookie4", "oval"]
+SAMPLES = 96
+TAU = 2 * math.pi
+
+
+def radii(cubics) -> list[float]:
+    points = []
+    for c in material_shapes.normalized(cubics):
+        for i in range(64):
+            p = material_shapes._point_on(c, i / 64)
+            points.append((math.atan2(p.y - 0.5, p.x - 0.5) % TAU, math.hypot(p.x - 0.5, p.y - 0.5)))
+    points.sort()
+    ring = [(a - TAU, r) for a, r in points[-2:]] + points + [(a + TAU, r) for a, r in points[:2]]
+    result = []
+    j = 0
+    for k in range(SAMPLES):
+        angle = TAU * k / SAMPLES
+        while ring[j + 1][0] < angle:
+            j += 1
+        (a0, r0), (a1, r1) = ring[j], ring[j + 1]
+        f = (angle - a0) / (a1 - a0) if a1 > a0 else 0.0
+        result.append(round(r0 + (r1 - r0) * f, 4))
+    return result
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 2:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    definitions = material_shapes.shape_definitions()
+    shapes = [radii(definitions[name]) for name in SEQUENCE]
+    text = (".pragma library\n\n"
+            f"var samples = {SAMPLES};\n"
+            f"var names = {json.dumps(SEQUENCE)};\n"
+            f"var shapes = {json.dumps(shapes, separators=(',', ':'))};\n")
+    pathlib.Path(argv[1]).write_text(text, encoding="utf-8")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

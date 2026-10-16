@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.34" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.35" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -495,6 +495,25 @@ grep -Fq 'MLinearProgress {' "$package_root/data/ui/LinearProgress.qml" \
 grep -Fq 'readonly property bool waving: wavy && !M3.classic' "$package_root/data/shell/m3/MLinearProgress.qml" \
   && grep -Fq 'shown > 0.1 && shown < 0.95' "$package_root/data/shell/m3/MLinearProgress.qml" \
   || fail "the wave does not flatten for md1/md2 or at the ends of the progress"
+grep -Fq 'MLoadingIndicator MLoadingIndicator.qml' "$package_root/data/shell/m3/qmldir" \
+  && grep -Fq 'gen-loading-shapes generated/style/org/kernora/m3/loadingshapes.js' "$package_root/debian/rules" \
+  || fail "the shape morphing loading indicator is not built"
+shapes_out=$(mktemp)
+python3 "$package_root/tools/gen-loading-shapes" "$shapes_out"
+python3 - "$shapes_out" <<'PY' || fail "loading shapes are not sampled the same way"
+import json, re, sys
+text = open(sys.argv[1]).read()
+samples = int(re.search(r"var samples = (\d+);", text).group(1))
+shapes = json.loads(re.search(r"var shapes = (.*);", text).group(1))
+assert len(shapes) == 7 and all(len(s) == samples for s in shapes)
+assert all(0.2 < r < 0.75 for s in shapes for r in s)
+PY
+rm -f "$shapes_out"
+grep -Fq 'readonly property bool expressive: !M3.classic' "$package_root/data/ui/SegmentedButtons.qml" \
+  && grep -Fq '(chosen || isFirst ? full : inner)' "$package_root/data/ui/SegmentedButtons.qml" \
+  || fail "segmented buttons are not the connected expressive group"
+grep -Fq '(root.pressed || root.checked) ? Math.round(height * 0.3)' "$package_root/data/ui/IconButton.qml" \
+  || fail "icon buttons do not change shape when pressed or checked"
 grep -Fq 'source: parent.user ? parent.user.picture : ""' "$greeter_qml" \
   && ! grep -Fq '"file://" + parent.user.picture' "$greeter_qml" \
   || fail "the login screen breaks the avatar url sddm already gives it"

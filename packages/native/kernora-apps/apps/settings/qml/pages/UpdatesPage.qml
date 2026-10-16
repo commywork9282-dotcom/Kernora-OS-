@@ -158,7 +158,7 @@ SettingsPage {
             LinearProgress {
                 Layout.fillWidth: true
                 visible: page.working
-                indeterminate: Updates.progress <= 0 || Updates.progress > 100
+                indeterminate: Updates.progress <= 0 || Updates.progress >= 100
                 value: Updates.progress / 100
             }
             RowLayout {

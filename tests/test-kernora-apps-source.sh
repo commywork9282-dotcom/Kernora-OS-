@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.43" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.44" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -109,5 +109,10 @@ grep -Fq 'wallpaper.colour, wallpaper.mode' "$package_root/src/updatenotifier/gr
   || fail "the login screen does not get the colour and theme"
 grep -Fq '"/kdedefaults/kdeglobals"' "$package_root/src/updatenotifier/greetersync.cpp" \
   || fail "the login screen turns dark after plasma moves the colour scheme to kdedefaults"
+
+grep -Fq 'MLoadingIndicator {' "$package_root/apps/store/qml/AppPage.qml" \
+  || fail "screenshots in Store do not use the loading indicator"
+grep -Fq 'indeterminate: Updates.progress <= 0 || Updates.progress >= 100' "$package_root/apps/settings/qml/pages/UpdatesPage.qml" \
+  || fail "the update bar flashes full while packagekit reports 100%"
 
 printf 'kernora-apps source test: OK\n'

@@ -14,3 +14,4 @@ MTile MTile.qml
 MShapeEcho MShapeEcho.qml
 MLinearProgress MLinearProgress.qml
 MCircularProgress MCircularProgress.qml
+MLoadingIndicator MLoadingIndicator.qml

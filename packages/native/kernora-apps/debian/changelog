@@ -1,3 +1,12 @@
+kernora-apps (1.1.44) UNRELEASED; urgency=medium
+
+  * Store shows the shape morphing loading indicator while screenshots load.
+  * The update bar no longer flashes full when PackageKit reports 100%.
+  * What's new: button groups and the loading indicator.
+  * Require kernora-desktop 1.4.35.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 16 Oct 2026 17:00:00 -0700
+
 kernora-apps (1.1.43) UNRELEASED; urgency=medium
 
   * The storage bars in Settings stay flat, they are meters.

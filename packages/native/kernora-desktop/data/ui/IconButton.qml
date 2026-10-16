@@ -27,9 +27,17 @@ QQC2.AbstractButton {
 
     contentItem: Item {}
     background: Rectangle {
-        radius: height / 2
+        radius: !M3.classic && (root.pressed || root.checked) ? Math.round(height * 0.3) : height / 2
         color: root.checked ? M3.secondaryContainer : "transparent"
         Behavior on color { ColorAnimation { duration: M3.durationShort4 } }
+        Behavior on radius {
+            enabled: !M3.classic
+            NumberAnimation {
+                duration: root.pressed ? M3.durationShort3 : M3.durationMedium2
+                easing.type: Easing.Bezier
+                easing.bezierCurve: M3.easingEmphasizedDecelerate
+            }
+        }
 
         MStateLayer {
             radius: parent.radius

@@ -425,11 +425,9 @@ Item {
                             visible: image.status === Image.Error
                         }
 
-                        LinearProgress {
+                        MLoadingIndicator {
                             anchors.centerIn: parent
-                            width: parent.width * 0.4
                             visible: image.status === Image.Loading
-                            indeterminate: true
                         }
 
                         MouseArea {
@@ -723,11 +721,12 @@ Item {
                 cache: true
             }
 
-            LinearProgress {
+            MLoadingIndicator {
                 anchors.centerIn: parent
-                width: 200
+                width: 64
+                height: 64
+                contained: true
                 visible: full.status === Image.Loading
-                indeterminate: true
             }
 
             MIconButton {

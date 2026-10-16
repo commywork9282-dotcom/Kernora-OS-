@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-10-16-4",
+    "date": "2026-10-16",
+    "items": [
+      {
+        "icon": "preferences-desktop-effects",
+        "title": {
+          "en": "Livelier button groups",
+          "ru": "Живые группы кнопок"
+        },
+        "text": {
+          "en": "Choices like the power mode or the app source are now separate buttons. The one you pick becomes a pill, and the one you press grows a little and nudges its neighbours.",
+          "ru": "Выбор вроде режима питания или источника приложения теперь сделан отдельными кнопками. Выбранная превращается в пилюлю, а нажатая чуть растёт и подвигает соседей."
+        }
+      },
+      {
+        "icon": "view-refresh",
+        "title": {
+          "en": "Shapes while loading",
+          "ru": "Фигуры при загрузке"
+        },
+        "text": {
+          "en": "While screenshots load in Store, a Material shape morphs from one form into another instead of a plain bar.",
+          "ru": "Пока в Магазине грузятся скриншоты, вместо простой полоски фигура Material перетекает из одной формы в другую."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-16-3",
     "date": "2026-10-16",
     "items": [
