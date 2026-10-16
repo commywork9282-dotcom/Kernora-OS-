@@ -11,7 +11,7 @@ The upstream suite is never addressed as mutable `stable`. Both suite and
 snapshot timestamp are declared in `configs/upstream/base.env`.
 
 The current values are Debian `trixie`, `amd64`, and snapshot
-`20260901T000000Z` (`2026-09-01T00:00:00Z`). Upstream source file hashes are
+`20261015T000000Z` (`2026-10-15T00:00:00Z`, Debian 13.7). Upstream source file hashes are
 recorded in `manifests/upstream.lock`. The locally extracted `mmdebstrap`
 package is separately pinned by version and SHA-256 in the same configuration
 file.
@@ -90,7 +90,7 @@ This target performs the following operations:
 2. builds the source package;
 3. bootstraps pinned `mmdebstrap` version `1.5.7-1+deb13u1`;
 4. creates or reuses a clean Debian `trixie` `buildd` rootfs from snapshot
-   `20260901T000000Z`;
+   `20261015T000000Z`;
 5. builds the binary in rootless namespaces with
    `dpkg-buildpackage --build=binary --no-sign`;
 6. tests the metadata and installed Kernora identity in the resulting package.
@@ -176,7 +176,7 @@ The installed `/etc/apt/sources.list` contains four declared sources:
 
 1. the embedded development archive at `/usr/share/kernora/archive`, scoped to
    its embedded public key;
-2. Debian `trixie` from snapshot `20260901T000000Z`;
+2. Debian `trixie` from snapshot `20261015T000000Z`;
 3. `trixie-updates` from the same snapshot;
 4. `trixie-security` from the matching Debian security snapshot.
 

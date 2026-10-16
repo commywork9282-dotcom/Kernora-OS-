@@ -33,13 +33,13 @@ grep -Fxq 'Parent: Debian' /etc/dpkg/origins/kernora \
   || fail "Kernora is not the default dpkg vendor"
 
 [[ "$(dpkg-query -W -f='${Version}' base-files)" \
-  == "13.8+deb13u6+kernora1" ]] || fail "wrong base-files version"
+  == "13.8+deb13u7+kernora1" ]] || fail "wrong base-files version"
 [[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.4" ]] \
   || fail "kernora-base is not installed"
 
 grep -Fq 'signed-by=/usr/share/keyrings/kernora-development-archive-keyring.gpg' \
   /etc/apt/sources.list || fail "Kernora source is not scoped to its key"
-grep -Fq 'snapshot.debian.org/archive/debian/20260901T000000Z' \
+grep -Fq 'snapshot.debian.org/archive/debian/20261015T000000Z' \
   /etc/apt/sources.list || fail "Debian source is not pinned to the snapshot"
 [[ ! -e /etc/apt/apt.conf.d/99mmdebstrap ]] \
   || fail "temporary mmdebstrap APT configuration remains"
@@ -70,7 +70,7 @@ apt_options=(
 apt-get "${apt_options[@]}" update >/dev/null \
   || fail "APT rejected the embedded Kernora archive"
 apt-cache "${apt_options[@]}" show kernora-base > "$apt_root/kernora-base.txt"
-grep -Fxq 'Depends: base-files (= 13.8+deb13u6+kernora1), kernora-archive (>= 1.0)' \
+grep -Fxq 'Depends: base-files (= 13.8+deb13u7+kernora1), kernora-archive (>= 1.0)' \
   "$apt_root/kernora-base.txt" || fail "APT sees the wrong identity dependency"
 
 printf 'inside rootfs: OK\n'

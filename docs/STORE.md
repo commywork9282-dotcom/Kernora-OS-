@@ -25,11 +25,22 @@ still work, downloading new stuff obviously needs a connection.
 
 ## Look
 
-Material 3: tonal navigation, an app header that adapts to the window size,
-cards with state layers and shape changes, and content that slides in one
-after another. Animations follow the desktop animation speed. The featured
-carousel pauses when you hover it and stops completely if animations are
-off. Category cards and the carousel work with the keyboard.
+Kinda like Google Play on purpose: a top bar with **Apps**, **Games** and
+**Categories** tabs, search and a **My apps** button (it shows a badge when
+updates are waiting). No big featured carousel or "popular" banner, the Apps
+tab is just rows of apps per category, each row title opens the full
+category. Games is a short recommended row (from `data/store/featured.json`)
+and then every game in a list.
+
+App tiles are the icon on a rounded plate, the name and the rating. App
+pages have the icon and developer up top, a stats row (rating, source,
+version, size), a big Install button (or Uninstall + Open/Update once it's
+installed), screenshots, "About this app", ratings with a per-star breakdown
+from ODRS, and app info at the bottom. Updates and installed apps live in
+My apps.
+
+Animations follow the desktop animation speed and there's not a lot of
+them: tabs slide their underline, pages fade in, rows scroll smoothly.
 
 To preview QML changes against an installed Store backend, close the Store
 and run this in a Kernora session:

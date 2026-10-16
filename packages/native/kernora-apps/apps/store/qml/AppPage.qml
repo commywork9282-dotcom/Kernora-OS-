@@ -19,8 +19,9 @@ Item {
     property string appId
 
     readonly property var app: QQC2.ApplicationWindow.window
-    readonly property real contentWidth: Math.min(width - 48, 920)
-    readonly property bool canGoBack: app ? app.canGoBack && (QQC2.StackView.index > 0 || app.narrow) : false
+    readonly property real contentWidth: Math.min(width - 48, 1040)
+    readonly property bool compact: width < 640
+    readonly property bool canGoBack: QQC2.StackView.index > 0
 
     property int revision: 0
     property int stateRevision: 0
@@ -32,8 +33,35 @@ Item {
         : (status.installedSource || "").length > 0 ? status.installedSource
         : sources.length > 0 ? sources[0].key : ""
     readonly property var sourceInfo: (info.perSource || {})[source] || {}
+    readonly property string sourceTitle: {
+        const entry = sources.find(item => item.key === source);
+        return entry ? entry.title : "";
+    }
     readonly property bool installed: status.installed === true
     readonly property bool busy: status.busy === true
+    readonly property string version: (installed ? status.installedVersion : "") || sourceInfo.version || info.version || ""
+    readonly property string updated: {
+        const stamp = sourceInfo.released;
+        if (!stamp) {
+            return "";
+        }
+        const date = new Date(stamp);
+        return isNaN(date.getTime()) || date.getFullYear() < 2000 ? "" : date.toLocaleDateString(Qt.locale(), "d MMMM yyyy");
+    }
+    readonly property var votes: info.ratingVotes || []
+    readonly property int mostVotes: Math.max(1, ...votes.map(value => Number(value)))
+
+    function primaryAction(): void {
+        if (page.installed && page.status.update === true) {
+            Store.update(page.appId);
+        } else if (page.installed) {
+            if (!Store.launch(page.appId)) {
+                page.app.showMessage(i18n("%1 is installed. Open it from the app menu.", page.info.name), "", null);
+            }
+        } else {
+            Store.install(page.appId, page.source);
+        }
+    }
 
     Connections {
         target: Store
@@ -51,121 +79,194 @@ Item {
         }
     }
 
-    EntranceMotion { item: column; distance: 24 }
+    component Stat: ColumnLayout {
+        id: stat
+        property string value
+        property string label
+        property string icon
+        spacing: 2
+        Layout.preferredWidth: Math.max(96, implicitWidth)
+        Layout.alignment: Qt.AlignTop
+
+        RowLayout {
+            Layout.alignment: Qt.AlignHCenter
+            spacing: 4
+            MText {
+                role: "titleSmall"
+                text: stat.value
+                elide: Text.ElideRight
+                Layout.maximumWidth: 160
+            }
+            MIcon {
+                visible: stat.icon.length > 0
+                size: 14
+                source: stat.icon
+                color: M3.surfaceContent
+            }
+        }
+        MText {
+            Layout.alignment: Qt.AlignHCenter
+            role: "bodySmall"
+            text: stat.label
+            color: M3.surfaceVariantContent
+        }
+    }
+
+    component Divider: Rectangle {
+        Layout.preferredWidth: 1
+        Layout.preferredHeight: 24
+        Layout.alignment: Qt.AlignVCenter
+        color: M3.outlineVariant
+    }
+
+    component SectionTitle: MText {
+        role: "titleLarge"
+        Layout.fillWidth: true
+    }
+
+    component Fact: ColumnLayout {
+        id: fact
+        property string label
+        property string value
+        property string link
+        spacing: 2
+        visible: value.length > 0
+        Layout.fillWidth: true
+        Layout.preferredWidth: 100
+        Layout.alignment: Qt.AlignTop
+
+        MText {
+            Layout.fillWidth: true
+            role: "bodyMedium"
+            text: fact.label
+            color: M3.surfaceVariantContent
+        }
+        MText {
+            Layout.fillWidth: true
+            role: "bodyLarge"
+            text: fact.value
+            wrapMode: Text.WrapAnywhere
+            maximumLineCount: 3
+            color: fact.link.length > 0 ? M3.primary : M3.surfaceContent
+            MouseArea {
+                id: linkMouse
+                anchors.fill: parent
+                enabled: fact.link.length > 0
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Qt.openUrlExternally(fact.link)
+            }
+        }
+    }
 
     Flickable {
         id: flick
 
         anchors.fill: parent
         contentWidth: width
-        contentHeight: column.implicitHeight + 56
+        contentHeight: column.implicitHeight + 64
         boundsBehavior: Flickable.StopAtBounds
 
-        Column {
+        ColumnLayout {
             id: column
 
             x: (flick.width - page.contentWidth) / 2
-            y: 20
+            y: 16
             width: page.contentWidth
-            spacing: 28
+            spacing: 24
 
-            Item {
-                width: parent.width
-                height: page.canGoBack ? 40 : 0
+            IconButton {
+                Layout.leftMargin: -8
                 visible: page.canGoBack
-                IconButton {
-                    x: -8
-                    iconName: Qt.application.layoutDirection === Qt.RightToLeft ? "go-next" : "go-previous"
-                    text: i18n("Back")
-                    onClicked: page.app.goBack()
+                iconName: Qt.application.layoutDirection === Qt.RightToLeft ? "go-next" : "go-previous"
+                text: i18n("Back")
+                onClicked: page.app.goBack()
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: page.compact ? 16 : 28
+
+                AppPlate {
+                    Layout.alignment: Qt.AlignTop
+                    size: page.compact ? 72 : 112
+                    iconName: page.info.icon || ""
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignVCenter
+                    spacing: 4
+
+                    MText {
+                        Layout.fillWidth: true
+                        role: page.compact ? "headlineSmall" : "headlineLarge"
+                        text: page.info.name || ""
+                        wrapMode: Text.Wrap
+                        maximumLineCount: 2
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 6
+                        visible: (page.info.developer || "").length > 0
+                        MText {
+                            Layout.maximumWidth: column.width - 160
+                            role: "titleMedium"
+                            text: page.info.developer || ""
+                            color: M3.primary
+                            elide: Text.ElideRight
+                        }
+                        MIcon {
+                            size: 18
+                            visible: page.info.verified === true
+                            source: "kernora-verified"
+                            color: M3.primary
+                        }
+                        Item { Layout.fillWidth: true }
+                    }
+                    MText {
+                        Layout.fillWidth: true
+                        role: "bodyMedium"
+                        color: M3.surfaceVariantContent
+                        wrapMode: Text.Wrap
+                        text: page.info.summary || ""
+                    }
                 }
             }
 
-            Rectangle {
-                width: parent.width
-                height: introduction.implicitHeight + 48
-                radius: M3.classic ? M3.cornerCard : 28
-                color: M3.surfaceContainerLow
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 16
+                visible: !page.info.local
 
-                RowLayout {
-                    id: introduction
-                    anchors.fill: parent
-                    anchors.margins: 24
-                    spacing: page.width < 600 ? 16 : 24
-
-                    Rectangle {
-                        Layout.alignment: Qt.AlignTop
-                        Layout.preferredWidth: page.width < 600 ? 72 : 112
-                        Layout.preferredHeight: Layout.preferredWidth
-                        radius: page.width < 600 ? 24 : 32
-                        color: M3.secondaryContainer
-
-                        AppIcon {
-                            anchors.centerIn: parent
-                            size: page.width < 600 ? 56 : 88
-                            name: page.info.icon || ""
-                        }
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignVCenter
-                        spacing: 6
-
-                        MText {
-                            Layout.fillWidth: true
-                            role: page.width < 600 ? "headlineSmall" : "headlineLarge"
-                            text: page.info.name || ""
-                            wrapMode: Text.Wrap
-                        }
-                        RowLayout {
-                            spacing: 6
-                            visible: (page.info.developer || "").length > 0
-                            MText {
-                                Layout.maximumWidth: Math.max(80, introduction.width - (page.width < 600 ? 72 : 112) - introduction.spacing - 30)
-                                elide: Text.ElideRight
-                                role: "titleMedium"
-                                text: page.info.developer || ""
-                                color: M3.primary
-                            }
-                            MIcon {
-                                size: 18
-                                visible: page.info.verified === true
-                                source: "kernora-verified"
-                                color: M3.primary
-                            }
-                        }
-                        MText {
-                            Layout.fillWidth: true
-                            role: "bodyLarge"
-                            text: page.info.summary || ""
-                            color: M3.surfaceVariantContent
-                            wrapMode: Text.Wrap
-                        }
-                        RowLayout {
-                            spacing: 8
-                            visible: (page.info.ratingCount || 0) > 0
-                            MText {
-                                role: "titleSmall"
-                                text: Number(page.info.rating || 0).toLocaleString(Qt.locale(), "f", 1)
-                            }
-                            Stars {
-                                value: page.info.rating || 0
-                                size: 16
-                            }
-                            MText {
-                                role: "bodySmall"
-                                color: M3.surfaceVariantContent
-                                text: i18np("%1 rating", "%1 ratings", page.info.ratingCount || 0)
-                            }
-                        }
-                    }
+                Stat {
+                    visible: (page.info.ratingCount || 0) > 0
+                    value: Number(page.info.rating || 0).toLocaleString(Qt.locale(), "f", 1)
+                    icon: "rating"
+                    label: i18np("%1 rating", "%1 ratings", page.info.ratingCount || 0)
                 }
-
+                Divider { visible: (page.info.ratingCount || 0) > 0 }
+                Stat {
+                    value: page.sourceTitle
+                    label: i18n("Source")
+                }
+                Divider { visible: page.version.length > 0 }
+                Stat {
+                    visible: page.version.length > 0
+                    value: page.version
+                    label: i18n("Version")
+                }
+                Divider { visible: (page.status.installedSize || "").length > 0 }
+                Stat {
+                    visible: (page.status.installedSize || "").length > 0
+                    value: page.status.installedSize || ""
+                    label: i18n("Size")
+                }
+                Item { Layout.fillWidth: true }
             }
 
             ColumnLayout {
-                width: parent.width
+                Layout.fillWidth: true
                 spacing: 12
 
                 RowLayout {
@@ -174,35 +275,30 @@ Item {
                     visible: !page.busy
 
                     MButton {
-                        variant: "filled"
-                        icon: page.installed ? "" : "download"
-                        text: page.installed ? i18n("Open") : i18n("Install")
-                        onClicked: {
-                            if (page.installed) {
-                                if (!Store.launch(page.appId)) {
-                                    page.app.showMessage(i18n("%1 is installed. Open it from the app menu.", page.info.name), "", null);
-                                }
-                            } else {
-                                Store.install(page.appId, page.source);
-                            }
-                        }
-                    }
-                    MButton {
-                        variant: "tonal"
-                        icon: "system-software-update"
-                        text: i18n("Update")
-                        visible: page.installed && page.status.update === true
-                        onClicked: Store.update(page.appId)
-                    }
-                    MButton {
-                        variant: "text"
-                        text: i18n("Remove")
+                        Layout.preferredWidth: page.compact ? implicitWidth : Math.max(implicitWidth, 160)
+                        variant: "outlined"
+                        text: i18n("Uninstall")
                         visible: page.installed
                         onClicked: removeDialog.open()
                     }
-                    Item {
-                        Layout.fillWidth: true
+                    MButton {
+                        Layout.preferredWidth: page.compact ? implicitWidth : Math.max(implicitWidth, page.installed ? 160 : 240)
+                        variant: "filled"
+                        text: page.installed && page.status.update === true ? i18n("Update")
+                            : page.installed ? i18n("Open") : i18n("Install")
+                        onClicked: page.primaryAction()
                     }
+                    MButton {
+                        variant: "text"
+                        text: i18n("Open")
+                        visible: page.installed && page.status.update === true
+                        onClicked: {
+                            if (!Store.launch(page.appId)) {
+                                page.app.showMessage(i18n("%1 is installed. Open it from the app menu.", page.info.name), "", null);
+                            }
+                        }
+                    }
+                    Item { Layout.fillWidth: true }
                     SegmentedButtons {
                         visible: !page.installed && page.sources.length > 1
                         options: page.sources.map(entry => ({value: entry.key, label: entry.title}))
@@ -232,7 +328,7 @@ Item {
                         }
                     }
                     MButton {
-                        variant: "tonal"
+                        variant: "outlined"
                         text: i18n("Cancel")
                         onClicked: Store.cancel(page.appId)
                     }
@@ -252,219 +348,308 @@ Item {
                 }
             }
 
-            Banner {
-                width: parent.width
+            Notice {
+                Layout.fillWidth: true
                 visible: page.info.local === true && page.source === "debian"
-                tone: "warning"
+                warning: true
                 icon: "dialog-warning"
-                title: i18n("Only install packages you trust")
-                text: i18n("This package comes from a file, not from a checked source. It gets full access to your computer.")
+                text: i18n("Only install packages you trust. This one comes from a file, not from a checked source, and gets full access to your computer.")
             }
 
-            Banner {
-                width: parent.width
+            Notice {
+                Layout.fillWidth: true
                 visible: Store.live && !page.installed
-                icon: "dialog-information"
-                title: i18n("You are trying Kernora")
-                text: i18n("Apps you install now disappear after a restart.")
+                text: i18n("You are trying Kernora. Apps you install now disappear after a restart.")
             }
 
-            ListView {
-                id: shots
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: shots.height
+                visible: shots.count > 0 && shots.contentWidth > shots.count * shots.spacing
 
-                width: parent.width
-                height: count > 0 ? 300 : 0
-                visible: count > 0
-                orientation: ListView.Horizontal
-                spacing: 12
-                clip: true
-                boundsBehavior: Flickable.StopAtBounds
-                model: page.info.screenshots || []
+                HoverHandler { id: shotsHover }
 
-                delegate: Item {
-                    id: shot
+                ListView {
+                    id: shots
 
-                    required property var modelData
-                    required property int index
-
-                    height: shots.height
-                    width: image.status === Image.Ready && image.implicitHeight > 0
-                        ? Math.min(shots.width * 0.9, height * image.implicitWidth / image.implicitHeight) : height * 16 / 10
-
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: M3.classic ? M3.cornerCard : 20
-                        color: M3.surfaceContainerHigh
+                    width: parent.width
+                    height: count > 0 ? (page.compact ? 200 : 280) : 0
+                    orientation: ListView.Horizontal
+                    spacing: 12
+                    clip: true
+                    boundsBehavior: Flickable.StopAtBounds
+                    model: page.info.screenshots || []
+                    Behavior on contentX {
+                        enabled: !shots.moving
+                        NumberAnimation { duration: M3.durationLong2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasized }
                     }
 
-                    RoundedClip {
-                        anchors.fill: parent
-                        radius: M3.classic ? M3.cornerCard : 20
+                    delegate: Item {
+                        id: shot
 
-                        Image {
-                            id: image
+                        required property var modelData
+                        required property int index
+
+                        height: shots.height
+                        visible: image.status !== Image.Error
+                        width: image.status === Image.Error ? 0
+                            : image.status === Image.Ready && image.implicitHeight > 0
+                            ? Math.min(shots.width * 0.9, height * image.implicitWidth / image.implicitHeight) : height * 16 / 10
+
+                        Rectangle {
                             anchors.fill: parent
-                            source: shot.modelData.thumb
-                            fillMode: Image.PreserveAspectFit
-                            asynchronous: true
-                            opacity: status === Image.Ready ? 1 : 0
-                            Behavior on opacity { NumberAnimation { duration: M3.durationMedium4 } }
-                            cache: true
-                            sourceSize.height: 600
+                            radius: M3.classic ? M3.cornerCard : 12
+                            color: M3.surfaceContainerHigh
+                        }
+
+                        RoundedClip {
+                            anchors.fill: parent
+                            radius: M3.classic ? M3.cornerCard : 12
+
+                            Image {
+                                id: image
+                                anchors.fill: parent
+                                source: shot.modelData.thumb
+                                fillMode: Image.PreserveAspectFit
+                                asynchronous: true
+                                cache: true
+                                sourceSize.height: 600
+                            }
+                        }
+
+                        MIcon {
+                            anchors.centerIn: parent
+                            size: 48
+                            source: "image-x-generic"
+                            color: M3.surfaceVariantContent
+                            visible: image.status === Image.Error
+                        }
+
+                        LinearProgress {
+                            anchors.centerIn: parent
+                            width: parent.width * 0.4
+                            visible: image.status === Image.Loading
+                            indeterminate: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: viewer.show(shot.index)
                         }
                     }
+                }
 
-                    MIcon {
-                        anchors.centerIn: parent
-                        size: 48
-                        source: "image-x-generic"
-                        color: M3.surfaceVariantContent
-                        visible: image.status === Image.Error
+                MIconButton {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 8
+                    anchors.verticalCenter: parent.verticalCenter
+                    variant: "tonal"
+                    icon: "go-previous"
+                    text: i18n("Previous")
+                    opacity: shotsHover.hovered && !shots.atXBeginning ? 1 : 0
+                    visible: opacity > 0
+                    Behavior on opacity { NumberAnimation { duration: M3.durationShort4 } }
+                    onClicked: shots.contentX = Math.max(shots.originX, shots.contentX - shots.width * 0.8)
+                }
+                MIconButton {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 8
+                    anchors.verticalCenter: parent.verticalCenter
+                    variant: "tonal"
+                    icon: "go-next"
+                    text: i18n("Next")
+                    opacity: shotsHover.hovered && !shots.atXEnd ? 1 : 0
+                    visible: opacity > 0
+                    Behavior on opacity { NumberAnimation { duration: M3.durationShort4 } }
+                    onClicked: shots.contentX = Math.min(shots.contentWidth - shots.width + shots.originX, shots.contentX + shots.width * 0.8)
+                }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 12
+                visible: (page.info.description || "").length > 0
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+                    SectionTitle {
+                        Layout.fillWidth: false
+                        text: i18n("About this app")
                     }
-
-                    LinearProgress {
-                        anchors.centerIn: parent
-                        width: parent.width * 0.4
-                        visible: image.status === Image.Loading
-                        indeterminate: true
+                    MIconButton {
+                        visible: description.truncated || description.expanded
+                        icon: description.expanded ? "arrow-up" : "arrow-down"
+                        text: description.expanded ? i18n("Show less") : i18n("Read more")
+                        onClicked: description.expanded = !description.expanded
                     }
+                    Item { Layout.fillWidth: true }
+                }
+                Text {
+                    id: description
+                    property bool expanded: false
+                    Layout.fillWidth: true
+                    text: page.info.description || ""
+                    textFormat: Text.RichText
+                    wrapMode: Text.Wrap
+                    font: M3.bodyMedium
+                    color: M3.surfaceVariantContent
+                    linkColor: M3.primary
+                    lineHeight: 1.2
+                    maximumLineCount: expanded ? 10000 : 5
+                    elide: Text.ElideRight
+                    onLinkActivated: link => Qt.openUrlExternally(link)
+                }
+                MText {
+                    Layout.fillWidth: true
+                    visible: page.updated.length > 0
+                    role: "bodyMedium"
+                    text: i18n("Updated on %1", page.updated)
+                }
+                Flow {
+                    Layout.fillWidth: true
+                    Layout.topMargin: 4
+                    spacing: 8
+                    visible: (page.info.categories || []).length > 0
 
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: viewer.show(shot.index)
+                    Repeater {
+                        model: page.info.categories || []
+                        delegate: Rectangle {
+                            id: tag
+                            required property var modelData
+                            implicitWidth: tagLabel.implicitWidth + 32
+                            implicitHeight: 32
+                            radius: M3.classic ? M3.cornerButton : 8
+                            color: "transparent"
+                            border.width: 1
+                            border.color: M3.outlineVariant
+
+                            MText {
+                                id: tagLabel
+                                anchors.centerIn: parent
+                                role: "labelLarge"
+                                text: tag.modelData.name
+                                color: M3.surfaceVariantContent
+                            }
+                            MStateLayer {
+                                radius: tag.radius
+                                color: M3.surfaceContent
+                                hovered: tagMouse.containsMouse
+                                pressed: tagMouse.pressed
+                                pressPoint: Qt.point(tagMouse.mouseX, tagMouse.mouseY)
+                            }
+                            MouseArea {
+                                id: tagMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: page.app.openCategory(tag.modelData.id)
+                            }
+                        }
                     }
                 }
             }
 
             ColumnLayout {
-                width: parent.width
-                spacing: 12
-                visible: (page.info.description || "").length > 0
+                Layout.fillWidth: true
+                spacing: 16
+                visible: (page.info.ratingCount || 0) > 0
 
-                MText {
-                    role: "titleLarge"
-                    text: i18n("About this app")
+                SectionTitle {
+                    text: i18n("Ratings")
                 }
-                Text {
-                    id: description
+                RowLayout {
                     Layout.fillWidth: true
-                    text: page.info.description || ""
-                    textFormat: Text.RichText
-                    wrapMode: Text.Wrap
-                    font: M3.bodyLarge
-                    color: M3.surfaceContent
-                    linkColor: M3.primary
-                    lineHeight: 1.15
-                    maximumLineCount: expanded ? 10000 : 8
-                    elide: Text.ElideRight
-                    property bool expanded: false
-                    onLinkActivated: link => Qt.openUrlExternally(link)
-                }
-                MButton {
-                    variant: "text"
-                    visible: description.truncated || description.expanded
-                    text: description.expanded ? i18n("Show less") : i18n("Read more")
-                    onClicked: description.expanded = !description.expanded
-                }
-            }
+                    spacing: 32
 
-            Group {
-                width: parent.width
-                title: i18n("Details")
-
-                ListItem {
-                    title: i18n("Version")
-                    icon: "dialog-information"
-                    iconStyle: "plain"
-                    interactive: false
-                    value: (page.installed ? page.status.installedVersion : "") || page.sourceInfo.version || page.info.version || i18n("Unknown")
-                    visible: value !== i18n("Unknown") || page.installed
-                }
-                ListItem {
-                    title: i18n("Source")
-                    icon: page.source === "flatpak" ? "applications-internet" : "package-x-generic"
-                    iconStyle: "plain"
-                    interactive: false
-                    value: {
-                        const entry = page.sources.find(item => item.key === page.source);
-                        return entry ? entry.title : "";
-                    }
-                }
-                ListItem {
-                    title: i18n("Size on disk")
-                    icon: "drive-harddisk"
-                    iconStyle: "plain"
-                    interactive: false
-                    visible: (page.status.installedSize || "").length > 0
-                    value: page.status.installedSize || ""
-                }
-                ListItem {
-                    title: i18n("Licence")
-                    icon: "license"
-                    iconStyle: "plain"
-                    interactive: false
-                    visible: (page.info.license || "").length > 0
-                    value: page.info.license || ""
-                }
-                ListItem {
-                    title: i18n("Website")
-                    subtitle: page.info.homepage || ""
-                    icon: "link"
-                    iconStyle: "plain"
-                    chevron: true
-                    visible: (page.info.homepage || "").length > 0
-                    onClicked: Qt.openUrlExternally(page.info.homepage)
-                }
-                ListItem {
-                    title: i18n("File")
-                    icon: "package-x-generic"
-                    iconStyle: "plain"
-                    interactive: false
-                    visible: (page.info.file || "").length > 0
-                    value: page.info.file || ""
-                }
-            }
-
-            Flow {
-                width: parent.width
-                spacing: 8
-                visible: (page.info.categories || []).length > 0
-
-                Repeater {
-                    model: page.info.categories || []
-                    delegate: Rectangle {
-                        id: tag
-                        required property var modelData
-                        implicitWidth: tagLabel.implicitWidth + 32
-                        implicitHeight: 36
-                        radius: M3.classic ? M3.cornerButton : 10
-                        color: "transparent"
-                        border.width: 1
-                        border.color: M3.outlineVariant
-
+                    ColumnLayout {
+                        Layout.alignment: Qt.AlignTop
+                        spacing: 4
                         MText {
-                            id: tagLabel
-                            anchors.centerIn: parent
-                            role: "labelLarge"
-                            text: tag.modelData.name
+                            role: "displayMedium"
+                            text: Number(page.info.rating || 0).toLocaleString(Qt.locale(), "f", 1)
+                        }
+                        Stars {
+                            value: page.info.rating || 0
+                            size: 16
+                        }
+                        MText {
+                            role: "bodySmall"
                             color: M3.surfaceVariantContent
-                        }
-                        MStateLayer {
-                            radius: tag.radius
-                            color: M3.surfaceContent
-                            hovered: tagMouse.containsMouse
-                            pressed: tagMouse.pressed
-                            pressPoint: Qt.point(tagMouse.mouseX, tagMouse.mouseY)
-                        }
-                        MouseArea {
-                            id: tagMouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: page.app.showSection("category:" + tag.modelData.id)
+                            text: i18np("%1 rating", "%1 ratings", page.info.ratingCount || 0)
                         }
                     }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.maximumWidth: 480
+                        Layout.alignment: Qt.AlignVCenter
+                        spacing: 6
+                        visible: page.votes.length === 5
+
+                        Repeater {
+                            model: 5
+                            delegate: RowLayout {
+                                id: bar
+                                required property int index
+                                readonly property int star: 5 - index
+                                readonly property real share: Number(page.votes[star - 1] || 0) / page.mostVotes
+                                Layout.fillWidth: true
+                                spacing: 12
+                                MText {
+                                    Layout.preferredWidth: 12
+                                    role: "bodySmall"
+                                    text: bar.star
+                                    color: M3.surfaceVariantContent
+                                    horizontalAlignment: Text.AlignRight
+                                }
+                                Rectangle {
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 10
+                                    radius: 5
+                                    color: M3.surfaceContainerHighest
+                                    Rectangle {
+                                        width: Math.max(bar.share > 0 ? height : 0, parent.width * bar.share)
+                                        height: parent.height
+                                        radius: parent.radius
+                                        color: M3.primary
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                MText {
+                    Layout.fillWidth: true
+                    role: "bodySmall"
+                    color: M3.surfaceVariantContent
+                    wrapMode: Text.Wrap
+                    text: i18n("Ratings come from Linux users through the Open Desktop Ratings Service.")
+                }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 16
+
+                SectionTitle {
+                    text: i18n("App info")
+                }
+                GridLayout {
+                    Layout.fillWidth: true
+                    columns: page.compact ? 1 : 3
+                    columnSpacing: 24
+                    rowSpacing: 16
+
+                    Fact { label: i18n("Version"); value: page.version }
+                    Fact { label: i18n("Updated on"); value: page.updated }
+                    Fact { label: i18n("Source"); value: page.sourceTitle }
+                    Fact { label: i18n("Package"); value: page.source === "debian" ? (page.sourceInfo.package || "") : "" }
+                    Fact { label: i18n("Size on disk"); value: page.status.installedSize || "" }
+                    Fact { label: i18n("Licence"); value: page.info.license || "" }
+                    Fact { label: i18n("Website"); value: page.info.homepage || ""; link: page.info.homepage || "" }
+                    Fact { label: i18n("File"); value: page.info.file || "" }
                 }
             }
         }
@@ -480,11 +665,11 @@ Item {
     Dialog {
         id: removeDialog
         icon: "user-trash"
-        title: i18n("Remove %1?", page.info.name || "")
+        title: i18n("Uninstall %1?", page.info.name || "")
         text: page.status.installedSource === "flatpak"
             ? i18n("The app and its files in the sandbox are removed. Your documents stay.")
             : i18n("The app is removed from the computer. Your documents stay.")
-        acceptText: i18n("Remove")
+        acceptText: i18n("Uninstall")
         destructive: true
         onAccepted: Store.remove(page.appId)
     }

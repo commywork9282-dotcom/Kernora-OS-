@@ -1,11 +1,11 @@
 Kernora base-files fork
 =======================
 
-Upstream source package: base-files 13.8+deb13u6
+Upstream source package: base-files 13.8+deb13u7
 Upstream suite: Debian 13 (trixie)
-Snapshot: 20260901T000000Z
+Snapshot: 20261015T000000Z
 Upstream DSC SHA-256:
-8e2254627410ebf9424cea290166f717e5ff1fa02758679fd9273e5f41b606c6
+6240b5a02fc32bd6d925bb7776e00c467e80d930f8cf3c4a20c299ce692dc7e4
 
 This fork owns the Kernora operating-system identity and dpkg vendor origin.
 The Debian origin file and /etc/debian_version are retained to describe the

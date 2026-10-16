@@ -23,7 +23,6 @@ generated/plasmoids/org.kernora.widget.* usr/share/plasma/plasmoids
 generated/locale usr/share
 data/skel-autostart/*.desktop etc/skel/.config/autostart
 generated/wallpapers/org.kernora.shapes usr/share/plasma/wallpapers
-generated/wallpapers/org.kernora.tower usr/share/plasma/wallpapers
 generated/wallpapers/org.kernora.rhythm usr/share/plasma/wallpapers
 generated/wallpapers/org.kernora.pastel usr/share/plasma/wallpapers
 generated/wallpapers/org.kernora.starfall usr/share/plasma/wallpapers
@@ -87,6 +86,9 @@ data/session/kernora-widgets-menu.conf usr/lib/systemd/user/plasma-plasmashell.s
 data/kconf_update/kernora-marbles-to-pastel.upd usr/share/kconf_update
 data/kconf_update/kernora-marbles-to-pastel.sh usr/share/kconf_update
 data/shell-updates/kernora_marbles_to_pastel.js usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates
+data/kconf_update/kernora-tower-to-shapes.upd usr/share/kconf_update
+data/kconf_update/kernora-tower-to-shapes.sh usr/share/kconf_update
+data/shell-updates/kernora_tower_to_shapes.js usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates
 data/xdg-notifyrc/plasma_workspace.notifyrc etc/xdg
 data/crash/kernora-crash-notifier usr/libexec
 data/crash/drkonqi-coredump-launcher-kernora.conf usr/lib/systemd/user/drkonqi-coredump-launcher@.service.d

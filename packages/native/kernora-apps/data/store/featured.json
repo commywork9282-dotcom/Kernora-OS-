@@ -1,24 +1,4 @@
 {
-  "hero": [
-    "com.valvesoftware.Steam",
-    "com.discordapp.Discord",
-    "com.spotify.Client",
-    "com.obsproject.Studio"
-  ],
-  "popular": [
-    "com.valvesoftware.Steam",
-    "com.discordapp.Discord",
-    "org.telegram.desktop",
-    "com.spotify.Client",
-    "org.videolan.VLC",
-    "com.obsproject.Studio",
-    "org.gimp.GIMP",
-    "org.libreoffice.LibreOffice",
-    "com.google.Chrome",
-    "com.visualstudio.code",
-    "org.qbittorrent.qBittorrent",
-    "org.mozilla.Thunderbird"
-  ],
   "games": [
     "com.valvesoftware.Steam",
     "com.heroicgameslauncher.hgl",

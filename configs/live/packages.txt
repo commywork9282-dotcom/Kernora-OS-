@@ -1,5 +1,5 @@
-kernora-base=1.5
-linux-image-amd64=6.12.107-1
+kernora-base=1.6
+linux-image-amd64=6.12.111-1
 live-boot=1:20250815~deb13u1
 systemd-sysv=257.13-1~deb13u1
 initramfs-tools=0.148.4
@@ -22,9 +22,9 @@ kwin-x11
 xserver-xorg
 libpam-fprintd
 
-kernora-desktop=1.4.30
-kernora-calamares=1.4.30
-kernora-apps=1.1.37
+kernora-desktop=1.4.31
+kernora-calamares=1.4.31
+kernora-apps=1.1.38
 polkit-kde-agent-1=4:6.3.6-1kernora1
 plymouth
 plymouth-label

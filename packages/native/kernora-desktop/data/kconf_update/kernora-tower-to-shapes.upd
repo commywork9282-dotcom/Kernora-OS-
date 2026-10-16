@@ -1,0 +1,4 @@
+Version=6
+
+Id=kernora_tower_to_shapes
+Script=kernora-tower-to-shapes.sh,sh

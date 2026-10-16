@@ -26,7 +26,7 @@ Item {
     signal clicked()
 
     implicitWidth: 360
-    implicitHeight: 112
+    implicitHeight: 88
     activeFocusOnTab: true
 
     Accessible.role: Accessible.Button
@@ -36,14 +36,9 @@ Item {
     Keys.onReturnPressed: clicked()
     Keys.onSpacePressed: clicked()
 
-    scale: mouse.pressed ? 0.975 : 1
-    Behavior on scale {
-        NumberAnimation { duration: M3.durationShort4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
-    }
-
-    StoreSurface {
-        id: card
-        anchors.fill: parent
+    MStateLayer {
+        radius: M3.classic ? M3.cornerCard : 16
+        color: M3.surfaceContent
         hovered: mouse.containsMouse
         pressed: mouse.pressed
         focused: root.activeFocus
@@ -52,17 +47,14 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        anchors.margins: 16
+        anchors.leftMargin: 8
+        anchors.rightMargin: 12
         spacing: 16
 
-        AppIcon {
+        AppPlate {
             Layout.alignment: Qt.AlignVCenter
             size: 64
-            scale: mouse.containsMouse ? 1.06 : 1
-            Behavior on scale {
-                NumberAnimation { duration: M3.durationMedium2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
-            }
-            name: root.iconSource
+            iconName: root.iconSource
         }
 
         ColumnLayout {
@@ -70,43 +62,50 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             spacing: 2
 
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 6
-                MText {
-                    Layout.fillWidth: true
-                    role: "titleMedium"
-                    text: root.name
-                    elide: Text.ElideRight
-                    maximumLineCount: 1
-                }
-                StateChip {
-                    installed: root.installed
-                    busy: root.busy
-                    hasUpdate: root.hasUpdate
-                    progress: root.progress
-                }
-            }
             MText {
                 Layout.fillWidth: true
-                role: "bodyMedium"
-                text: root.summary
-                color: M3.surfaceVariantContent
-                wrapMode: Text.Wrap
+                role: "titleMedium"
+                text: root.name
                 elide: Text.ElideRight
-                maximumLineCount: 2
+                maximumLineCount: 1
             }
             RowLayout {
-                spacing: 6
-                visible: root.rating > 0 || root.verified
-                Stars {
-                    value: root.rating
+                Layout.fillWidth: true
+                spacing: 4
+                MText {
+                    Layout.maximumWidth: parent.width - (root.verified ? 18 : 0)
+                    role: "bodyMedium"
+                    text: root.developer.length > 0 ? root.developer : root.summary
+                    color: M3.surfaceVariantContent
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
                 }
                 MIcon {
                     size: 14
                     visible: root.verified
                     source: "kernora-verified"
                     color: M3.primary
+                }
+                Item { Layout.fillWidth: true }
+            }
+            Item {
+                Layout.fillWidth: true
+                implicitHeight: 20
+
+                MText {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width
+                    visible: root.busy || root.installed || root.hasUpdate
+                    role: "bodySmall"
+                    elide: Text.ElideRight
+                    color: root.hasUpdate && !root.busy ? M3.primary : M3.surfaceVariantContent
+                    text: root.busy ? (root.progress >= 0 ? i18n("%1%", root.progress) : i18n("Working…"))
+                        : root.hasUpdate ? i18n("Update available") : i18n("Installed")
+                }
+                RatingLabel {
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: !root.busy && !root.installed && !root.hasUpdate && value > 0
+                    value: root.rating
                 }
             }
         }
@@ -116,8 +115,9 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.margins: 16
-        anchors.bottomMargin: 8
+        anchors.leftMargin: 88
+        anchors.rightMargin: 12
+        anchors.bottomMargin: 6
         visible: root.busy
         indeterminate: root.progress < 0
         value: Math.max(0, root.progress) / 100

@@ -151,6 +151,7 @@ private:
     struct Rating {
         int total = 0;
         double stars = 0;
+        QVariantList votes;
     };
 
     explicit Store(QObject *parent = nullptr);

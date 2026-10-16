@@ -1,3 +1,16 @@
+kernora-apps (1.1.38) UNRELEASED; urgency=medium
+
+  * Store: new layout with Apps, Games and Categories tabs in a top bar,
+    search and My apps next to them. The featured carousel and the Popular
+    shelf are gone; the Apps tab shows rows per category. App pages show
+    a stats row, Install/Uninstall/Open buttons, screenshots, ratings with
+    a per-star breakdown and app info. Updates and installed apps are in
+    My apps.
+  * What's new: Debian 13.7, the new Store and the Tower wallpaper removal.
+  * Require kernora-base 1.6 and kernora-desktop 1.4.31.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 15 Oct 2026 16:00:00 -0700
+
 kernora-apps (1.1.37) UNRELEASED; urgency=medium
 
   * Wallpaper & style: "Use on the lock screen too" works for live

@@ -1,3 +1,20 @@
+base-files (13.8+deb13u7+kernora1) UNRELEASED; urgency=medium
+
+  * Rebase on Debian base-files 13.8+deb13u7 (Debian 13.7): debian_version,
+    the new common-licenses and their copyright entries.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 15 Oct 2026 16:00:00 -0700
+
+base-files (13.8+deb13u7) trixie; urgency=medium
+
+  * Update debian_version and os-release for Debian 13.7 point release.
+  * Add AGPL-3.0, Artistic-2.0, BSL-1.0, CC-BY-3.0, CC-BY-4.0, CC-BY-SA-3.0,
+    CC-BY-SA-4.0, GFDL-1.1 and OFL-1.1 to common-licenses. Closes: #1136090.
+    Packages in forky/sid which decide to refer to those licenses at their
+    common-licenses location will now be easier to backport for trixie.
+
+ -- Santiago Vila <sanvila@debian.org>  Fri, 17 Jul 2026 19:05:00 +0200
+
 base-files (13.8+deb13u6+kernora1) UNRELEASED; urgency=medium
 
   * Fork Debian base-files for Kernora OS 1 (Ember).

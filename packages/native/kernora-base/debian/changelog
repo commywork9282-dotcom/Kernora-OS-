@@ -1,3 +1,9 @@
+kernora-base (1.6) UNRELEASED; urgency=medium
+
+  * Debian 13.7: depend on base-files 13.8+deb13u7+kernora1.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 15 Oct 2026 16:00:00 -0700
+
 kernora-base (1.5) UNRELEASED; urgency=medium
 
   * Depend on everyday command-line tools, so a fresh install and an updated

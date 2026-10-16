@@ -1,5 +1,44 @@
 [
   {
+    "id": "2026-10-15-1",
+    "date": "2026-10-15",
+    "items": [
+      {
+        "icon": "org.kernora.store",
+        "title": {
+          "en": "A new look for the Store",
+          "ru": "Новый вид магазина"
+        },
+        "text": {
+          "en": "Apps, Games and Categories are tabs at the top now, with search and My apps right next to them. App pages show ratings, version and source at a glance, and a big Install button.",
+          "ru": "Приложения, игры и категории теперь во вкладках сверху, рядом поиск и «Мои приложения». На странице приложения сразу видно оценку, версию и источник, а кнопка «Установить» стала большой."
+        }
+      },
+      {
+        "icon": "system-software-update",
+        "title": {
+          "en": "Debian 13.7 underneath",
+          "ru": "Внутри теперь Debian 13.7"
+        },
+        "text": {
+          "en": "Kernora now builds on Debian 13.7 with its latest fixes and a newer Linux 6.12 kernel.",
+          "ru": "Kernora теперь основана на Debian 13.7 со всеми свежими исправлениями и более новым ядром Linux 6.12."
+        }
+      },
+      {
+        "icon": "preferences-desktop-wallpaper",
+        "title": {
+          "en": "Tower wallpaper retired",
+          "ru": "Обои «Башня» убраны"
+        },
+        "text": {
+          "en": "The Tower live wallpaper is gone. If you used it, your desktop, lock screen and login screen now show Kernora Shapes.",
+          "ru": "Живых обоев «Башня» больше нет. Если они у вас стояли, на рабочем столе, экране блокировки и входа теперь «Фигуры Kernora»."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-14-1",
     "date": "2026-10-14",
     "items": [

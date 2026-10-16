@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""usage: gen-wallpaper-assets OUTPUT_DIRECTORY [tower|rhythm|starfall|pastel]
+"""usage: gen-wallpaper-assets OUTPUT_DIRECTORY [rhythm|starfall|pastel]
 """
 
 from __future__ import annotations
@@ -95,10 +95,6 @@ def palette() -> dict:
 
 
 THEMES = {
-    "tower": {
-        "paper": (None, 10), "ember": (None, 62), "amber": (78, 52), "rose": (12, 48),
-        "plum": (338, 36), "teal": (192, 34), "ink": (262, 26),
-    },
     "rhythm": {
         "night": (268, 22), "rose": (8, 48), "ember": (None, 58), "amber": (78, 50),
         "mint": (160, 38), "teal": (196, 36), "sky": (242, 40), "violet": (292, 40),

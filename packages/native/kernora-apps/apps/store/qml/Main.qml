@@ -21,54 +21,72 @@ AppWindow {
     height: 820
     minimumWidth: 420
     minimumHeight: 560
-    color: M3.surfaceContainer
+    color: M3.surface
     visible: true
 
-    readonly property bool narrow: width < 920
-    property string section: ""
-    property bool pageShown: false
+    readonly property bool narrow: width < 860
+    property string section: "apps"
+    property string lastTab: "apps"
     property bool hiding: false
     property string pendingUrl: ""
 
+    readonly property var tabs: [
+        {value: "apps", label: i18n("Apps")},
+        {value: "games", label: i18n("Games")},
+        {value: "categories", label: i18n("Categories")}
+    ]
+
+    readonly property bool canGoBack: stack.depth > 1
+    readonly property alias searchText: search.text
+
     function showSection(name: string): void {
         if (name !== "search") {
-            search.text = "";
+            lastTab = name;
+            if (search.text.length > 0) {
+                search.text = "";
+            }
         }
         section = name;
         stack.clear(QQC2.StackView.Immediate);
-        if (name === "home") {
+        if (name === "apps") {
             stack.push(Qt.resolvedUrl("HomePage.qml"), {}, QQC2.StackView.Immediate);
-        } else if (name === "updates") {
-            stack.push(Qt.resolvedUrl("UpdatesPage.qml"), {}, QQC2.StackView.Immediate);
-        } else if (name === "installed") {
-            stack.push(Qt.resolvedUrl("ListPage.qml"), {title: i18n("Installed"), filter: Store.Installed}, QQC2.StackView.Immediate);
+        } else if (name === "games") {
+            stack.push(Qt.resolvedUrl("ListPage.qml"), {
+                title: i18n("All games"),
+                category: "games",
+                shelfTitle: i18n("Recommended"),
+                shelfCollection: "games",
+                showHeader: false
+            }, QQC2.StackView.Immediate);
+        } else if (name === "categories") {
+            stack.push(Qt.resolvedUrl("CategoriesPage.qml"), {}, QQC2.StackView.Immediate);
         } else if (name === "search") {
             stack.push(Qt.resolvedUrl("ListPage.qml"), {title: i18n("Search"), searching: true}, QQC2.StackView.Immediate);
-        } else if (name.startsWith("category:")) {
-            const category = name.slice(9);
-            stack.push(Qt.resolvedUrl("ListPage.qml"), {title: Store.categoryName(category), category: category}, QQC2.StackView.Immediate);
         }
-        pageShown = true;
     }
 
     function openApp(id: string): void {
-        if (id.length === 0) {
+        if (id.length > 0) {
+            stack.push(Qt.resolvedUrl("AppPage.qml"), {appId: id});
+        }
+    }
+
+    function openCategory(category: string): void {
+        stack.push(Qt.resolvedUrl("ListPage.qml"), {title: Store.categoryName(category), category: category});
+    }
+
+    function openMyApps(): void {
+        if (stack.currentItem && stack.currentItem.objectName === "myApps") {
             return;
         }
-        stack.push(Qt.resolvedUrl("AppPage.qml"), {appId: id});
-        pageShown = true;
+        stack.push(Qt.resolvedUrl("MyAppsPage.qml"), {objectName: "myApps"});
     }
 
     function goBack(): void {
         if (stack.depth > 1) {
             stack.pop();
-        } else if (narrow) {
-            pageShown = false;
         }
     }
-
-    readonly property bool canGoBack: stack.depth > 1 || narrow
-    readonly property alias searchText: search.text
 
     function handleArguments(args: var): void {
         for (const argument of args || []) {
@@ -88,17 +106,9 @@ AppWindow {
     }
 
     Component.onCompleted: {
-        if (!narrow) {
-            showSection("home");
-        }
+        showSection("apps");
         if (startArguments && startArguments.length > 0) {
             handleArguments(startArguments);
-        }
-    }
-
-    onNarrowChanged: {
-        if (!narrow && section.length === 0) {
-            showSection("home");
         }
     }
 
@@ -139,247 +149,127 @@ AppWindow {
 
     Shortcut {
         sequences: [StandardKey.Find]
-        onActivated: {
-            app.pageShown = false;
-            search.forceActiveFocus();
-        }
+        onActivated: search.forceActiveFocus()
     }
     Shortcut {
         sequences: [StandardKey.Back, "Alt+Left"]
         onActivated: app.goBack()
     }
 
-    component Destination: Item {
-        id: destination
-
-        property string name
-        property string title
-        property string icon
-        property int badge: 0
-
-        width: parent ? parent.width : 300
-        height: item.implicitHeight
-
-        readonly property bool current: app.section === name && !app.narrow
-        activeFocusOnTab: true
-        Accessible.role: Accessible.PageTab
-        Accessible.name: title
-        Accessible.selected: current
-        Accessible.onPressAction: app.showSection(name)
-        Keys.onReturnPressed: app.showSection(name)
-        Keys.onSpacePressed: app.showSection(name)
-
-        StoreSurface {
-            id: item
-            width: parent.width
-            implicitHeight: 52
-            height: implicitHeight
-            corner: 26
-            restingColor: destination.current ? M3.secondaryContainer : M3.surfaceContainer
-            activeColor: M3.secondaryContainer
-            hovered: destinationMouse.containsMouse
-            pressed: destinationMouse.pressed
-            focused: destination.activeFocus
-            pressPoint: Qt.point(destinationMouse.mouseX, destinationMouse.mouseY)
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.rightMargin: destination.badge > 0 ? 48 : 20
-                spacing: 18
-                MIcon {
-                    size: 24
-                    source: destination.icon
-                    color: destination.current ? M3.secondaryContainerContent : M3.surfaceVariantContent
-                    scale: destination.current ? 1.12 : 1
-                    Behavior on scale {
-                        NumberAnimation { duration: M3.durationMedium2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
-                    }
-                }
-                MText {
-                    Layout.fillWidth: true
-                    role: destination.current ? "titleSmall" : "bodyLarge"
-                    text: destination.title
-                    elide: Text.ElideRight
-                    color: destination.current ? M3.secondaryContainerContent : M3.surfaceContent
-                }
-            }
-            MouseArea {
-                id: destinationMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: app.showSection(destination.name)
-            }
-        }
-
-        Rectangle {
-            anchors.right: parent.right
-            anchors.rightMargin: 16
-            anchors.verticalCenter: parent.verticalCenter
-            visible: destination.badge > 0
-            width: Math.max(height, count.implicitWidth + 12)
-            height: 22
-            radius: height / 2
-            color: M3.error
-
-            MText {
-                id: count
-                anchors.centerIn: parent
-                role: "labelMedium"
-                text: destination.badge
-                color: M3.errorContent
-            }
-        }
-    }
-
-    RowLayout {
+    ColumnLayout {
         anchors.fill: parent
         spacing: 0
 
-        Item {
-            id: navigation
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: false
+            Layout.preferredHeight: 64
+            Layout.leftMargin: 20
+            Layout.rightMargin: 12
+            spacing: 12
 
-            Layout.fillHeight: true
-            Layout.preferredWidth: app.narrow ? app.width : 280
-            visible: !app.narrow || !app.pageShown
-
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: app.narrow ? 12 : 4
-                spacing: 12
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.leftMargin: 16
-                    Layout.topMargin: 20
-                    Layout.bottomMargin: 8
-                    spacing: 12
-                    Rectangle {
-                        width: 44
-                        height: 44
-                        radius: 16
-                        color: M3.primaryContainer
-                        MIcon {
-                            anchors.centerIn: parent
-                            source: "view-app-grid"
-                            size: 28
-                            color: M3.primaryContainerContent
-                        }
+            AppIcon {
+                size: 32
+                name: "org.kernora.store"
+            }
+            MText {
+                visible: app.width > 560
+                role: "titleLarge"
+                text: i18n("Store")
+            }
+            StoreTabs {
+                visible: !app.narrow
+                Layout.fillHeight: true
+                Layout.leftMargin: 24
+                tabs: app.tabs
+                current: app.section
+                onSelected: value => app.showSection(value)
+            }
+            Item {
+                Layout.fillWidth: true
+            }
+            SearchField {
+                id: search
+                Layout.preferredWidth: app.narrow ? Math.max(160, app.width - (app.width > 560 ? 380 : 260)) : Math.min(420, app.width * 0.3)
+                implicitHeight: 44
+                placeholderText: i18n("Search apps and games")
+                onTextChanged: {
+                    if (text.trim().length > 0 && (app.section !== "search" || stack.depth > 1)) {
+                        app.showSection("search");
+                    } else if (text.trim().length === 0 && app.section === "search") {
+                        app.showSection(app.lastTab);
                     }
+                }
+                onAccepted: {
+                    if (text.trim().length > 0) {
+                        app.showSection("search");
+                    }
+                }
+            }
+            MIconButton {
+                icon: "view-refresh"
+                text: Store.loading ? i18n("Refreshing…") : i18n("Refresh")
+                enabled: !Store.loading && !Store.checkingUpdates
+                onClicked: Store.refresh()
+            }
+            Item {
+                implicitWidth: myApps.implicitWidth
+                implicitHeight: myApps.implicitHeight
+
+                MButton {
+                    id: myApps
+                    visible: app.width > 560
+                    variant: "tonal"
+                    icon: "view-app-grid"
+                    text: i18n("My apps")
+                    onClicked: app.openMyApps()
+                }
+                MIconButton {
+                    anchors.centerIn: parent
+                    visible: !myApps.visible
+                    icon: "view-app-grid"
+                    text: i18n("My apps")
+                    onClicked: app.openMyApps()
+                }
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.rightMargin: -4
+                    anchors.topMargin: -4
+                    visible: Store.updateCount > 0
+                    width: Math.max(height, count.implicitWidth + 10)
+                    height: 20
+                    radius: height / 2
+                    color: M3.error
+
                     MText {
-                        Layout.fillWidth: true
-                        role: "headlineSmall"
-                        text: i18n("Store")
-                    }
-                    MIconButton {
-                        icon: "view-refresh"
-                        text: Store.loading ? i18n("Refreshing…") : i18n("Refresh")
-                        enabled: !Store.loading && !Store.checkingUpdates
-                        onClicked: Store.refresh()
-                    }
-                }
-
-                SearchField {
-                    id: search
-                    Layout.fillWidth: true
-                    Layout.topMargin: app.narrow ? 0 : 8
-                    placeholderText: i18n("Search apps")
-                    color: input.activeFocus ? M3.surfaceContainerHighest : M3.surfaceContainerHigh
-                    Behavior on color { ColorAnimation { duration: M3.durationMedium2 } }
-                    onTextChanged: {
-                        if (text.trim().length > 0 && (app.section !== "search" || stack.depth > 1)) {
-                            app.showSection("search");
-                        } else if (text.trim().length === 0 && app.section === "search") {
-                            app.showSection("home");
-                        }
-                    }
-                    onAccepted: {
-                        if (text.trim().length > 0) {
-                            app.showSection("search");
-                        }
-                    }
-                }
-
-                QQC2.ScrollView {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    contentWidth: availableWidth
-                    QQC2.ScrollBar.horizontal.policy: QQC2.ScrollBar.AlwaysOff
-
-                    Column {
-                        width: parent.width
-                        spacing: 2
-
-                        Destination {
-                            name: "home"
-                            title: i18n("Discover")
-                            icon: "go-home"
-                        }
-
-                        Item { width: 1; height: 8 }
-
-                        MText {
-                            x: 16
-                            height: 40
-                            verticalAlignment: Text.AlignVCenter
-                            role: "titleSmall"
-                            text: i18n("Categories")
-                            color: M3.surfaceVariantContent
-                        }
-
-                        Repeater {
-                            model: Store.categories
-                            delegate: Destination {
-                                required property var modelData
-                                name: "category:" + modelData.id
-                                title: modelData.name
-                                icon: modelData.icon
-                            }
-                        }
-
-                        Item { width: 1; height: 8 }
-
-                        Rectangle {
-                            x: 16
-                            width: parent.width - 32
-                            height: 1
-                            color: M3.outlineVariant
-                        }
-
-                        Item { width: 1; height: 8 }
-
-                        Destination {
-                            name: "installed"
-                            title: i18n("Installed")
-                            icon: "view-app-grid"
-                        }
-
-                        Destination {
-                            name: "updates"
-                            title: i18n("Updates")
-                            icon: "system-software-update"
-                            badge: Store.updateCount
-                        }
-
-                        Item { width: 1; height: 16 }
+                        id: count
+                        anchors.centerIn: parent
+                        role: "labelSmall"
+                        text: Store.updateCount
+                        color: M3.errorContent
                     }
                 }
             }
         }
 
-        Rectangle {
-            id: pane
+        StoreTabs {
+            visible: app.narrow
+            Layout.leftMargin: 8
+            tabs: app.tabs
+            current: app.section
+            onSelected: value => app.showSection(value)
+        }
 
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 1
+            color: M3.outlineVariant
+        }
+
+        Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.topMargin: app.narrow ? 0 : 8
-            Layout.rightMargin: app.narrow ? 0 : 12
-            Layout.bottomMargin: app.narrow ? 0 : 12
-            visible: !app.narrow || app.pageShown
-            radius: app.narrow ? 0 : (M3.classic ? M3.cornerCard : 28)
-            color: M3.surface
             clip: true
 
             QQC2.StackView {
@@ -389,22 +279,19 @@ AppWindow {
                 pushEnter: Transition {
                     ParallelAnimation {
                         NumberAnimation { property: "opacity"; from: 0; to: 1; duration: M3.durationMedium2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
-                        NumberAnimation { property: "x"; from: 48; to: 0; duration: M3.durationMedium4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
+                        NumberAnimation { property: "x"; from: 32; to: 0; duration: M3.durationMedium4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
                     }
                 }
                 pushExit: Transition {
                     NumberAnimation { property: "opacity"; from: 1; to: 0; duration: M3.durationShort4 }
                 }
                 popEnter: Transition {
-                    ParallelAnimation {
-                        NumberAnimation { property: "opacity"; from: 0; to: 1; duration: M3.durationMedium2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
-                        NumberAnimation { property: "x"; from: -48; to: 0; duration: M3.durationMedium4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
-                    }
+                    NumberAnimation { property: "opacity"; from: 0; to: 1; duration: M3.durationMedium2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
                 }
                 popExit: Transition {
                     ParallelAnimation {
                         NumberAnimation { property: "opacity"; from: 1; to: 0; duration: M3.durationShort4 }
-                        NumberAnimation { property: "x"; from: 0; to: 48; duration: M3.durationShort4 }
+                        NumberAnimation { property: "x"; from: 0; to: 32; duration: M3.durationShort4 }
                     }
                 }
                 replaceEnter: pushEnter
@@ -421,7 +308,6 @@ AppWindow {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: pane.radius
                     color: M3.surface
                 }
 

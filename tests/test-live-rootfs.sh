@@ -43,9 +43,9 @@ fail() {
 }
 
 grep -Fxq 'ID=kernora' /usr/lib/os-release || fail "wrong OS identity"
-[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.5" ]] \
+[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.6" ]] \
   || fail "kernora-base is not installed"
-[[ "$(dpkg-query -W -f='${Version}' linux-image-amd64)" == "6.12.107-1" ]] \
+[[ "$(dpkg-query -W -f='${Version}' linux-image-amd64)" == "6.12.111-1" ]] \
   || fail "wrong kernel metapackage version"
 [[ "$(dpkg-query -W -f='${Version}' live-boot)" == "1:20250815~deb13u1" ]] \
   || fail "wrong live-boot version"
@@ -91,8 +91,8 @@ done
   || fail "sddm is not installed"
 
 # The Kernora Material 3 shell and what it is set in.
-[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.30" ]] \
-  || fail "kernora-desktop 1.4.30 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.31" ]] \
+  || fail "kernora-desktop 1.4.31 is not installed"
 for applet in org.kernora.launcher org.kernora.quicksettings; do
   [[ -s "/usr/share/plasma/plasmoids/$applet/contents/ui/main.qml" ]] \
     || fail "Kernora shell applet is missing: $applet"
@@ -124,7 +124,7 @@ done
 grep -qx 'cursorTheme=kernora_cursors' /etc/xdg/kcminputrc || fail "Plasma does not use the Kernora cursors"
 grep -qx 'Bouncing=false' /etc/xdg/klaunchrc || fail "the bouncing launch icon is still on"
 # The wallpapers are Kernora's live ones; no picture wallpapers ship.
-for wallpaper in tower rhythm starfall pastel; do
+for wallpaper in rhythm starfall pastel; do
   [[ -s /usr/share/plasma/wallpapers/org.kernora.$wallpaper/contents/ui/Scene.qml ]] \
     || fail "the $wallpaper live wallpaper is missing"
 done
@@ -151,8 +151,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.37" ]] \
-  || fail "kernora-apps 1.1.37 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.38" ]] \
+  || fail "kernora-apps 1.1.38 is not installed"
 for package in flatpak appstream; do
   [[ "$(dpkg-query -W -f='${Status}' "$package")" == 'install ok installed' ]] || fail "Store dependency missing: $package"
 done

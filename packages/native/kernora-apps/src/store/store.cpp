@@ -83,7 +83,7 @@ QString normalised(QString id)
     if (id.endsWith(QLatin1String(".desktop"))) {
         id.chop(8);
     }
-    return id;
+    return id.toLower();
 }
 
 QString flatpakName(const QString &ref)
@@ -440,6 +440,7 @@ void Store::loadRatings()
             const int votes = entry.value(QStringLiteral("star%1").arg(star)).toInt();
             weighted += votes * star;
             counted += votes;
+            rating.votes.append(votes);
         }
         rating.total = entry.value(QStringLiteral("total")).toInt();
         rating.stars = counted > 0 ? double(weighted) / counted : 0;
@@ -833,6 +834,7 @@ QVariantMap Store::details(const QString &id) const
         {QStringLiteral("accentDark"), app.accentDark},
         {QStringLiteral("rating"), m_ratings.value(id).stars},
         {QStringLiteral("ratingCount"), m_ratings.value(id).total},
+        {QStringLiteral("ratingVotes"), m_ratings.value(id).votes},
         {QStringLiteral("local"), !app.localPath.isEmpty()},
     };
 

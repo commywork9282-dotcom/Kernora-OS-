@@ -1,3 +1,12 @@
+kernora-desktop (1.4.31) UNRELEASED; urgency=medium
+
+  * Remove the Tower live wallpaper. Desktops that used it move to Kernora
+    Shapes through a Plasma shell update script, kconf_update
+    kernora_tower_to_shapes moves the lock screen, and postinst moves the
+    login screen's theme.conf.user.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 15 Oct 2026 16:00:00 -0700
+
 kernora-desktop (1.4.30) UNRELEASED; urgency=medium
 
   * Reduce motion no longer breaks the shell. With animations off Kirigami

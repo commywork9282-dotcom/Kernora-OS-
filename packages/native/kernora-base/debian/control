@@ -9,7 +9,7 @@ Package: kernora-base
 Architecture: all
 Depends:
  ${misc:Depends},
- base-files (= 13.8+deb13u6+kernora1),
+ base-files (= 13.8+deb13u7+kernora1),
  kernora-archive (>= 1.0),
  7zip,
  bash-completion,

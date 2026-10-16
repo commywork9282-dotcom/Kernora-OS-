@@ -18,12 +18,16 @@ Item {
 
     property string title
     property string category
+    property string shelfTitle
+    property string shelfCollection
     property int filter: Store.All
     property bool searching: false
+    property bool showHeader: true
 
     readonly property var app: QQC2.ApplicationWindow.window
-    readonly property real contentWidth: Math.min(width - 48, 1180)
-    readonly property int columns: Math.max(1, Math.floor((contentWidth + 12) / 352))
+    readonly property bool canGoBack: QQC2.StackView.index > 0
+    readonly property real contentWidth: Math.min(width - 48, 1200)
+    readonly property int columns: Math.max(1, Math.floor((contentWidth + 16) / 376))
 
     AppModel {
         id: results
@@ -37,49 +41,64 @@ Item {
 
         anchors.fill: parent
         anchors.leftMargin: (page.width - page.contentWidth) / 2
-        anchors.rightMargin: anchors.leftMargin - 12
-        cellWidth: (page.contentWidth + 12) / page.columns
-        cellHeight: 124
+        anchors.rightMargin: anchors.leftMargin - 16
+        cellWidth: (page.contentWidth + 16) / page.columns
+        cellHeight: 96
         boundsBehavior: Flickable.StopAtBounds
         cacheBuffer: 600
         model: results
 
-        header: Item {
+        header: Column {
             width: page.contentWidth
-            height: heading.implicitHeight + 52
+            topPadding: 24
+            bottomPadding: 16
+            spacing: 28
 
             RowLayout {
-                id: heading
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.topMargin: 28
+                width: parent.width
                 spacing: 8
+                visible: page.showHeader
 
                 IconButton {
-                    visible: page.app && page.app.narrow
-                    iconName: "go-previous"
+                    visible: page.canGoBack
+                    iconName: Qt.application.layoutDirection === Qt.RightToLeft ? "go-next" : "go-previous"
                     text: i18n("Back")
                     onClicked: page.app.goBack()
                 }
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4
+                    spacing: 2
                     MText {
                         Layout.fillWidth: true
-                        role: "headlineLarge"
+                        role: "headlineSmall"
                         text: page.searching ? i18n("Results for “%1”", page.app ? page.app.searchText.trim() : "") : page.title
                         elide: Text.ElideRight
                     }
                     MText {
                         Layout.fillWidth: true
-                        role: "bodyLarge"
+                        role: "bodyMedium"
                         color: M3.surfaceVariantContent
                         visible: results.total > 0
                         text: page.filter === Store.Installed ? i18np("%1 app installed", "%1 apps installed", results.total)
                             : i18np("%1 app", "%1 apps", results.total)
                     }
                 }
+            }
+
+            Loader {
+                width: parent.width
+                active: page.shelfCollection.length > 0
+                visible: active
+                sourceComponent: Shelf {
+                    title: page.shelfTitle
+                    collection: page.shelfCollection
+                }
+            }
+
+            MText {
+                visible: page.shelfCollection.length > 0
+                role: "titleLarge"
+                text: page.title
             }
         }
 
@@ -91,7 +110,6 @@ Item {
         delegate: Item {
             id: cell
 
-            required property int index
             required property string appId
             required property string name
             required property string summary
@@ -107,12 +125,10 @@ Item {
             width: grid.cellWidth
             height: grid.cellHeight
 
-            EntranceMotion { item: cell; delay: Math.min(cell.index % (page.columns * 3), 8) * 28 }
-
             AppCard {
                 anchors.fill: parent
-                anchors.rightMargin: 12
-                anchors.bottomMargin: 12
+                anchors.rightMargin: 16
+                anchors.bottomMargin: 8
                 appId: cell.appId
                 name: cell.name
                 summary: cell.summary

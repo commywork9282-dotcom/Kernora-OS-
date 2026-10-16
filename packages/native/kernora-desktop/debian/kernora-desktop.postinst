@@ -7,6 +7,10 @@ if [ "$1" = configure ]; then
     if [ -e /boot/grub/grub.cfg ] && command -v update-grub >/dev/null 2>&1; then
         update-grub || true
     fi
+    greeter=/usr/share/sddm/themes/kernora/theme.conf.user
+    if [ -f "$greeter" ] && grep -q '^wallpaper=org\.kernora\.tower$' "$greeter"; then
+        sed -i 's/^wallpaper=org\.kernora\.tower$/wallpaper=org.kernora.shapes/' "$greeter"
+    fi
 fi
 
 #DEBHELPER#

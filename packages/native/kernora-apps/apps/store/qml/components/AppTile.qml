@@ -6,7 +6,6 @@
 import QtQuick
 import QtQuick.Layouts
 import org.kernora.m3
-import org.kernora.ui
 
 Item {
     id: root
@@ -23,8 +22,8 @@ Item {
 
     signal clicked()
 
-    implicitWidth: 176
-    implicitHeight: 248
+    implicitWidth: 120
+    implicitHeight: plate.height + 8 + title.lineHeight * 2 + 4 + 20
     activeFocusOnTab: true
 
     Accessible.role: Accessible.Button
@@ -34,78 +33,67 @@ Item {
     Keys.onReturnPressed: clicked()
     Keys.onSpacePressed: clicked()
 
-    scale: mouse.pressed ? 0.975 : 1
-    Behavior on scale {
-        NumberAnimation { duration: M3.durationShort4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
+    Item {
+        anchors.fill: parent
+        anchors.margins: -8
+        MStateLayer {
+            radius: M3.classic ? M3.cornerCard : 16
+            color: M3.surfaceContent
+            hovered: mouse.containsMouse
+            pressed: mouse.pressed
+            focused: root.activeFocus
+            pressPoint: Qt.point(mouse.mouseX + 8, mouse.mouseY + 8)
+        }
     }
 
-    StoreSurface {
-        id: card
-        anchors.fill: parent
-        hovered: mouse.containsMouse
-        pressed: mouse.pressed
-        focused: root.activeFocus
-        pressPoint: Qt.point(mouse.mouseX, mouse.mouseY)
+    AppPlate {
+        id: plate
+        size: root.width
+        iconName: root.iconSource
     }
 
-    ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: 16
-        spacing: 6
+    MText {
+        id: title
+        anchors.top: plate.bottom
+        anchors.topMargin: 8
+        width: parent.width
+        role: "bodyMedium"
+        text: root.name
+        wrapMode: Text.Wrap
+        maximumLineCount: 2
+        elide: Text.ElideRight
+        verticalAlignment: Text.AlignTop
+    }
 
-        AppIcon {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.topMargin: 4
-            Layout.bottomMargin: 6
-            size: 88
-            name: root.iconSource
-            scale: mouse.containsMouse ? 1.05 : 1
-            Behavior on scale {
-                NumberAnimation { duration: M3.durationMedium2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate }
-            }
-        }
+    Item {
+        anchors.top: title.bottom
+        anchors.topMargin: 2
+        width: parent.width
+        height: 20
+
         MText {
-            Layout.fillWidth: true
-            role: "titleMedium"
-            text: root.name
-            horizontalAlignment: Text.AlignHCenter
-            elide: Text.ElideRight
-            maximumLineCount: 1
-        }
-        MText {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            width: parent.width
+            visible: root.busy || root.installed || root.hasUpdate
             role: "bodySmall"
-            text: root.summary
-            color: M3.surfaceVariantContent
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignTop
-            wrapMode: Text.Wrap
             elide: Text.ElideRight
-            maximumLineCount: 2
+            color: root.hasUpdate && !root.busy ? M3.primary : M3.surfaceVariantContent
+            text: root.busy ? (root.progress >= 0 ? i18n("%1%", root.progress) : i18n("Working…"))
+                : root.hasUpdate ? i18n("Update available") : i18n("Installed")
         }
-        Item {
-            Layout.fillWidth: true
-            implicitHeight: 24
-
-            StateChip {
-                anchors.centerIn: parent
-                installed: root.installed
-                busy: root.busy
-                hasUpdate: root.hasUpdate
-                progress: root.progress
-            }
-            Stars {
-                anchors.centerIn: parent
-                visible: !root.installed && !root.busy && value > 0
-                value: root.rating
-            }
+        RatingLabel {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            visible: !root.busy && !root.installed && !root.hasUpdate && value > 0
+            value: root.rating
         }
     }
 
     MouseArea {
         id: mouse
         anchors.fill: parent
+        anchors.margins: -8
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: root.clicked()

@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.30" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.31" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -35,7 +35,7 @@ grep -Eq '^ calamares \(>= [^)]*kernora[0-9]+\),$' "$control" \
   || fail "installer configuration does not depend on the Kernora calamares"
 
 data_root="$package_root/data"
-for wallpaper in shapes tower rhythm starfall pastel; do
+for wallpaper in shapes rhythm starfall pastel; do
   for file in metadata.json contents/ui/main.qml contents/ui/Scene.qml contents/ui/config.qml contents/config/main.xml; do
     [[ -s "$data_root/wallpaper/org.kernora.$wallpaper/$file" ]] \
       || fail "the $wallpaper wallpaper lacks $file"
@@ -43,7 +43,9 @@ for wallpaper in shapes tower rhythm starfall pastel; do
   [[ -s "$package_root/data/shell/po/plasma_wallpaper_org.kernora.$wallpaper.ru.po" ]] \
     || fail "the $wallpaper wallpaper has no Russian translation"
 done
-[[ -s "$data_root/wallpaper/org.kernora.tower/contents/ui/tower.js" ]] || fail "the tower's simulation is missing"
+[[ ! -e "$data_root/wallpaper/org.kernora.tower" ]] || fail "Tower is back"
+[[ ! -e "$package_root/data/shell/po/plasma_wallpaper_org.kernora.tower.ru.po" ]] || fail "Tower still has a translation"
+grep -q '"tower"' "$package_root/tools/gen-wallpaper-assets" && fail "gen-wallpaper-assets still has a Tower palette"
 [[ ! -e "$data_root/wallpaper/org.kernora.marbles" ]] || fail "Marble Run is back"
 sh -n "$package_root/data/kconf_update/kernora-marbles-to-pastel.sh" || fail "the Marble Run migration does not parse"
 marbles_home=$(mktemp -d)
@@ -54,13 +56,24 @@ grep -Fxq 'WallpaperPlugin=org.kernora.pastel' "$marbles_home/kscreenlockerrc" \
 grep -Fq '"org.kernora.pastel"' "$package_root/data/shell-updates/kernora_marbles_to_pastel.js" \
   || fail "desktops with Marble Run do not move to Pastel"
 rm -rf "$marbles_home"
+sh -n "$package_root/data/kconf_update/kernora-tower-to-shapes.sh" || fail "the Tower migration does not parse"
+tower_home=$(mktemp -d)
+printf '[Greeter]\nWallpaperPlugin=org.kernora.tower\n' > "$tower_home/kscreenlockerrc"
+XDG_CONFIG_HOME="$tower_home" sh "$package_root/data/kconf_update/kernora-tower-to-shapes.sh"
+grep -Fxq 'WallpaperPlugin=org.kernora.shapes' "$tower_home/kscreenlockerrc" \
+  || fail "a lock screen with Tower does not move to Shapes"
+grep -Fq '"org.kernora.shapes"' "$package_root/data/shell-updates/kernora_tower_to_shapes.js" \
+  || fail "desktops with Tower do not move to Shapes"
+grep -Fq 'wallpaper=org.kernora.shapes' "$package_root/debian/kernora-desktop.postinst" \
+  || fail "a login screen with Tower does not move to Shapes"
+rm -rf "$tower_home"
 assets=$(mktemp -d)
-python3 "$package_root/tools/gen-wallpaper-assets" "$assets" tower >/dev/null \
-  || fail "gen-wallpaper-assets cannot write the tower's assets"
+python3 "$package_root/tools/gen-wallpaper-assets" "$assets" pastel >/dev/null \
+  || fail "gen-wallpaper-assets cannot write Pastel's assets"
 grep -q '"hull":\[\[' "$assets/materialshapes.js" || fail "the shapes have no hulls"
-grep -q '"paper"' "$assets/palettes/kernora.qml" || fail "the tower's palette has no paper"
-KERNORA_COLOUR=blue python3 "$package_root/tools/gen-wallpaper-assets" "$assets" tower >/dev/null \
-  || fail "gen-wallpaper-assets cannot write the tower's blue palette"
+grep -q '"base"' "$assets/palettes/kernora.qml" || fail "Pastel's palette has no base"
+KERNORA_COLOUR=blue python3 "$package_root/tools/gen-wallpaper-assets" "$assets" pastel >/dev/null \
+  || fail "gen-wallpaper-assets cannot write Pastel's blue palette"
 cmp -s "$assets/palettes/kernora.qml" "$assets/palettes/blue.qml" && fail "the wallpaper does not change with the colour"
 rm -rf "$assets"
 palettes=$(mktemp -d)

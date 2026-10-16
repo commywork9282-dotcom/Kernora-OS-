@@ -30,7 +30,7 @@ OS identity and vendor origin while retaining Debian parent and original
 maintainer provenance.
 
 The corresponding immutable upstream source is fetched from Debian snapshot
-`20260901T000000Z`, authenticated, checksummed in `manifests/upstream.lock`, and
+`20261015T000000Z`, authenticated, checksummed in `manifests/upstream.lock`, and
 kept outside Git. `manifests/derived-packages.txt` records the mapping between
 the Debian and Kernora versions.
 

@@ -137,8 +137,8 @@ the generation. Brown, grey and blue grey carry their own chroma (24, 0 and
 * **Live wallpapers.** `gen-wallpaper-assets` writes one palette per colour,
   `contents/ui/palettes/<colour>.qml`. Each scene loads the one named by
   `M3.colour` with a `Loader`, so the wallpaper changes colour with the
-  theme. Shapes rotates its families around the seed; Tower, Rhythm, Starfall
-  and Pastel turn their palette by the seed's hue difference from Kernora's,
+  theme. Shapes rotates its families around the seed; Rhythm, Starfall and
+  Pastel turn their palette by the seed's hue difference from Kernora's,
   except families marked fixed (Starfall's night sky, Pastel's accents).
 * **Switching.** `Appearance.setColour(colour)` runs the same steps as a
   change of generation with the colour's themes, and then
@@ -479,17 +479,6 @@ scene; the palette's `c(family, tone)` returns the nearest tone it has.
 Settings and Welcome load `Scene.qml` directly for previews
 (`Files.liveWallpapers()`), a still at phase 0.3.
 
-* **Tower** (`org.kernora.tower`, 50 s): a stack of toy blocks on warm
-  paper -- a slab, a square, a cookie, an arch, a ball, a clover, a sun --
-  rocks on the edge of its base, once, twice, a third time too far, and
-  goes over; the pieces fly, bounce, rock and roll until each lies on a
-  flat side, then hop home one by one, from the base up, landing with a
-  squash. `tower.js` simulates the fall once per screen size: the standing
-  tower is a rigid body tipping about its edge; a loose piece flies under
-  gravity and on the floor rocks and rolls on its hull about its centre of
-  mass, so a square settles on a side and an arch onto its foot; pieces on
-  the floor overlap a little, as a heap does, and no more. The run is
-  sampled into a table the scene looks poses up in; about 90 ms per size.
 * **Rhythm** (`org.kernora.rhythm`, 160 s): a pendulum wave in the round.
   24 shapes on rays from the centre swing in and out, each one beat a loop
   faster than the one before; they start as a circle, wind into a spiral,

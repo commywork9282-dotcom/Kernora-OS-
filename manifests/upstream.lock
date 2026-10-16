@@ -1,14 +1,14 @@
-# Debian snapshot: 20260901T000000Z
+# Debian snapshot: 20261015T000000Z
 # Format: SHA256 two-spaces relative/path
-8e2254627410ebf9424cea290166f717e5ff1fa02758679fd9273e5f41b606c6  _cache/upstream-sources/base-files_13.8+deb13u6.dsc
-0d8c018d562213aa274a8210042bbc3c4ca985a43a75e0021de4bfa4d9722e34  _cache/upstream-sources/base-files_13.8+deb13u6.tar.xz
+6240b5a02fc32bd6d925bb7776e00c467e80d930f8cf3c4a20c299ce692dc7e4  _cache/upstream-sources/base-files_13.8+deb13u7.dsc
+be32803b9408ac9aa46b96f68c83ee45e88d04d89854a87999986efc4cb34c69  _cache/upstream-sources/base-files_13.8+deb13u7.tar.xz
 83e70d9e72062c43e7293288b81d163e03db84dcebdf630f30b0ac7f2b729752  _cache/upstream-sources/calamares_3.3.14-1.debian.tar.xz
 6dcf28679e2e8bb1010627e5d52b448f3273023fab39f99b4ea12ea8ba5fcaa7  _cache/upstream-sources/calamares_3.3.14-1.dsc
 fa158d679bb9384beaf4a2f821be6da63500b13631ad14acec9bb446565dad4a  _cache/upstream-sources/calamares_3.3.14.orig.tar.gz
 09604bd8d4562a1e942e5d1a19a6b82447cbdeb2e7c7f0df7c32a2503647ea47  _cache/upstream-sources/debian-archive-keyring_2025.1.dsc
 2d019c3fa19c42da4d37571e473c296286dad0214cb3bd5cafd99f04a8bf5471  _cache/upstream-sources/debian-archive-keyring_2025.1.tar.xz
-b0fd789e986bcfc424da3d63913ee60b15bcec2791b97b1064e56182b82bd87c  _cache/upstream-sources/debian-installer_20250803+deb13u6.dsc
-e62aa36c36269a69d79c1d476a7ea0f8c88611a9565d08fc399d7edd1f57f267  _cache/upstream-sources/debian-installer_20250803+deb13u6.tar.xz
+2542e25aff5b98f318d2cf9c642c384e254141ad98b6871e2048e1a5e9a2ab2e  _cache/upstream-sources/debian-installer_20250803+deb13u7.dsc
+3703614db280645e10ce4efd6e255081495c48f2acd66bbdbfca571b4ae860b6  _cache/upstream-sources/debian-installer_20250803+deb13u7.tar.xz
 165df822ce7d0d1958b1a04d21dd62d5577bc8f050cbee2b82df6c8428ea9e61  _cache/upstream-sources/debootstrap_1.0.141.dsc
 232ec755f4b1f445f829996885846abba6f1b6fd55d049476ab26ddd8c4b4e1b  _cache/upstream-sources/debootstrap_1.0.141.tar.gz
 a80ce97e866915e93d2d6f1dea57137da20abc43f9f57480ff5cd9639977549a  _cache/upstream-sources/polkit-kde-agent-1_6.3.6-1.debian.tar.xz

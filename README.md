@@ -18,7 +18,7 @@ root folder ownership that caused it.
 
 ## What's in it
 
-- Debian 13.6 from a fixed snapshot (2026-09-01), Linux 6.12, KDE Plasma 6.3
+- Debian 13.7 from a fixed snapshot (2026-10-15), Linux 6.12, KDE Plasma 6.3
 - a Kernora shell on top of Plasma: panel, app launcher, quick settings,
   notifications, lock screen, Alt+Tab and power menu. Every colour comes
   from one seed colour, `#ff6a1e`, and you can switch the whole look between
@@ -28,8 +28,8 @@ root folder ownership that caused it.
   Welcome, plus a file chooser every app uses
 - Store for apps and games from Flathub and Debian, so you don't need the
   terminal to install stuff (see [docs/STORE.md](docs/STORE.md))
-- Material 3 desktop widgets and live wallpapers: Shapes, Tower, Rhythm,
-  Starfall and Pastel
+- Material 3 desktop widgets and live wallpapers: Shapes, Rhythm, Starfall
+  and Pastel
 - the usual terminal tools out of the box: git, curl, htop, fastfetch and co
 - LibreWolf as the browser. It's not in Debian, so the build installs one
   pinned version from the LibreWolf repo and installed systems update from
