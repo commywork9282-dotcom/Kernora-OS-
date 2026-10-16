@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-10-16-5",
+    "date": "2026-10-16",
+    "items": [
+      {
+        "icon": "preferences-desktop-effects",
+        "title": {
+          "en": "Springy buttons",
+          "ru": "Пружинистые кнопки"
+        },
+        "text": {
+          "en": "Buttons squish into a rounder square when you press them and spring back with a little bounce. Buttons that are switched on stay a rounded square.",
+          "ru": "Кнопки при нажатии сжимаются в скруглённый квадрат и отпружинивают обратно с лёгким отскоком. Включённые кнопки остаются скруглённым квадратом."
+        }
+      },
+      {
+        "icon": "view-list-details",
+        "title": {
+          "en": "Livelier menus",
+          "ru": "Живые меню"
+        },
+        "text": {
+          "en": "In Settings, Files and Player the highlight of the chosen item grows out of its icon, and Photos shows morphing shapes while a photo opens.",
+          "ru": "В Настройках, Файлах и Плеере подсветка выбранного пункта вырастает из его иконки, а Фото показывает перетекающие фигуры, пока открывается снимок."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-16-4",
     "date": "2026-10-16",
     "items": [

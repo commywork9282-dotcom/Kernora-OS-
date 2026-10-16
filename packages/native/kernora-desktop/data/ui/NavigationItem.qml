@@ -31,14 +31,32 @@ Item {
     Keys.onSpacePressed: clicked()
     Keys.onReturnPressed: clicked()
 
+    MMorph {
+        id: selectMorph
+        active: root.current
+        dampingRatio: M3.springExpressiveDefaultDamping
+        response: M3.springExpressiveDefaultResponse
+    }
+
+    Rectangle {
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        height: parent.height
+        width: M3.classic ? parent.width : Math.max(0, Math.min(parent.width, height + (parent.width - height) * selectMorph.value))
+        radius: M3.radius("indicator", height)
+        color: M3.secondaryContainer
+        opacity: M3.classic ? (root.current ? 1 : 0) : Math.max(0, Math.min(1, selectMorph.value * 2.5))
+        Behavior on opacity {
+            enabled: M3.classic
+            NumberAnimation { duration: M3.durationShort4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingStandard }
+        }
+    }
+
     Rectangle {
         id: pill
         anchors.fill: parent
         radius: M3.radius("indicator", height)
-        color: root.current ? M3.secondaryContainer : M3.withAlpha(M3.secondaryContainer, 0)
-        Behavior on color {
-            ColorAnimation { duration: M3.durationShort4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingStandard }
-        }
+        color: "transparent"
         MStateLayer {
             radius: pill.radius
             color: root.current ? M3.secondaryContainerContent : M3.surfaceContent

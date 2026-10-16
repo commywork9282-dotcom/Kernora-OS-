@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.35" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.36" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -512,8 +512,16 @@ rm -f "$shapes_out"
 grep -Fq 'readonly property bool expressive: !M3.classic' "$package_root/data/ui/SegmentedButtons.qml" \
   && grep -Fq '(chosen || isFirst ? full : inner)' "$package_root/data/ui/SegmentedButtons.qml" \
   || fail "segmented buttons are not the connected expressive group"
-grep -Fq '(root.pressed || root.checked) ? Math.round(height * 0.3)' "$package_root/data/ui/IconButton.qml" \
+grep -Fq 'MMorph { id: checkMorph; active: root.checked }' "$package_root/data/ui/IconButton.qml" \
   || fail "icon buttons do not change shape when pressed or checked"
+grep -Fq 'MMorph MMorph.qml' "$package_root/data/shell/m3/qmldir" \
+  && grep -Fq '"expressiveFast": (0.6, 0.222)' "$package_root/tools/kernora_design.py" \
+  && grep -Fq 'MMorph { id: pressMorph; active: surface.control.down }' "$package_root/data/style/org.kernora.desktop/private/ButtonSurface.qml" \
+  && grep -Fq 'MMorph { id: checkMorph; active: root.checkable && root.checked }' "$package_root/data/shell/m3/MIconButton.qml" \
+  && grep -Fq 'MMorph { id: pressMorph; active: mouse.pressed }' "$package_root/data/shell/m3/MButton.qml" \
+  || fail "buttons do not morph on the expressive springs"
+grep -Fq 'height + (parent.width - height) * selectMorph.value' "$package_root/data/ui/NavigationItem.qml" \
+  || fail "the navigation indicator does not grow out of the icon"
 grep -Fq 'source: parent.user ? parent.user.picture : ""' "$greeter_qml" \
   && ! grep -Fq '"file://" + parent.user.picture' "$greeter_qml" \
   || fail "the login screen breaks the avatar url sddm already gives it"

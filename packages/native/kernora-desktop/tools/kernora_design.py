@@ -395,6 +395,8 @@ CLASSIC_EASING = {
 SPRING = {
     "spatialDefault": (0.9, 0.7),
     "spatialFast": (0.9, 0.35),
+    "expressiveFast": (0.6, 0.222),
+    "expressiveDefault": (0.8, 0.322),
 }
 
 

@@ -26,18 +26,14 @@ QQC2.AbstractButton {
     QQC2.ToolTip.delay: 600
 
     contentItem: Item {}
+    MMorph { id: pressMorph; active: root.pressed }
+    MMorph { id: checkMorph; active: root.checked }
+
     background: Rectangle {
-        radius: !M3.classic && (root.pressed || root.checked) ? Math.round(height * 0.3) : height / 2
+        readonly property real rest: height / 2 + (Math.round(height * 0.3) - height / 2) * checkMorph.value
+        radius: M3.classic ? height / 2 : Math.max(0, rest + (Math.round(height * 0.22) - rest) * pressMorph.value)
         color: root.checked ? M3.secondaryContainer : "transparent"
         Behavior on color { ColorAnimation { duration: M3.durationShort4 } }
-        Behavior on radius {
-            enabled: !M3.classic
-            NumberAnimation {
-                duration: root.pressed ? M3.durationShort3 : M3.durationMedium2
-                easing.type: Easing.Bezier
-                easing.bezierCurve: M3.easingEmphasizedDecelerate
-            }
-        }
 
         MStateLayer {
             radius: parent.radius

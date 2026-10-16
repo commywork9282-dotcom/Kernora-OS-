@@ -15,3 +15,4 @@ MShapeEcho MShapeEcho.qml
 MLinearProgress MLinearProgress.qml
 MCircularProgress MCircularProgress.qml
 MLoadingIndicator MLoadingIndicator.qml
+MMorph MMorph.qml

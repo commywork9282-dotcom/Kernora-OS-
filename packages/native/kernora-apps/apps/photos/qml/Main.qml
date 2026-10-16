@@ -438,7 +438,10 @@ AppWindow {
             color: parent.checked ? "#66ffffff" : parent.hovered ? "#33ffffff" : "#26000000"
         }
     }
-    component BusyIndicatorOverlay: QQC2.BusyIndicator {
+    component BusyIndicatorOverlay: MLoadingIndicator {
+        width: 64
+        height: 64
+        contained: true
         running: visible
     }
 }

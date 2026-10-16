@@ -263,6 +263,8 @@ for path in \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/MCircularProgress.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/ProgressBar.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MLoadingIndicator.qml \
+  usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MMorph.qml \
+  usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/MMorph.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/loadingshapes.js \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/loadingshapes.js \
   usr/share/plymouth/themes/kernora/wave-0.png \

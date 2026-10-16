@@ -53,25 +53,18 @@ Item {
     readonly property var shadowSpec: M3.elevationOf("button")
     readonly property bool raised: M3.classic && (variant === "filled" || variant === "tonal")
 
+    MMorph { id: pressMorph; active: mouse.pressed }
+
     Kirigami.ShadowedRectangle {
         id: container
         anchors.fill: parent
-        radius: M3.classic ? M3.radius("button", height) : mouse.pressed ? 12 : height / 2
+        radius: M3.classic ? M3.radius("button", height) : Math.max(0, height / 2 + (12 - height / 2) * pressMorph.value)
         color: root.containerColor
         border.width: root.variant === "outlined" ? 1 : 0
         border.color: M3.outlineVariant
         shadow.size: root.raised ? root.shadowSpec.blur * (mouse.pressed ? 2 : 1) : 0
         shadow.yOffset: root.raised ? root.shadowSpec.offset * (mouse.pressed ? 2 : 1) : 0
         shadow.color: Qt.rgba(0, 0, 0, root.shadowSpec.opacity)
-
-        Behavior on radius {
-            enabled: !M3.classic
-            NumberAnimation {
-                duration: mouse.pressed ? M3.durationShort3 : M3.durationMedium2
-                easing.type: Easing.Bezier
-                easing.bezierCurve: M3.easingEmphasizedDecelerate
-            }
-        }
 
         Row {
             id: row

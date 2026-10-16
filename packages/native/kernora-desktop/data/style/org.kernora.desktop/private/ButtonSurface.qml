@@ -57,12 +57,16 @@ Item {
     readonly property var shadowSpec: M3.elevationOf("button")
     readonly property bool raised: M3.classic && hasContainer && control.enabled
 
+    MMorph { id: pressMorph; active: surface.control.down }
+    MMorph { id: checkMorph; active: surface.control.checkable && surface.control.checked }
+
     Kirigami.ShadowedRectangle {
         id: container
 
         anchors.fill: parent
+        readonly property real rest: surface.restRadius + (Math.min(surface.restRadius, 12) - surface.restRadius) * checkMorph.value
         radius: M3.classic ? Math.min(M3.radius("button", height), surface.restRadius)
-              : surface.control.down ? surface.pressedRadius : surface.restRadius
+              : Math.max(0, rest + (surface.pressedRadius - rest) * pressMorph.value)
         shadow.size: surface.raised ? surface.shadowSpec.blur * (surface.control.down ? 2 : 1) : 0
         shadow.yOffset: surface.raised ? surface.shadowSpec.offset * (surface.control.down ? 2 : 1) : 0
         shadow.color: Qt.rgba(0, 0, 0, surface.shadowSpec.opacity)
@@ -70,14 +74,6 @@ Item {
         border.width: surface.variant === "outlined" ? 1 : 0
         border.color: surface.control.enabled ? M3.outlineVariant : M3.withAlpha(M3.surfaceContent, M3.stateDisabledContainer)
 
-        Behavior on radius {
-            enabled: M3.motionScale > 0 && !M3.classic
-            NumberAnimation {
-                duration: surface.control.down ? M3.durationShort3 : M3.durationMedium2
-                easing.type: Easing.Bezier
-                easing.bezierCurve: M3.easingEmphasizedDecelerate
-            }
-        }
         Behavior on color {
             enabled: M3.motionScale > 0
             ColorAnimation {

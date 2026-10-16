@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.44" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.45" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -112,6 +112,8 @@ grep -Fq '"/kdedefaults/kdeglobals"' "$package_root/src/updatenotifier/greetersy
 
 grep -Fq 'MLoadingIndicator {' "$package_root/apps/store/qml/AppPage.qml" \
   || fail "screenshots in Store do not use the loading indicator"
+grep -Fq 'component BusyIndicatorOverlay: MLoadingIndicator {' "$package_root/apps/photos/qml/Main.qml" \
+  || fail "the photo viewer does not use the loading indicator"
 grep -Fq 'indeterminate: Updates.progress <= 0 || Updates.progress >= 100' "$package_root/apps/settings/qml/pages/UpdatesPage.qml" \
   || fail "the update bar flashes full while packagekit reports 100%"
 

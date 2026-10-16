@@ -69,21 +69,18 @@ Item {
         }
     }
 
+    MMorph { id: pressMorph; active: mouse.pressed }
+    MMorph { id: checkMorph; active: root.checkable && root.checked }
+
     Rectangle {
         id: container
         anchors.fill: parent
-        radius: mouse.pressed && !M3.classic ? Math.round(root.height * 0.3) : root.height / 2
+        readonly property real rest: root.height / 2 + (Math.round(root.height * 0.3) - root.height / 2) * checkMorph.value
+        radius: M3.classic ? root.height / 2 : Math.max(0, rest + (Math.round(root.height * 0.22) - rest) * pressMorph.value)
         color: root.containerColor
         border.width: root.variant === "outlined" && !(root.checkable && root.checked) ? 1 : 0
         border.color: M3.outlineVariant
 
-        Behavior on radius {
-            NumberAnimation {
-                duration: mouse.pressed ? M3.durationShort3 : M3.durationMedium2
-                easing.type: Easing.Bezier
-                easing.bezierCurve: M3.easingEmphasizedDecelerate
-            }
-        }
         Behavior on color {
             ColorAnimation {
                 duration: M3.durationMedium1
