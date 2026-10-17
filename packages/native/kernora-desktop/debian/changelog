@@ -1,3 +1,13 @@
+kernora-desktop (1.4.38) UNRELEASED; urgency=medium
+
+  * The boot menu follows the colour and the light or dark theme: every
+    colour gets a light and a dark GRUB theme, kernora-grub-theme copies
+    the chosen one to /boot/grub/themes/kernora and the greeter helper
+    calls it whenever the login screen gets a new colour or mode.
+  * The installer calls the release Kernora OS 1, without Ember.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 17 Oct 2026 12:00:00 -0700
+
 kernora-desktop (1.4.37) UNRELEASED; urgency=medium
 
   * Divert the KDE theme pickers (global theme, Plasma style, colours,

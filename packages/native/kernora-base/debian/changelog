@@ -1,3 +1,9 @@
+kernora-base (1.6.2) UNRELEASED; urgency=medium
+
+  * Depend on base-files 13.8+deb13u7+kernora2.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 17 Oct 2026 12:00:00 -0700
+
 kernora-base (1.6.1) UNRELEASED; urgency=medium
 
   * fastfetch shows the Kernora logo, ascii art by milanrudis. The compact

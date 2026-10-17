@@ -1,3 +1,10 @@
+base-files (13.8+deb13u7+kernora2) UNRELEASED; urgency=medium
+
+  * The name is just Kernora OS 1 now, the ember codename stays in
+    VERSION_CODENAME and the archive suite.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 17 Oct 2026 12:00:00 -0700
+
 base-files (13.8+deb13u7+kernora1) UNRELEASED; urgency=medium
 
   * Rebase on Debian base-files 13.8+deb13u7 (Debian 13.7): debian_version,

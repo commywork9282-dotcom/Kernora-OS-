@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.37" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.38" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -537,6 +537,15 @@ grep -Fq 'root.backend.openSettings("appearance")' "$package_root/data/shell/sha
   || fail "the dark theme tile still points at the KDE global theme"
 grep -Fxq 'Id=kernora_sound_theme_without_ocean' "$package_root/data/kconf_update/kernora-sound-theme.upd" \
   || fail "ocean users are not moved to the Kernora sounds"
+grep -Fq 'GRUB_THEME=/boot/grub/themes/kernora/theme.txt' "$package_root/data/grub/kernora.cfg" \
+  && grep -Fq '/usr/libexec/kernora-grub-theme' "$package_root/data/grub/kernora.cfg" \
+  && grep -Fq '/usr/libexec/kernora-grub-theme || true' "$package_root/data/greeter/kernora-greeter-background" \
+  && grep -Fq '/usr/libexec/kernora-grub-theme || true' "$package_root/debian/kernora-desktop.postinst" \
+  && grep -Fq 'generated/grub-themes/$$colour-$$mode $$mode' "$package_root/debian/rules" \
+  || fail "the boot menu does not follow the colour and theme"
+bash -n "$package_root/data/grub/kernora-grub-theme" || fail "the grub theme helper does not parse"
+! grep -qi 'ember' "$package_root/data/calamares/branding/kernora/branding.desc" \
+  || fail "the installer still says Ember"
 grep -Fq 'source: parent.user ? parent.user.picture : ""' "$greeter_qml" \
   && ! grep -Fq '"file://" + parent.user.picture' "$greeter_qml" \
   || fail "the login screen breaks the avatar url sddm already gives it"

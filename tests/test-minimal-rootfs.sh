@@ -33,7 +33,7 @@ grep -Fxq 'Parent: Debian' /etc/dpkg/origins/kernora \
   || fail "Kernora is not the default dpkg vendor"
 
 [[ "$(dpkg-query -W -f='${Version}' base-files)" \
-  == "13.8+deb13u7+kernora1" ]] || fail "wrong base-files version"
+  == "13.8+deb13u7+kernora2" ]] || fail "wrong base-files version"
 [[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.4" ]] \
   || fail "kernora-base is not installed"
 
@@ -70,7 +70,7 @@ apt_options=(
 apt-get "${apt_options[@]}" update >/dev/null \
   || fail "APT rejected the embedded Kernora archive"
 apt-cache "${apt_options[@]}" show kernora-base > "$apt_root/kernora-base.txt"
-grep -Fxq 'Depends: base-files (= 13.8+deb13u7+kernora1), kernora-archive (>= 1.0)' \
+grep -Fxq 'Depends: base-files (= 13.8+deb13u7+kernora2), kernora-archive (>= 1.0)' \
   "$apt_root/kernora-base.txt" || fail "APT sees the wrong identity dependency"
 
 printf 'inside rootfs: OK\n'

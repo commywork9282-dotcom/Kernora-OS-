@@ -1,3 +1,11 @@
+kernora-apps (1.1.47) UNRELEASED; urgency=medium
+
+  * About shows the version without the codename.
+  * What's new: boot menu colours and the shorter name.
+  * Require kernora-desktop 1.4.38.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 17 Oct 2026 12:00:00 -0700
+
 kernora-apps (1.1.46) UNRELEASED; urgency=medium
 
   * Sound settings no longer offer the KDE sound theme.

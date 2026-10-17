@@ -4,6 +4,9 @@ set -e
 if [ "$1" = configure ]; then
     update-alternatives --install /usr/share/icons/default/index.theme x-cursor-theme \
         /usr/share/icons/kernora_cursors/cursor.theme 100
+    if [ -d /boot/grub ]; then
+        /usr/libexec/kernora-grub-theme || true
+    fi
     if [ -e /boot/grub/grub.cfg ] && command -v update-grub >/dev/null 2>&1; then
         update-grub || true
     fi

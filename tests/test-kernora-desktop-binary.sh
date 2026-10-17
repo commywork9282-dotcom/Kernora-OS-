@@ -264,6 +264,11 @@ for path in \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/ProgressBar.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MLoadingIndicator.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MMorph.qml \
+  usr/libexec/kernora-grub-theme \
+  usr/share/kernora/grub/kernora-dark/theme.txt \
+  usr/share/kernora/grub/kernora-dark/select_c.png \
+  usr/share/kernora/grub/light-blue-light/theme.txt \
+  usr/share/kernora/grub/green-dark/logo.png \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/MMorph.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/loadingshapes.js \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/loadingshapes.js \
@@ -279,6 +284,10 @@ grep -Fxq 'MLinearProgress MLinearProgress.qml' "$temporary_root/desktop/usr/lib
   && grep -Fxq 'MCircularProgress MCircularProgress.qml' "$temporary_root/desktop/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/qmldir" \
   && grep -Fxq 'ProgressBar 1.0 ProgressBar.qml' "$temporary_root/desktop/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/qmldir" \
   || fail "the wavy progress indicators are not registered"
+cmp -s "$temporary_root/desktop/usr/share/kernora/grub/kernora-dark/theme.txt" "$temporary_root/desktop/usr/share/grub/themes/kernora/theme.txt" \
+  || fail "the default boot menu and the kernora dark variant differ"
+grep -Fq 'desktop-color: "#f' "$temporary_root/desktop/usr/share/kernora/grub/light-blue-light/theme.txt" \
+  || fail "the light boot menu is not light"
 cmp -s "$temporary_root/desktop/usr/share/kernora/faces/kernora.png" "$temporary_root/desktop/usr/share/kernora/avatars/00-kernora.png" \
   || fail "the Kernora face and the stock Kernora avatar differ"
 cmp -s "$temporary_root/desktop/usr/share/kernora/faces/kernora.png" "$temporary_root/desktop/usr/share/kernora/faces/light-blue.png" \

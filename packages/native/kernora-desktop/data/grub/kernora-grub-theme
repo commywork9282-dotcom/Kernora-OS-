@@ -1,0 +1,38 @@
+#!/bin/bash
+set -eu
+
+(( EUID == 0 )) || { echo "kernora-grub-theme: run as root" >&2; exit 1; }
+[[ -d /boot/grub ]] || exit 0
+
+settings=/usr/share/sddm/themes/kernora/theme.conf.user
+variants=/usr/share/kernora/grub
+fonts=/usr/share/grub/themes/kernora
+themes=/boot/grub/themes
+target=$themes/kernora
+
+previous() {
+  sed -n "s/^$1=//p" "$settings" 2>/dev/null | head -n 1
+}
+colour=$(previous colour)
+mode=$(previous mode)
+[[ $colour =~ ^[a-z]+(-[a-z]+)*$ ]] || colour=kernora
+[[ $mode == light ]] || mode=dark
+source=$variants/$colour-$mode
+[[ -f $source/theme.txt ]] || source=$variants/kernora-dark
+[[ -f $source/theme.txt ]] || exit 0
+
+install -d -m 0755 "$themes"
+work=$(mktemp -d "$themes/.kernora.XXXXXX")
+trap 'rm -rf "$work"' EXIT
+cp "$source"/* "$work"/
+cp "$fonts"/*.pf2 "$work"/
+printf '%s\n' "$(basename "$source")" > "$work/variant"
+chmod 0755 "$work"
+chmod 0644 "$work"/*
+rm -rf "$themes/.kernora.old"
+if [[ -e $target ]]; then
+  mv "$target" "$themes/.kernora.old"
+fi
+mv "$work" "$target"
+trap - EXIT
+rm -rf "$themes/.kernora.old"

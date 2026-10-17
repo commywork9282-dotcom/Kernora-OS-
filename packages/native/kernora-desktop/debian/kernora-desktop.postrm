@@ -3,6 +3,7 @@ set -e
 
 if [ "$1" = purge ]; then
     rm -f /var/lib/kernora/plymouth-theme
+    rm -rf /boot/grub/themes/kernora
 fi
 
 if [ "$1" = remove ]; then

@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-10-17-2",
+    "date": "2026-10-17",
+    "items": [
+      {
+        "icon": "system-reboot",
+        "title": {
+          "en": "Boot menu in your colours",
+          "ru": "Меню загрузки в ваших цветах"
+        },
+        "text": {
+          "en": "The boot menu you see when the computer starts now follows your colour and your light or dark theme.",
+          "ru": "Меню загрузки при включении компьютера теперь следует вашему цвету и светлой или тёмной теме."
+        }
+      },
+      {
+        "icon": "kernora-logo",
+        "title": {
+          "en": "Just Kernora OS 1",
+          "ru": "Просто Kernora OS 1"
+        },
+        "text": {
+          "en": "The system is now called simply Kernora OS 1, without Ember in the name.",
+          "ru": "Система теперь называется просто Kernora OS 1, без Ember в названии."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-17-1",
     "date": "2026-10-17",
     "items": [

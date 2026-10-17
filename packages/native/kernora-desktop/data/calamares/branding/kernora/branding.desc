@@ -10,9 +10,9 @@ windowPlacement: center
 strings:
     productName:         Kernora OS
     shortProductName:    Kernora
-    version:             Ember
+    version:             1
     shortVersion:        1
-    versionedName:       Kernora OS 1 "Ember"
+    versionedName:       Kernora OS 1
     shortVersionedName:  Kernora 1
     bootloaderEntryName: Kernora
 

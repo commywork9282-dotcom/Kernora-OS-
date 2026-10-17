@@ -43,12 +43,7 @@ SettingsPage {
         }, true);
     }
 
-    readonly property string versionText: {
-        const codename = SystemInfo.osCodename;
-        const named = codename && SystemInfo.osVersion.toLowerCase().includes(codename.toLowerCase());
-        return named || !codename ? SystemInfo.osVersion
-            : SystemInfo.osVersion + " (" + codename.charAt(0).toUpperCase() + codename.slice(1) + ")";
-    }
+    readonly property string versionText: SystemInfo.osVersion
 
     readonly property string summary: [
         SystemInfo.osName + " " + page.versionText,

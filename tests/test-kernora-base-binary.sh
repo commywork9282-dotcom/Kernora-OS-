@@ -26,7 +26,7 @@ done
 [[ "$(dpkg-deb --field "$deb" Section)" == "admin" ]] \
   || fail "wrong package section"
 depends=$(dpkg-deb --field "$deb" Depends)
-[[ "$depends" == "base-files (= 13.8+deb13u7+kernora1), kernora-archive (>= 1.0), 7zip, bash-completion, curl, fastfetch, git, htop, lsof, man-db, openssh-client, rsync, tree, unzip, wget, zip" ]] \
+[[ "$depends" == "base-files (= 13.8+deb13u7+kernora2), kernora-archive (>= 1.0), 7zip, bash-completion, curl, fastfetch, git, htop, lsof, man-db, openssh-client, rsync, tree, unzip, wget, zip" ]] \
   || fail "wrong binary dependency: $depends"
 essential=$(dpkg-deb --field "$deb" Essential)
 [[ "$essential" == "no" || -z "$essential" ]] \

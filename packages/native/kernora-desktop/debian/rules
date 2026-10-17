@@ -156,6 +156,13 @@ override_dh_auto_build:
 	  rsvg-convert --output=$${image%.svg}.png $$image; \
 	  rm $$image; \
 	done
+	set -e; for colour in $(COLOURS); do for mode in dark light; do \
+	  KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-grub-theme $(LOGO) generated/grub-themes/$$colour-$$mode $$mode >/dev/null; \
+	  for image in generated/grub-themes/$$colour-$$mode/*.svg; do \
+	    rsvg-convert --output=$${image%.svg}.png $$image; \
+	    rm $$image; \
+	  done; \
+	done; done
 	set -e; for face in Regular:16 Medium:16 Regular:24; do \
 	  weight=$${face%%:*}; size=$${face#*:}; \
 	  grub-mkfont --size=$$size --name="Roboto $$weight" \

@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.46" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.47" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -116,6 +116,8 @@ grep -Fq 'component BusyIndicatorOverlay: MLoadingIndicator {' "$package_root/ap
   || fail "the photo viewer does not use the loading indicator"
 ! grep -qi 'ocean' "$package_root/apps/settings/qml/pages/SoundPage.qml" \
   || fail "Settings still offers the KDE sound theme"
+grep -Fq 'readonly property string versionText: SystemInfo.osVersion' "$package_root/apps/settings/qml/pages/AboutPage.qml" \
+  || fail "About still glues the codename onto the version"
 grep -Fq 'indeterminate: Updates.progress <= 0 || Updates.progress >= 100' "$package_root/apps/settings/qml/pages/UpdatesPage.qml" \
   || fail "the update bar flashes full while packagekit reports 100%"
 

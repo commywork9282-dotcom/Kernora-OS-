@@ -109,6 +109,8 @@ generated/plymouth/kernora usr/share/plymouth/themes
 data/plymouth/plymouthd.defaults usr/share/plymouth
 data/grub/kernora.cfg etc/default/grub.d
 generated/grub/kernora usr/share/grub/themes
+generated/grub-themes/* usr/share/kernora/grub
+data/grub/kernora-grub-theme usr/libexec
 data/plymouth/plymouth-quit-kernora.conf usr/lib/systemd/system/plymouth-quit.service.d
 data/plymouth/sddm-plymouth.conf usr/lib/systemd/system/sddm.service.d
 data/drivers/kernora-drivers usr/libexec
