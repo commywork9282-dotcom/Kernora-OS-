@@ -380,7 +380,7 @@ Item {
                     checked: root.backend.darkOn
                     hasDetails: true
                     onToggled: root.backend.toggleDark()
-                    onDetailsRequested: { root.backend.openSettings("kcm_lookandfeel"); root.requestClose(); }
+                    onDetailsRequested: { root.backend.openSettings("appearance"); root.requestClose(); }
                 }
                 MTile {
                     Layout.fillWidth: true

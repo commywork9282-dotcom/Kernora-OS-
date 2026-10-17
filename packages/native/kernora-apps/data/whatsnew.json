@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-17-1",
+    "date": "2026-10-17",
+    "items": [
+      {
+        "icon": "preferences-desktop-theme",
+        "title": {
+          "en": "One Kernora look",
+          "ru": "Единый вид Kernora"
+        },
+        "text": {
+          "en": "The old KDE theme pickers are gone from More settings, so the system can't slip back into the KDE look by accident. Colours, the dark theme, wallpapers, fonts and cursor size are all in Settings.",
+          "ru": "Старые выборы тем KDE убраны из «Дополнительных настроек», и система больше не может случайно вернуться к виду KDE. Цвета, тёмная тема, обои, шрифты и размер курсора — в Настройках."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-16-5",
     "date": "2026-10-16",
     "items": [

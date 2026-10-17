@@ -5,6 +5,8 @@ shell=/usr/share/plasma/shells/org.kde.plasma.desktop/contents
 notifications=/usr/share/plasma/plasmoids/org.kde.plasma.notifications/contents/ui
 tasks=/usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui
 folder=/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
+kcms=/usr/lib/x86_64-linux-gnu/qt6/plugins/plasma/kcms/systemsettings
+pickers="kcm_lookandfeel kcm_desktoptheme kcm_colors kcm_style kcm_icons kcm_cursortheme kcm_kwindecoration kcm_splashscreen kcm_sddm kcm_soundtheme"
 if [ "$1" = install ] || [ "$1" = upgrade ]; then
     for file in "$shell/lockscreen/LockScreen.qml" "$shell/osd/Osd.qml" \
             "$shell/configuration/AppletConfiguration.qml" \
@@ -22,6 +24,18 @@ if [ "$1" = install ] || [ "$1" = upgrade ]; then
             /usr/share/kglobalaccel/org.kde.krunner.desktop \
             /usr/share/kglobalaccel/org.kde.plasma.emojier.desktop \
             /usr/share/plymouth/plymouthd.defaults; do
+        dpkg-divert --package kernora-desktop --add --rename \
+            --divert "$file.kde" "$file"
+    done
+    for module in $pickers; do
+        for file in "$kcms/$module.so" "/usr/share/applications/$module.desktop"; do
+            dpkg-divert --package kernora-desktop --add --rename \
+                --divert "$file.kde" "$file"
+        done
+    done
+    for file in /usr/share/applications/kcm_breezedecoration.desktop \
+            /usr/bin/lookandfeeltool /usr/bin/plasma-apply-lookandfeel \
+            /usr/bin/kvantummanager /usr/share/applications/kvantummanager.desktop; do
         dpkg-divert --package kernora-desktop --add --rename \
             --divert "$file.kde" "$file"
     done

@@ -1,3 +1,15 @@
+kernora-desktop (1.4.37) UNRELEASED; urgency=medium
+
+  * Divert the KDE theme pickers (global theme, Plasma style, colours,
+    application style, icons, cursors, window decorations, splash screen,
+    login screen, sound theme), the Breeze decoration settings,
+    lookandfeeltool and Kvantum Manager. Kernora keeps its own look; every
+    real setting is still in Settings.
+  * The dark theme tile opens Wallpaper & style.
+  * Users on the Ocean sounds move to the Kernora sounds once.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 17 Oct 2026 10:00:00 -0700
+
 kernora-desktop (1.4.36) UNRELEASED; urgency=medium
 
   * Buttons morph on the M3 Expressive springs (new expressiveFast and

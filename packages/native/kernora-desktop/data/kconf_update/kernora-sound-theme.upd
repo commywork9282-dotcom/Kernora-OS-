@@ -2,3 +2,6 @@ Version=6
 
 Id=kernora_sound_theme
 Script=kernora-sound-theme.sh,sh
+
+Id=kernora_sound_theme_without_ocean
+Script=kernora-sound-theme.sh,sh

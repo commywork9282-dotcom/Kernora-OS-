@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.36" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.37" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -522,6 +522,21 @@ grep -Fq 'MMorph MMorph.qml' "$package_root/data/shell/m3/qmldir" \
   || fail "buttons do not morph on the expressive springs"
 grep -Fq 'height + (parent.width - height) * selectMorph.value' "$package_root/data/ui/NavigationItem.qml" \
   || fail "the navigation indicator does not grow out of the icon"
+for script in kernora-desktop.preinst kernora-desktop.postrm; do
+  for module in kcm_lookandfeel kcm_desktoptheme kcm_colors kcm_style kcm_icons kcm_cursortheme \
+      kcm_kwindecoration kcm_splashscreen kcm_sddm kcm_soundtheme; do
+    grep -q "^pickers=.*\b$module\b" "$package_root/debian/$script" \
+      || fail "$module can still bring the KDE look back ($script)"
+  done
+  grep -Fq '/usr/bin/lookandfeeltool /usr/bin/plasma-apply-lookandfeel' "$package_root/debian/$script" \
+    && grep -Fq '/usr/bin/kvantummanager' "$package_root/debian/$script" \
+    || fail "theme reset tools are still around ($script)"
+done
+grep -Fq 'root.backend.openSettings("appearance")' "$package_root/data/shell/shade/contents/ui/ShadeSheet.qml" \
+  && ! grep -Fq 'kcm_lookandfeel' "$package_root/data/shell/shade/contents/ui/ShadeSheet.qml" \
+  || fail "the dark theme tile still points at the KDE global theme"
+grep -Fxq 'Id=kernora_sound_theme_without_ocean' "$package_root/data/kconf_update/kernora-sound-theme.upd" \
+  || fail "ocean users are not moved to the Kernora sounds"
 grep -Fq 'source: parent.user ? parent.user.picture : ""' "$greeter_qml" \
   && ! grep -Fq '"file://" + parent.user.picture' "$greeter_qml" \
   || fail "the login screen breaks the avatar url sddm already gives it"

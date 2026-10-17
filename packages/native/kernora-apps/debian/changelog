@@ -1,3 +1,11 @@
+kernora-apps (1.1.46) UNRELEASED; urgency=medium
+
+  * Sound settings no longer offer the KDE sound theme.
+  * What's new: one look.
+  * Require kernora-desktop 1.4.37.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 17 Oct 2026 10:00:00 -0700
+
 kernora-apps (1.1.45) UNRELEASED; urgency=medium
 
   * Photos shows the shape morphing loading indicator while a photo opens.
