@@ -9,3 +9,4 @@ data/installer/kernora-installer usr/bin
 data/installer/org.kernora.installer.policy usr/share/polkit-1/actions
 data/installer/49-kernora-installer.rules usr/share/polkit-1/rules.d
 data/installer/org.kernora.installer.desktop usr/share/applications
+data/installer/org.kernora.installer-autostart.desktop etc/xdg/autostart

@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.40" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.41" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -535,6 +535,14 @@ for script in kernora-desktop.preinst kernora-desktop.postrm; do
     && grep -Fq '/usr/bin/kvantummanager' "$package_root/debian/$script" \
     || fail "theme reset tools are still around ($script)"
 done
+grep -Fxq 'Exec=/usr/bin/kernora-installer --autostart' "$package_root/data/installer/org.kernora.installer-autostart.desktop" \
+  && grep -Fxq 'data/installer/org.kernora.installer-autostart.desktop etc/xdg/autostart' "$package_root/debian/kernora-calamares.install" \
+  && grep -Fq "grep -qw 'boot=live' /proc/cmdline" "$package_root/data/installer/kernora-installer" \
+  || fail "the live session does not open the installer"
+grep -Fxq 'Id=kernora_welcome_retired' "$package_root/data/kconf_update/kernora-welcome-retired.upd" \
+  && grep -Fxq 'data/kconf_update/kernora-welcome-retired.sh usr/share/kconf_update' "$package_root/debian/kernora-desktop.install" \
+  && [[ -x "$package_root/data/kconf_update/kernora-welcome-retired.sh" ]] \
+  || fail "welcome stays in the menu after people went through it"
 shade_ui="$package_root/data/shell/shade/contents/ui"
 grep -Fq 'internet: internetTile' "$shade_ui/ShadeSheet.qml" && grep -Fq 'TileGrid {' "$shade_ui/ShadeSheet.qml" \
   && grep -Fq 'root.detail === "internet" ? internetPanel' "$shade_ui/ShadeSheet.qml" \
@@ -574,6 +582,8 @@ find "$package_root/data/plymouth" -name __pycache__ -exec rm -rf {} +
 bash -n "$package_root/data/grub/kernora-grub-theme" || fail "the grub theme helper does not parse"
 ! grep -qi 'ember' "$package_root/data/calamares/branding/kernora/branding.desc" \
   || fail "the installer still says Ember"
+grep -Fq '/^[0-9.]+$/.test(version) ? ["", ""] : ["«", "»"]' "$package_root/data/calamares/branding/kernora/welcomeq.qml" \
+  || fail "the installer puts quotes around a plain version number"
 grep -Fq 'source: parent.user ? parent.user.picture : ""' "$greeter_qml" \
   && ! grep -Fq '"file://" + parent.user.picture' "$greeter_qml" \
   || fail "the login screen breaks the avatar url sddm already gives it"

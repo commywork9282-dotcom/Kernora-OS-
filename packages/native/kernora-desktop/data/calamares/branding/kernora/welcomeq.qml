@@ -26,7 +26,9 @@ Item {
     function part(tag: string): string {
         const match = welcomeText.match(new RegExp("<" + tag + ">([\\s\\S]*?)</" + tag + ">"));
         const text = match ? match[1] : "";
-        return text.replace(/<quote>/g, "«").replace(/<\/quote>/g, "»").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+        const version = Branding.string(Branding.Version);
+        const quoted = /^[0-9.]+$/.test(version) ? ["", ""] : ["«", "»"];
+        return text.replace(/<quote>/g, quoted[0]).replace(/<\/quote>/g, quoted[1]).replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
     }
 
     RoundedClip {

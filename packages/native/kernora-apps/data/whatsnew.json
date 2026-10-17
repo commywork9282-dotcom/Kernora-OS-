@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-17-5",
+    "date": "2026-10-17",
+    "items": [
+      {
+        "icon": "system-run",
+        "title": {
+          "en": "Welcome says hello once",
+          "ru": "Приветствие только один раз"
+        },
+        "text": {
+          "en": "Welcome greets you on the first login after installing Kernora and then leaves the app menu. On the live USB the installer now opens by itself.",
+          "ru": "Приветствие встречает вас при первом входе после установки Kernora и потом пропадает из меню приложений. На загрузочной флешке установщик теперь открывается сам."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-17-4",
     "date": "2026-10-17",
     "items": [

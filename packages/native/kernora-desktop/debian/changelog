@@ -1,3 +1,12 @@
+kernora-desktop (1.4.41) UNRELEASED; urgency=medium
+
+  * kernora-calamares starts the installer when the live session logs in;
+    kernora-installer --autostart does nothing outside a live boot.
+  * kconf_update hides Welcome from the menu for people who already went
+    through it.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 17 Oct 2026 21:00:00 -0700
+
 kernora-desktop (1.4.40) UNRELEASED; urgency=medium
 
   * Quick settings in the Android 16/17 expressive style: an Internet tile

@@ -51,6 +51,8 @@ for module in kcm_lookandfeel kcm_desktoptheme kcm_colors kcm_style kcm_icons kc
 done
 [[ ! -e /usr/bin/lookandfeeltool && ! -e /usr/bin/plasma-apply-lookandfeel ]] \
   || fail "KDE global theme tools are still installed"
+grep -Fxq 'Exec=/usr/bin/kernora-installer --autostart' /etc/xdg/autostart/org.kernora.installer-autostart.desktop \
+  || fail "the live session does not open the installer on login"
 fastfetch_out=$(fastfetch --pipe true 2>/dev/null)
 grep -Fq ',o000000000oo,,' <<<"$fastfetch_out" && grep -Fq 'Kernel' <<<"$fastfetch_out" \
   || fail "fastfetch does not show the Kernora logo with the system info"
@@ -100,8 +102,8 @@ done
   || fail "sddm is not installed"
 
 # The Kernora Material 3 shell and what it is set in.
-[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.40" ]] \
-  || fail "kernora-desktop 1.4.40 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.41" ]] \
+  || fail "kernora-desktop 1.4.41 is not installed"
 for applet in org.kernora.launcher org.kernora.quicksettings; do
   [[ -s "/usr/share/plasma/plasmoids/$applet/contents/ui/main.qml" ]] \
     || fail "Kernora shell applet is missing: $applet"
@@ -160,8 +162,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.49" ]] \
-  || fail "kernora-apps 1.1.49 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.50" ]] \
+  || fail "kernora-apps 1.1.50 is not installed"
 for package in flatpak appstream; do
   [[ "$(dpkg-query -W -f='${Status}' "$package")" == 'install ok installed' ]] || fail "Store dependency missing: $package"
 done

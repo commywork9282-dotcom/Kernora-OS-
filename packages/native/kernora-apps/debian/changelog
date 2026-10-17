@@ -1,3 +1,11 @@
+kernora-apps (1.1.50) UNRELEASED; urgency=medium
+
+  * Welcome shows once after installation: closing it in any way turns off
+    the login start and hides it from the menu. What's new is not affected.
+  * Require kernora-desktop 1.4.41.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 17 Oct 2026 21:00:00 -0700
+
 kernora-apps (1.1.49) UNRELEASED; urgency=medium
 
   * What's new: new quick settings and launcher.

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Install Kernora
+Name[ru]=Установить Kernora
+Icon=org.kernora.installer
+Exec=/usr/bin/kernora-installer --autostart
+NoDisplay=true
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=2

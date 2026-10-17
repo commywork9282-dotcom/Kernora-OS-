@@ -1,0 +1,4 @@
+Version=6
+
+Id=kernora_welcome_retired
+Script=kernora-welcome-retired.sh,sh

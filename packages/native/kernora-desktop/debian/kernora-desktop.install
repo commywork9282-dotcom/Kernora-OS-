@@ -83,6 +83,8 @@ data/kconf_update/kernora-terminal-entry.upd usr/share/kconf_update
 data/kconf_update/kernora-terminal-entry.sh usr/share/kconf_update
 data/kconf_update/kernora-add-widgets-menu.upd usr/share/kconf_update
 data/kconf_update/kernora-add-widgets-menu.sh usr/share/kconf_update
+data/kconf_update/kernora-welcome-retired.upd usr/share/kconf_update
+data/kconf_update/kernora-welcome-retired.sh usr/share/kconf_update
 data/session/kernora-widgets-menu.conf usr/lib/systemd/user/plasma-plasmashell.service.d
 data/kconf_update/kernora-marbles-to-pastel.upd usr/share/kconf_update
 data/kconf_update/kernora-marbles-to-pastel.sh usr/share/kconf_update

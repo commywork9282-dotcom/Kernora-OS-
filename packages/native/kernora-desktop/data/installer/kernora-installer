@@ -3,6 +3,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 set -eu
 
+if [ "${1:-}" = --autostart ]; then
+    grep -qw 'boot=live' /proc/cmdline 2>/dev/null || [ -d /run/live/medium ] || exit 0
+    shift
+fi
+
 if [ "$(id -u)" != 0 ]; then
     exec pkexec /usr/bin/kernora-installer --session "${LANG:-C.UTF-8}" "${LANGUAGE:-}"
 fi
