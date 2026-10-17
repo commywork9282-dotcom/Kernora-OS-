@@ -21,6 +21,15 @@ Item {
     signal menuRequested(real x, real y)
 
     readonly property real appear: Math.max(0, Math.min(1, (reveal - enterDelay) / 0.55))
+    readonly property real pop: {
+        if (M3.classic) {
+            return appear;
+        }
+        const t = appear - 1;
+        return 1 + 2.7 * t * t * t + 1.7 * t * t;
+    }
+
+    MMorph { id: pressMorph; active: mouse.pressed }
 
     Accessible.role: Accessible.Button
     Accessible.name: name
@@ -29,12 +38,20 @@ Item {
         anchors.fill: parent
         anchors.margins: 4
         opacity: root.appear
-        transform: Translate { y: (1 - root.appear) * 16 }
+        transform: [
+            Translate { y: (1 - root.pop) * 16 },
+            Scale {
+                origin.x: root.width / 2
+                origin.y: root.height / 2
+                xScale: M3.classic ? 1 : 0.85 + 0.15 * root.pop
+                yScale: M3.classic ? 1 : 0.85 + 0.15 * root.pop
+            }
+        ]
 
         Rectangle {
             id: container
             anchors.fill: parent
-            radius: M3.classic ? M3.cornerListItem : 20
+            radius: M3.classic ? M3.cornerListItem : 20 + 10 * pressMorph.value
             color: root.current ? M3.secondaryContainer : "transparent"
             Behavior on color { ColorAnimation { duration: M3.durationShort4 } }
 
@@ -55,14 +72,7 @@ Item {
             height: 48
             source: root.iconSource
             animated: false
-            scale: mouse.pressed ? 0.9 : 1
-            Behavior on scale {
-                NumberAnimation {
-                    duration: M3.durationShort4
-                    easing.type: Easing.Bezier
-                    easing.bezierCurve: M3.easingEmphasizedDecelerate
-                }
-            }
+            scale: M3.classic ? (mouse.pressed ? 0.9 : 1) : 1 - 0.12 * pressMorph.value
         }
 
         MText {

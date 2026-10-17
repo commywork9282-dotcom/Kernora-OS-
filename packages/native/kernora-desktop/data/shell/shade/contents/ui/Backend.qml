@@ -87,6 +87,13 @@ Item {
     readonly property string wifiSubtitle: network ? network.wifiSubtitle : i18n("Unavailable")
     function toggleWifi(): void { network?.toggleWifi(); }
 
+    readonly property bool internetAvailable: network ? network.internetAvailable : false
+    readonly property bool internetOn: network ? network.internetOn : false
+    readonly property string internetIcon: network ? network.internetIcon : "network-offline"
+    readonly property string internetSubtitle: network ? network.internetSubtitle : i18n("Unavailable")
+    readonly property bool internetToggles: wifiAvailable && !airplaneOn
+    function toggleInternet(): void { network?.toggleInternet(); }
+
     readonly property bool airplaneAvailable: network ? network.airplaneAvailable : false
     readonly property bool airplaneOn: network ? network.airplaneOn : false
     function toggleAirplane(): void { network?.toggleAirplane(); }

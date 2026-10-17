@@ -85,6 +85,11 @@ for path in \
   usr/share/knotifications6/kernora-devices.notifyrc \
   usr/share/plasma/plasmoids/org.kernora.quicksettings/contents/ui/sources/DeviceSource.qml \
   usr/share/plasma/plasmoids/org.kernora.quicksettings/contents/ui/sources/ThemeSource.qml \
+  usr/share/plasma/plasmoids/org.kernora.quicksettings/contents/ui/TileGrid.qml \
+  usr/share/plasma/plasmoids/org.kernora.quicksettings/contents/ui/InternetPanel.qml \
+  usr/share/plasma/plasmoids/org.kernora.quicksettings/contents/ui/BluetoothPanel.qml \
+  usr/share/plasma/plasmoids/org.kernora.quicksettings/contents/ui/PanelRow.qml \
+  usr/share/plasma/plasmoids/org.kernora.launcher/contents/ui/SessionGroup.qml \
   usr/share/plasma/desktoptheme/kernora-md1/metadata.json \
   usr/share/plasma/desktoptheme/kernora-md1-light/colors \
   usr/share/plasma/desktoptheme/kernora-md2/dialogs/background.svg \

@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.39" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.40" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -535,6 +535,23 @@ for script in kernora-desktop.preinst kernora-desktop.postrm; do
     && grep -Fq '/usr/bin/kvantummanager' "$package_root/debian/$script" \
     || fail "theme reset tools are still around ($script)"
 done
+shade_ui="$package_root/data/shell/shade/contents/ui"
+grep -Fq 'internet: internetTile' "$shade_ui/ShadeSheet.qml" && grep -Fq 'TileGrid {' "$shade_ui/ShadeSheet.qml" \
+  && grep -Fq 'root.detail === "internet" ? internetPanel' "$shade_ui/ShadeSheet.qml" \
+  && grep -Fq '"/kernora-quicksettingsrc"' "$shade_ui/TileGrid.qml" \
+  && grep -Fq 'handler.addAndActivateConnection(entry.modelData.devicePath, entry.modelData.specificPath, password.text)' "$shade_ui/InternetPanel.qml" \
+  && grep -Fq 'device.connectToDevice()' "$shade_ui/BluetoothPanel.qml" \
+  && grep -Fq 'readonly property bool wiredConnected' "$shade_ui/sources/NetworkSource.qml" \
+  || fail "quick settings are not the android style internet, bluetooth and editable tiles"
+grep -Fq 'property bool compact: false' "$package_root/data/shell/m3/MTile.qml" \
+  && grep -Fq 'readonly property bool split: hasDetails && !compact && available' "$package_root/data/shell/m3/MTile.qml" \
+  || fail "tiles have no small or split form"
+grep -Fq 'SessionGroup {' "$package_root/data/shell/launcher/contents/ui/LauncherView.qml" \
+  && grep -Fq 'MMorph { id: pressMorph; active: mouse.pressed }' "$package_root/data/shell/launcher/contents/ui/AppTile.qml" \
+  || fail "the launcher is not the expressive one"
+grep -Fq 'msgid "Edit tiles"' "$package_root/data/shell/po/plasma_applet_org.kernora.quicksettings.ru.po" \
+  && grep -Fq 'msgid "Pair new device"' "$package_root/data/shell/po/plasma_applet_org.kernora.quicksettings.ru.po" \
+  || fail "the new quick settings are not translated"
 grep -Fq 'root.backend.openSettings("appearance")' "$package_root/data/shell/shade/contents/ui/ShadeSheet.qml" \
   && ! grep -Fq 'kcm_lookandfeel' "$package_root/data/shell/shade/contents/ui/ShadeSheet.qml" \
   || fail "the dark theme tile still points at the KDE global theme"

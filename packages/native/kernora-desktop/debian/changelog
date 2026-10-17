@@ -1,3 +1,15 @@
+kernora-desktop (1.4.40) UNRELEASED; urgency=medium
+
+  * Quick settings in the Android 16/17 expressive style: an Internet tile
+    that knows about cables, split tiles (the icon toggles, the label opens
+    the details), small round tiles, Internet and Bluetooth panels inside
+    the shade with the networks and devices, and a pencil to move, resize,
+    hide and add tiles. The layout lives in kernora-quicksettingsrc.
+  * Launcher: tiles pop in and squish on springs, emphasized section
+    headers and a connected session button group.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 17 Oct 2026 19:00:00 -0700
+
 kernora-desktop (1.4.39) UNRELEASED; urgency=medium
 
   * The boot splash follows the colour and the light or dark theme. The

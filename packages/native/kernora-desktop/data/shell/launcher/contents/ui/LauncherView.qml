@@ -289,27 +289,37 @@ FocusScope {
             MIconButton {
                 icon: "system-lock-screen"
                 text: i18n("Lock")
-                visible: root.canLock
+                visible: M3.classic && root.canLock
                 onClicked: root.lockScreen()
             }
             MIconButton {
                 icon: "system-log-out"
                 text: i18n("Log Out")
-                visible: root.canLogout
+                visible: M3.classic && root.canLogout
                 onClicked: root.logOut()
             }
             MIconButton {
                 icon: "system-reboot"
                 text: i18n("Restart")
-                visible: root.canShutdown
+                visible: M3.classic && root.canShutdown
                 onClicked: root.restart()
             }
             MIconButton {
                 icon: "system-shutdown"
                 variant: "tonal"
                 text: i18n("Shut Down…")
-                visible: root.canShutdown
+                visible: M3.classic && root.canShutdown
                 onClicked: root.shutDown()
+            }
+            SessionGroup {
+                visible: !M3.classic
+                Layout.leftMargin: 4
+                actions: [
+                    { icon: "system-lock-screen", text: i18n("Lock"), visible: root.canLock, trigger: () => root.lockScreen() },
+                    { icon: "system-log-out", text: i18n("Log Out"), visible: root.canLogout, trigger: () => root.logOut() },
+                    { icon: "system-reboot", text: i18n("Restart"), visible: root.canShutdown, trigger: () => root.restart() },
+                    { icon: "system-shutdown", text: i18n("Shut Down…"), visible: root.canShutdown, primary: true, trigger: () => root.shutDown() }
+                ]
             }
         }
     }

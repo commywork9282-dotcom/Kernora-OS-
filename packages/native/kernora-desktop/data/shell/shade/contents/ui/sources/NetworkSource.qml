@@ -60,6 +60,51 @@ Item {
         handler.enableWireless(!wifiOn);
     }
 
+    readonly property bool wiredConnected: statusIcon.startsWith("network-wired")
+        && !statusIcon.includes("disconnected") && !statusIcon.includes("offline")
+        && !statusIcon.includes("acquiring")
+
+    readonly property bool internetAvailable: wifiAvailable || devices.wiredDeviceAvailable || wiredConnected
+    readonly property bool internetOn: wiredConnected || (wifiAvailable && wifiOn && !airplaneOn)
+
+    readonly property string internetIcon: {
+        if (wiredConnected) {
+            return "network-wired-activated";
+        }
+        if (!wifiAvailable || !wifiOn || airplaneOn) {
+            return airplaneOn ? "airplane-mode" : "network-wireless-offline";
+        }
+        return statusIcon.startsWith("network-wireless") ? statusIcon : "network-wireless";
+    }
+
+    readonly property string internetSubtitle: {
+        if (connecting) {
+            return i18n("Connecting…");
+        }
+        if (wiredConnected) {
+            return wifiConnected && connectionName.length > 0 ? connectionName : i18n("Ethernet");
+        }
+        if (airplaneOn) {
+            return i18n("Airplane mode");
+        }
+        if (!wifiAvailable) {
+            return devices.wiredDeviceAvailable ? i18n("Cable unplugged") : i18n("Unavailable");
+        }
+        if (!wifiOn) {
+            return i18n("Wi-Fi off");
+        }
+        if (wifiConnected && connectionName.length > 0) {
+            return connectionName;
+        }
+        return i18n("Not connected");
+    }
+
+    function toggleInternet(): void {
+        if (wifiAvailable && !airplaneOn) {
+            toggleWifi();
+        }
+    }
+
     readonly property bool airplaneAvailable: devices.wirelessDeviceAvailable || devices.modemDeviceAvailable
     readonly property bool airplaneOn: PlasmaNM.Configuration.airplaneModeEnabled
 

@@ -4,6 +4,7 @@
 */
 
 import QtQuick
+import org.kde.plasma.components as PC3
 
 Item {
     id: root
@@ -15,6 +16,7 @@ Item {
     property bool checked: false
     property bool available: true
     property bool hasDetails: false
+    property bool compact: false
 
     signal toggled()
     signal detailsRequested()
@@ -114,23 +116,29 @@ Item {
         }
     }
 
+    MMorph { id: onMorph; active: root.on; dampingRatio: M3.springExpressiveDefaultDamping; response: M3.springExpressiveDefaultResponse }
+    MMorph { id: bodyPress; active: mouse.pressed && !mouse.onIcon }
+    MMorph { id: iconPress; active: mouse.pressed && mouse.onIcon }
+
+    readonly property bool split: hasDetails && !compact && available
+    readonly property color bodyColor: compact ? (on ? M3.primary : M3.surfaceContainerHighest)
+                                               : (on ? M3.primaryContainer : M3.surfaceContainerHighest)
+    readonly property color bodyContent: compact ? (on ? M3.primaryContent : M3.surfaceContent)
+                                                 : (on ? M3.primaryContainerContent : M3.surfaceContent)
+    readonly property color bodySupporting: on ? bodyContent : M3.surfaceVariantContent
+    readonly property color iconBoxColor: on ? M3.primary : M3.withAlpha(M3.surfaceContent, 0.1)
+    readonly property color iconColor: compact ? bodyContent : on ? M3.primaryContent : M3.surfaceContent
+
     Rectangle {
         id: container
 
         visible: !M3.classic
         anchors.fill: parent
-        radius: mouse.pressed ? 16 : root.on ? 20 : height / 2
-        color: root.containerColor
+        readonly property real rest: height / 2 + (20 - height / 2) * onMorph.value
+        radius: Math.max(0, rest + (14 - rest) * bodyPress.value)
+        color: root.bodyColor
         opacity: root.available ? 1 : 0.5
-        scale: mouse.pressed ? 0.97 : 1
 
-        Behavior on radius {
-            NumberAnimation {
-                duration: M3.durationMedium2
-                easing.type: Easing.Bezier
-                easing.bezierCurve: M3.easingEmphasizedDecelerate
-            }
-        }
         Behavior on color {
             ColorAnimation {
                 duration: M3.durationMedium2
@@ -138,48 +146,64 @@ Item {
                 easing.bezierCurve: M3.easingEmphasized
             }
         }
-        Behavior on scale {
-            NumberAnimation {
-                duration: M3.durationShort4
-                easing.type: Easing.Bezier
-                easing.bezierCurve: M3.easingStandard
+
+        MStateLayer {
+            radius: container.radius
+            color: root.bodyContent
+            hovered: mouse.containsMouse && !mouse.onIcon
+            pressed: mouse.pressed && !mouse.onIcon
+            focused: root.activeFocus
+            pressPoint: Qt.point(mouse.mouseX, mouse.mouseY)
+        }
+
+        Rectangle {
+            id: iconBox
+            visible: !root.compact
+            x: 12
+            anchors.verticalCenter: parent.verticalCenter
+            width: 40
+            height: 40
+            readonly property real rest: 20 + (12 - 20) * onMorph.value
+            radius: Math.max(0, rest + (8 - rest) * iconPress.value)
+            color: root.iconBoxColor
+            Behavior on color { ColorAnimation { duration: M3.durationMedium2 } }
+
+            MStateLayer {
+                radius: iconBox.radius
+                color: root.iconColor
+                hovered: mouse.containsMouse && mouse.onIcon
+                pressed: mouse.pressed && mouse.onIcon
+                pressPoint: Qt.point(width / 2, height / 2)
             }
         }
 
         Item {
             id: iconSlot
-            x: 16
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.centerIn: root.compact ? parent : iconBox
             width: 24
             height: 24
 
             MIcon {
                 anchors.fill: parent
                 source: root.icon
-                color: root.contentColor
+                color: root.iconColor
                 opacity: root.on && root.iconOn.length > 0 ? 0 : 1
                 Behavior on opacity { NumberAnimation { duration: M3.durationShort4 } }
             }
             MIcon {
                 anchors.fill: parent
                 source: root.iconOn
-                color: root.contentColor
+                color: root.iconColor
                 visible: root.iconOn.length > 0
                 opacity: root.on ? 1 : 0
-                scale: root.on ? 1 : 0.7
+                scale: 0.7 + 0.3 * Math.min(1, onMorph.value)
                 Behavior on opacity { NumberAnimation { duration: M3.durationShort4 } }
-                Behavior on scale {
-                    NumberAnimation {
-                        duration: M3.durationMedium2
-                        easing.type: Easing.Bezier
-                        easing.bezierCurve: M3.easingEmphasizedDecelerate
-                    }
-                }
             }
         }
 
         Column {
-            anchors.left: iconSlot.right
+            visible: !root.compact
+            anchors.left: iconBox.right
             anchors.leftMargin: 12
             anchors.right: chevron.visible ? chevron.left : parent.right
             anchors.rightMargin: chevron.visible ? 0 : 16
@@ -190,13 +214,13 @@ Item {
                 width: parent.width
                 role: "titleSmall"
                 text: root.title
-                color: root.contentColor
+                color: root.bodyContent
             }
             MText {
                 width: parent.width
                 role: "bodySmall"
                 text: root.subtitle
-                color: root.supportingColor
+                color: root.bodySupporting
                 opacity: root.on ? 0.85 : 1
                 visible: text.length > 0
             }
@@ -207,25 +231,16 @@ Item {
             anchors.right: parent.right
             anchors.top: parent.top
             anchors.bottom: parent.bottom
-            width: 40
-            visible: root.hasDetails && root.available
+            width: 36
+            visible: root.split
 
             MIcon {
                 anchors.centerIn: parent
                 anchors.horizontalCenterOffset: -4
                 size: 20
                 source: "arrow-right"
-                color: root.supportingColor
+                color: root.bodySupporting
             }
-        }
-
-        MStateLayer {
-            radius: container.radius
-            color: root.contentColor
-            hovered: mouse.containsMouse
-            pressed: mouse.pressed
-            focused: root.activeFocus
-            pressPoint: Qt.point(mouse.mouseX, mouse.mouseY)
         }
     }
 
@@ -233,14 +248,23 @@ Item {
         id: mouse
         anchors.fill: parent
         hoverEnabled: true
-        enabled: root.available
+        enabled: root.available || root.hasDetails
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         cursorShape: Qt.PointingHandCursor
+        readonly property bool onIcon: !M3.classic && root.split && mouseX < iconBox.x + iconBox.width + 6
         onClicked: event => {
-            const onChevron = M3.classic
-                ? root.hasDetails && event.y >= classicLabel.y - 2
-                : chevron.visible && event.x >= chevron.x;
-            if (event.button === Qt.RightButton || onChevron) {
+            if (M3.classic) {
+                const onLabel = root.hasDetails && event.y >= classicLabel.y - 2;
+                if (event.button === Qt.RightButton || onLabel) {
+                    if (root.hasDetails) {
+                        root.detailsRequested();
+                    }
+                    return;
+                }
+                root.activate();
+                return;
+            }
+            if (event.button === Qt.RightButton || (root.split && !onIcon) || (!root.available && root.hasDetails)) {
                 if (root.hasDetails) {
                     root.detailsRequested();
                 }
@@ -249,4 +273,8 @@ Item {
             root.activate();
         }
     }
+
+    PC3.ToolTip.text: root.subtitle.length > 0 ? root.title + " · " + root.subtitle : root.title
+    PC3.ToolTip.visible: root.compact && mouse.containsMouse && !mouse.pressed
+    PC3.ToolTip.delay: 600
 }

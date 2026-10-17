@@ -24,6 +24,15 @@ Item {
     signal handleDragEnded()
 
     readonly property bool scrollable: scroller.interactive
+    property string detail: ""
+    property bool editing: false
+
+    onProgressChanged: {
+        if (progress <= 0) {
+            detail = "";
+            editing = false;
+        }
+    }
 
     function scrollToTop(): void {
         scroller.contentY = 0;
@@ -97,6 +106,19 @@ Item {
             width: scroller.width - 32
             spacing: 16
 
+            Loader {
+                Layout.fillWidth: true
+                active: root.detail.length > 0
+                visible: active
+                opacity: active ? 1 : 0
+                sourceComponent: root.detail === "internet" ? internetPanel : root.detail === "bluetooth" ? bluetoothPanel : null
+            }
+
+            ColumnLayout {
+            Layout.fillWidth: true
+            visible: root.detail.length === 0
+            spacing: 16
+
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 4
@@ -146,6 +168,12 @@ Item {
                     }
                 }
 
+                MIconButton {
+                    icon: "document-edit"
+                    text: i18n("Edit tiles")
+                    variant: root.editing ? "tonal" : "standard"
+                    onClicked: root.editing = !root.editing
+                }
                 MIconButton {
                     icon: "configure"
                     text: i18n("System Settings")
@@ -268,129 +296,32 @@ Item {
                 }
             }
 
-            GridLayout {
+            TileGrid {
+                id: tileGrid
                 Layout.fillWidth: true
-                Layout.bottomMargin: root.backend.mediaActive ? 0 : 8
-                columns: M3.classic ? 4 : 2
-                columnSpacing: M3.classic ? 0 : 8
-                rowSpacing: 8
+                Layout.bottomMargin: root.backend.mediaActive || root.editing ? 0 : 8
+                editing: root.editing
+                tiles: root.tileComponents
+                names: root.tileNames
                 opacity: root.stage(0.45)
                 transform: Translate { y: (1 - root.stage(0.45)) * 32 }
+            }
 
-                MTile {
-                    Layout.fillWidth: true
-                    icon: root.backend.wifiOn ? "network-wireless" : "network-wireless-offline"
-                    iconOn: "kernora-tile-wifi-on"
-                    title: i18n("Wi-Fi")
-                    subtitle: root.backend.wifiSubtitle
-                    available: root.backend.wifiAvailable
-                    checked: root.backend.wifiOn
-                    hasDetails: true
-                    onToggled: root.backend.toggleWifi()
-                    onDetailsRequested: { root.backend.openSettings("kcm_networkmanagement"); root.requestClose(); }
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.bottomMargin: 8
+                visible: root.editing
+                spacing: 8
+                Item { Layout.fillWidth: true }
+                MButton {
+                    variant: "text"
+                    text: i18n("Reset")
+                    onClicked: tileGrid.reset()
                 }
-                MTile {
-                    Layout.fillWidth: true
-                    icon: root.backend.btOn ? "bluetooth" : "bluetooth-disabled"
-                    iconOn: "kernora-tile-bluetooth-on"
-                    title: i18n("Bluetooth")
-                    subtitle: root.backend.btSubtitle
-                    available: root.backend.btAvailable
-                    checked: root.backend.btOn
-                    hasDetails: true
-                    onToggled: root.backend.toggleBluetooth()
-                    onDetailsRequested: { root.backend.openSettings("kcm_bluetooth"); root.requestClose(); }
-                }
-                MTile {
-                    Layout.fillWidth: true
-                    icon: root.backend.soundMuted ? "audio-volume-muted" : "audio-volume-high"
-                    title: i18n("Sound")
-                    subtitle: root.backend.soundMuted ? i18n("Muted") : root.backend.outputName
-                    available: root.backend.soundAvailable
-                    checked: !root.backend.soundMuted
-                    hasDetails: true
-                    onToggled: root.backend.toggleMute()
-                    onDetailsRequested: { root.backend.openSettings("kcm_pulseaudio"); root.requestClose(); }
-                }
-                MTile {
-                    Layout.fillWidth: true
-                    icon: root.backend.micMuted ? "microphone-sensitivity-muted" : "audio-input-microphone"
-                    title: i18n("Microphone")
-                    subtitle: root.backend.micMuted ? i18n("Muted") : i18n("On")
-                    available: root.backend.micAvailable
-                    checked: !root.backend.micMuted
-                    onToggled: root.backend.toggleMic()
-                }
-                MTile {
-                    Layout.fillWidth: true
-                    icon: "notifications-disabled"
-                    iconOn: "kernora-tile-dnd-on"
-                    title: i18n("Do Not Disturb")
-                    subtitle: root.backend.dndOn ? i18n("On") : i18n("Off")
-                    available: root.backend.dndAvailable
-                    checked: root.backend.dndOn
-                    hasDetails: true
-                    onToggled: root.backend.toggleDnd()
-                    onDetailsRequested: { root.backend.openSettings("kcm_notifications"); root.requestClose(); }
-                }
-                MTile {
-                    Layout.fillWidth: true
-                    icon: "redshift-status-on"
-                    iconOn: "kernora-tile-nightlight-on"
-                    title: i18n("Night Light")
-                    subtitle: root.backend.nightSubtitle
-                    available: root.backend.nightAvailable
-                    checked: root.backend.nightOn
-                    hasDetails: true
-                    onToggled: {
-                        if (root.backend.nightNeedsSetup) {
-                            root.requestClose();
-                        }
-                        root.backend.toggleNight();
-                    }
-                    onDetailsRequested: { root.backend.openSettings("kcm_nightlight"); root.requestClose(); }
-                }
-                MTile {
-                    Layout.fillWidth: true
-                    icon: "airplane-mode"
-                    iconOn: "kernora-tile-airplane-on"
-                    title: i18n("Airplane Mode")
-                    subtitle: root.backend.airplaneOn ? i18n("On") : i18n("Off")
-                    available: root.backend.airplaneAvailable
-                    checked: root.backend.airplaneOn
-                    onToggled: root.backend.toggleAirplane()
-                }
-                MTile {
-                    Layout.fillWidth: true
-                    icon: "kernora-tile-caffeine"
-                    iconOn: "kernora-tile-caffeine-on"
-                    title: i18n("Keep Awake")
-                    subtitle: root.backend.awakeOn ? i18n("Sleep blocked") : i18n("Off")
-                    available: root.backend.awakeAvailable
-                    checked: root.backend.awakeOn
-                    onToggled: root.backend.toggleAwake()
-                }
-                MTile {
-                    Layout.fillWidth: true
-                    icon: "kernora-tile-darktheme"
-                    iconOn: "kernora-tile-darktheme-on"
-                    title: i18n("Dark Theme")
-                    subtitle: root.backend.themeBusy ? i18n("Switching…") : root.backend.darkOn ? i18n("On") : i18n("Off")
-                    available: root.backend.themeAvailable
-                    checked: root.backend.darkOn
-                    hasDetails: true
-                    onToggled: root.backend.toggleDark()
-                    onDetailsRequested: { root.backend.openSettings("appearance"); root.requestClose(); }
-                }
-                MTile {
-                    Layout.fillWidth: true
-                    icon: "applets-screenshooter"
-                    title: i18n("Screenshot")
-                    checked: false
-                    onToggled: {
-                        root.requestClose();
-                        root.backend.takeScreenshot();
-                    }
+                MButton {
+                    variant: "filled"
+                    text: i18n("Done")
+                    onClicked: root.editing = false
                 }
             }
 
@@ -402,6 +333,185 @@ Item {
                 opacity: root.stage(0.6)
                 transform: Translate { y: (1 - root.stage(0.6)) * 40 }
                 onRequestClose: root.requestClose()
+            }
+            }
+        }
+    }
+
+    readonly property var tileNames: ({
+        internet: i18n("Internet"),
+        bluetooth: i18n("Bluetooth"),
+        sound: i18n("Sound"),
+        mic: i18n("Microphone"),
+        dnd: i18n("Do Not Disturb"),
+        night: i18n("Night Light"),
+        airplane: i18n("Airplane Mode"),
+        awake: i18n("Keep Awake"),
+        dark: i18n("Dark Theme"),
+        screenshot: i18n("Screenshot")
+    })
+
+    readonly property var tileComponents: ({
+        internet: internetTile,
+        bluetooth: bluetoothTile,
+        sound: soundTile,
+        mic: micTile,
+        dnd: dndTile,
+        night: nightTile,
+        airplane: airplaneTile,
+        awake: awakeTile,
+        dark: darkTile,
+        screenshot: screenshotTile
+    })
+
+    Component {
+        id: internetPanel
+        InternetPanel {
+            backend: root.backend
+            onBack: root.detail = ""
+            onRequestClose: root.requestClose()
+        }
+    }
+    Component {
+        id: bluetoothPanel
+        BluetoothPanel {
+            backend: root.backend
+            onBack: root.detail = ""
+            onRequestClose: root.requestClose()
+        }
+    }
+
+    Component {
+        id: internetTile
+        MTile {
+            icon: root.backend.internetIcon
+            title: i18n("Internet")
+            subtitle: root.backend.internetSubtitle
+            available: root.backend.internetAvailable
+            checked: root.backend.internetOn
+            hasDetails: true
+            onToggled: root.backend.internetToggles ? root.backend.toggleInternet() : root.detail = "internet"
+            onDetailsRequested: root.detail = "internet"
+        }
+    }
+    Component {
+        id: bluetoothTile
+        MTile {
+            icon: root.backend.btOn ? "bluetooth" : "bluetooth-disabled"
+            iconOn: "kernora-tile-bluetooth-on"
+            title: i18n("Bluetooth")
+            subtitle: root.backend.btSubtitle
+            available: root.backend.btAvailable
+            checked: root.backend.btOn
+            hasDetails: true
+            onToggled: root.backend.toggleBluetooth()
+            onDetailsRequested: root.detail = "bluetooth"
+        }
+    }
+    Component {
+        id: soundTile
+        MTile {
+            icon: root.backend.soundMuted ? "audio-volume-muted" : "audio-volume-high"
+            title: i18n("Sound")
+            subtitle: root.backend.soundMuted ? i18n("Muted") : root.backend.outputName
+            available: root.backend.soundAvailable
+            checked: !root.backend.soundMuted
+            hasDetails: true
+            onToggled: root.backend.toggleMute()
+            onDetailsRequested: { root.backend.openSettings("kcm_pulseaudio"); root.requestClose(); }
+        }
+    }
+    Component {
+        id: micTile
+        MTile {
+            icon: root.backend.micMuted ? "microphone-sensitivity-muted" : "audio-input-microphone"
+            title: i18n("Microphone")
+            subtitle: root.backend.micMuted ? i18n("Muted") : i18n("On")
+            available: root.backend.micAvailable
+            checked: !root.backend.micMuted
+            onToggled: root.backend.toggleMic()
+        }
+    }
+    Component {
+        id: dndTile
+        MTile {
+            icon: "notifications-disabled"
+            iconOn: "kernora-tile-dnd-on"
+            title: i18n("Do Not Disturb")
+            subtitle: root.backend.dndOn ? i18n("On") : i18n("Off")
+            available: root.backend.dndAvailable
+            checked: root.backend.dndOn
+            hasDetails: true
+            onToggled: root.backend.toggleDnd()
+            onDetailsRequested: { root.backend.openSettings("kcm_notifications"); root.requestClose(); }
+        }
+    }
+    Component {
+        id: nightTile
+        MTile {
+            icon: "redshift-status-on"
+            iconOn: "kernora-tile-nightlight-on"
+            title: i18n("Night Light")
+            subtitle: root.backend.nightSubtitle
+            available: root.backend.nightAvailable
+            checked: root.backend.nightOn
+            hasDetails: true
+            onToggled: {
+                if (root.backend.nightNeedsSetup) {
+                    root.requestClose();
+                }
+                root.backend.toggleNight();
+            }
+            onDetailsRequested: { root.backend.openSettings("kcm_nightlight"); root.requestClose(); }
+        }
+    }
+    Component {
+        id: airplaneTile
+        MTile {
+            icon: "airplane-mode"
+            iconOn: "kernora-tile-airplane-on"
+            title: i18n("Airplane Mode")
+            subtitle: root.backend.airplaneOn ? i18n("On") : i18n("Off")
+            available: root.backend.airplaneAvailable
+            checked: root.backend.airplaneOn
+            onToggled: root.backend.toggleAirplane()
+        }
+    }
+    Component {
+        id: awakeTile
+        MTile {
+            icon: "kernora-tile-caffeine"
+            iconOn: "kernora-tile-caffeine-on"
+            title: i18n("Keep Awake")
+            subtitle: root.backend.awakeOn ? i18n("Sleep blocked") : i18n("Off")
+            available: root.backend.awakeAvailable
+            checked: root.backend.awakeOn
+            onToggled: root.backend.toggleAwake()
+        }
+    }
+    Component {
+        id: darkTile
+        MTile {
+            icon: "kernora-tile-darktheme"
+            iconOn: "kernora-tile-darktheme-on"
+            title: i18n("Dark Theme")
+            subtitle: root.backend.themeBusy ? i18n("Switching…") : root.backend.darkOn ? i18n("On") : i18n("Off")
+            available: root.backend.themeAvailable
+            checked: root.backend.darkOn
+            hasDetails: true
+            onToggled: root.backend.toggleDark()
+            onDetailsRequested: { root.backend.openSettings("appearance"); root.requestClose(); }
+        }
+    }
+    Component {
+        id: screenshotTile
+        MTile {
+            icon: "applets-screenshooter"
+            title: i18n("Screenshot")
+            checked: false
+            onToggled: {
+                root.requestClose();
+                root.backend.takeScreenshot();
             }
         }
     }

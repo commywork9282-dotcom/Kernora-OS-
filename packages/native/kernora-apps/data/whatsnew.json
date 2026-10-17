@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-10-17-4",
+    "date": "2026-10-17",
+    "items": [
+      {
+        "icon": "network-wired",
+        "title": {
+          "en": "New quick settings",
+          "ru": "Новые быстрые настройки"
+        },
+        "text": {
+          "en": "The Internet tile shows your cable or Wi-Fi network, and its arrow opens the list of networks right in the panel, the Bluetooth arrow opens your devices. Small round tiles keep the panel shorter, and the pencil lets you move, resize, hide and add tiles.",
+          "ru": "Плитка «Интернет» показывает кабель или сеть Wi-Fi, а её стрелка открывает список сетей прямо в панели, стрелка Bluetooth открывает ваши устройства. Маленькие круглые плитки делают панель короче, а карандаш позволяет переставлять, менять размер, скрывать и добавлять плитки."
+        }
+      },
+      {
+        "icon": "view-app-grid",
+        "title": {
+          "en": "A livelier app menu",
+          "ru": "Живое меню приложений"
+        },
+        "text": {
+          "en": "Apps pop into the menu and squish when you press them, and lock, log out, restart and shut down sit together in one group.",
+          "ru": "Приложения выпрыгивают в меню и пружинят при нажатии, а блокировка, выход, перезагрузка и выключение собраны в одну группу."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-17-3",
     "date": "2026-10-17",
     "items": [

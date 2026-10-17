@@ -138,3 +138,81 @@ msgstr "Переключение…"
 
 msgid "Screenshot"
 msgstr "Снимок экрана"
+
+msgid "%1% battery"
+msgstr "Заряд %1%"
+
+msgid "Airplane mode"
+msgstr "Режим полёта"
+
+msgid "Airplane mode is on. Wi-Fi stays off until you turn it off."
+msgstr "Включён режим полёта. Wi-Fi не работает, пока он не выключен."
+
+msgid "All tiles are in use"
+msgstr "Все плитки уже на месте"
+
+msgid "Available"
+msgstr "Доступна"
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "Cable unplugged"
+msgstr "Кабель не подключён"
+
+msgid "Connect"
+msgstr "Подключить"
+
+msgid "Connected"
+msgstr "Подключено"
+
+msgid "Disconnecting…"
+msgstr "Отключение…"
+
+msgid "Done"
+msgstr "Готово"
+
+msgid "Edit tiles"
+msgstr "Изменить плитки"
+
+msgid "Ethernet"
+msgstr "Ethernet"
+
+msgid "Internet"
+msgstr "Интернет"
+
+msgid "Looking for networks…"
+msgstr "Поиск сетей…"
+
+msgid "Network settings"
+msgstr "Настройки сети"
+
+msgid "No paired devices yet."
+msgstr "Пока нет сопряжённых устройств."
+
+msgid "Pair new device"
+msgstr "Новое устройство"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Reset"
+msgstr "Сбросить"
+
+msgid "Saved"
+msgstr "Сохранена"
+
+msgid "Secured"
+msgstr "Защищена"
+
+msgid "Tap a tile to add it"
+msgstr "Нажмите на плитку, чтобы добавить"
+
+msgid "This computer has no Bluetooth."
+msgstr "На этом компьютере нет Bluetooth."
+
+msgid "Turn Bluetooth on to use your devices."
+msgstr "Включите Bluetooth, чтобы пользоваться устройствами."
+
+msgid "Wi-Fi off"
+msgstr "Wi-Fi выключен"

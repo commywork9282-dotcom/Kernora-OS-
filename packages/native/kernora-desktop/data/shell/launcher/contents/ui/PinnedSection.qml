@@ -25,8 +25,8 @@ Column {
 
     MText {
         x: 12
-        role: "labelLarge"
-        color: M3.surfaceVariantContent
+        role: M3.classic ? "labelLarge" : "titleSmall"
+        color: M3.classic ? M3.surfaceVariantContent : M3.primary
         text: i18n("Pinned")
         visible: root.hasPinned
         opacity: root.reveal
@@ -69,8 +69,8 @@ Column {
     MText {
         x: 12
         topPadding: root.hasPinned ? 8 : 0
-        role: "labelLarge"
-        color: M3.surfaceVariantContent
+        role: M3.classic ? "labelLarge" : "titleSmall"
+        color: M3.classic ? M3.surfaceVariantContent : M3.primary
         text: i18n("All apps")
         opacity: root.reveal
     }
