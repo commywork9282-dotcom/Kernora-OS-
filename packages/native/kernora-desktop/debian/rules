@@ -151,6 +151,12 @@ override_dh_auto_build:
 	  rsvg-convert --output=$${image%.svg}.png $$image; \
 	  rm $$image; \
 	done
+	python3 $(TOOLS)/gen-plymouth-theme --masks $(LOGO) $(SYMBOLS) generated/plymouth-masks
+	set -e; for image in generated/plymouth-masks/*.svg; do \
+	  rsvg-convert --output=$${image%.svg}.png $$image; \
+	done
+	install -d generated/boot
+	python3 $(TOOLS)/pack-boot-masks generated/plymouth-masks generated/boot/plymouth.pack
 	python3 $(TOOLS)/gen-grub-theme $(LOGO) generated/grub/kernora
 	set -e; for image in generated/grub/kernora/*.svg; do \
 	  rsvg-convert --output=$${image%.svg}.png $$image; \

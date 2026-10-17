@@ -4,6 +4,10 @@ set -e
 if [ "$1" = purge ]; then
     rm -f /var/lib/kernora/plymouth-theme
     rm -rf /boot/grub/themes/kernora
+    if [ "$(/usr/sbin/plymouth-set-default-theme 2>/dev/null || true)" = kernora-colour ]; then
+        /usr/sbin/plymouth-set-default-theme --reset || true
+    fi
+    rm -rf /usr/share/plymouth/themes/kernora-colour
 fi
 
 if [ "$1" = remove ]; then

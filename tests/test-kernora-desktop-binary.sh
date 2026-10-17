@@ -265,6 +265,8 @@ for path in \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MLoadingIndicator.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MMorph.qml \
   usr/libexec/kernora-grub-theme \
+  usr/libexec/kernora-boot-theme \
+  usr/share/kernora/boot/plymouth.pack \
   usr/share/kernora/grub/kernora-dark/theme.txt \
   usr/share/kernora/grub/kernora-dark/select_c.png \
   usr/share/kernora/grub/light-blue-light/theme.txt \
@@ -288,6 +290,32 @@ cmp -s "$temporary_root/desktop/usr/share/kernora/grub/kernora-dark/theme.txt" "
   || fail "the default boot menu and the kernora dark variant differ"
 grep -Fq 'desktop-color: "#f' "$temporary_root/desktop/usr/share/kernora/grub/light-blue-light/theme.txt" \
   || fail "the light boot menu is not light"
+boot_work=$(mktemp -d)
+python3 -I - "$temporary_root/desktop" "$boot_work" <<'PY' || fail "the boot theme tool does not build a working Plymouth theme"
+import importlib.machinery, importlib.util, pathlib, sys
+root, work = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+loader = importlib.machinery.SourceFileLoader("boot", str(root / "usr/libexec/kernora-boot-theme"))
+spec = importlib.util.spec_from_loader("boot", loader)
+boot = importlib.util.module_from_spec(spec)
+loader.exec_module(boot)
+boot.PACK = root / "usr/share/kernora/boot/plymouth.pack"
+boot.PALETTES = root / "usr/share/kernora/palettes"
+boot.THEMES = work
+stock = root / "usr/share/plymouth/themes/kernora"
+boot.build("kernora", "dark")
+theme = work / boot.NAME
+assert (theme / f"{boot.NAME}.script").read_text() == (stock / "kernora.script").read_text()
+assert sorted(p.name for p in stock.glob("*.png")) == sorted(p.name for p in theme.glob("*.png"))
+boot.build("light-blue", "light")
+theme = work / boot.NAME
+assert (theme / "variant").read_text().strip() == "light-blue-light"
+for png in theme.glob("*.png"):
+    assert png.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n", png
+script = (theme / f"{boot.NAME}.script").read_text()
+assert "@BG@" not in script and "Window.SetBackgroundTopColor(0.976, 0.976, 0.988)" in script, script[:400]
+assert f"ImageDir={work / boot.NAME}" in (theme / f"{boot.NAME}.plymouth").read_text()
+PY
+rm -rf "$boot_work"
 cmp -s "$temporary_root/desktop/usr/share/kernora/faces/kernora.png" "$temporary_root/desktop/usr/share/kernora/avatars/00-kernora.png" \
   || fail "the Kernora face and the stock Kernora avatar differ"
 cmp -s "$temporary_root/desktop/usr/share/kernora/faces/kernora.png" "$temporary_root/desktop/usr/share/kernora/faces/light-blue.png" \

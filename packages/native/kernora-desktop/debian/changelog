@@ -1,3 +1,16 @@
+kernora-desktop (1.4.39) UNRELEASED; urgency=medium
+
+  * The boot splash follows the colour and the light or dark theme. The
+    build packs white alpha masks of the splash pieces once
+    (gen-plymouth-theme --masks, pack-boot-masks) and kernora-boot-theme
+    paints them in the chosen palette into the kernora-colour Plymouth
+    theme, switches to it and rebuilds the initramfs in the background.
+    Kernora dark keeps the stock kernora theme.
+  * The session splash uses the M3 colours too and shows the same wavy
+    ring as the boot splash.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 17 Oct 2026 15:00:00 -0700
+
 kernora-desktop (1.4.38) UNRELEASED; urgency=medium
 
   * The boot menu follows the colour and the light or dark theme: every

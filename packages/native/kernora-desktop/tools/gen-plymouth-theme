@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """usage: gen-plymouth-theme LOGO.svg SYMBOLS_DIR OUTPUT_DIR
+       gen-plymouth-theme --masks LOGO.svg SYMBOLS_DIR OUTPUT_DIR
 """
 
 from __future__ import annotations
 
+import json
 import math
 import pathlib
 import re
@@ -245,7 +247,47 @@ Plymouth.SetMessageFunction(message_callback);
 """
 
 
+def triple(hex_colour: str) -> str:
+    return ", ".join(f"{c:.3f}" for c in rgb(hex_colour))
+
+
+def masks(logo: pathlib.Path, symbols: pathlib.Path, output: pathlib.Path) -> int:
+    output.mkdir(parents=True, exist_ok=True)
+    white = "#ffffff"
+    outputs = []
+
+    def layer(name: str, body: str) -> str:
+        (output / f"{name}.svg").write_text(body, encoding="utf-8")
+        return name
+
+    outputs.append({"file": "logo.png", "layers": [[layer("logo", logo_svg(logo.read_text(encoding="utf-8"), white)), "surfaceContent"]]})
+    for index, name in enumerate(SEQUENCE):
+        outputs.append({"file": f"shape-{index}.png", "layers": [[layer(f"shape-{index}", shape_svg(name, white)), "primary"]]})
+    radius = ENTRY_HEIGHT / 2
+    box = f'x="1" y="1" width="{ENTRY_WIDTH - 2}" height="{ENTRY_HEIGHT - 2}" rx="{radius - 1}"'
+    outputs.append({"file": "entry.png", "layers": [
+        [layer("entry-fill", svg(ENTRY_WIDTH, ENTRY_HEIGHT, f'<rect {box} fill="{white}"/>')), "surfaceContainerHighest"],
+        [layer("entry-stroke", svg(ENTRY_WIDTH, ENTRY_HEIGHT, f'<rect {box} fill="none" stroke="{white}" stroke-width="2"/>')), "primary"],
+    ]})
+    for frame in range(WAVE_FRAMES):
+        outputs.append({"file": f"wave-{frame}.png", "layers": [
+            [layer(f"wave-track-{frame}", wave_svg(frame, "none", white)), "secondaryContainer"],
+            [layer(f"wave-active-{frame}", wave_svg(frame, white, "none")), "primary"],
+        ]})
+    outputs.append({"file": "lock.png", "layers": [[layer("lock", symbol_svg(symbols / "lock_24px.svg", 24, white)), "surfaceVariantContent"]]})
+    template = SCRIPT % {"bg": "@BG@", "count": len(SEQUENCE), "frames": WAVE_FRAMES, "text": "@TEXT@", "soft": "@SOFT@"}
+    (output / "layers.json").write_text(json.dumps({
+        "outputs": outputs,
+        "script": template,
+        "colours": {"@BG@": "surface", "@TEXT@": "surfaceContent", "@SOFT@": "surfaceVariantContent"},
+    }, indent=1), encoding="utf-8")
+    print(f"Plymouth masks: {output}")
+    return 0
+
+
 def main(argv: list[str]) -> int:
+    if len(argv) == 5 and argv[1] == "--masks":
+        return masks(pathlib.Path(argv[2]), pathlib.Path(argv[3]), pathlib.Path(argv[4]))
     if len(argv) != 4:
         print(__doc__.strip(), file=sys.stderr)
         return 2
@@ -254,9 +296,6 @@ def main(argv: list[str]) -> int:
     output = pathlib.Path(argv[3])
     output.mkdir(parents=True, exist_ok=True)
     dark = design.DARK
-
-    def triple(hex_colour: str) -> str:
-        return ", ".join(f"{c:.3f}" for c in rgb(hex_colour))
 
     (output / f"{THEME}.plymouth").write_text(
         "[Plymouth Theme]\n"

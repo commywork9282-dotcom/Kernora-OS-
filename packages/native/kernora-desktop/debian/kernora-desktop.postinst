@@ -14,10 +14,12 @@ if [ "$1" = configure ]; then
     if [ -f "$greeter" ] && grep -q '^wallpaper=org\.kernora\.tower$' "$greeter"; then
         sed -i 's/^wallpaper=org\.kernora\.tower$/wallpaper=org.kernora.shapes/' "$greeter"
     fi
-    splash=/usr/share/plymouth/themes/kernora
+    /usr/libexec/kernora-boot-theme || true
+    active=$(/usr/sbin/plymouth-set-default-theme 2>/dev/null || true)
+    splash=/usr/share/plymouth/themes/${active:-kernora}
     stamp=/var/lib/kernora/plymouth-theme
     if [ -d "$splash" ] && [ -x /usr/sbin/update-initramfs ]; then
-        sum=$(cd "$splash" && find . -type f | LC_ALL=C sort | xargs md5sum | md5sum | cut -d' ' -f1)
+        sum=$( { echo "${active:-kernora}"; cd "$splash" && find . -type f | LC_ALL=C sort | xargs md5sum; } | md5sum | cut -d' ' -f1)
         if [ "$sum" != "$(cat "$stamp" 2>/dev/null || true)" ]; then
             dpkg-trigger --no-await update-initramfs || update-initramfs -u || true
             install -d -m 0755 /var/lib/kernora

@@ -1,8 +1,10 @@
 import QtQuick
+import org.kde.kirigami as Kirigami
+import org.kernora.m3
 
 Rectangle {
     id: root
-    color: "#181210"
+    color: M3.surface
 
     property int stage
 
@@ -16,38 +18,26 @@ Rectangle {
         id: content
         anchors.fill: parent
 
-        Image {
+        Kirigami.Icon {
             id: logo
-            readonly property real size:
-                Math.round(Math.min(root.width, root.height) * 0.22)
+            readonly property real size: Math.round(Math.min(root.width, root.height) * 0.14)
 
             anchors.centerIn: parent
             anchors.verticalCenterOffset: -Math.round(root.height * 0.04)
-
-            source: "images/kernora.png"
-            sourceSize.width: size
-            sourceSize.height: size
             width: size
             height: size
-            smooth: true
-
-            RotationAnimator on rotation {
-                from: 0
-                to: 360
-                duration: 6000
-                loops: Animation.Infinite
-                running: true
-            }
+            source: Qt.resolvedUrl("images/kernora.png")
+            isMask: true
+            color: M3.surfaceContent
         }
 
-        Text {
+        MCircularProgress {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: logo.bottom
             anchors.topMargin: Math.round(root.height * 0.06)
-            text: "Kernora OS"
-            color: "#ede0dc"
-            font.family: "Roboto"
-            font.pixelSize: Math.round(root.height * 0.028)
+            width: Math.round(logo.size * 0.5)
+            height: width
+            running: true
         }
     }
 

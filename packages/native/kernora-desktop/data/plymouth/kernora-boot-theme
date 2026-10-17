@@ -1,0 +1,171 @@
+#!/usr/bin/python3 -I
+"""usage: kernora-boot-theme [--initramfs]
+"""
+
+import base64
+import json
+import os
+import pathlib
+import re
+import shutil
+import struct
+import subprocess
+import sys
+import tempfile
+import zlib
+
+PACK = pathlib.Path("/usr/share/kernora/boot/plymouth.pack")
+SETTINGS = pathlib.Path("/usr/share/sddm/themes/kernora/theme.conf.user")
+PALETTES = pathlib.Path("/usr/share/kernora/palettes")
+THEMES = pathlib.Path("/usr/share/plymouth/themes")
+STOCK = "kernora"
+NAME = "kernora-colour"
+SET_THEME = "/usr/sbin/plymouth-set-default-theme"
+
+
+def setting(key: str) -> str:
+    try:
+        text = SETTINGS.read_text(encoding="utf-8")
+    except OSError:
+        return ""
+    match = re.search(rf"^{key}=(.*)$", text, re.MULTILINE)
+    return match.group(1).strip() if match else ""
+
+
+def palette(colour: str, mode: str) -> dict:
+    roles = {}
+    section = None
+    for line in (PALETTES / f"{colour}.conf").read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line.startswith("["):
+            section = line[1:-1]
+        elif section == f"md3-{mode}" and "=" in line:
+            key, value = line.split("=", 1)
+            roles[key] = tuple(int(value[i:i + 2], 16) for i in (0, 2, 4))
+    return roles
+
+
+def chunk(kind: bytes, body: bytes) -> bytes:
+    return struct.pack(">I", len(body)) + kind + body + struct.pack(">I", zlib.crc32(kind + body) & 0xFFFFFFFF)
+
+
+def png(width: int, height: int, pixels: bytearray) -> bytes:
+    stride = width * 4
+    raw = bytearray()
+    for y in range(height):
+        raw.append(0)
+        raw += pixels[y * stride:(y + 1) * stride]
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(bytes(raw), 6)) + chunk(b"IEND", b""))
+
+
+def compose(output: dict, roles: dict) -> bytes:
+    width, height = output["width"], output["height"]
+    count = width * height
+    layers = [(zlib.decompress(base64.b64decode(data)), roles[role]) for data, role in output["layers"]]
+    pixels = bytearray(count * 4)
+    if len(layers) == 1:
+        alpha, (r, g, b) = layers[0]
+        pixels[0::4] = bytes([r]) * count
+        pixels[1::4] = bytes([g]) * count
+        pixels[2::4] = bytes([b]) * count
+        pixels[3::4] = alpha
+        return png(width, height, pixels)
+    for i in range(count):
+        out_a = 0.0
+        out_r = out_g = out_b = 0.0
+        for alpha, (r, g, b) in layers:
+            a = alpha[i] / 255
+            if a == 0:
+                continue
+            keep = 1 - a
+            out_r = r * a + out_r * keep
+            out_g = g * a + out_g * keep
+            out_b = b * a + out_b * keep
+            out_a = a + out_a * keep
+        if out_a > 0:
+            j = i * 4
+            pixels[j] = min(255, round(out_r / out_a))
+            pixels[j + 1] = min(255, round(out_g / out_a))
+            pixels[j + 2] = min(255, round(out_b / out_a))
+            pixels[j + 3] = min(255, round(out_a * 255))
+    return png(width, height, pixels)
+
+
+def build(colour: str, mode: str) -> None:
+    pack = json.loads(PACK.read_text(encoding="utf-8"))
+    roles = palette(colour, mode)
+    THEMES.mkdir(parents=True, exist_ok=True)
+    work = pathlib.Path(tempfile.mkdtemp(prefix=f".{NAME}.", dir=THEMES))
+    try:
+        for output in pack["outputs"]:
+            (work / output["file"]).write_bytes(compose(output, roles))
+        script = pack["script"]
+        for token, role in pack["colours"].items():
+            script = script.replace(token, ", ".join(f"{c / 255:.3f}" for c in roles[role]))
+        (work / f"{NAME}.script").write_text(script, encoding="utf-8")
+        (work / f"{NAME}.plymouth").write_text(
+            "[Plymouth Theme]\n"
+            "Name=Kernora\n"
+            "Description=The Kernora mark and Material 3 Expressive's wavy loading indicator in your colours\n"
+            "ModuleName=script\n"
+            "\n"
+            "[script]\n"
+            f"ImageDir={THEMES / NAME}\n"
+            f"ScriptFile={THEMES / NAME / NAME}.script\n", encoding="utf-8")
+        (work / "variant").write_text(f"{colour}-{mode}\n", encoding="utf-8")
+        os.chmod(work, 0o755)
+        for item in work.iterdir():
+            os.chmod(item, 0o644)
+        target = THEMES / NAME
+        old = THEMES / f".{NAME}.old"
+        shutil.rmtree(old, ignore_errors=True)
+        if target.exists():
+            target.rename(old)
+        work.rename(target)
+        shutil.rmtree(old, ignore_errors=True)
+    except BaseException:
+        shutil.rmtree(work, ignore_errors=True)
+        raise
+
+
+def current_theme() -> str:
+    try:
+        return subprocess.run([SET_THEME], capture_output=True, text=True, check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return ""
+
+
+def main(argv: list[str]) -> int:
+    if os.geteuid() != 0:
+        print("kernora-boot-theme: run as root", file=sys.stderr)
+        return 1
+    initramfs = argv[1:] == ["--initramfs"]
+    if argv[1:] not in ([], ["--initramfs"]):
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    if not PACK.is_file() or not os.access(SET_THEME, os.X_OK):
+        return 0
+    colour = setting("colour")
+    mode = "light" if setting("mode") == "light" else "dark"
+    if not re.fullmatch(r"[a-z]+(-[a-z]+)*", colour) or not (PALETTES / f"{colour}.conf").is_file():
+        colour = "kernora"
+    variant_file = THEMES / NAME / "variant"
+    before = (current_theme(), variant_file.read_text().strip() if variant_file.is_file() else "")
+    if colour == "kernora" and mode == "dark":
+        theme = STOCK
+    else:
+        build(colour, mode)
+        theme = NAME
+    if before[0] != theme:
+        subprocess.run([SET_THEME, theme], check=False, stdout=subprocess.DEVNULL)
+    after = (theme, f"{colour}-{mode}" if theme == NAME else before[1])
+    if initramfs and (before[0] != after[0] or (theme == NAME and before[1] != after[1])):
+        subprocess.run(["systemd-run", "--no-block", "--collect", "--quiet", "--property=Nice=10",
+                        "flock", "/run/kernora-initramfs.lock", "update-initramfs", "-u"],
+                       check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

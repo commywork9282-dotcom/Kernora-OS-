@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+"""usage: pack-boot-masks MASK_DIR OUTPUT_FILE
+"""
+
+from __future__ import annotations
+
+import base64
+import json
+import pathlib
+import struct
+import sys
+import zlib
+
+
+def paeth(a: int, b: int, c: int) -> int:
+    p = a + b - c
+    pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+    if pa <= pb and pa <= pc:
+        return a
+    return b if pb <= pc else c
+
+
+def alpha_of(path: pathlib.Path) -> tuple[int, int, bytes]:
+    data = path.read_bytes()
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        raise SystemExit(f"{path}: not a PNG")
+    pos = 8
+    idat = bytearray()
+    width = height = 0
+    while pos < len(data):
+        length, kind = struct.unpack(">I4s", data[pos:pos + 8])
+        body = data[pos + 8:pos + 8 + length]
+        pos += 12 + length
+        if kind == b"IHDR":
+            width, height, depth, colour, _, _, interlace = struct.unpack(">IIBBBBB", body)
+            if depth != 8 or colour != 6 or interlace != 0:
+                raise SystemExit(f"{path}: expected 8-bit RGBA without interlacing")
+        elif kind == b"IDAT":
+            idat += body
+        elif kind == b"IEND":
+            break
+    raw = zlib.decompress(bytes(idat))
+    stride = width * 4
+    previous = bytearray(stride)
+    alpha = bytearray()
+    offset = 0
+    for _ in range(height):
+        kind = raw[offset]
+        line = bytearray(raw[offset + 1:offset + 1 + stride])
+        offset += 1 + stride
+        for x in range(stride):
+            left = line[x - 4] if x >= 4 else 0
+            up = previous[x]
+            corner = previous[x - 4] if x >= 4 else 0
+            if kind == 1:
+                line[x] = (line[x] + left) & 0xFF
+            elif kind == 2:
+                line[x] = (line[x] + up) & 0xFF
+            elif kind == 3:
+                line[x] = (line[x] + ((left + up) >> 1)) & 0xFF
+            elif kind == 4:
+                line[x] = (line[x] + paeth(left, up, corner)) & 0xFF
+        alpha += line[3::4]
+        previous = line
+    return width, height, bytes(alpha)
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 3:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    masks = pathlib.Path(argv[1])
+    index = json.loads((masks / "layers.json").read_text(encoding="utf-8"))
+    outputs = []
+    for output in index["outputs"]:
+        layers = []
+        size = None
+        for name, role in output["layers"]:
+            width, height, alpha = alpha_of(masks / f"{name}.png")
+            if size is not None and size != (width, height):
+                raise SystemExit(f"{name}: layer size differs")
+            size = (width, height)
+            layers.append([base64.b64encode(zlib.compress(alpha, 9)).decode("ascii"), role])
+        outputs.append({"file": output["file"], "width": size[0], "height": size[1], "layers": layers})
+    pathlib.Path(argv[2]).write_text(json.dumps({
+        "outputs": outputs,
+        "script": index["script"],
+        "colours": index["colours"],
+    }, separators=(",", ":")), encoding="utf-8")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

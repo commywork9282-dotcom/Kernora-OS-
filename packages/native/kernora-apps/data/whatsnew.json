@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-17-3",
+    "date": "2026-10-17",
+    "items": [
+      {
+        "icon": "system-reboot",
+        "title": {
+          "en": "Loading screens in your colours",
+          "ru": "Экраны загрузки в ваших цветах"
+        },
+        "text": {
+          "en": "The startup and shutdown screens, the disk password screen and the screen after you log in now follow your colour and your light or dark theme.",
+          "ru": "Экраны включения и выключения, ввода пароля диска и экран после входа теперь следуют вашему цвету и светлой или тёмной теме."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-17-2",
     "date": "2026-10-17",
     "items": [

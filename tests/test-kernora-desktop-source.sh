@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.38" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.39" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -375,9 +375,12 @@ splash="$data_root/look-and-feel/org.kernora.desktop/contents/splash/Splash.qml"
 [[ -s "$splash" ]] || fail "session splash is missing"
 grep -Fq 'images/kernora.png' "$splash" \
   || fail "splash does not draw the Kernora mark"
-if grep '^import' "$splash" | grep -qv '^import QtQuick$'; then
-  fail "splash imports something other than QtQuick"
+if grep '^import' "$splash" | grep -Evq '^import (QtQuick|org\.kde\.kirigami as Kirigami|org\.kernora\.m3)$'; then
+  fail "splash imports something unexpected"
 fi
+grep -Fq 'color: M3.surface' "$splash" && grep -Fq 'color: M3.surfaceContent' "$splash" \
+  && grep -Fq 'MCircularProgress {' "$splash" \
+  || fail "the session splash does not follow the colour and theme"
 grep -Fxq 'Current=kernora' "$data_root/sddm.conf.d/kernora-theme.conf" \
   || fail "greeter does not use the Kernora login screen"
 grep -Fxq 'InputMethod=' "$data_root/sddm.conf.d/kernora-theme.conf" \
@@ -543,6 +546,14 @@ grep -Fq 'GRUB_THEME=/boot/grub/themes/kernora/theme.txt' "$package_root/data/gr
   && grep -Fq '/usr/libexec/kernora-grub-theme || true' "$package_root/debian/kernora-desktop.postinst" \
   && grep -Fq 'generated/grub-themes/$$colour-$$mode $$mode' "$package_root/debian/rules" \
   || fail "the boot menu does not follow the colour and theme"
+grep -Fq '/usr/libexec/kernora-boot-theme --initramfs || true' "$package_root/data/greeter/kernora-greeter-background" \
+  && grep -Fq '/usr/libexec/kernora-boot-theme || true' "$package_root/debian/kernora-desktop.postinst" \
+  && grep -Fq 'gen-plymouth-theme --masks' "$package_root/debian/rules" \
+  && grep -Fq 'pack-boot-masks generated/plymouth-masks generated/boot/plymouth.pack' "$package_root/debian/rules" \
+  || fail "the boot splash does not follow the colour and theme"
+python3 -I -m py_compile "$package_root/data/plymouth/kernora-boot-theme" 2>/dev/null \
+  || fail "the boot theme tool does not compile"
+find "$package_root/data/plymouth" -name __pycache__ -exec rm -rf {} +
 bash -n "$package_root/data/grub/kernora-grub-theme" || fail "the grub theme helper does not parse"
 ! grep -qi 'ember' "$package_root/data/calamares/branding/kernora/branding.desc" \
   || fail "the installer still says Ember"
