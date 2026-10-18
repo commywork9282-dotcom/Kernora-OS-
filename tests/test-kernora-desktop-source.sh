@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.41" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.42" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -513,7 +513,7 @@ assert all(0.2 < r < 0.75 for s in shapes for r in s)
 PY
 rm -f "$shapes_out"
 grep -Fq 'readonly property bool expressive: !M3.classic' "$package_root/data/ui/SegmentedButtons.qml" \
-  && grep -Fq '(chosen || isFirst ? full : inner)' "$package_root/data/ui/SegmentedButtons.qml" \
+  && grep -Fq '(isFirst ? full : inner + (full - inner) * chosenMorph.value)' "$package_root/data/ui/SegmentedButtons.qml" \
   || fail "segmented buttons are not the connected expressive group"
 grep -Fq 'MMorph { id: checkMorph; active: root.checked }' "$package_root/data/ui/IconButton.qml" \
   || fail "icon buttons do not change shape when pressed or checked"
@@ -525,6 +525,27 @@ grep -Fq 'MMorph MMorph.qml' "$package_root/data/shell/m3/qmldir" \
   || fail "buttons do not morph on the expressive springs"
 grep -Fq 'height + (parent.width - height) * selectMorph.value' "$package_root/data/ui/NavigationItem.qml" \
   || fail "the navigation indicator does not grow out of the icon"
+tokens_out=$(mktemp)
+python3 "$package_root/tools/gen-qml-tokens" "$tokens_out" >/dev/null
+grep -Fq 'readonly property font bodyLargeEmphasized: Qt.font({ family: tokens.typeface, pixelSize: Math.round(16 * tokens.scale), weight: [400, 400, 500][tokens.generationIndex]' "$tokens_out" \
+  && grep -Fq 'readonly property int labelLargeEmphasizedLineHeight:' "$tokens_out" \
+  && grep -Fq 'menu: [2, 4, 16]' "$tokens_out" \
+  && grep -Fq 'role: root.current ? "bodyLargeEmphasized" : "bodyLarge"' "$package_root/data/ui/NavigationItem.qml" \
+  || fail "there is no emphasized type for selected items"
+rm -f "$tokens_out"
+grep -Fq 'color: control.selected ? M3.tertiaryContainer' "$package_root/data/style/org.kernora.desktop/MenuItem.qml" \
+  && grep -Fq 'radius: M3.classic ? 0 : 12' "$package_root/data/shell/m3/MMenu.qml" \
+  && grep -Fxq 'MENU_RADIUS = 16' "$package_root/tools/gen-kvantum-theme" \
+  || fail "menus are not the expressive ones"
+grep -Fxq 'FloatingToolbar 1.0 FloatingToolbar.qml' "$package_root/data/ui/qmldir" \
+  && grep -Fq 'checkedFill: M3.secondaryContainer' "$package_root/data/ui/IconButton.qml" \
+  || fail "there is no floating toolbar"
+for file in shell/shade/contents/ui/PanelRow.qml shell/shade/contents/ui/MediaCard.qml shell/launcher/contents/ui/LauncherButton.qml \
+    lockscreen/LockScreen.qml lockscreen/KernoraMediaControls.qml look-and-feel/org.kernora.desktop/contents/logout/Logout.qml \
+    calamares/branding/kernora/keyboardq.qml calamares/branding/kernora/finishedq.qml; do
+  ! grep -Fq 'Behavior on radius' "$package_root/data/$file" && grep -Fq 'MMorph {' "$package_root/data/$file" \
+    || fail "$file still changes shape on a plain curve"
+done
 for script in kernora-desktop.preinst kernora-desktop.postrm; do
   for module in kcm_lookandfeel kcm_desktoptheme kcm_colors kcm_style kcm_icons kcm_cursortheme \
       kcm_kwindecoration kcm_splashscreen kcm_sddm kcm_soundtheme; do

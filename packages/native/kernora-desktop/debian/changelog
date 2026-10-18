@@ -1,3 +1,16 @@
+kernora-desktop (1.4.42) UNRELEASED; urgency=medium
+
+  * More Material 3 Expressive for md3:
+    - emphasized type tokens; the current navigation item uses them;
+    - menus are rounder (16) with a 12 highlight, and the checked item
+      sits on a tertiary pill (QML menus, combo boxes, Kvantum menus);
+    - org.kernora.ui FloatingToolbar, IconButton checkedFill/checkedInk;
+    - shape changes in the shade rows, media card, launcher button, lock
+      screen, logout tiles, button groups and the installer keyboard and
+      finish badge run on the expressive springs.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 17 Oct 2026 23:30:00 -0700
+
 kernora-desktop (1.4.41) UNRELEASED; urgency=medium
 
   * kernora-calamares starts the installer when the live session logs in;

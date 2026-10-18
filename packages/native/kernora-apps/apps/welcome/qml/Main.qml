@@ -903,8 +903,13 @@ AppWindow {
                 id: thumb
                 Layout.fillWidth: true
                 Layout.preferredHeight: width * 0.62
-                radius: M3.classic ? M3.cornerImage : tile.selected ? 28 : 18
-                Behavior on radius { NumberAnimation { duration: M3.durationMedium2 } }
+                radius: M3.classic ? M3.cornerImage : 18 + 10 * selectMorph.value
+                MMorph {
+                    id: selectMorph
+                    active: tile.selected
+                    dampingRatio: M3.springExpressiveDefaultDamping
+                    response: M3.springExpressiveDefaultResponse
+                }
                 Rectangle { anchors.fill: parent; color: tile.live ? M3.darkScheme.surface : M3.surfaceContainerHigh }
                 Image {
                     anchors.fill: parent

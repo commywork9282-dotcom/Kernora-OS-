@@ -32,8 +32,13 @@ Item {
         id: thumb
         width: parent.width
         height: Math.round(width * 0.62)
-        radius: M3.classic ? M3.cornerImage : root.selected ? 28 : 18
-        Behavior on radius { NumberAnimation { duration: M3.durationMedium2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate } }
+        radius: M3.classic ? M3.cornerImage : 18 + 10 * selectMorph.value
+        MMorph {
+            id: selectMorph
+            active: root.selected
+            dampingRatio: M3.springExpressiveDefaultDamping
+            response: M3.springExpressiveDefaultResponse
+        }
 
         Rectangle {
             anchors.fill: parent

@@ -12,6 +12,8 @@ QQC2.AbstractButton {
 
     property string iconName
     property color ink: M3.surfaceVariantContent
+    property color checkedFill: M3.secondaryContainer
+    property color checkedInk: M3.secondaryContainerContent
 
     implicitWidth: 40
     implicitHeight: 40
@@ -32,12 +34,12 @@ QQC2.AbstractButton {
     background: Rectangle {
         readonly property real rest: height / 2 + (Math.round(height * 0.3) - height / 2) * checkMorph.value
         radius: M3.classic ? height / 2 : Math.max(0, rest + (Math.round(height * 0.22) - rest) * pressMorph.value)
-        color: root.checked ? M3.secondaryContainer : "transparent"
+        color: root.checked ? root.checkedFill : "transparent"
         Behavior on color { ColorAnimation { duration: M3.durationShort4 } }
 
         MStateLayer {
             radius: parent.radius
-            color: root.checked ? M3.secondaryContainerContent : root.ink
+            color: root.checked ? root.checkedInk : root.ink
             hovered: root.hovered
             pressed: root.pressed
             focused: root.visualFocus
@@ -46,7 +48,7 @@ QQC2.AbstractButton {
             anchors.centerIn: parent
             size: 24
             source: root.iconName
-            color: root.checked ? M3.secondaryContainerContent : root.ink
+            color: root.checked ? root.checkedInk : root.ink
         }
     }
 }

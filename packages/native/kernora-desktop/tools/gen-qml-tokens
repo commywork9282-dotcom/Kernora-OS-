@@ -317,8 +317,8 @@ def type_lines() -> list[str]:
         "    readonly property real scale: Kirigami.Units.gridUnit / 18"
     )
     lines.append("")
-    def pick(style: str, index: int) -> str:
-        values = [design.type_style(style, g)[index] for g in design.GENERATIONS]
+    def pick(style: str, index: int, source=design.type_style) -> str:
+        values = [source(style, g)[index] for g in design.GENERATIONS]
         if len(set(values)) == 1:
             return str(values[0])
         return f"[{', '.join(str(v) for v in values)}][tokens.generationIndex]"
@@ -327,6 +327,13 @@ def type_lines() -> list[str]:
             f"    readonly property font {style}: Qt.font({{"
             f" family: tokens.typeface, pixelSize: Math.round({pick(style, 0)} * tokens.scale),"
             f" weight: {pick(style, 2)}, letterSpacing: {pick(style, 3)} }})"
+        )
+    for style in design.TYPE_SCALE:
+        emphasized = design.emphasized_type_style
+        lines.append(
+            f"    readonly property font {style}Emphasized: Qt.font({{"
+            f" family: tokens.typeface, pixelSize: Math.round({pick(style, 0, emphasized)} * tokens.scale),"
+            f" weight: {pick(style, 2, emphasized)}, letterSpacing: {pick(style, 3, emphasized)} }})"
         )
     lines.append("    // Button labels: Material 3's label style; capitals spaced out in the older")
     lines.append("    // generations.")
@@ -338,10 +345,10 @@ def type_lines() -> list[str]:
     lines.append("    readonly property int buttonLineHeight: Math.round(20 * tokens.scale)")
     lines.append("")
     for style in design.TYPE_SCALE:
-        prop = style + "LineHeight"
-        lines.append(
-            f"    readonly property int {prop}: Math.round({pick(style, 1)} * tokens.scale)"
-        )
+        for prop in (style + "LineHeight", style + "EmphasizedLineHeight"):
+            lines.append(
+                f"    readonly property int {prop}: Math.round({pick(style, 1)} * tokens.scale)"
+            )
     return lines
 
 

@@ -262,7 +262,7 @@ CORNERS = {
     "button": (2, 4, FULL),
     "field": (2, 4, FULL),
     "chip": (FULL, FULL, 8),
-    "menu": (2, 4, 12),
+    "menu": (2, 4, 16),
     "tooltip": (2, 4, 8),
     "image": (0, 4, 12),
     "indicator": (0, 4, FULL),
@@ -349,6 +349,14 @@ CLASSIC_BUTTON_TRACKING = 1.25
 def type_style(style: str, generation: str | None = None) -> tuple[float, float, int, float]:
     generation = generation or GENERATION
     return TYPE_OVERRIDES.get(style, {}).get(generation, TYPE_SCALE[style])
+
+
+def emphasized_type_style(style: str, generation: str | None = None) -> tuple[float, float, int, float]:
+    generation = generation or GENERATION
+    size, line, weight, tracking = type_style(style, generation)
+    if generation == "md3":
+        weight = 500 if weight < 500 else 700
+    return size, line, weight, tracking
 
 
 KDE_FONT_POINT_SIZE = 10.5

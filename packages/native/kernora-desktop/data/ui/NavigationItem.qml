@@ -83,7 +83,7 @@ Item {
             spacing: 0
             MText {
                 Layout.fillWidth: true
-                role: "bodyLarge"
+                role: root.current ? "bodyLargeEmphasized" : "bodyLarge"
                 text: root.title
                 color: root.current ? M3.secondaryContainerContent : M3.surfaceContent
             }

@@ -26,7 +26,9 @@ T.MenuItem {
     readonly property bool listHasCheckables: (ListView.view && ListView.view.hasCheckables) || checkable
     readonly property bool listHasIcons: (ListView.view && ListView.view.hasIcons)
                                          || icon.name !== "" || icon.source.toString() !== ""
-    readonly property color ink: highlighted || down ? M3.secondaryContainerContent : M3.surfaceContent
+    readonly property bool selected: checked && !M3.classic
+    readonly property color ink: selected ? M3.tertiaryContainerContent
+                               : highlighted || down ? M3.secondaryContainerContent : M3.surfaceContent
 
     leftPadding: inset + 12
     rightPadding: inset + 12
@@ -113,7 +115,8 @@ T.MenuItem {
 
             text: itemShortcut.nativeText
             font: control.font
-            color: control.highlighted || control.down ? M3.secondaryContainerContent : M3.surfaceVariantContent
+            color: control.selected ? M3.tertiaryContainerContent
+                 : control.highlighted || control.down ? M3.secondaryContainerContent : M3.surfaceVariantContent
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
         }
@@ -146,8 +149,9 @@ T.MenuItem {
             anchors.fill: parent
             anchors.leftMargin: M3.classic ? 0 : control.inset
             anchors.rightMargin: M3.classic ? 0 : control.inset
-            radius: M3.classic ? 0 : 8
-            color: control.highlighted || control.down ? M3.secondaryContainer : M3.withAlpha(M3.secondaryContainer, 0)
+            radius: M3.classic ? 0 : 12
+            color: control.selected ? M3.tertiaryContainer
+                 : control.highlighted || control.down ? M3.secondaryContainer : M3.withAlpha(M3.secondaryContainer, 0)
 
             Behavior on color {
                 enabled: M3.motionScale > 0
@@ -160,8 +164,8 @@ T.MenuItem {
 
             MStateLayer {
                 radius: pill.radius
-                color: M3.secondaryContainerContent
-                hovered: false
+                color: control.selected ? M3.tertiaryContainerContent : M3.secondaryContainerContent
+                hovered: control.selected && control.highlighted
                 pressed: control.down
                 pressPoint: Qt.point(control.pressX - pill.x, control.pressY - pill.y)
             }

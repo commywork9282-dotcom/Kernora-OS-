@@ -7,6 +7,7 @@ ChoiceDialog 1.0 ChoiceDialog.qml
 ChoiceItem 1.0 ChoiceItem.qml
 Dialog 1.0 Dialog.qml
 EmptyState 1.0 EmptyState.qml
+FloatingToolbar 1.0 FloatingToolbar.qml
 Group 1.0 Group.qml
 HeroSwitch 1.0 HeroSwitch.qml
 IconButton 1.0 IconButton.qml

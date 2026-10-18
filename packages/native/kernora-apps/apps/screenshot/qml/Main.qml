@@ -353,10 +353,10 @@ AppWindow {
                         Accessible.name: i18n("Take the screenshot")
                         QQC2.ToolTip.text: i18n("Take the screenshot (Enter)")
                         QQC2.ToolTip.visible: hovered
+                        MMorph { id: shutterMorph; active: shutter.pressed && !M3.classic }
                         background: Rectangle {
-                            radius: shutter.pressed && !M3.classic ? 16 : 28
+                            radius: 28 - 12 * shutterMorph.value
                             color: M3.primary
-                            Behavior on radius { NumberAnimation { duration: M3.durationShort4 } }
                             MStateLayer {
                                 radius: parent.radius
                                 color: M3.primaryContent

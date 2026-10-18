@@ -152,6 +152,7 @@ for path in \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/M3.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui/qmldir \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui/ListItem.qml \
+  usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui/FloatingToolbar.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui/Page.qml \
   usr/share/locale/ru/LC_MESSAGES/kernora-ui.mo \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/M3.qml \

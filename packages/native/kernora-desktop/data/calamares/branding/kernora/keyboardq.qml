@@ -294,13 +294,14 @@ Item {
 
         onClicked: typing(kind === "character" ? typed.replace("◌", "") : kind === "space" ? " " : code === 14 ? "\b" : "")
 
+        MMorph { id: litMorph; active: key.lit }
         background: Rectangle {
-            radius: key.lit ? height / 2 : (key.kind === "space" ? height / 2 : 12)
+            readonly property real rest: key.kind === "space" ? height / 2 : 12
+            radius: rest + (height / 2 - rest) * litMorph.value
             color: key.lit ? M3.primary
                 : key.kind === "enter" ? M3.primaryContainer
                 : key.kind === "character" || key.kind === "space" ? M3.surfaceContainerHighest
                 : M3.secondaryContainer
-            Behavior on radius { NumberAnimation { duration: M3.durationShort4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingStandard } }
             Behavior on color { ColorAnimation { duration: M3.durationShort3 } }
             MStateLayer {
                 radius: parent.radius

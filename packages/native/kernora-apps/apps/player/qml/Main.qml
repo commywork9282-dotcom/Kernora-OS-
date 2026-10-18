@@ -372,11 +372,22 @@ AppWindow {
                         anchors.centerIn: parent
                         width: Math.min(parent.width, parent.height, 320)
                         height: width
-                        radius: M3.classic ? M3.cornerImage : app.playing ? width * (hasCover ? 0.18 : 0.32) : width * 0.1
-                        rotation: app.playing && !hasCover ? 8 : 0
+                        readonly property real playing: M3.classic ? 0 : playMorph.value
+                        radius: M3.classic ? M3.cornerImage : width * (0.1 + (0.32 - 0.14 * coverMorph.value - 0.1) * playing)
+                        rotation: 8 * playing * (1 - coverMorph.value)
                         color: M3.accent(1).container
-                        Behavior on radius { NumberAnimation { duration: M3.durationLong2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate } }
-                        Behavior on rotation { NumberAnimation { duration: M3.durationLong2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate } }
+                        MMorph {
+                            id: playMorph
+                            active: app.playing
+                            dampingRatio: M3.springExpressiveDefaultDamping
+                            response: M3.springExpressiveDefaultResponse
+                        }
+                        MMorph {
+                            id: coverMorph
+                            active: art.hasCover
+                            dampingRatio: M3.springExpressiveDefaultDamping
+                            response: M3.springExpressiveDefaultResponse
+                        }
                         MIcon {
                             anchors.centerIn: parent
                             rotation: -art.rotation
@@ -557,10 +568,12 @@ AppWindow {
         QQC2.ToolTip.delay: 600
         Accessible.name: text
         contentItem: Item {}
+        MMorph { id: shapeMorph; active: button.tonal && !M3.classic && app.playing }
+        MMorph { id: pressMorph; active: button.pressed && !M3.classic }
         background: Rectangle {
-            radius: button.tonal && !M3.classic ? (app.playing ? 24 : button.height / 2) : button.height / 2
+            readonly property real rest: button.height / 2 + (24 - button.height / 2) * shapeMorph.value
+            radius: Math.max(0, rest + (button.height * 0.22 - rest) * pressMorph.value)
             color: button.tonal ? M3.primaryContainer : button.checked ? M3.withAlpha(M3.primary, 0.14) : "transparent"
-            Behavior on radius { NumberAnimation { duration: M3.durationMedium2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingStandard } }
             MStateLayer {
                 radius: parent.radius
                 color: button.tonal ? M3.primaryContainerContent : button.ink

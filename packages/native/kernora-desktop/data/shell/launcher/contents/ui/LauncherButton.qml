@@ -29,16 +29,10 @@ Item {
         anchors.centerIn: parent
         width: 40
         height: 40
-        radius: mouse.pressed && !M3.classic ? 12 : 20
+        radius: 20 - 8 * pressMorph.value
         color: root.active ? M3.primary : M3.surfaceContainerHighest
 
-        Behavior on radius {
-            NumberAnimation {
-                duration: mouse.pressed ? M3.durationShort3 : M3.durationMedium2
-                easing.type: Easing.Bezier
-                easing.bezierCurve: M3.easingEmphasizedDecelerate
-            }
-        }
+        MMorph { id: pressMorph; active: mouse.pressed && !M3.classic }
         Behavior on color {
             ColorAnimation {
                 duration: M3.durationMedium2

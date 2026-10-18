@@ -323,10 +323,11 @@ Item {
 
         width: 128
         height: 128
-        radius: M3.classic ? M3.cornerCard : tileMouse.pressed ? 20 : (tileMouse.containsMouse || focused ? 40 : 28)
+        radius: M3.classic ? M3.cornerCard : Math.max(0, 28 + 12 * hoverMorph.value - (28 + 12 * hoverMorph.value - 20) * pressMorph.value)
         color: primary ? M3.primary : M3.secondaryContainer
         clip: true
-        Behavior on radius { NumberAnimation { duration: M3.durationShort4; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingStandard } }
+        MMorph { id: hoverMorph; active: tileMouse.containsMouse || tile.focused }
+        MMorph { id: pressMorph; active: tileMouse.pressed }
 
         readonly property color ink: primary ? M3.primaryContent : M3.secondaryContainerContent
 

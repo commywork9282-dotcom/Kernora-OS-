@@ -1,3 +1,13 @@
+kernora-apps (1.1.51) UNRELEASED; urgency=medium
+
+  * Photos: the viewer actions sit in a floating toolbar at the bottom.
+  * Calculator keys, the Player play button and cover, the Screenshot
+    shutter, photo tiles and wallpaper tiles change shape on springs.
+  * What's new: more Material Expressive.
+  * Require kernora-desktop 1.4.42.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 18 Oct 2026 13:30:00 -0700
+
 kernora-apps (1.1.50) UNRELEASED; urgency=medium
 
   * Welcome shows once after installation: closing it in any way turns off

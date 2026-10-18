@@ -216,15 +216,14 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 implicitWidth: 56
                 implicitHeight: 56
-                radius: card.backend.mediaPlaying && !M3.classic ? 16 : 28
+                radius: 28 - 12 * playMorph.value
                 color: M3.primaryContainer
                 opacity: card.backend.mediaCanPlayPause ? 1 : 0.38
-                Behavior on radius {
-                    NumberAnimation {
-                        duration: M3.durationLong2
-                        easing.type: Easing.Bezier
-                        easing.bezierCurve: M3.easingEmphasized
-                    }
+                MMorph {
+                    id: playMorph
+                    active: card.backend.mediaPlaying && !M3.classic
+                    dampingRatio: M3.springExpressiveDefaultDamping
+                    response: M3.springExpressiveDefaultResponse
                 }
                 Accessible.role: Accessible.Button
                 Accessible.name: card.backend.mediaPlaying ? i18n("Pause") : i18n("Play")

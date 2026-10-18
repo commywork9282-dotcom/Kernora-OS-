@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.50" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.51" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -114,6 +114,14 @@ grep -Fq 'MLoadingIndicator {' "$package_root/apps/store/qml/AppPage.qml" \
   || fail "screenshots in Store do not use the loading indicator"
 grep -Fq 'component BusyIndicatorOverlay: MLoadingIndicator {' "$package_root/apps/photos/qml/Main.qml" \
   || fail "the photo viewer does not use the loading indicator"
+grep -Fq 'FloatingToolbar {' "$package_root/apps/photos/qml/Main.qml" \
+  && grep -Fq 'shown: chrome.shown' "$package_root/apps/photos/qml/Main.qml" \
+  || fail "the photo viewer has no floating toolbar"
+for file in apps/calculator/qml/Main.qml apps/player/qml/Main.qml apps/photos/qml/Main.qml apps/screenshot/qml/Main.qml \
+    apps/welcome/qml/Main.qml apps/settings/qml/components/WallpaperTile.qml; do
+  ! grep -Fq 'Behavior on radius' "$package_root/$file" && grep -Fq 'MMorph {' "$package_root/$file" \
+    || fail "$file still changes shape on a plain curve"
+done
 ! grep -qi 'ocean' "$package_root/apps/settings/qml/pages/SoundPage.qml" \
   || fail "Settings still offers the KDE sound theme"
 grep -Fq 'onClosing: retire()' "$package_root/apps/welcome/qml/Main.qml" \

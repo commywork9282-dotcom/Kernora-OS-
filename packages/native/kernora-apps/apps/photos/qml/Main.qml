@@ -175,8 +175,9 @@ AppWindow {
                     RoundedClip {
                         anchors.fill: parent
                         anchors.margins: 4
-                        radius: M3.classic ? M3.cornerImage : tileMouse.containsMouse ? 28 : 16
-                        Behavior on radius { NumberAnimation { duration: M3.durationMedium1 } }
+                        radius: M3.classic ? M3.cornerImage : 16 + 12 * hoverMorph.value - 6 * pressMorph.value
+                        MMorph { id: hoverMorph; active: tileMouse.containsMouse }
+                        MMorph { id: pressMorph; active: tileMouse.pressed }
 
                         Rectangle { anchors.fill: parent; color: tile.fileIsDir ? M3.primaryContainer : M3.surfaceContainerHigh }
                         Image {
@@ -331,16 +332,43 @@ AppWindow {
                         font: M3.bodySmall
                     }
                 }
-                ViewerButton { icon.name: "object-rotate-left"; text: i18n("Rotate left"); onClicked: viewer.rotation -= 90 }
-                ViewerButton { icon.name: "transform-rotate-right"; text: i18n("Rotate right"); onClicked: viewer.rotation += 90 }
-                ViewerButton { icon.name: "view-presentation"; text: i18n("Slideshow"); checked: slideshow.running; onClicked: slideshow.running = !slideshow.running }
-                ViewerButton { icon.name: "help-about"; text: i18n("Details"); checked: infoPanel.shown; onClicked: infoPanel.shown = !infoPanel.shown }
-                ViewerButton { icon.name: app.fullScreen ? "view-restore" : "view-fullscreen"; text: i18n("Full screen"); onClicked: app.toggleFullScreen() }
+                ViewerButton { visible: M3.classic; icon.name: "object-rotate-left"; text: i18n("Rotate left"); onClicked: viewer.rotation -= 90 }
+                ViewerButton { visible: M3.classic; icon.name: "transform-rotate-right"; text: i18n("Rotate right"); onClicked: viewer.rotation += 90 }
+                ViewerButton { visible: M3.classic; icon.name: "view-presentation"; text: i18n("Slideshow"); checked: slideshow.running; onClicked: slideshow.running = !slideshow.running }
+                ViewerButton { visible: M3.classic; icon.name: "help-about"; text: i18n("Details"); checked: infoPanel.shown; onClicked: infoPanel.shown = !infoPanel.shown }
+                ViewerButton { visible: M3.classic; icon.name: app.fullScreen ? "view-restore" : "view-fullscreen"; text: i18n("Full screen"); onClicked: app.toggleFullScreen() }
                 ViewerButton {
                     id: moreButton
+                    visible: M3.classic
                     icon.name: "overflow-menu"
                     text: i18n("More")
                     onClicked: moreMenu.popup(moreButton, 0, moreButton.height)
+                }
+            }
+
+            FloatingToolbar {
+                id: toolbar
+                visible: !M3.classic && opacity > 0
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.horizontalCenterOffset: infoPanel.width > 0 ? -(infoPanel.width + 12) / 2 : 0
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 24
+                vibrant: true
+                shown: chrome.shown
+
+                ToolbarButton { iconName: "object-rotate-left"; text: i18n("Rotate left"); onClicked: viewer.rotation -= 90 }
+                ToolbarButton { iconName: "transform-rotate-right"; text: i18n("Rotate right"); onClicked: viewer.rotation += 90 }
+                ToolbarButton { iconName: "view-presentation"; text: i18n("Slideshow"); checked: slideshow.running; onClicked: slideshow.running = !slideshow.running }
+                ToolbarButton { iconName: "help-about"; text: i18n("Details"); checked: infoPanel.shown; onClicked: infoPanel.shown = !infoPanel.shown }
+                ToolbarButton { iconName: app.fullScreen ? "view-restore" : "view-fullscreen"; text: i18n("Full screen"); onClicked: app.toggleFullScreen() }
+                ToolbarButton {
+                    id: toolbarMore
+                    iconName: "overflow-menu"
+                    text: i18n("More")
+                    onClicked: {
+                        moreMenu.popup(toolbarMore, 0, 0);
+                        moreMenu.y = Qt.binding(() => -moreMenu.height - 16);
+                    }
                 }
             }
 
@@ -424,6 +452,13 @@ AppWindow {
         QQC2.MenuItem { text: i18n("Move to trash"); icon.name: "user-trash"; onTriggered: app.trashCurrent() }
     }
 
+    component ToolbarButton: IconButton {
+        implicitWidth: 48
+        implicitHeight: 48
+        ink: toolbar.ink
+        checkedFill: toolbar.checkedFill
+        checkedInk: toolbar.checkedInk
+    }
     component ViewerButton: QQC2.RoundButton {
         display: QQC2.AbstractButton.IconOnly
         icon.color: "white"

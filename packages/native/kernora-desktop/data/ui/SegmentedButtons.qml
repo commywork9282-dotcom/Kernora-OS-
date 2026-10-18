@@ -56,36 +56,23 @@ Item {
                 readonly property bool isFirst: index === 0
                 readonly property bool isLast: index === root.options.length - 1
 
-                property real weight: root.expressive && mouse.pressed ? 1.15 : 1
-                Behavior on weight {
-                    enabled: root.expressive
-                    NumberAnimation {
-                        duration: M3.durationMedium2
-                        easing.type: Easing.OutBack
-                        easing.overshoot: 1.6
-                    }
+                MMorph { id: pressMorph; active: root.expressive && mouse.pressed }
+                MMorph {
+                    id: chosenMorph
+                    active: segment.chosen
+                    dampingRatio: M3.springExpressiveDefaultDamping
+                    response: M3.springExpressiveDefaultResponse
                 }
 
+                readonly property real weight: 1 + 0.15 * pressMorph.value
                 readonly property real full: height / 2
-                readonly property real inner: mouse.pressed ? 4 : 8
-                property real startRadius: root.expressive ? (chosen || isFirst ? full : inner) : (isFirst ? Math.max(0, M3.radius("button", height)) : 0)
-                property real endRadius: root.expressive ? (chosen || isLast ? full : inner) : (isLast ? Math.max(0, M3.radius("button", height)) : 0)
-                Behavior on startRadius {
-                    enabled: root.expressive
-                    NumberAnimation {
-                        duration: M3.durationMedium4
-                        easing.type: Easing.OutBack
-                        easing.overshoot: 1.2
-                    }
-                }
-                Behavior on endRadius {
-                    enabled: root.expressive
-                    NumberAnimation {
-                        duration: M3.durationMedium4
-                        easing.type: Easing.OutBack
-                        easing.overshoot: 1.2
-                    }
-                }
+                readonly property real inner: 8 - 4 * pressMorph.value
+                readonly property real startRadius: root.expressive
+                    ? (isFirst ? full : inner + (full - inner) * chosenMorph.value)
+                    : (isFirst ? Math.max(0, M3.radius("button", height)) : 0)
+                readonly property real endRadius: root.expressive
+                    ? (isLast ? full : inner + (full - inner) * chosenMorph.value)
+                    : (isLast ? Math.max(0, M3.radius("button", height)) : 0)
 
                 readonly property color contentColor: root.expressive
                     ? (chosen ? M3.primaryContent : M3.surfaceVariantContent)

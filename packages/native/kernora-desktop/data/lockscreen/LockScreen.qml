@@ -400,10 +400,10 @@ Item {
                     Rectangle {
                         implicitWidth: 56
                         implicitHeight: 56
-                        radius: loginMouse.pressed && !M3.classic ? 16 : 28
+                        radius: 28 - 12 * loginMorph.value
                         color: M3.primary
                         opacity: password.enabled ? 1 : 0.5
-                        Behavior on radius { NumberAnimation { duration: M3.durationShort3 } }
+                        MMorph { id: loginMorph; active: loginMouse.pressed && !M3.classic }
                         MIcon {
                             anchors.centerIn: parent
                             size: 26

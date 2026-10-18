@@ -34,11 +34,15 @@ Item {
             Layout.alignment: Qt.AlignHCenter
             implicitWidth: 128
             implicitHeight: 128
-            radius: finished.visible ? 40 : 64
-            rotation: finished.visible ? 0 : -45
+            radius: 64 - 24 * arrive.value
+            rotation: -45 * (1 - arrive.value)
             color: config.failed ? M3.errorContainer : M3.primaryContainer
-            Behavior on radius { NumberAnimation { duration: M3.durationExtraLong1; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate } }
-            Behavior on rotation { NumberAnimation { duration: M3.durationExtraLong1; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate } }
+            MMorph {
+                id: arrive
+                active: finished.visible
+                dampingRatio: 0.55
+                response: 0.6
+            }
             MIcon {
                 anchors.centerIn: parent
                 rotation: -badge.rotation

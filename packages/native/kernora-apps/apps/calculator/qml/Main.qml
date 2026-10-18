@@ -441,10 +441,11 @@ AppWindow {
         focusPolicy: Qt.NoFocus
         Accessible.name: label
         contentItem: Item {}
+        MMorph { id: pressMorph; active: key.pressed && !M3.classic }
         background: Rectangle {
-            radius: Math.max(0, key.pressed && !M3.classic ? Math.min(width, height) * 0.24 : Math.min(width, height) / 2)
+            readonly property real round: Math.min(width, height) / 2
+            radius: Math.max(0, round + (Math.min(width, height) * 0.24 - round) * pressMorph.value)
             color: key.fill
-            Behavior on radius { NumberAnimation { duration: M3.durationShort3; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingStandard } }
             MStateLayer {
                 radius: parent.radius
                 color: key.ink

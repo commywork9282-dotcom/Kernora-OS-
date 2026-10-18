@@ -22,9 +22,9 @@ kwin-x11
 xserver-xorg
 libpam-fprintd
 
-kernora-desktop=1.4.41
-kernora-calamares=1.4.41
-kernora-apps=1.1.50
+kernora-desktop=1.4.42
+kernora-calamares=1.4.42
+kernora-apps=1.1.51
 polkit-kde-agent-1=4:6.3.6-1kernora1
 plymouth
 plymouth-label

@@ -113,15 +113,14 @@ Rectangle {
             id: play
             implicitWidth: 48
             implicitHeight: 48
-            radius: pill.playing && !M3.classic ? 14 : 24
+            radius: 24 - 10 * playMorph.value
             color: M3.primary
             opacity: pill.canControl ? 1 : 0.38
-            Behavior on radius {
-                NumberAnimation {
-                    duration: M3.durationLong2
-                    easing.type: Easing.Bezier
-                    easing.bezierCurve: M3.easingEmphasized
-                }
+            MMorph {
+                id: playMorph
+                active: pill.playing && !M3.classic
+                dampingRatio: M3.springExpressiveDefaultDamping
+                response: M3.springExpressiveDefaultResponse
             }
             MIcon {
                 anchors.centerIn: parent

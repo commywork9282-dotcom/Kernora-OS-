@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-10-18-1",
+    "date": "2026-10-18",
+    "items": [
+      {
+        "icon": "view-preview",
+        "title": {
+          "en": "A floating toolbar in Photos",
+          "ru": "Плавающая панель в «Фото»"
+        },
+        "text": {
+          "en": "When you look at a picture, rotate, slideshow, details and full screen now sit in a rounded toolbar at the bottom, and it hides with the rest when you click the photo.",
+          "ru": "Когда вы смотрите снимок, поворот, слайд-шоу, сведения и полный экран теперь в круглой панели внизу, и она прячется вместе с остальным по щелчку на фото."
+        }
+      },
+      {
+        "icon": "preferences-desktop-theme",
+        "title": {
+          "en": "Springier shapes, bolder picks",
+          "ru": "Пружинистые формы и яркий выбор"
+        },
+        "text": {
+          "en": "Buttons, keys and tiles all over the system change shape on springs, the page you are on is written in bolder letters, and menus got rounder with the chosen option in its own colour.",
+          "ru": "Кнопки, клавиши и плитки по всей системе меняют форму на пружинах, открытая страница в меню выделена жирным, а меню стали круглее, и выбранный пункт теперь своего цвета."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-17-5",
     "date": "2026-10-17",
     "items": [

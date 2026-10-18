@@ -48,11 +48,11 @@ Item {
         Item {
             Layout.preferredWidth: 36
             Layout.preferredHeight: 36
+            MMorph { id: activeMorph; active: row.active }
             Rectangle {
                 anchors.fill: parent
-                radius: row.active ? 12 : 18
+                radius: 18 - 6 * activeMorph.value
                 color: row.active ? M3.primary : M3.withAlpha(M3.surfaceContent, 0.08)
-                Behavior on radius { NumberAnimation { duration: M3.durationMedium2 } }
             }
             MIcon {
                 anchors.centerIn: parent
