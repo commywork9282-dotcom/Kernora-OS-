@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.42" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.43" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -537,6 +537,23 @@ grep -Fq 'color: control.selected ? M3.tertiaryContainer' "$package_root/data/st
   && grep -Fq 'radius: M3.classic ? 0 : 12' "$package_root/data/shell/m3/MMenu.qml" \
   && grep -Fxq 'MENU_RADIUS = 16' "$package_root/tools/gen-kvantum-theme" \
   || fail "menus are not the expressive ones"
+for script in kernora-desktop.preinst kernora-desktop.postrm; do
+  grep -q '^pickers=.*\bkcm_landingpage\b' "$package_root/debian/$script" \
+    && grep -Fq 'systemsettings_qwidgets/kcm_kwintabbox.so' "$package_root/debian/$script" \
+    && grep -Fq '"$tasks/ContextMenu.qml"' "$package_root/debian/$script" \
+    || fail "the KDE landing page, task switcher picker or task menu are not replaced ($script)"
+done
+grep -Fq 'i18nd("kernora-ui", "Unpin from panel")' "$package_root/data/taskmanager/ContextMenu.qml" \
+  && ! grep -Fq 'internalAction("configure")' "$package_root/data/taskmanager/ContextMenu.qml" \
+  && ! grep -Fq 'Task Manager' "$package_root/data/taskmanager/ContextMenu.qml" \
+  && grep -Fxq 'data/taskmanager/ContextMenu.qml usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui' "$package_root/debian/kernora-desktop.install" \
+  || fail "the task icon menu still talks about the KDE task manager"
+grep -Fq 'i18nd("plasmashellprivateplugin", "Download New Plasma Widgets")' "$package_root/data/explorer/WidgetExplorer.qml" \
+  && grep -Fq '.filter(action => !action.separator && action.text.length > 0 && action.text !== store)' "$package_root/data/explorer/WidgetExplorer.qml" \
+  && grep -Fq 'readonly property real widestRow' "$package_root/data/shell/m3/MMenu.qml" \
+  || fail "the widgets menu still offers the KDE store or clips its labels"
+grep -Fq 'readonly property real handleX: track.level * (width - slot)' "$package_root/data/osd/KernoraOsdItem.qml" \
+  || fail "the volume pop-up is not the expressive slider"
 grep -Fxq 'FloatingToolbar 1.0 FloatingToolbar.qml' "$package_root/data/ui/qmldir" \
   && grep -Fq 'checkedFill: M3.secondaryContainer' "$package_root/data/ui/IconButton.qml" \
   || fail "there is no floating toolbar"

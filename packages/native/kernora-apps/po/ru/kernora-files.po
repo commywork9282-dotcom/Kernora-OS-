@@ -434,3 +434,6 @@ msgid_plural "%1 items are already here"
 msgstr[0] "%1 объект уже есть в этой папке"
 msgstr[1] "%1 объекта уже есть в этой папке"
 msgstr[2] "%1 объектов уже есть в этой папке"
+
+msgid "Clear selection"
+msgstr "Снять выделение"

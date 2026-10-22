@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-10-21-1",
+    "date": "2026-10-21",
+    "items": [
+      {
+        "icon": "system-file-manager",
+        "title": {
+          "en": "A toolbar for your selection",
+          "ru": "Панель для выделенных файлов"
+        },
+        "text": {
+          "en": "Select files and a floating toolbar pops up with cut, copy, rename and trash. The New folder button shrinks to an icon while you scroll, and the volume and brightness pop-up now looks like the sliders in quick settings.",
+          "ru": "Выделите файлы, и снизу появится плавающая панель с вырезанием, копированием, переименованием и корзиной. Кнопка «Новая папка» сжимается до значка при прокрутке, а подсказка громкости и яркости теперь выглядит как слайдеры в быстрых настройках."
+        }
+      },
+      {
+        "icon": "configure",
+        "title": {
+          "en": "Less KDE around",
+          "ru": "Меньше KDE"
+        },
+        "text": {
+          "en": "More settings only lists what Kernora has no page of its own for, the widgets menu no longer sends you to the KDE store, and the panel icon menu simply says Pin to panel.",
+          "ru": "«Ещё настройки» показывают только то, для чего в Kernora нет своей страницы, меню виджетов больше не ведёт в магазин KDE, а меню значка на панели просто предлагает закрепить его на панели."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-18-1",
     "date": "2026-10-18",
     "items": [

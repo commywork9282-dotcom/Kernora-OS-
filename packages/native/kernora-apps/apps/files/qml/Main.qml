@@ -13,6 +13,7 @@ import org.kernora.m3
 import org.kernora.ui
 import org.kernora.system
 import org.kde.notification
+import org.kde.kirigami as Kirigami
 import "kinds.js" as Kinds
 
 AppWindow {
@@ -480,7 +481,7 @@ AppWindow {
                         Layout.fillHeight: true
                         leftMargin: app.listMode ? 12 : 12
                         rightMargin: 12
-                        bottomMargin: 12
+                        bottomMargin: 88
                         clip: true
                         focus: true
                         model: folderModel
@@ -561,27 +562,80 @@ AppWindow {
                     text: filter.text.length > 0 ? i18n("No names contain “%1”.", filter.text) : ""
                 }
 
-                Rectangle {
+                Kirigami.ShadowedRectangle {
+                    id: fab
+
+                    property bool collapsed: false
+                    property real lastY: 0
+                    readonly property bool selecting: !M3.classic && app.selectedCount > 0
+                    readonly property real extendedWidth: fabRow.implicitWidth + 36
+
+                    Connections {
+                        target: view
+                        function onContentYChanged() {
+                            const y = view.contentY - view.originY;
+                            if (y <= 8 || y < fab.lastY - 4) {
+                                fab.collapsed = false;
+                            } else if (y > fab.lastY + 4) {
+                                fab.collapsed = true;
+                            }
+                            fab.lastY = y;
+                        }
+                    }
+
+                    MMorph {
+                        id: expandMorph
+                        active: !fab.collapsed || M3.classic
+                        dampingRatio: M3.springExpressiveDefaultDamping
+                        response: M3.springExpressiveDefaultResponse
+                    }
+                    MMorph { id: fabPress; active: fabMouse.pressed && !M3.classic }
+                    MMorph {
+                        id: fabShown
+                        active: !app.inTrash && !fab.selecting
+                        dampingRatio: M3.springExpressiveDefaultDamping
+                        response: M3.springExpressiveDefaultResponse
+                    }
+
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
                     anchors.margins: 20
-                    visible: !app.inTrash
-                    width: fabRow.implicitWidth + 40
+                    visible: fabShown.value > 0.01
+                    opacity: Math.min(1, fabShown.value * 1.5)
+                    scale: 0.6 + 0.4 * fabShown.value
+                    transformOrigin: Item.BottomRight
+                    width: 56 + (extendedWidth - 56) * Math.max(0, expandMorph.value)
                     height: 56
-                    radius: M3.classic ? M3.cornerButton : 16
+                    radius: M3.classic ? M3.cornerButton : 16 - 4 * fabPress.value
                     color: M3.primaryContainer
+                    readonly property var elevation: M3.elevationOf("fab")
+                    shadow.xOffset: 0
+                    shadow.yOffset: elevation.offset
+                    shadow.size: elevation.blur
+                    shadow.color: Qt.rgba(0, 0, 0, M3.dark ? elevation.opacity + 0.2 : elevation.opacity)
+                    Accessible.role: Accessible.Button
+                    Accessible.name: i18n("New folder")
                     MStateLayer {
-                        radius: M3.classic ? M3.cornerButton : 16
+                        radius: fab.radius
                         color: M3.primaryContainerContent
                         hovered: fabMouse.containsMouse
                         pressed: fabMouse.pressed
                         pressPoint: Qt.point(fabMouse.mouseX, fabMouse.mouseY)
                     }
+                    MIcon {
+                        x: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        size: 24
+                        source: "folder-new"
+                        color: M3.primaryContainerContent
+                    }
                     RowLayout {
                         id: fabRow
-                        anchors.centerIn: parent
+                        x: 16
+                        anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
-                        MIcon { size: 24; source: "folder-new"; color: M3.primaryContainerContent }
+                        opacity: Math.max(0, Math.min(1, expandMorph.value * 1.4 - 0.4))
+                        Item { implicitWidth: 24; implicitHeight: 24 }
                         MText { role: "labelLarge"; text: i18n("New folder"); color: M3.primaryContainerContent }
                     }
                     MouseArea {
@@ -590,10 +644,81 @@ AppWindow {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: newFolderDialog.open()
+                        QQC2.ToolTip.text: i18n("New folder")
+                        QQC2.ToolTip.visible: fab.collapsed && containsMouse
+                        QQC2.ToolTip.delay: 600
+                    }
+                }
+
+                FloatingToolbar {
+                    id: selectionBar
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 20
+                    vibrant: true
+                    shown: fab.selecting
+
+                    ToolbarButton {
+                        iconName: "window-close"
+                        text: i18n("Clear selection")
+                        onClicked: app.clearSelection()
+                    }
+                    Rectangle {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 1
+                        height: 24
+                        color: M3.withAlpha(M3.primaryContainerContent, 0.3)
+                    }
+                    ToolbarButton {
+                        visible: app.inTrash
+                        iconName: "edit-undo"
+                        text: i18n("Restore")
+                        onClicked: app.restore()
+                    }
+                    ToolbarButton {
+                        visible: !app.inTrash
+                        iconName: "edit-cut"
+                        text: i18n("Cut")
+                        onClicked: app.copy(true)
+                    }
+                    ToolbarButton {
+                        visible: !app.inTrash
+                        iconName: "edit-copy"
+                        text: i18n("Copy")
+                        onClicked: app.copy(false)
+                    }
+                    ToolbarButton {
+                        visible: !app.inTrash && app.selectedCount === 1
+                        iconName: "edit-rename"
+                        text: i18n("Rename")
+                        onClicked: app.rename()
+                    }
+                    ToolbarButton {
+                        iconName: "user-trash"
+                        text: app.inTrash ? i18n("Delete forever") : i18n("Move to trash")
+                        onClicked: app.inTrash ? app.deleteForever() : app.trash()
+                    }
+                    ToolbarButton {
+                        id: selectionMore
+                        iconName: "overflow-menu"
+                        text: i18n("More")
+                        onClicked: {
+                            const menu = app.inTrash ? trashMenu : fileMenu;
+                            menu.popup(selectionMore, 0, 0);
+                            menu.y = Qt.binding(() => -menu.height - 16);
+                        }
                     }
                 }
             }
         }
+    }
+
+    component ToolbarButton: IconButton {
+        implicitWidth: 48
+        implicitHeight: 48
+        ink: selectionBar.ink
+        checkedFill: selectionBar.checkedFill
+        checkedInk: selectionBar.checkedInk
     }
 
     QQC2.Menu {

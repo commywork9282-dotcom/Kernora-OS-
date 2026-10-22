@@ -16,6 +16,37 @@ If an older image left your installed system on a black screen, see
 [boot recovery](docs/BOOT-RECOVERY.md). Current images and updates fix the
 root folder ownership that caused it.
 
+## Screenshots
+
+Taken in a VM with the default colour and dark theme.
+
+<table>
+  <tr>
+    <td><img src="docs/screenshots/launcher.png" alt="App launcher"></td>
+    <td><img src="docs/screenshots/quick-settings.png" alt="Quick settings"></td>
+  </tr>
+  <tr>
+    <td align="center">App launcher</td>
+    <td align="center">Quick settings</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/settings.png" alt="Settings, wallpaper and style"></td>
+    <td><img src="docs/screenshots/files.png" alt="Files with a folder selected"></td>
+  </tr>
+  <tr>
+    <td align="center">Settings</td>
+    <td align="center">Files, with the selection toolbar</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/store.png" alt="Store"></td>
+    <td><img src="docs/screenshots/lock-screen.png" alt="Lock screen"></td>
+  </tr>
+  <tr>
+    <td align="center">Store</td>
+    <td align="center">Lock screen</td>
+  </tr>
+</table>
+
 ## What's in it
 
 - Debian 13.7 from a fixed snapshot (2026-10-15), Linux 6.12, KDE Plasma 6.3

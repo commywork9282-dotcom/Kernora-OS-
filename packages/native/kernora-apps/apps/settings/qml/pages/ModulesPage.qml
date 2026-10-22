@@ -18,7 +18,14 @@ SettingsPage {
     title: i18n("More settings")
     subtitle: i18n("Every option of the system, including the rarely used ones.")
 
+    readonly property var internal: ["kcm_activities", "kcm_kded", "kcm_feedback", "kwincompositing",
+                                     "kcm_kgamma", "kcm_qtquicksettings", "kcm_landingpage", "kcm_kwintabbox"]
     readonly property var modules: Process.settingsModules()
+        .filter(m => !internal.includes(m.id) && catalog.resolve(m.id) === null)
+
+    Catalog {
+        id: catalog
+    }
     readonly property var shown: {
         const query = filter.text.trim().toLocaleLowerCase();
         if (query.length === 0) {

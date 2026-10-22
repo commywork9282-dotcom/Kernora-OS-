@@ -24,7 +24,15 @@ T.Popup {
     padding: 0
     topPadding: 12
     bottomPadding: 12
-    implicitWidth: Math.max(200, list.implicitWidth)
+    readonly property real widestRow: {
+        let widest = 0;
+        for (const row of list.children) {
+            widest = Math.max(widest, row.implicitWidth || 0);
+        }
+        return widest;
+    }
+
+    implicitWidth: Math.max(200, widestRow)
     implicitHeight: list.implicitHeight + topPadding + bottomPadding
     modal: false
     focus: true

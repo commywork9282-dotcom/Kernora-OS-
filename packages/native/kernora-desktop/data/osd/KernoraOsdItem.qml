@@ -76,50 +76,142 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                Rectangle {
-                    anchors.fill: parent
-                    radius: height / 2
-                    color: M3.surfaceContainerHighest
+                readonly property real level: Math.max(0, Math.min(1, levelSpring.value))
+                readonly property color fill: root.overdriven ? M3.error : M3.primary
+                readonly property color ink: root.overdriven ? M3.errorContent : M3.primaryContent
+                property bool shown: false
+
+                function settle(): void {
+                    if (shown) {
+                        levelSpring.animateTo(root.fraction);
+                    } else if (width > 0) {
+                        levelSpring.jumpTo(root.fraction);
+                        shown = true;
+                    }
                 }
-                Rectangle {
-                    id: fill
-                    height: parent.height
-                    radius: height / 2
-                    color: root.overdriven ? M3.error : M3.primary
-                    width: Math.max(height, springWidth.value)
-                    readonly property real goal: track.width * root.fraction
-                    property bool shown: false
-                    onGoalChanged: {
-                        if (shown) {
-                            springWidth.animateTo(goal);
-                        } else if (track.width > 0) {
-                            springWidth.jumpTo(goal);
-                            shown = true;
+
+                Connections {
+                    target: root
+                    function onFractionChanged() { track.settle(); }
+                }
+                onWidthChanged: if (!shown) settle()
+
+                MSpring {
+                    id: levelSpring
+                    response: M3.springSpatialFastResponse
+                    dampingRatio: M3.springSpatialFastDamping
+                }
+
+                Item {
+                    anchors.fill: parent
+                    visible: M3.classic
+
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: height / 2
+                        color: M3.surfaceContainerHighest
+                    }
+                    Rectangle {
+                        id: fill
+                        height: parent.height
+                        radius: height / 2
+                        color: track.fill
+                        width: Math.max(height, track.level * parent.width)
+                        Behavior on color { ColorAnimation { duration: M3.durationShort4 } }
+                    }
+                    MIcon {
+                        x: (fill.height - size) / 2
+                        anchors.verticalCenter: parent.verticalCenter
+                        size: 24
+                        source: root.icon
+                        color: track.ink
+                    }
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: fill.width > parent.width - width - 24 ? track.ink : M3.surfaceContent
+                        text: root.formatPercent(Math.round(Number(root.osdValue)))
+                        font: M3.labelLarge
+                        renderType: Text.QtRendering
+                    }
+                }
+
+                Item {
+                    id: expressive
+                    anchors.fill: parent
+                    visible: !M3.classic
+
+                    readonly property real gap: 6
+                    readonly property real slot: 4
+                    readonly property real outer: height / 2
+                    readonly property real handleX: track.level * (width - slot)
+                    readonly property real activeWidth: Math.max(0, handleX - gap)
+                    readonly property real inactiveX: handleX + slot + gap
+                    readonly property real inactiveWidth: Math.max(0, width - inactiveX)
+                    readonly property bool iconOnActive: activeWidth >= 48
+                    readonly property bool valueOnInactive: inactiveWidth >= percent.implicitWidth + 40
+
+                    Rectangle {
+                        width: expressive.activeWidth
+                        height: parent.height
+                        visible: width > 0.5
+                        color: track.fill
+                        topLeftRadius: Math.min(expressive.outer, width / 2)
+                        bottomLeftRadius: Math.min(expressive.outer, width / 2)
+                        topRightRadius: Math.min(4, width / 2)
+                        bottomRightRadius: Math.min(4, width / 2)
+                        Behavior on color { ColorAnimation { duration: M3.durationShort4 } }
+                    }
+                    Rectangle {
+                        x: expressive.inactiveX
+                        width: expressive.inactiveWidth
+                        height: parent.height
+                        visible: width > 0.5
+                        color: M3.secondaryContainer
+                        topLeftRadius: Math.min(4, width / 2)
+                        bottomLeftRadius: Math.min(4, width / 2)
+                        topRightRadius: Math.min(expressive.outer, width / 2)
+                        bottomRightRadius: Math.min(expressive.outer, width / 2)
+
+                        Rectangle {
+                            width: 6
+                            height: 6
+                            radius: 3
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: parent.right
+                            anchors.rightMargin: expressive.outer - 3
+                            color: track.fill
+                            visible: parent.width > expressive.outer * 2 && !expressive.valueOnInactive
                         }
                     }
-                    MSpring {
-                        id: springWidth
-                        response: M3.springSpatialFastResponse
-                        dampingRatio: M3.springSpatialFastDamping
+                    Rectangle {
+                        x: expressive.handleX
+                        y: -4
+                        width: expressive.slot
+                        height: parent.height + 8
+                        radius: width / 2
+                        color: track.fill
                     }
-                    Behavior on color { ColorAnimation { duration: M3.durationShort4 } }
-                }
-                MIcon {
-                    x: (fill.height - size) / 2
-                    anchors.verticalCenter: parent.verticalCenter
-                    size: 24
-                    source: root.icon
-                    color: root.overdriven ? M3.errorContent : M3.primaryContent
-                }
-                Text {
-                    anchors.right: parent.right
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: fill.width > track.width - width - 24
-                        ? (root.overdriven ? M3.errorContent : M3.primaryContent) : M3.surfaceContent
-                    text: root.formatPercent(Math.round(Number(root.osdValue)))
-                    font: M3.labelLarge
-                    renderType: Text.QtRendering
+                    MIcon {
+                        x: expressive.iconOnActive ? 16 : expressive.inactiveX + 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        size: 24
+                        source: root.icon
+                        color: expressive.iconOnActive ? track.ink : M3.secondaryContainerContent
+                        visible: expressive.iconOnActive || expressive.inactiveWidth >= 48
+                    }
+                    Text {
+                        id: percent
+                        anchors.verticalCenter: parent.verticalCenter
+                        x: expressive.valueOnInactive ? parent.width - width - 18
+                                                      : Math.max(0, expressive.activeWidth - width - 14)
+                        color: expressive.valueOnInactive ? M3.secondaryContainerContent : track.ink
+                        text: root.formatPercent(Math.round(Number(root.osdValue)))
+                        font: M3.labelLarge
+                        renderType: Text.QtRendering
+                        visible: expressive.valueOnInactive || expressive.activeWidth >= width + 24 + (expressive.iconOnActive ? 40 : 0)
+                    }
                 }
             }
         }

@@ -186,13 +186,16 @@ Item {
             MIconButton {
                 id: moreButton
                 icon: "overflow-menu"
-                text: i18ndc("plasma_shell_org.kde.plasma.desktop", "@action:button", "Get New Widgets…")
+                text: main.tr("More")
                 onClicked: {
-                    moreMenu.items = Array.from(widgetExplorer.widgetsMenuActions, action => ({
-                        icon: action.icon,
-                        text: action.text.replace(/&(?!&)/g, ""),
-                        action: () => action.trigger()
-                    }));
+                    const store = i18nd("plasmashellprivateplugin", "Download New Plasma Widgets");
+                    moreMenu.items = Array.from(widgetExplorer.widgetsMenuActions)
+                        .filter(action => !action.separator && action.text.length > 0 && action.text !== store)
+                        .map(action => ({
+                            icon: action.icon,
+                            text: action.text.replace(/&(?!&)/g, ""),
+                            action: () => action.trigger()
+                        }));
                     moreMenu.openAt(moreButton, 0, moreButton.height);
                 }
             }

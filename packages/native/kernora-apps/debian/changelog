@@ -1,3 +1,16 @@
+kernora-apps (1.1.52) UNRELEASED; urgency=medium
+
+  * Settings: More settings hides the KDE modules Kernora has its own page
+    for and the KDE internal ones (activities, background services,
+    feedback, compositor, gamma, Qt Quick, landing page, task switcher).
+  * Files: selected files get a floating toolbar (clear, cut, copy, rename,
+    trash, more) and the New folder button shrinks to an icon while you
+    scroll down.
+  * What's new: less KDE, expressive Files and volume.
+  * Require kernora-desktop 1.4.43.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 21 Oct 2026 18:00:00 -0700
+
 kernora-apps (1.1.51) UNRELEASED; urgency=medium
 
   * Photos: the viewer actions sit in a floating toolbar at the bottom.

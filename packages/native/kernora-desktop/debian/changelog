@@ -1,3 +1,17 @@
+kernora-desktop (1.4.43) UNRELEASED; urgency=medium
+
+  * Less KDE:
+    - divert the KDE landing page (it offers global themes) and the task
+      switcher picker, like the other theme pickers;
+    - the task icon menu is Kernora's: "Pin to panel" / "Unpin from panel",
+      no widget or panel settings in it (they stay in the panel menu);
+    - the widgets menu drops the KDE store and empty separators.
+  * MMenu sizes itself from its widest row, so no clipped labels.
+  * The volume and brightness OSD is an expressive slider for md3: active
+    track, a handle bar between gaps, inactive track with a stop dot.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 21 Oct 2026 18:00:00 -0700
+
 kernora-desktop (1.4.42) UNRELEASED; urgency=medium
 
   * More Material 3 Expressive for md3:

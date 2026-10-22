@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.51" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.52" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -114,6 +114,12 @@ grep -Fq 'MLoadingIndicator {' "$package_root/apps/store/qml/AppPage.qml" \
   || fail "screenshots in Store do not use the loading indicator"
 grep -Fq 'component BusyIndicatorOverlay: MLoadingIndicator {' "$package_root/apps/photos/qml/Main.qml" \
   || fail "the photo viewer does not use the loading indicator"
+grep -Fq '.filter(m => !internal.includes(m.id) && catalog.resolve(m.id) === null)' "$package_root/apps/settings/qml/pages/ModulesPage.qml" \
+  && grep -Fq '"kcm_activities"' "$package_root/apps/settings/qml/pages/ModulesPage.qml" \
+  || fail "More settings still lists KDE modules Kernora replaces"
+grep -Fq 'id: selectionBar' "$package_root/apps/files/qml/Main.qml" \
+  && grep -Fq 'active: !fab.collapsed || M3.classic' "$package_root/apps/files/qml/Main.qml" \
+  || fail "Files has no selection toolbar or collapsing button"
 grep -Fq 'FloatingToolbar {' "$package_root/apps/photos/qml/Main.qml" \
   && grep -Fq 'shown: chrome.shown' "$package_root/apps/photos/qml/Main.qml" \
   || fail "the photo viewer has no floating toolbar"
