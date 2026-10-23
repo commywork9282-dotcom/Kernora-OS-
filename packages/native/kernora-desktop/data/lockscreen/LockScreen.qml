@@ -163,35 +163,140 @@ Item {
     Rectangle {
         anchors.fill: parent
         color: M3.darkScheme.surface
-        opacity: (lockScreen.uiVisible ? 0.55 : 0.3) * (1 - root.exit)
-        Behavior on opacity {
-            enabled: root.exit === 0
-            NumberAnimation { duration: M3.durationMedium4 }
-        }
+        opacity: (0.3 + 0.25 * lockScreen.reveal) * (1 - root.exit)
     }
 
     MouseArea {
         id: lockScreen
 
         property bool uiVisible: false
+        readonly property color wallpaperInk: M3.darkScheme.surfaceContent
         readonly property bool blockUI: password.text.length > 0 || root.passwordless
+        readonly property real reveal: Math.max(0, Math.min(1, revealSpring.value))
+        readonly property real travel: Math.max(240, height * 0.4)
+        property bool dragging: false
+        property bool hinting: false
+        property real pressY: 0
+        property real pressReveal: 0
+        property real lastY: 0
+        property double lastTime: 0
+        property real flick: 0
+
+        function settle(open: bool, velocity: real): void {
+            if (open !== uiVisible) {
+                uiVisible = open;
+            }
+            revealSpring.animateTo(open ? 1 : 0, velocity);
+            if (open && root.passwordless) {
+                root.unlock();
+            }
+        }
+
+        function endPeek(): void {
+            if (!uiVisible && !dragging) {
+                revealSpring.animateTo(0, 0);
+            }
+        }
+
+        function peek(): void {
+            hinting = true;
+            hintTimer.restart();
+            if (!uiVisible && !dragging && !nudge.running && revealSpring.value < 0.01) {
+                nudge.start();
+            }
+        }
+
+        MSpring {
+            id: revealSpring
+            dampingRatio: 0.82
+            response: 0.42
+        }
+
+        SequentialAnimation {
+            id: nudge
+            ScriptAction { script: revealSpring.animateTo(0.08, 0) }
+            PauseAnimation { duration: 180 }
+            ScriptAction { script: lockScreen.endPeek() }
+        }
+
+        Timer {
+            id: hintTimer
+            interval: 3000
+            onTriggered: lockScreen.hinting = false
+        }
 
         anchors.fill: parent
         hoverEnabled: true
-        cursorShape: uiVisible ? Qt.ArrowCursor : Qt.BlankCursor
+        cursorShape: dragging ? Qt.ClosedHandCursor : uiVisible || hinting ? Qt.ArrowCursor : Qt.BlankCursor
         opacity: 1 - root.exit
         transform: Translate { y: -72 * root.exit }
-        onPressed: uiVisible = true
-        onPositionChanged: uiVisible = true
+        onPressed: mouse => {
+            pressY = mouse.y;
+            lastY = mouse.y;
+            lastTime = Date.now();
+            pressReveal = reveal;
+            flick = 0;
+            dragging = false;
+        }
+        onPositionChanged: mouse => {
+            if (!pressed) {
+                if (!uiVisible) {
+                    peek();
+                }
+                return;
+            }
+            const distance = pressY - mouse.y;
+            if (!dragging && Math.abs(distance) > 8) {
+                dragging = true;
+                nudge.stop();
+            }
+            if (dragging) {
+                revealSpring.jumpTo(Math.max(0, Math.min(1, pressReveal + distance / travel)));
+                const now = Date.now();
+                flick = (lastY - mouse.y) / Math.max(1, now - lastTime) * 1000;
+                lastY = mouse.y;
+                lastTime = now;
+            }
+        }
+        onReleased: {
+            if (!dragging) {
+                settle(true, 0);
+                return;
+            }
+            dragging = false;
+            settle(flick > 600 || (flick > -600 && reveal > 0.4), flick / travel);
+        }
+        onCanceled: {
+            dragging = false;
+            settle(reveal > 0.4, 0);
+        }
+        onWheel: wheel => {
+            if (uiVisible) {
+                return;
+            }
+            const delta = wheel.pixelDelta.y !== 0 ? wheel.pixelDelta.y : wheel.angleDelta.y / 2;
+            revealSpring.jumpTo(Math.max(0, Math.min(1, reveal + Math.abs(delta) / travel)));
+            wheelSettle.restart();
+        }
+        Timer {
+            id: wheelSettle
+            interval: 160
+            onTriggered: lockScreen.settle(lockScreen.reveal > 0.3, 0)
+        }
+        Component.onCompleted: {
+            revealSpring.jumpTo(uiVisible ? 1 : 0);
+            password.forceActiveFocus();
+        }
         onUiVisibleChanged: {
             if (blockUI) {
                 fadeoutTimer.running = false;
             } else if (uiVisible) {
                 fadeoutTimer.restart();
             }
-            if (uiVisible) {
-                password.forceActiveFocus();
+            if (!dragging) {
+                revealSpring.animateTo(uiVisible ? 1 : 0);
             }
+            password.forceActiveFocus();
             authenticator.startAuthenticating();
         }
         onBlockUIChanged: {
@@ -232,23 +337,23 @@ Item {
         ColumnLayout {
             id: clock
             anchors.horizontalCenter: parent.horizontalCenter
-            y: lockScreen.uiVisible ? parent.height * 0.1 : parent.height * 0.3
+            y: parent.height * (0.3 - 0.2 * lockScreen.reveal)
             spacing: 0
-            Behavior on y { NumberAnimation { duration: M3.durationLong2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate } }
+            scale: 1 - 0.18 * lockScreen.reveal
+            transformOrigin: Item.Top
             Text {
                 Layout.alignment: Qt.AlignHCenter
                 text: lockScreen.now.toLocaleTimeString(Qt.locale(), Qt.locale().name === "C" ? "HH:mm" : Locale.ShortFormat)
-                color: M3.darkScheme.surfaceContent
+                color: lockScreen.wallpaperInk
                 font.family: M3.typeface
                 font.weight: Font.Light
-                font.pixelSize: lockScreen.uiVisible ? 112 : 136
+                font.pixelSize: 136
                 renderType: Text.QtRendering
-                Behavior on font.pixelSize { NumberAnimation { duration: M3.durationLong2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate } }
             }
             Text {
                 Layout.alignment: Qt.AlignHCenter
                 text: lockScreen.now.toLocaleDateString(Qt.locale(), "dddd, d MMMM")
-                color: M3.darkScheme.surfaceContent
+                color: lockScreen.wallpaperInk
                 font.family: M3.typeface
                 font.pixelSize: 22
                 renderType: Text.QtRendering
@@ -265,37 +370,50 @@ Item {
             Behavior on opacity { NumberAnimation { duration: M3.durationMedium4 } }
         }
 
-        Rectangle {
+        Column {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
             anchors.bottomMargin: media.active ? 24 + media.height + 24 : 48
-            width: 56
-            height: 56
-            radius: 28
-            color: Qt.alpha(M3.surfaceContainerHigh, 0.9)
-            opacity: lockScreen.uiVisible ? 0 : 1
+            spacing: 12
+            opacity: Math.max(0, 1 - 2.5 * lockScreen.reveal)
             visible: opacity > 0
-            Behavior on opacity { NumberAnimation { duration: M3.durationMedium2 } }
-            MIcon {
-                anchors.centerIn: parent
-                size: 24
-                source: "system-lock-screen"
-                color: M3.surfaceContent
+            transform: Translate { y: -lockScreen.travel * 0.5 * lockScreen.reveal }
+
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: i18nd("kernora-ui", "Swipe up or start typing")
+                color: lockScreen.wallpaperInk
+                font.family: M3.typeface
+                font.pixelSize: 15
+                font.weight: Font.Medium
+                opacity: lockScreen.hinting ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: M3.durationMedium2 } }
+            }
+            Rectangle {
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 56
+                height: 56
+                radius: 28
+                color: Qt.alpha(M3.surfaceContainerHigh, 0.9)
+                MIcon {
+                    anchors.centerIn: parent
+                    size: 24
+                    source: "system-lock-screen"
+                    color: M3.surfaceContent
+                }
             }
         }
 
         Rectangle {
             id: card
+            readonly property bool shown: lockScreen.reveal > 0.5
             anchors.horizontalCenter: parent.horizontalCenter
-            y: lockScreen.uiVisible ? parent.height * 0.5 - height * 0.25 : parent.height * 0.5 + 24
+            y: parent.height * 0.5 - height * 0.25 + (1 - lockScreen.reveal) * lockScreen.travel * 0.6
             width: 400
             height: cardColumn.implicitHeight + 64
             radius: M3.classic ? M3.cornerDialog : 36
             color: Qt.alpha(M3.surfaceContainer, 0.94)
-            opacity: lockScreen.uiVisible ? 1 : 0
-            visible: opacity > 0
-            Behavior on opacity { NumberAnimation { duration: M3.durationMedium4 } }
-            Behavior on y { NumberAnimation { duration: M3.durationLong2; easing.type: Easing.Bezier; easing.bezierCurve: M3.easingEmphasizedDecelerate } }
+            opacity: Math.max(0, Math.min(1, (lockScreen.reveal - 0.25) / 0.55))
 
             SequentialAnimation {
                 id: shake
@@ -436,6 +554,7 @@ Item {
                         MouseArea {
                             id: loginMouse
                             anchors.fill: parent
+                            enabled: card.shown
                             cursorShape: Qt.PointingHandCursor
                             onClicked: password.accepted()
                         }
@@ -464,6 +583,7 @@ Item {
                     }
                     MouseArea {
                         anchors.fill: parent
+                        enabled: card.shown
                         cursorShape: Qt.PointingHandCursor
                         onClicked: root.unlock()
                     }
@@ -497,9 +617,8 @@ Item {
             anchors.bottom: parent.bottom
             anchors.margins: 24
             spacing: 8
-            opacity: lockScreen.uiVisible ? 1 : 0
+            opacity: Math.max(0, Math.min(1, (lockScreen.reveal - 0.4) / 0.6))
             visible: opacity > 0
-            Behavior on opacity { NumberAnimation { duration: M3.durationMedium4 } }
 
             PW.KeyboardLayoutSwitcher {
                 id: keyboardLayouts

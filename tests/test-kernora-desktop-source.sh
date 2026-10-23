@@ -562,6 +562,15 @@ for wallpaper in shapes pastel rhythm starfall; do
     && grep -Fq '<entry name="IntroAt" type="String">' "$package_root/data/wallpaper/org.kernora.$wallpaper/contents/config/main.xml" \
     || fail "the $wallpaper wallpaper does not run on the clock or replays its intro at login"
 done
+for screen in lockscreen/LockScreen.qml sddm-theme/kernora/Main.qml; do
+  grep -Fq 'revealSpring.jumpTo(Math.max(0, Math.min(1, ' "$package_root/data/$screen" \
+    && grep -Fq 'onWheel: wheel => {' "$package_root/data/$screen" \
+    && grep -Fq 'flick > 600 || (flick > -600 && ' "$package_root/data/$screen" \
+    || fail "$screen has no swipe up"
+done
+grep -Fq '"lock_24px.svg": ("lock", "onSurface")' "$package_root/tools/gen-greeter-palette" \
+  && grep -Fq 'msgid "Swipe up or start typing"' "$package_root/data/shell/po/kernora-ui.ru.po" \
+  || fail "the swipe hint has no icon or translation"
 grep -Fq 'leave.start();' "$package_root/data/sddm-theme/kernora/Main.qml" \
   && grep -Fq 'return (offset + Date.now() / 1000 / loop) % 1;' "$package_root/data/sddm-theme/kernora/Main.qml" \
   && grep -Fq 'onFinished: Qt.quit()' "$package_root/data/lockscreen/LockScreen.qml" \

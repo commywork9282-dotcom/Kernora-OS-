@@ -25,6 +25,60 @@ Rectangle {
     property bool busy: false
     property real exit: 0
 
+    property bool open: false
+    readonly property real reveal: Math.max(0, Math.min(1, revealSpring.value))
+    readonly property real travel: Math.max(240, height * 0.4)
+    property bool hinting: false
+
+    function settle(show: bool, velocity: real): void {
+        open = show;
+        revealSpring.animateTo(show ? 1 : 0, velocity);
+        if (show) {
+            password.forceActiveFocus();
+            idleTimer.restart();
+        }
+    }
+
+    function endPeek(): void {
+        if (!open && !swipe.dragging) {
+            revealSpring.animateTo(0, 0);
+        }
+    }
+
+    MSpring {
+        id: revealSpring
+        dampingRatio: 0.82
+        response: 0.42
+    }
+
+    SequentialAnimation {
+        id: nudge
+        ScriptAction { script: revealSpring.animateTo(0.08, 0) }
+        PauseAnimation { duration: 180 }
+        ScriptAction { script: root.endPeek() }
+    }
+
+    Timer {
+        id: hintTimer
+        interval: 3000
+        onTriggered: root.hinting = false
+    }
+
+    Timer {
+        id: idleTimer
+        interval: 15000
+        onTriggered: {
+            if (password.text.length === 0 && !root.busy) {
+                root.settle(false, 0);
+            }
+        }
+    }
+
+    Keys.onEscapePressed: {
+        password.text = "";
+        root.settle(false, 0);
+    }
+
     NumberAnimation {
         id: leave
         target: root
@@ -121,7 +175,7 @@ Rectangle {
             Rectangle {
                 anchors.fill: parent
                 color: M3.darkScheme.surface
-                opacity: 0.35 * (1 - root.exit)
+                opacity: (0.25 + 0.2 * root.reveal) * (1 - root.exit)
             }
         }
     }
@@ -134,11 +188,84 @@ Rectangle {
         onTriggered: root.now = new Date()
     }
 
+    MouseArea {
+        id: swipe
+
+        property bool dragging: false
+        property real pressY: 0
+        property real pressReveal: 0
+        property real lastY: 0
+        property double lastTime: 0
+        property real flick: 0
+
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: dragging ? Qt.ClosedHandCursor : Qt.ArrowCursor
+        onPressed: mouse => {
+            pressY = mouse.y;
+            lastY = mouse.y;
+            lastTime = Date.now();
+            pressReveal = root.reveal;
+            flick = 0;
+            dragging = false;
+        }
+        onPositionChanged: mouse => {
+            if (!pressed) {
+                if (!root.open) {
+                    root.hinting = true;
+                    hintTimer.restart();
+                    if (!nudge.running && revealSpring.value < 0.01) {
+                        nudge.start();
+                    }
+                }
+                return;
+            }
+            const distance = pressY - mouse.y;
+            if (!dragging && Math.abs(distance) > 8) {
+                dragging = true;
+                nudge.stop();
+            }
+            if (dragging) {
+                revealSpring.jumpTo(Math.max(0, Math.min(1, pressReveal + distance / root.travel)));
+                const now = Date.now();
+                flick = (lastY - mouse.y) / Math.max(1, now - lastTime) * 1000;
+                lastY = mouse.y;
+                lastTime = now;
+            }
+        }
+        onReleased: {
+            if (!dragging) {
+                root.settle(true, 0);
+                return;
+            }
+            dragging = false;
+            root.settle(flick > 600 || (flick > -600 && root.reveal > 0.4), flick / root.travel);
+        }
+        onCanceled: {
+            dragging = false;
+            root.settle(root.reveal > 0.4, 0);
+        }
+        onWheel: wheel => {
+            if (root.open) {
+                return;
+            }
+            const delta = wheel.pixelDelta.y !== 0 ? wheel.pixelDelta.y : wheel.angleDelta.y / 2;
+            revealSpring.jumpTo(Math.max(0, Math.min(1, root.reveal + Math.abs(delta) / root.travel)));
+            wheelSettle.restart();
+        }
+        Timer {
+            id: wheelSettle
+            interval: 160
+            onTriggered: root.settle(root.reveal > 0.3, 0)
+        }
+    }
+
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.topMargin: parent.height * 0.1
+        y: parent.height * (0.3 - 0.2 * root.reveal)
         spacing: 0
+        scale: 1 - 0.18 * root.reveal
+        transformOrigin: Item.Top
         opacity: 1 - root.exit
         transform: Translate { y: -64 * root.exit }
         Text {
@@ -147,7 +274,7 @@ Rectangle {
             color: M3.darkScheme.surfaceContent
             font.family: "Roboto"
             font.weight: Font.Light
-            font.pixelSize: 112
+            font.pixelSize: 136
             renderType: Text.QtRendering
         }
         Text {
@@ -173,15 +300,52 @@ Rectangle {
         }
     }
 
+    Column {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 48
+        spacing: 12
+        opacity: Math.max(0, 1 - 2.5 * root.reveal) * (1 - root.exit)
+        visible: opacity > 0
+        transform: Translate { y: -root.travel * 0.5 * root.reveal }
+
+        Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: root.tr("Swipe up or start typing", "Проведите вверх или начните вводить пароль")
+            color: M3.darkScheme.surfaceContent
+            font.family: "Roboto"
+            font.pixelSize: 15
+            font.weight: Font.Medium
+            opacity: root.hinting ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 250 } }
+        }
+        Rectangle {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 56
+            height: 56
+            radius: 28
+            color: Qt.alpha(M3.surfaceContainerHigh, 0.9)
+            Kirigami.Icon {
+                anchors.centerIn: parent
+                width: 24
+                height: 24
+                source: Qt.resolvedUrl("icons/lock.svg")
+                isMask: true
+                color: M3.surfaceContent
+            }
+        }
+    }
+
     Rectangle {
         id: card
+        readonly property bool shown: root.reveal > 0.5
         anchors.centerIn: parent
-        anchors.verticalCenterOffset: parent.height * 0.08
+        anchors.verticalCenterOffset: parent.height * 0.08 + (1 - root.reveal) * root.travel * 0.6
         width: 400
         height: cardColumn.implicitHeight + 64
         radius: 36
         color: Qt.alpha(M3.surfaceContainer, 0.94)
-        opacity: 1 - root.exit
+        opacity: Math.max(0, Math.min(1, (root.reveal - 0.25) / 0.55)) * (1 - root.exit)
         transform: Translate { y: -96 * root.exit }
 
         SequentialAnimation {
@@ -284,7 +448,13 @@ Rectangle {
                         renderType: Text.QtRendering
                         clip: true
                         onAccepted: root.login()
-                        onTextChanged: root.failure = ""
+                        onTextChanged: {
+                            root.failure = "";
+                            if (text.length > 0 && !root.open) {
+                                root.settle(true, 0);
+                            }
+                            idleTimer.restart();
+                        }
 
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
@@ -324,6 +494,7 @@ Rectangle {
                     }
                     MouseArea {
                         id: loginMouse
+                        enabled: card.shown
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: root.login()
@@ -369,6 +540,7 @@ Rectangle {
                         }
                         MouseArea {
                             anchors.fill: parent
+                            enabled: card.shown
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
                                 root.userIndex = index;
@@ -388,7 +560,8 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 24
         spacing: 8
-        opacity: 1 - root.exit
+        opacity: Math.max(0, Math.min(1, (root.reveal - 0.4) / 0.6)) * (1 - root.exit)
+        visible: opacity > 0
 
         Chip {
             visible: sessionModel.rowCount() > 1

@@ -10,6 +10,10 @@ kernora-desktop (1.4.44) UNRELEASED; urgency=medium
   * The lock screen wallpaper holds still; the desktop holds while it is not
     shown and glides back to the clock afterwards, so unlocking has no jump.
   * Login and lock screens slide their clock and card away on success.
+  * Android style swipe on both: they start as a clock, and dragging up
+    (mouse, touch or the wheel) pulls the card in on a spring. A short
+    drag springs back, typing opens it right away, moving the mouse nudges
+    the screen and shows a hint.
 
  -- Kernora Developers <developers@kernora.invalid>  Thu, 22 Oct 2026 23:50:00 -0700
 

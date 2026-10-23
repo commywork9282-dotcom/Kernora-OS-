@@ -17,6 +17,7 @@ SYMBOLS = {
     "keyboard_24px.svg": ("keyboard", "onSurfaceVariant"),
     "desktop_windows_24px.svg": ("session", "onSurfaceVariant"),
     "account_circle_24px.svg": ("user", "onPrimaryContainer"),
+    "lock_24px.svg": ("lock", "onSurface"),
 }
 
 

@@ -144,3 +144,6 @@ msgstr "Открепить от панели"
 
 msgid "More"
 msgstr "Ещё"
+
+msgid "Swipe up or start typing"
+msgstr "Проведите вверх или начните вводить пароль"

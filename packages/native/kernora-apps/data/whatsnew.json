@@ -13,6 +13,17 @@
           "en": "After you sign in there is no loading screen any more: your wallpaper stays on screen and the desktop appears right on top of it. Unlocking works the same way, the lock screen slides away and the wallpaper carries on from where it was.",
           "ru": "После входа больше нет экрана загрузки: на экране остаются ваши обои, а рабочий стол появляется прямо поверх них. Разблокировка работает так же: экран блокировки уезжает, а обои продолжают с того же места."
         }
+      },
+      {
+        "icon": "go-up",
+        "title": {
+          "en": "Swipe up to unlock",
+          "ru": "Свайп вверх для входа"
+        },
+        "text": {
+          "en": "The lock screen and the login screen start with just the clock. Swipe up with the mouse, touchpad or finger and the password card follows you up, or simply start typing.",
+          "ru": "Экран блокировки и экран входа сначала показывают только часы. Проведите вверх мышью, тачпадом или пальцем, и карточка с паролем поедет следом, или просто начните вводить пароль."
+        }
       }
     ]
   },
