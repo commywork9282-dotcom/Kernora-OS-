@@ -1,3 +1,20 @@
+kernora-desktop (1.4.45) UNRELEASED; urgency=medium
+
+  * Transparent panel (merged PR #4 by lexaaakorolevv-cyber): the panel is
+    the surface colour at 82% with blur behind, solid/ stays opaque.
+  * Turn on adaptive transparency in the theme, else Plasma ignores the
+    panel's opacity mode and the opaque setting never shows.
+  * The launcher applies panelOpacityRequest from its config to the panel
+    view it sits in, since panel.opacity from a script is broken on 6.3.
+  * Cut the panel shape out of the panel shadow, it showed through as a
+    dark band along the top and in the round ends.
+  * Task buttons are chips inset around the icon instead of full-height
+    boxes, those looked like a glitch on the see-through panel. Hovering
+    the active task keeps the primary tint, pinned apps get a hover chip
+    too (launcher-hover, Plasma never falls back to hover for them).
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 23 Oct 2026 16:30:00 -0700
+
 kernora-desktop (1.4.44) UNRELEASED; urgency=medium
 
   * No loading screen after signing in: the session splash shows the chosen

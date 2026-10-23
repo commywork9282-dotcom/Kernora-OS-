@@ -5,6 +5,7 @@
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Window
 import org.kde.coreaddons as KCoreAddons
 import org.kde.kcmutils as KCMUtils
 import org.kde.plasma.core as PlasmaCore
@@ -49,6 +50,15 @@ PlasmoidItem {
                 Plasmoid.configuration.favoritesPortedToKAstats = true;
             }
             refresh();
+        }
+    }
+
+    readonly property string panelOpacityRequest: Plasmoid.configuration.panelOpacityRequest
+    onPanelOpacityRequestChanged: {
+        const mode = parseInt(panelOpacityRequest, 10);
+        const view = root.Window.window;
+        if (mode >= 0 && mode <= 2 && view && view.opacityMode !== undefined) {
+            view.opacityMode = mode;
         }
     }
 

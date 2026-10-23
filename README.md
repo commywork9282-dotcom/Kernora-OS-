@@ -50,10 +50,11 @@ Taken in a VM with the default colour and dark theme.
 ## What's in it
 
 - Debian 13.7 from a fixed snapshot (2026-10-15), Linux 6.12, KDE Plasma 6.3
-- a Kernora shell on top of Plasma: panel, app launcher, quick settings,
-  notifications, lock screen, Alt+Tab and power menu. Every colour comes
-  from one seed colour, `#ff6a1e`, and you can switch the whole look between
-  Material Design 1, 2 and 3 in Settings
+- a Kernora shell on top of Plasma: see-through floating panel (you can make
+  it solid in Settings), app launcher, quick settings, notifications, lock
+  screen, Alt+Tab and power menu. Every colour comes from one seed colour,
+  `#ff6a1e`, and you can switch the whole look between Material Design 1, 2
+  and 3 in Settings
 - Kernora apps instead of the KDE ones: Settings, Store, Files, Text Editor,
   Photos, Media Player, Calculator, Screenshot, Terminal (Alacritty) and
   Welcome, plus a file chooser every app uses

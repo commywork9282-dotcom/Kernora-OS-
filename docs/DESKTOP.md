@@ -181,7 +181,7 @@ has no network) and `fetch-symbols --check` verifies them during the build.
 | `widgets/panel-background` | floating pill, radius = half the 56px thickness |
 | `dialogs/background` | popups: extra-large 28dp corners, level-3 shadow |
 | `widgets/tooltip` | rich tooltip on the highest container |
-| `widgets/tasks` | task buttons as tonal containers, primary tint when active |
+| `widgets/tasks` | task buttons as chips inset around the icon, primary tint when active |
 | `widgets/slider`, `lineedit`, `button` | 16dp track, pill fields and buttons |
 | `widgets/listitem`, `viewitem`, `scrollbar`, `tabbar`, `line` | state layers, thin thumbs |
 
@@ -224,19 +224,25 @@ New accounts do not autostart the Xwayland video bridge (see
 `data/skel-autostart/`): its status icon is permanently passive and would bring
 the arrow back. Kernora's applications are native Wayland clients.
 
-Settings → Wallpaper & style → Panel offers a **Transparent panel** switch
-for all panels. It changes Plasma's native `panel.opacity` between
-`translucent` and `opaque`, so Plasma saves the choice across logins and its
-panel editor reads the same setting. Settings reads the live panels when
-opened. Changing the colour, light/dark theme or Material generation keeps
-the opacity choice.
+Settings → Wallpaper & style → Panel has a **Transparent panel** switch.
+Plasma's own `panel.opacity` script setter is broken on 6.3 (on a live panel it
+calls `QWindow::setOpacity` with the enum value), so Settings goes through the
+launcher instead: it writes `panelOpacityRequest` into the launcher's config
+and the launcher sets `opacityMode` on the panel view it sits in. Plasma then
+saves it in `plasmashellrc` like any other panel setting. The switch needs the
+launcher on the panel, without it the switch is greyed out.
 
-The translucent background uses the same `ColorScheme-Background` role,
-corners, padding and shadows as the solid panel, with 82% surface opacity.
-KWin supplies the blur behind its full-opacity mask; text, icons and task
-buttons retain their own opacity. The `solid/` SVG stays fully opaque for
-the opaque mode and when compositing is unavailable. Dialogs and tooltips
-keep their solid surfaces. New panels keep their translucent default.
+The theme has `[AdaptiveTransparency] enabled=true`, otherwise Plasma ignores
+the panel's opacity mode and always draws the translucent SVG. Translucent is
+the same `ColorScheme-Background` at 82% with KWin blur behind it, `solid/` is
+fully opaque and is used for the opaque mode (and for adaptive panels while a
+maximized window touches them). Dialogs and tooltips stay solid.
+
+Two things only show up on the see-through panel. KWin draws shadow tiles under
+the window as well, so the panel shadow has the panel's shape cut out of it
+(minus a 1px seam), else a dark band shows along the top edge and in the round
+ends. And the task buttons are chips inset 6px around the icon: the old
+full-height boxes looked like a glitch once the wallpaper showed around them.
 
 ### Launcher (`org.kernora.launcher`)
 

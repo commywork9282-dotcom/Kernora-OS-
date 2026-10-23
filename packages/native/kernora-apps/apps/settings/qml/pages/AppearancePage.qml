@@ -89,35 +89,53 @@ SettingsPage {
     property bool panelBusy: false
     property bool panelAvailable: false
     property bool panelTranslucent: false
+    property string panelWanted: ""
 
     function updatePanelOpacity(mode: string): void {
         if (panelBusy) {
             return;
         }
         panelBusy = true;
-        const script = "var items = panels(); "
-            + (mode ? "items.forEach(function (panel) { panel.opacity = " + JSON.stringify(mode) + "; }); " : "")
-            + "print(JSON.stringify(items.map(function (panel) { return panel.opacity; })));";
+        const request = ({ opaque: 1, translucent: 2 })[mode];
+        const write = request === undefined ? ""
+            : "launchers.forEach(function (widget) { widget.currentConfigGroup = ['General']; "
+              + "widget.writeConfig('panelOpacityRequest', '" + request + ":" + Date.now() + "'); }); ";
+        const script = "print(JSON.stringify(panels().map(function (panel) { "
+            + "var launchers = panel.widgets('org.kernora.launcher'); " + write
+            + "return launchers.length > 0 ? panel.opacity : ''; })));";
         DBus.call("session", "org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell", "evaluateScript",
                   [{ type: "s", value: script }], (ok, result) => {
             page.panelBusy = false;
             let modes = [];
             if (ok) {
                 try {
-                    modes = JSON.parse(String(result).trim());
-                    ok = Array.isArray(modes) && modes.every(value => ["opaque", "translucent", "adaptive"].includes(value));
+                    modes = JSON.parse(String(result).trim()).filter(value => value !== "");
+                    ok = modes.every(value => ["opaque", "translucent", "adaptive"].includes(value));
                 } catch (error) {
                     ok = false;
                 }
             }
             page.panelAvailable = ok && modes.length > 0;
-            if (page.panelAvailable) {
-                page.panelTranslucent = modes.every(value => value === "translucent");
+            if (request !== undefined) {
+                page.panelWanted = mode;
+                page.panelTranslucent = mode === "translucent";
+                panelCheck.restart();
+                return;
             }
-            if (mode && (!page.panelAvailable || modes.some(value => value !== mode))) {
+            if (page.panelAvailable) {
+                page.panelTranslucent = modes.every(value => value !== "opaque");
+            }
+            if (page.panelWanted && (!page.panelAvailable || modes.some(value => value !== page.panelWanted))) {
                 page.notify(i18n("The panel transparency could not be changed."));
             }
+            page.panelWanted = "";
         });
+    }
+
+    Timer {
+        id: panelCheck
+        interval: 400
+        onTriggered: page.updatePanelOpacity("")
     }
 
     onVisibleChanged: {

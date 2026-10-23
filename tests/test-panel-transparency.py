@@ -24,6 +24,10 @@ def check_theme(theme):
                 assert element.get("fill-opacity") == opacity, (theme, prefix, part)
                 assert element.get("class") == "ColorScheme-Background"
         assert elements["mask-center"].get("fill") == "#000000"
+        for corner in ("topleft", "topright", "bottomleft", "bottomright"):
+            shadow = elements["shadow-" + corner]
+            assert shadow.get("fill-rule") == "evenodd" and shadow.get("d").count("Z") == 2, (theme, corner)
+        assert elements["shadow-top"].tag.endswith("g"), theme
     for image in (translucent, solid):
         for element in image.iter():
             element.attrib.pop("fill-opacity", None)
@@ -32,7 +36,12 @@ def check_theme(theme):
     settings.read(theme / "plasmarc")
     assert settings.getboolean("BlurBehindEffect", "enabled")
     assert not settings.getboolean("ContrastEffect", "enabled")
-    assert not settings.getboolean("AdaptiveTransparency", "enabled")
+    assert settings.getboolean("AdaptiveTransparency", "enabled")
+    tasks = {element.get("id"): element for element in ET.parse(theme / "widgets/tasks.svg").getroot().iter()}
+    for state in ("normal-", "minimized-", "hover-", "launcher-hover-", "focus-", "focus-hover-", "attention-", "progress-"):
+        corner = tasks[state + "topleft"]
+        box, shape = list(corner)
+        assert box.get("fill") == "none" and shape.tag.endswith("path"), (theme, state)
     for relative in ("dialogs/background.svg", "widgets/tooltip.svg"):
         image = ET.parse(theme / relative).getroot()
         assert next(element for element in image.iter() if element.get("id") == "center").get("fill-opacity") == "1"

@@ -31,6 +31,8 @@ WIDGET_RADIUS = design.corner("card") if CLASSIC else design.SHAPE["largeIncreas
 WIDGET_PADDING = 16
 TASK_RADIUS = design.corner("button") if CLASSIC else design.SHAPE["large"]
 TASK_PADDING = 6
+TASK_CHIP_RADIUS = TASK_RADIUS if CLASSIC else design.SHAPE["largeIncreased"]
+TASK_CHIP_INSET = 6
 ITEM_RADIUS = design.corner("listItem") if CLASSIC else design.SHAPE["medium"]
 ITEM_PADDING = 8
 BUTTON_RADIUS = design.corner("button") if CLASSIC else 15
@@ -40,6 +42,7 @@ FLUSH = 0.01
 SHADOW_PANEL = (12, 0.36) if CLASSIC else (14, 0.28)
 SHADOW_DIALOG = (24, 0.50) if CLASSIC else (22, 0.40)
 SHADOW_TOOLTIP = (8, 0.36) if CLASSIC else (12, 0.30)
+SHADOW_SEAM = 1.0
 
 STATE = design.STATE
 
@@ -263,8 +266,11 @@ def frame(
             sheet.hint(f"{prefix}hint-{side}-inset", insets, insets)
 
 
-def shadow(sheet: Sheet, size: float, radius: float, alpha: float, gradient_id: str) -> None:
+def shadow(sheet: Sheet, size: float, radius: float, alpha: float, gradient_id: str,
+           cutout: bool = False) -> None:
     tile = size + radius
+    extents = {side: round(size * (0.6 if side == "top" else 1.0))
+               for side in ("top", "right", "bottom", "left")}
     stops = (
         f'<stop offset="0" stop-color="#000000" stop-opacity="{fmt(alpha)}"/>'
         f'<stop offset="{fmt(radius / tile)}" stop-color="#000000" stop-opacity="{fmt(alpha)}"/>'
@@ -285,6 +291,13 @@ def shadow(sheet: Sheet, size: float, radius: float, alpha: float, gradient_id: 
             f'<radialGradient id="{gid}" gradientUnits="userSpaceOnUse" '
             f'cx="{fmt(x + cx)}" cy="{fmt(y + cy)}" r="{fmt(tile)}">{stops}</radialGradient>'
         )
+        if cutout:
+            outer = f"M{fmt(x)},{fmt(y)}h{fmt(tile)}v{fmt(tile)}h{fmt(-tile)}Z"
+            sheet.add(
+                f'<path id="shadow-{name}" d="{outer}{shadow_hole(x, y, tile, radius, extents, name)}" '
+                f'fill-rule="evenodd" fill="url(#{gid})"/>'
+            )
+            continue
         sheet.add(
             f'<rect id="shadow-{name}" x="{fmt(x)}" y="{fmt(y)}" width="{fmt(tile)}" '
             f'height="{fmt(tile)}" fill="url(#{gid})"/>'
@@ -310,15 +323,44 @@ def shadow(sheet: Sheet, size: float, radius: float, alpha: float, gradient_id: 
             f'x1="{fmt(x + x1 * w)}" y1="{fmt(y + y1 * h)}" '
             f'x2="{fmt(x + x2 * w)}" y2="{fmt(y + y2 * h)}">{edge_stops}</linearGradient>'
         )
+        if cutout and name == "top" and extents["top"] + SHADOW_SEAM < h:
+            sheet.add(
+                f'<g id="shadow-{name}">'
+                f'<rect x="{fmt(x)}" y="{fmt(y)}" width="{fmt(w)}" height="{fmt(h)}" fill="none"/>'
+                f'<rect x="{fmt(x)}" y="{fmt(y)}" width="{fmt(w)}" '
+                f'height="{fmt(extents["top"] + SHADOW_SEAM)}" fill="url(#{gid})"/>'
+                "</g>"
+            )
+            continue
         sheet.add(
             f'<rect id="shadow-{name}" x="{fmt(x)}" y="{fmt(y)}" width="{fmt(w)}" '
             f'height="{fmt(h)}" fill="url(#{gid})"/>'
         )
     x, y = sheet.place(1, 1)
     sheet.add(f'<rect id="shadow-center" x="{fmt(x)}" y="{fmt(y)}" width="1" height="1" fill="none"/>')
-    for side in ("top", "right", "bottom", "left"):
-        extent = size * (0.6 if side == "top" else 1.0)
+    for side, extent in extents.items():
         sheet.hint(f"shadow-hint-{side}-margin", extent, extent)
+
+
+def shadow_hole(x: float, y: float, tile: float, radius: float,
+                extents: dict[str, int], corner: str) -> str:
+    r = max(radius - SHADOW_SEAM, 0.0)
+    left = x + extents["left"] + SHADOW_SEAM
+    right = x + tile - extents["right"] - SHADOW_SEAM
+    top = y + extents["top"] + SHADOW_SEAM
+    bottom = y + tile - extents["bottom"] - SHADOW_SEAM
+    end_x, end_y = x + tile, y + tile
+    if corner == "topleft":
+        return (f"M{fmt(left)},{fmt(top + r)}A{fmt(r)},{fmt(r)} 0 0 1 {fmt(left + r)},{fmt(top)}"
+                f"H{fmt(end_x)}V{fmt(end_y)}H{fmt(left)}Z")
+    if corner == "topright":
+        return (f"M{fmt(x)},{fmt(top)}H{fmt(right - r)}A{fmt(r)},{fmt(r)} 0 0 1 {fmt(right)},{fmt(top + r)}"
+                f"V{fmt(end_y)}H{fmt(x)}Z")
+    if corner == "bottomleft":
+        return (f"M{fmt(left)},{fmt(y)}H{fmt(end_x)}V{fmt(bottom)}H{fmt(left + r)}"
+                f"A{fmt(r)},{fmt(r)} 0 0 1 {fmt(left)},{fmt(bottom - r)}Z")
+    return (f"M{fmt(x)},{fmt(y)}H{fmt(right)}V{fmt(bottom - r)}"
+            f"A{fmt(r)},{fmt(r)} 0 0 1 {fmt(right - r)},{fmt(bottom)}H{fmt(x)}Z")
 
 
 def panel_background(opacity: float = PANEL_OPACITY) -> str:
@@ -329,7 +371,7 @@ def panel_background(opacity: float = PANEL_OPACITY) -> str:
           margins=PANEL_PADDING)
     frame(sheet, "floating-", PANEL_RADIUS, "ColorScheme-Background", opacity,
           margins=PANEL_FLOAT_GAP)
-    shadow(sheet, *SHADOW_PANEL[:1], PANEL_RADIUS, SHADOW_PANEL[1], "panel-shadow")
+    shadow(sheet, SHADOW_PANEL[0], PANEL_RADIUS, SHADOW_PANEL[1], "panel-shadow", cutout=True)
     return sheet.render()
 
 
@@ -363,14 +405,51 @@ def tasks() -> str:
         "normal-": ("ColorScheme-Text", 0.06),
         "minimized-": ("ColorScheme-Text", 0.03),
         "hover-": ("ColorScheme-Text", STATE["hover"] + 0.04),
+        "launcher-hover-": ("ColorScheme-Text", STATE["hover"] + 0.04),
         "focus-": ("ColorScheme-Highlight", 0.24),
+        "focus-hover-": ("ColorScheme-Highlight", 0.32),
         "attention-": ("ColorScheme-NeutralText", 0.32),
         "progress-": ("ColorScheme-Highlight", 0.30),
     }
     for prefix, (css_class, opacity) in states.items():
-        frame(sheet, prefix, TASK_RADIUS, css_class, opacity,
-              margins=TASK_PADDING if prefix == "normal-" else None)
+        chip(sheet, prefix, TASK_CHIP_RADIUS, TASK_CHIP_INSET, css_class, opacity,
+             margins=TASK_PADDING if prefix == "normal-" else None)
     return sheet.render()
+
+
+def chip(sheet: Sheet, prefix: str, radius: float, inset: float, css_class: str,
+         opacity: float, margins: float | None = None) -> None:
+    r = max(float(radius), 1.0)
+    side = inset + r
+    box_x, box_y = sheet.place(2 * side + EDGE, 2 * side + EDGE)
+    attributes = paint(css_class, opacity)
+    pieces = {
+        "topleft": ((0, 0), (side, side), "corner", (inset, inset)),
+        "top": ((side, 0), (EDGE, side), (0, inset, EDGE, r), None),
+        "topright": ((side + EDGE, 0), (side, side), "corner", (0, inset)),
+        "left": ((0, side), (side, EDGE), (inset, 0, r, EDGE), None),
+        "center": ((side, side), (EDGE, EDGE), (0, 0, EDGE, EDGE), None),
+        "right": ((side + EDGE, side), (side, EDGE), (0, 0, r, EDGE), None),
+        "bottomleft": ((0, side + EDGE), (side, side), "corner", (inset, 0)),
+        "bottom": ((side, side + EDGE), (EDGE, side), (0, 0, EDGE, r), None),
+        "bottomright": ((side + EDGE, side + EDGE), (side, side), "corner", (0, 0)),
+    }
+    for name, ((dx, dy), (w, h), shape, offset) in pieces.items():
+        x, y = box_x + dx, box_y + dy
+        if shape == "corner":
+            body = f'<path d="{corner_path(x + offset[0], y + offset[1], r, name)}" {attributes}/>'
+        else:
+            sx, sy, sw, sh = shape
+            body = (f'<rect x="{fmt(x + sx)}" y="{fmt(y + sy)}" width="{fmt(sw)}" '
+                    f'height="{fmt(sh)}" {attributes}/>')
+        sheet.add(
+            f'<g id="{prefix}{name}">'
+            f'<rect x="{fmt(x)}" y="{fmt(y)}" width="{fmt(w)}" height="{fmt(h)}" fill="none"/>'
+            f"{body}</g>"
+        )
+    if margins is not None:
+        for edge in ("top", "right", "bottom", "left"):
+            sheet.hint(f"{prefix}hint-{edge}-margin", margins, margins)
 
 
 def listitem() -> str:
@@ -604,7 +683,7 @@ enabled=true
 enabled=false
 
 [AdaptiveTransparency]
-enabled=false
+enabled=true
 """
 
 

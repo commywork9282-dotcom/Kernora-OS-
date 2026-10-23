@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-23-1",
+    "date": "2026-10-23",
+    "items": [
+      {
+        "icon": "preferences-desktop-plasma-theme",
+        "title": {
+          "en": "See-through panel",
+          "ru": "Прозрачная панель"
+        },
+        "text": {
+          "en": "The panel now lets your wallpaper show through, softly blurred and tinted in your colour. Open apps get a rounded highlight around their icon. If you like it solid, turn it off in Settings, Wallpaper & style, Panel.",
+          "ru": "Сквозь панель теперь видно обои, мягко размытые и подкрашенные в ваш цвет. Открытые приложения выделяются скруглённой подложкой вокруг значка. Если нравится сплошная панель, выключите это в Настройках: Обои и стиль, Панель."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-22-1",
     "date": "2026-10-22",
     "items": [
