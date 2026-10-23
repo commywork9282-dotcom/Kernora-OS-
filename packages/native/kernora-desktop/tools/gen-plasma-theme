@@ -21,6 +21,7 @@ CLASSIC = design.GENERATION != "md3"
 PANEL_RADIUS = max(design.corner("panel"), 1) if CLASSIC else PANEL_THICKNESS // 2
 PANEL_PADDING = 8
 PANEL_FLOAT_GAP = 8
+PANEL_OPACITY = 0.82
 
 DIALOG_RADIUS = design.corner("dialog")
 DIALOG_PADDING = 12
@@ -320,13 +321,13 @@ def shadow(sheet: Sheet, size: float, radius: float, alpha: float, gradient_id: 
         sheet.hint(f"shadow-hint-{side}-margin", extent, extent)
 
 
-def panel_background() -> str:
+def panel_background(opacity: float = PANEL_OPACITY) -> str:
     sheet = Sheet()
-    frame(sheet, "", PANEL_RADIUS, "ColorScheme-Background", 1.0,
+    frame(sheet, "", PANEL_RADIUS, "ColorScheme-Background", opacity,
           margins=PANEL_PADDING, insets=0, mask=True)
-    frame(sheet, "thick-", PANEL_RADIUS, "ColorScheme-Background", 1.0,
+    frame(sheet, "thick-", PANEL_RADIUS, "ColorScheme-Background", opacity,
           margins=PANEL_PADDING)
-    frame(sheet, "floating-", PANEL_RADIUS, "ColorScheme-Background", 1.0,
+    frame(sheet, "floating-", PANEL_RADIUS, "ColorScheme-Background", opacity,
           margins=PANEL_FLOAT_GAP)
     shadow(sheet, *SHADOW_PANEL[:1], PANEL_RADIUS, SHADOW_PANEL[1], "panel-shadow")
     return sheet.render()
@@ -596,8 +597,9 @@ defaultFileSuffix=.png
 defaultWidth=1672
 defaultHeight=941
 
-# Material surfaces are opaque tones, not frosted glass: no contrast effect and
-# no adaptive transparency, so the panel reads the same over any wallpaper.
+[BlurBehindEffect]
+enabled=true
+
 [ContrastEffect]
 enabled=false
 
@@ -633,7 +635,7 @@ def main(argv: list[str]) -> int:
 
     files = {
         "widgets/panel-background.svg": panel_background(),
-        "solid/widgets/panel-background.svg": panel_background(),
+        "solid/widgets/panel-background.svg": panel_background(1.0),
         "dialogs/background.svg": dialog_background(),
         "solid/dialogs/background.svg": dialog_background(),
         "widgets/background.svg": widget_background(),
