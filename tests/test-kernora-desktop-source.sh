@@ -169,6 +169,7 @@ grep -Fxq 'name=kernora' "$defaults" \
   || fail "look-and-feel does not select the Kernora Plasma theme"
 
 tools_root="$package_root/tools"
+python3 "$project_root/tests/test-panel-transparency.py" || fail "panel transparency variants are inconsistent"
 for tool in gen-color-schemes gen-icon-theme gen-kdeglobals gen-plasma-theme \
   gen-qml-tokens gen-translations fetch-symbols gen-wallpaper-assets \
   gen-kvantum-theme gen-aurorae-theme gen-avatar gen-avatars gen-terminal-theme gen-greeter-palette \

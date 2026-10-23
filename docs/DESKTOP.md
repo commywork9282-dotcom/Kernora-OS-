@@ -224,6 +224,20 @@ New accounts do not autostart the Xwayland video bridge (see
 `data/skel-autostart/`): its status icon is permanently passive and would bring
 the arrow back. Kernora's applications are native Wayland clients.
 
+Settings → Wallpaper & style → Panel offers a **Transparent panel** switch
+for all panels. It changes Plasma's native `panel.opacity` between
+`translucent` and `opaque`, so Plasma saves the choice across logins and its
+panel editor reads the same setting. Settings reads the live panels when
+opened. Changing the colour, light/dark theme or Material generation keeps
+the opacity choice.
+
+The translucent background uses the same `ColorScheme-Background` role,
+corners, padding and shadows as the solid panel, with 82% surface opacity.
+KWin supplies the blur behind its full-opacity mask; text, icons and task
+buttons retain their own opacity. The `solid/` SVG stays fully opaque for
+the opaque mode and when compositing is unavailable. Dialogs and tooltips
+keep their solid surfaces. New panels keep their translucent default.
+
 ### Launcher (`org.kernora.launcher`)
 
 A popup built on Plasma's Kicker models, so it lists exactly what Plasma knows:

@@ -17,6 +17,21 @@ msgstr ""
 msgid "Settings"
 msgstr "Настройки"
 
+msgid "Panel"
+msgstr "Панель"
+
+msgid "Transparent panel"
+msgstr "Прозрачная панель"
+
+msgid "Applies to all panels. The shape and colour follow the system style."
+msgstr "Применяется ко всем панелям. Форма и цвет соответствуют стилю системы."
+
+msgid "Let the wallpaper show through a softly tinted background"
+msgstr "Обои просвечивают сквозь фон с мягким оттенком системной темы"
+
+msgid "The panel transparency could not be changed."
+msgstr "Не удалось изменить прозрачность панели."
+
 #: apps/settings/qml/Main.qml:153
 msgid "Search settings"
 msgstr "Поиск настроек"

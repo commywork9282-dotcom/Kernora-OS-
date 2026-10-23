@@ -81,7 +81,50 @@ SettingsPage {
         }
         wallpaperPlugin = "org.kernora.shapes";
     }
-    Component.onCompleted: readWallpaper()
+    Component.onCompleted: {
+        readWallpaper();
+        updatePanelOpacity("");
+    }
+
+    property bool panelBusy: false
+    property bool panelAvailable: false
+    property bool panelTranslucent: false
+
+    function updatePanelOpacity(mode: string): void {
+        if (panelBusy) {
+            return;
+        }
+        panelBusy = true;
+        const script = "var items = panels(); "
+            + (mode ? "items.forEach(function (panel) { panel.opacity = " + JSON.stringify(mode) + "; }); " : "")
+            + "print(JSON.stringify(items.map(function (panel) { return panel.opacity; })));";
+        DBus.call("session", "org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell", "evaluateScript",
+                  [{ type: "s", value: script }], (ok, result) => {
+            page.panelBusy = false;
+            let modes = [];
+            if (ok) {
+                try {
+                    modes = JSON.parse(String(result).trim());
+                    ok = Array.isArray(modes) && modes.every(value => ["opaque", "translucent", "adaptive"].includes(value));
+                } catch (error) {
+                    ok = false;
+                }
+            }
+            page.panelAvailable = ok && modes.length > 0;
+            if (page.panelAvailable) {
+                page.panelTranslucent = modes.every(value => value === "translucent");
+            }
+            if (mode && (!page.panelAvailable || modes.some(value => value !== mode))) {
+                page.notify(i18n("The panel transparency could not be changed."));
+            }
+        });
+    }
+
+    onVisibleChanged: {
+        if (visible) {
+            updatePanelOpacity("");
+        }
+    }
 
     function sameImage(a: string, b: string): bool {
         const strip = s => String(s).replace(/^file:\/\//, "");
@@ -244,6 +287,22 @@ SettingsPage {
                 return option ? option.label : "";
             }
             onSelected: value => page.setGeneration(value)
+        }
+    }
+
+    Group {
+        title: i18n("Panel")
+        note: i18n("Applies to all panels. The shape and colour follow the system style.")
+
+        ListItem {
+            title: i18n("Transparent panel")
+            subtitle: page.panelBusy ? i18n("Applying…") : i18n("Let the wallpaper show through a softly tinted background")
+            icon: "preferences-desktop-plasma-theme"
+            iconStyle: "plain"
+            checkable: true
+            checked: page.panelTranslucent
+            enabled: page.panelAvailable && !page.panelBusy && !Appearance.busy
+            onToggled: on => page.updatePanelOpacity(on ? "translucent" : "opaque")
         }
     }
 
