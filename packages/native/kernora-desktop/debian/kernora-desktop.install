@@ -12,7 +12,6 @@ generated/skel/.face etc/skel
 generated/avatars/*.png usr/share/kernora/avatars
 generated/faces/*.png usr/share/kernora/faces
 data/skel-applications/*.desktop etc/skel/.local/share/applications
-generated/splash/kernora.png usr/share/plasma/look-and-feel/org.kernora.desktop/contents/splash/images
 generated/xdg/kdeglobals etc/xdg
 data/xdg-plasmarc/plasmarc etc/xdg
 generated/color-schemes/*.colors usr/share/color-schemes
@@ -125,6 +124,7 @@ data/drivers/kernora-drivers.timer usr/lib/systemd/system
 data/drivers/kernora-drivers@.service usr/lib/systemd/system
 data/drivers/org.kernora.drivers.policy usr/share/polkit-1/actions
 data/greeter/kernora-greeter-background usr/libexec
+data/greeter/kernora-splash-wallpaper usr/libexec
 data/greeter/org.kernora.greeter-background.policy usr/share/polkit-1/actions
 data/greeter/50-kernora-greeter-background.rules usr/share/polkit-1/rules.d
 data/xdg-kscreenlockerrc/kscreenlockerrc usr/share/kernora/xdg

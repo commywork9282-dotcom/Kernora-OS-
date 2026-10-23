@@ -14,6 +14,7 @@ if [ "$1" = configure ]; then
     if [ -f "$greeter" ] && grep -q '^wallpaper=org\.kernora\.tower$' "$greeter"; then
         sed -i 's/^wallpaper=org\.kernora\.tower$/wallpaper=org.kernora.shapes/' "$greeter"
     fi
+    /usr/libexec/kernora-splash-wallpaper || true
     /usr/libexec/kernora-boot-theme || true
     active=$(/usr/sbin/plymouth-set-default-theme 2>/dev/null || true)
     splash=/usr/share/plymouth/themes/${active:-kernora}

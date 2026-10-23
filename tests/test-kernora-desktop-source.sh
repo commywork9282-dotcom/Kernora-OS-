@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.43" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.44" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -373,14 +373,13 @@ if grep -Fq '"AccentColor"' "$tools_root/kde_colors.py"; then
 fi
 splash="$data_root/look-and-feel/org.kernora.desktop/contents/splash/Splash.qml"
 [[ -s "$splash" ]] || fail "session splash is missing"
-grep -Fq 'images/kernora.png' "$splash" \
-  || fail "splash does not draw the Kernora mark"
-if grep '^import' "$splash" | grep -Evq '^import (QtQuick|org\.kde\.kirigami as Kirigami|org\.kernora\.m3)$'; then
+if grep '^import' "$splash" | grep -Evq '^import (QtQuick|QtQuick\.Window|org\.kernora\.m3)$'; then
   fail "splash imports something unexpected"
 fi
-grep -Fq 'color: M3.surface' "$splash" && grep -Fq 'color: M3.surfaceContent' "$splash" \
-  && grep -Fq 'MCircularProgress {' "$splash" \
-  || fail "the session splash does not follow the colour and theme"
+grep -Fq 'source: "file:///var/lib/kernora/greeter/wallpaper.qml"' "$splash" \
+  && grep -Fq 'return (offset + Date.now() / 1000 / loop) % 1;' "$splash" \
+  && ! grep -Fq 'MCircularProgress' "$splash" && ! grep -Fq 'kernora.png' "$splash" \
+  || fail "the session splash is a loading screen instead of the wallpaper"
 grep -Fxq 'Current=kernora' "$data_root/sddm.conf.d/kernora-theme.conf" \
   || fail "greeter does not use the Kernora login screen"
 grep -Fxq 'InputMethod=' "$data_root/sddm.conf.d/kernora-theme.conf" \
@@ -554,6 +553,25 @@ grep -Fq 'i18nd("plasmashellprivateplugin", "Download New Plasma Widgets")' "$pa
   || fail "the widgets menu still offers the KDE store or clips its labels"
 grep -Fq 'readonly property real handleX: track.level * (width - slot)' "$package_root/data/osd/KernoraOsdItem.qml" \
   || fail "the volume pop-up is not the expressive slider"
+for wallpaper in shapes pastel rhythm starfall; do
+  main="$package_root/data/wallpaper/org.kernora.$wallpaper/contents/ui/main.qml"
+  grep -Fq 'readonly property bool lockScreen: typeof authenticator !== "undefined"' "$main" \
+    && grep -Fq 'function phaseAt(time: double): real {' "$main" \
+    && grep -Fq 'intro: root.switched ? 0 : 1' "$main" \
+    && grep -Fq 'running: root.running && !root.lockScreen' "$main" \
+    && grep -Fq '<entry name="IntroAt" type="String">' "$package_root/data/wallpaper/org.kernora.$wallpaper/contents/config/main.xml" \
+    || fail "the $wallpaper wallpaper does not run on the clock or replays its intro at login"
+done
+grep -Fq 'leave.start();' "$package_root/data/sddm-theme/kernora/Main.qml" \
+  && grep -Fq 'return (offset + Date.now() / 1000 / loop) % 1;' "$package_root/data/sddm-theme/kernora/Main.qml" \
+  && grep -Fq 'onFinished: Qt.quit()' "$package_root/data/lockscreen/LockScreen.qml" \
+  && ! grep -Fq 'Qt.quit();' "$package_root/data/lockscreen/LockScreen.qml" \
+  || fail "login and lock screens do not slide away on success"
+grep -Fxq 'data/greeter/kernora-splash-wallpaper usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq '/usr/libexec/kernora-splash-wallpaper || true' "$package_root/data/greeter/kernora-greeter-background" \
+  && grep -Fq '/usr/libexec/kernora-splash-wallpaper || true' "$package_root/debian/kernora-desktop.postinst" \
+  && [[ -x "$package_root/data/greeter/kernora-splash-wallpaper" ]] \
+  || fail "the splash does not learn which wallpaper to show"
 grep -Fxq 'FloatingToolbar 1.0 FloatingToolbar.qml' "$package_root/data/ui/qmldir" \
   && grep -Fq 'checkedFill: M3.secondaryContainer' "$package_root/data/ui/IconButton.qml" \
   || fail "there is no floating toolbar"

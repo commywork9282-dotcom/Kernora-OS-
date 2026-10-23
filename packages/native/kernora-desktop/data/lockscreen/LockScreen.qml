@@ -49,6 +49,24 @@ Item {
     }
 
     property bool passwordless: false
+    property real exit: 0
+
+    function unlock(): void {
+        if (!leave.running) {
+            leave.start();
+        }
+    }
+
+    NumberAnimation {
+        id: leave
+        target: root
+        property: "exit"
+        to: 1
+        duration: 220
+        easing.type: Easing.Bezier
+        easing.bezierCurve: [0.3, 0.0, 0.8, 0.15, 1.0, 1.0]
+        onFinished: Qt.quit()
+    }
 
     Connections {
         target: authenticator
@@ -64,7 +82,7 @@ Item {
         }
         function onSucceeded() {
             if (authenticator.hadPrompt) {
-                Qt.quit();
+                root.unlock();
             } else {
                 root.passwordless = true;
                 unlockButton.forceActiveFocus();
@@ -145,8 +163,11 @@ Item {
     Rectangle {
         anchors.fill: parent
         color: M3.darkScheme.surface
-        opacity: lockScreen.uiVisible ? 0.55 : 0.3
-        Behavior on opacity { NumberAnimation { duration: M3.durationMedium4 } }
+        opacity: (lockScreen.uiVisible ? 0.55 : 0.3) * (1 - root.exit)
+        Behavior on opacity {
+            enabled: root.exit === 0
+            NumberAnimation { duration: M3.durationMedium4 }
+        }
     }
 
     MouseArea {
@@ -158,6 +179,8 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: uiVisible ? Qt.ArrowCursor : Qt.BlankCursor
+        opacity: 1 - root.exit
+        transform: Translate { y: -72 * root.exit }
         onPressed: uiVisible = true
         onPositionChanged: uiVisible = true
         onUiVisibleChanged: {
@@ -428,8 +451,8 @@ Item {
                     radius: M3.radius("button", 48)
                     color: M3.primary
                     activeFocusOnTab: true
-                    Keys.onReturnPressed: Qt.quit()
-                    Keys.onEnterPressed: Qt.quit()
+                    Keys.onReturnPressed: root.unlock()
+                    Keys.onEnterPressed: root.unlock()
                     Text {
                         id: unlockLabel
                         anchors.centerIn: parent
@@ -442,7 +465,7 @@ Item {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: Qt.quit()
+                        onClicked: root.unlock()
                     }
                 }
 

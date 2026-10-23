@@ -420,6 +420,8 @@ void Files::setLiveWallpaper(const QString &plugin)
     const QString id = valid.match(plugin).hasMatch() ? plugin : QStringLiteral("org.kernora.shapes");
     evaluateShellScript(QStringLiteral(
         "for (const d of desktops()) {"
+        "  d.currentConfigGroup = ['Wallpaper', '%1', 'General'];"
+        "  d.writeConfig('IntroAt', String(Date.now()));"
         "  d.wallpaperPlugin = '%1';"
         "}").arg(id));
 }

@@ -28,7 +28,7 @@ override_dh_auto_build:
 	    --output=generated/hicolor/$${size}x$${size}/apps/kernora-logo.png \
 	    $(LOGO); \
 	done
-	install -d generated/branding generated/skel generated/splash
+	install -d generated/branding generated/skel
 	rsvg-convert --width=160 --height=160 \
 	  --output=generated/branding/kernora-logo.png $(LOGO)
 	python3 $(TOOLS)/gen-qm data/calamares/lang/calamares-kernora_ru.ts \
@@ -53,8 +53,6 @@ override_dh_auto_build:
 	  rsvg-convert --width=512 --height=512 --output=generated/faces/$$colour.png generated/faces/$$colour.svg; \
 	  rm generated/faces/$$colour.svg; \
 	done
-	rsvg-convert --width=512 --height=512 \
-	  --output=generated/splash/kernora.png $(LOGO)
 	python3 $(TOOLS)/fetch-symbols --check
 	python3 $(TOOLS)/gen-icon-theme $(SYMBOLS) generated/icon-theme
 	set -e; for colour in $(EXTRA_COLOURS); do \

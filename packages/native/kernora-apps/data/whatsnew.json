@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-22-1",
+    "date": "2026-10-22",
+    "items": [
+      {
+        "icon": "system-lock-screen",
+        "title": {
+          "en": "Straight into your desktop",
+          "ru": "Сразу на рабочий стол"
+        },
+        "text": {
+          "en": "After you sign in there is no loading screen any more: your wallpaper stays on screen and the desktop appears right on top of it. Unlocking works the same way, the lock screen slides away and the wallpaper carries on from where it was.",
+          "ru": "После входа больше нет экрана загрузки: на экране остаются ваши обои, а рабочий стол появляется прямо поверх них. Разблокировка работает так же: экран блокировки уезжает, а обои продолжают с того же места."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-21-1",
     "date": "2026-10-21",
     "items": [

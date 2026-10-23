@@ -1,0 +1,21 @@
+#!/bin/bash
+set -eu
+
+settings=/usr/share/sddm/themes/kernora/theme.conf.user
+state=/var/lib/kernora/greeter
+
+value() {
+  sed -n "s/^$1=//p" "$settings" 2>/dev/null | head -n 1
+}
+
+plugin=$(value wallpaper)
+image=$(value wallpaperImage)
+[[ $plugin =~ ^org\.(kernora\.[a-z]+|kde\.image)$ ]] || plugin=org.kernora.shapes
+[[ $image =~ ^/var/lib/kernora/greeter/background\.(png|jpg|webp)$ && -f $image ]] || image=
+[[ $plugin == org.kde.image && -z $image ]] && plugin=org.kernora.shapes
+
+install -d -m 0755 /var/lib/kernora "$state"
+file=$(mktemp "$state/.wallpaper.qml.XXXXXX")
+printf 'import QtQuick\n\nQtObject {\n    readonly property string plugin: "%s"\n    readonly property string image: "%s"\n}\n' "$plugin" "$image" > "$file"
+chmod 0644 "$file"
+mv "$file" "$state/wallpaper.qml"

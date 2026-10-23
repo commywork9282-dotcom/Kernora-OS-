@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.52" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.53" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -117,6 +117,8 @@ grep -Fq 'component BusyIndicatorOverlay: MLoadingIndicator {' "$package_root/ap
 grep -Fq '.filter(m => !internal.includes(m.id) && catalog.resolve(m.id) === null)' "$package_root/apps/settings/qml/pages/ModulesPage.qml" \
   && grep -Fq '"kcm_activities"' "$package_root/apps/settings/qml/pages/ModulesPage.qml" \
   || fail "More settings still lists KDE modules Kernora replaces"
+grep -Fq "writeConfig('IntroAt', String(Date.now()));" "$package_root/src/system/files.cpp" \
+  || fail "switching a live wallpaper does not mark it for its intro"
 grep -Fq 'id: selectionBar' "$package_root/apps/files/qml/Main.qml" \
   && grep -Fq 'active: !fab.collapsed || M3.classic' "$package_root/apps/files/qml/Main.qml" \
   || fail "Files has no selection toolbar or collapsing button"

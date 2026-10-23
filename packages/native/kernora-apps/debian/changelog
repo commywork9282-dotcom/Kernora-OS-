@@ -1,3 +1,12 @@
+kernora-apps (1.1.53) UNRELEASED; urgency=medium
+
+  * Switching a live wallpaper marks it (IntroAt), so it grows in then but
+    not at the next login.
+  * What's new: straight into your desktop.
+  * Require kernora-desktop 1.4.44.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 22 Oct 2026 23:50:00 -0700
+
 kernora-apps (1.1.52) UNRELEASED; urgency=medium
 
   * Settings: More settings hides the KDE modules Kernora has its own page

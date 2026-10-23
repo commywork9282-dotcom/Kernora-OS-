@@ -23,6 +23,17 @@ Rectangle {
     property int sessionIndex: sessionModel.lastIndex >= 0 ? sessionModel.lastIndex : 0
     property string failure: ""
     property bool busy: false
+    property real exit: 0
+
+    NumberAnimation {
+        id: leave
+        target: root
+        property: "exit"
+        to: 1
+        duration: 320
+        easing.type: Easing.Bezier
+        easing.bezierCurve: [0.3, 0.0, 0.8, 0.15, 1.0, 1.0]
+    }
 
     readonly property var user: users.count > userIndex ? users.objectAt(userIndex) : null
     function login(): void {
@@ -54,7 +65,7 @@ Rectangle {
             clearTimer.restart();
         }
         function onLoginSucceeded() {
-            root.busy = false;
+            leave.start();
         }
     }
 
@@ -75,21 +86,22 @@ Rectangle {
                 anchors.fill: parent
                 active: !parent.picture || backdrop.status === Image.Error
                 source: "file:///usr/share/plasma/wallpapers/" + (parent.picture ? "org.kernora.shapes" : parent.wallpaper) + "/contents/ui/Scene.qml"
-                property real phase: 0.4
-                NumberAnimation on phase {
-                    id: drift
+                readonly property real loop: status === Loader.Ready && item.loopSeconds > 0 ? item.loopSeconds : 180
+                readonly property real offset: (parent.x / 7919 + parent.y / 104729) % 1
+                property real phase: 0
+                function clockPhase(): real {
+                    return (offset + Date.now() / 1000 / loop) % 1;
+                }
+                Timer {
+                    interval: 33
+                    repeat: true
                     running: config.background !== "still" && scene.status === Loader.Ready
-                    from: 0.4
-                    to: 1.4
-                    duration: 420000
-                    loops: Animation.Infinite
+                    onTriggered: scene.phase = scene.clockPhase()
                 }
                 onLoaded: {
                     item.intro = 1;
-                    item.phase = Qt.binding(() => scene.phase % 1);
-                    if (item.loopSeconds > 0) {
-                        drift.duration = item.loopSeconds * 1000;
-                    }
+                    scene.phase = scene.clockPhase();
+                    item.phase = Qt.binding(() => scene.phase);
                 }
                 onStatusChanged: {
                     if (status === Loader.Error && source.toString().indexOf("org.kernora.shapes") < 0) {
@@ -109,7 +121,7 @@ Rectangle {
             Rectangle {
                 anchors.fill: parent
                 color: M3.darkScheme.surface
-                opacity: 0.35
+                opacity: 0.35 * (1 - root.exit)
             }
         }
     }
@@ -127,6 +139,8 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: parent.height * 0.1
         spacing: 0
+        opacity: 1 - root.exit
+        transform: Translate { y: -64 * root.exit }
         Text {
             Layout.alignment: Qt.AlignHCenter
             text: root.now.toLocaleTimeString(Qt.locale(), Qt.locale().name === "C" ? "HH:mm" : Locale.ShortFormat)
@@ -167,6 +181,8 @@ Rectangle {
         height: cardColumn.implicitHeight + 64
         radius: 36
         color: Qt.alpha(M3.surfaceContainer, 0.94)
+        opacity: 1 - root.exit
+        transform: Translate { y: -96 * root.exit }
 
         SequentialAnimation {
             id: shake
@@ -372,6 +388,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 24
         spacing: 8
+        opacity: 1 - root.exit
 
         Chip {
             visible: sessionModel.rowCount() > 1

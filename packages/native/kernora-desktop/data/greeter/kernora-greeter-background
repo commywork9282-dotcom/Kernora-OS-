@@ -62,5 +62,6 @@ settings=$(mktemp "$theme/.theme.conf.user.XXXXXX")
 printf '[General]\nwallpaper=%s\nwallpaperImage=%s\ncolour=%s\nmode=%s\n' "$plugin" "$image" "$colour" "$mode" > "$settings"
 chmod 0644 "$settings"
 mv "$settings" "$theme/theme.conf.user"
+/usr/libexec/kernora-splash-wallpaper || true
 /usr/libexec/kernora-grub-theme || true
 /usr/libexec/kernora-boot-theme --initramfs || true

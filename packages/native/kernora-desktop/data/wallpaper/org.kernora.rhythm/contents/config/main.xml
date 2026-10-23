@@ -14,5 +14,8 @@
     <entry name="PauseWhenCovered" type="Bool">
       <default>true</default>
     </entry>
+    <entry name="IntroAt" type="String">
+      <default></default>
+    </entry>
   </group>
 </kcfg>

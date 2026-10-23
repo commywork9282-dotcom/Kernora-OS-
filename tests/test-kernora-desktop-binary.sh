@@ -62,7 +62,6 @@ for path in \
   usr/share/icons/Kernora/scalable/apps/start-here-kde-symbolic.svg \
   usr/share/icons/Kernora/scalable/apps/start-here-kde.svg \
   usr/share/plasma/look-and-feel/org.kernora.desktop/contents/splash/Splash.qml \
-  usr/share/plasma/look-and-feel/org.kernora.desktop/contents/splash/images/kernora.png \
   usr/share/plasma/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js \
   etc/xdg/plasmarc \
   usr/share/color-schemes/KernoraDark.colors \
@@ -153,6 +152,7 @@ for path in \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui/qmldir \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui/ListItem.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui/FloatingToolbar.qml \
+  usr/libexec/kernora-splash-wallpaper \
   usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui/ContextMenu.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui/Page.qml \
   usr/share/locale/ru/LC_MESSAGES/kernora-ui.mo \

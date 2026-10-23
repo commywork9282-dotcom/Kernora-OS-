@@ -1,3 +1,18 @@
+kernora-desktop (1.4.44) UNRELEASED; urgency=medium
+
+  * No loading screen after signing in: the session splash shows the chosen
+    wallpaper (from /var/lib/kernora/greeter/wallpaper.qml, written by the
+    new kernora-splash-wallpaper) instead of the logo and spinner, and the
+    desktop appears on top of it.
+  * Live wallpapers run on the clock, so the login screen, the splash, the
+    lock screen and the desktop show the same frame. They only grow in when
+    the wallpaper was just switched (IntroAt), not at every login.
+  * The lock screen wallpaper holds still; the desktop holds while it is not
+    shown and glides back to the clock afterwards, so unlocking has no jump.
+  * Login and lock screens slide their clock and card away on success.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 22 Oct 2026 23:50:00 -0700
+
 kernora-desktop (1.4.43) UNRELEASED; urgency=medium
 
   * Less KDE:
