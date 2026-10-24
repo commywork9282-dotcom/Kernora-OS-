@@ -15,14 +15,14 @@ for dependency in dpkg-parsechangelog grep python3; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.0.0" ]] || fail "unexpected source version"
+[[ "$version" == "1.0.1" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
 [[ -x "$package_root/debian/rules" ]] || fail "debian/rules is not executable"
 grep -Fxq 'Package: kernora-quickshare' "$package_root/debian/control" || fail "binary stanza is missing"
 grep -q -- '--offline --frozen' "$package_root/debian/rules" || fail "the build may reach the network"
-grep -Fxq 'version = "1.0.0"' "$package_root/Cargo.toml" || fail "Cargo.toml and the changelog disagree"
+grep -Fxq 'version = "1.0.1"' "$package_root/Cargo.toml" || fail "Cargo.toml and the changelog disagree"
 
 lock="$package_root/Cargo.lock"
 [[ -s "$lock" ]] || fail "Cargo.lock is missing"

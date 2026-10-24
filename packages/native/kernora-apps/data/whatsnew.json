@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-24-1",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "icon": "kernora-quickshare",
+        "title": {
+          "en": "Quick Share, like on a Chromebook",
+          "ru": "Quick Share как на Chromebook"
+        },
+        "text": {
+          "en": "Sharing now works the way it does on ChromeOS: pick a device next to a preview of your files, check the secure connection ID and follow the progress in notifications. In quick settings, tap the Quick Share icon to turn it on or off, or tap the tile to choose who can see you.",
+          "ru": "Отправка теперь устроена как в ChromeOS: выберите устройство рядом с превью файлов, сверьте код безопасного подключения и следите за прогрессом в уведомлениях. В быстрых настройках значок Quick Share включает и выключает его, а нажатие на плитку открывает выбор, кто вас видит."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-23-2",
     "date": "2026-10-23",
     "items": [

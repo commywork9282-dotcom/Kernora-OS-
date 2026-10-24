@@ -74,6 +74,39 @@
              let ctk_blea = ctk.clone();
              tracker.spawn(async move {
                  let blea = match BleAdvertiser::new().await {
+--- a/src/manager.rs
++++ b/src/manager.rs
+@@ -53,8 +53,17 @@
+                 }
+                 Some(i) = self.connect_receiver.recv() => {
+                     info!("{INNER_NAME}: connect_receiver: got {:?}", i);
++                    let id = i.id.clone();
+                     if let Err(e) = self.connect(cctk, i).await {
+                         error!("{INNER_NAME}: error sending: {}", e.to_string());
++                        let _ = self.sender.send(ChannelMessage {
++                            id,
++                            msg: channel::Message::Client(MessageClient {
++                                kind: TransferKind::Outbound,
++                                state: Some(TransferState::Disconnected),
++                                metadata: Default::default(),
++                            }),
++                        });
+                     }
+                 }
+                 r = self.tcp_listener.accept() => {
+@@ -110,7 +119,11 @@
+     /// To be called inside a separate task if we want to handle concurrency
+     pub async fn connect(&self, ctk: CancellationToken, si: SendInfo) -> Result<(), anyhow::Error> {
+         debug!("{INNER_NAME}: Connecting to: {}", si.addr);
+-        let socket = TcpStream::connect(si.addr.clone()).await?;
++        let socket = tokio::time::timeout(
++            std::time::Duration::from_secs(10),
++            TcpStream::connect(si.addr.clone()),
++        )
++        .await??;
+ 
+         let mut or = OutboundRequest::new(
+             self.endpoint_id,
 --- a/src/utils.rs
 +++ b/src/utils.rs
 @@ -202,6 +202,40 @@

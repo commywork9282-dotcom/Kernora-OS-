@@ -112,7 +112,7 @@ Item {
                 active: root.detail.length > 0
                 visible: active
                 opacity: active ? 1 : 0
-                sourceComponent: root.detail === "internet" ? internetPanel : root.detail === "bluetooth" ? bluetoothPanel : null
+                sourceComponent: root.detail === "internet" ? internetPanel : root.detail === "bluetooth" ? bluetoothPanel : root.detail === "quickshare" ? quickSharePanel : null
             }
 
             ColumnLayout {
@@ -376,6 +376,14 @@ Item {
         }
     }
     Component {
+        id: quickSharePanel
+        QuickSharePanel {
+            backend: root.backend
+            onBack: root.detail = ""
+            onRequestClose: root.requestClose()
+        }
+    }
+    Component {
         id: bluetoothPanel
         BluetoothPanel {
             backend: root.backend
@@ -512,14 +520,17 @@ Item {
             readonly property string mode: QuickShare.visibility
             icon: "kernora-quickshare"
             title: i18n("Quick Share")
-            subtitle: mode === "everyone" ? i18n("Everyone")
-                : mode === "temporary" ? i18np("For %1 min", "For %1 min", Math.max(1, Math.ceil(QuickShare.visibleFor / 60)))
+            subtitle: !QuickShare.enabled ? i18n("Off")
+                : mode === "temporary" ? i18n("Everyone, %1", QuickShare.visibleFor > 60
+                    ? i18nc("minutes left, short", "%1m", Math.ceil(QuickShare.visibleFor / 60))
+                    : i18nc("seconds left, short", "%1s", Math.max(1, QuickShare.visibleFor)))
+                : mode === "everyone" ? i18n("Everyone")
                 : i18n("Hidden")
             available: QuickShare.available
-            checked: mode === "everyone" || mode === "temporary"
+            checked: QuickShare.enabled
             hasDetails: true
-            onToggled: QuickShare.setVisibility(checked ? "hidden" : "temporary")
-            onDetailsRequested: { root.backend.openSettings("quickshare"); root.requestClose(); }
+            onToggled: QuickShare.setEnabled(!QuickShare.enabled)
+            onDetailsRequested: root.detail = "quickshare"
         }
     }
     Component {

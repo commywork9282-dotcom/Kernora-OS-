@@ -19,11 +19,13 @@ SettingsPage {
 
     title: i18n("Quick Share")
 
+    readonly property bool on: QuickShare.enabled
     readonly property string visibility: QuickShare.visibility
+    readonly property bool everyoneForAWhile: visibility === "temporary"
     readonly property var recent: QuickShare.transfers.slice().reverse().slice(0, 6)
 
-    function minutes(seconds: int): string {
-        return i18np("%1 minute left", "%1 minutes left", Math.max(1, Math.ceil(seconds / 60)));
+    function remaining(seconds: int): string {
+        return seconds > 60 ? i18n("%1 min", Math.ceil(seconds / 60)) : i18n("%1 sec", Math.max(1, seconds));
     }
 
     function folderName(path: string): string {
@@ -56,61 +58,78 @@ SettingsPage {
         }
     }
 
+    HeroSwitch {
+        width: parent.width
+        title: i18n("Use Quick Share")
+        checked: page.on
+        enabled: QuickShare.available
+        onToggled: checked => QuickShare.setEnabled(checked)
+    }
+
     Group {
-        title: i18n("Who can see this computer")
-        note: QuickShare.available
-            ? i18n("Phones and computers find it over Wi-Fi on the same network. Bluetooth helps wake up a phone that is sharing.")
-            : i18n("Quick Share is not running.")
+        title: i18n("Device name")
+        note: i18n("How your device appears to others")
+        enabled: page.on
+
+        ListItem {
+            title: QuickShare.name
+            icon: "computer"
+            accent: 0
+            chevron: true
+            onClicked: nameDialog.open()
+        }
+    }
+
+    Group {
+        title: i18n("Device visibility")
+        note: page.on ? i18n("Your device visibility controls who can share with you while your screen is unlocked. Every transfer still waits for you to accept it.")
+                      : i18n("Quick Share is off. Nobody can see this computer.")
+        enabled: page.on
 
         RadioRow {
             title: i18n("Everyone")
-            subtitle: i18n("Any device nearby can ask to send you files")
+            subtitle: i18n("Any device nearby can share with you")
             checked: page.visibility === "everyone"
             onClicked: QuickShare.setVisibility("everyone")
         }
         RadioRow {
-            title: i18n("Everyone for 10 minutes")
-            subtitle: page.visibility === "temporary" ? page.minutes(QuickShare.visibleFor) : i18n("Then hidden again")
-            checked: page.visibility === "temporary"
-            onClicked: QuickShare.setVisibility("temporary")
-        }
-        RadioRow {
             title: i18n("Hidden")
-            subtitle: i18n("Nobody sees this computer until you allow it")
-            checked: page.visibility === "hidden"
+            subtitle: i18n("No one can share with you")
+            checked: page.visibility !== "everyone"
             onClicked: QuickShare.setVisibility("hidden")
         }
         ListItem {
-            title: i18n("Ask when someone nearby is sharing")
-            subtitle: i18n("While hidden, offer to become visible when a phone nearby opens Quick Share")
+            visible: page.visibility !== "everyone"
+            title: i18n("Visible to everyone")
+            subtitle: page.everyoneForAWhile ? i18n("%1 left", page.remaining(QuickShare.visibleFor)) : i18n("For 10 min")
+            icon: "kernora-timer"
+            iconStyle: "plain"
+            checkable: true
+            checked: page.everyoneForAWhile
+            onToggled: on => QuickShare.setHighVisibility(on)
+        }
+        ListItem {
+            visible: page.visibility !== "everyone"
+            title: i18n("Ask when a device nearby is sharing")
+            subtitle: i18n("Offer to become visible when a phone nearby opens Quick Share")
             icon: "preferences-desktop-notification"
             iconStyle: "plain"
             checkable: true
-            enabled: page.visibility !== "everyone"
             checked: QuickShare.askNearby
             onToggled: on => QuickShare.setAskNearby(on)
         }
     }
 
     Group {
-        title: i18n("This computer")
+        title: i18n("Received files")
+        enabled: page.on
 
-        ListItem {
-            title: i18n("Name")
-            subtitle: QuickShare.name
-            icon: "computer"
-            accent: 0
-            chevron: true
-            enabled: QuickShare.available
-            onClicked: nameDialog.open()
-        }
         ListItem {
             title: i18n("Save received files to")
             subtitle: page.folderName(QuickShare.folder)
             icon: "folder-download"
             iconStyle: "plain"
             chevron: true
-            enabled: QuickShare.available
             onClicked: folderDialog.open()
         }
     }
@@ -136,10 +155,10 @@ SettingsPage {
 
     Dialog {
         id: nameDialog
-        title: i18n("Name")
-        text: i18n("Phones nearby see this computer by this name in Quick Share.")
+        title: i18n("Device name")
+        text: i18n("How your device appears to others in Quick Share.")
         acceptText: i18n("Rename")
-        acceptEnabled: nameField.text.trim().length > 0
+        acceptEnabled: nameField.text.trim().length > 0 && nameField.text.trim().length <= 60
         onOpened: {
             nameField.text = QuickShare.name;
             nameField.forceActiveFocus();
@@ -148,7 +167,7 @@ SettingsPage {
         InputField {
             id: nameField
             Layout.fillWidth: true
-            label: i18n("Name")
+            label: i18n("Device name")
             onAccepted: {
                 if (nameDialog.acceptEnabled) {
                     nameDialog.accept();

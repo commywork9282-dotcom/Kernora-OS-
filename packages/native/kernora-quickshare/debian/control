@@ -18,7 +18,8 @@ Depends:
  ${misc:Depends},
  ${shlibs:Depends},
  bluez,
- dbus-user-session
+ dbus-user-session,
+ wl-clipboard
 Description: Quick Share for Kernora
  Sends and receives files with Android phones and other computers nearby
  over Quick Share, on the same Wi-Fi network. Bluetooth is used to wake

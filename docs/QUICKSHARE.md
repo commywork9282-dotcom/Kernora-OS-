@@ -13,10 +13,12 @@ fork by [nozwock](https://github.com/nozwock/rquickshare) that
 `Cargo.lock`. The rest is ours:
 
 - D-Bus API `org.kernora.QuickShare1` on `/org/kernora/QuickShare`: methods
-  `State`, `SetVisibility`, `SetDeviceName`, `SetDownloadFolder`,
-  `SetAskNearby`, `StartDiscovery`, `StopDiscovery`, `Send`, `Accept`,
-  `Decline`, `Cancel`, `Dismiss`, and a `Changed(state)` signal with the
-  whole state as JSON (at most four times a second)
+  `State`, `SetEnabled`, `SetVisibility`, `SetHighVisibility`,
+  `SetDeviceName`, `SetDownloadFolder`, `SetAskNearby`, `StartDiscovery`,
+  `StopDiscovery`, `Send`, `Accept`, `Decline`, `Cancel`, `Dismiss`, and a
+  `Changed(state)` signal with the whole state as JSON (at most four times a
+  second). Off (`SetEnabled false`) stops rqs_lib completely: no listening,
+  no mDNS, no Bluetooth scanning.
 - incoming requests are normal notifications with Accept / Decline and the
   PIN, progress goes through Plasma's job view, the finished notification
   has the files (or Open / Copy for a link, Connect for a Wi-Fi network)
@@ -28,6 +30,35 @@ The UI bits are in `kernora-apps` and `kernora-desktop`: the `QuickShare`
 singleton in `org.kernora.system`, Settings > Quick Share, the send window
 `kernora-share` (Files opens it from the menu and the selection toolbar) and
 the Quick Share tile in quick settings.
+
+## Looks like ChromeOS
+
+The flow and the wording follow Quick Share on a Chromebook (taken from
+Chromium: `ash/system/nearby_share/`, `chrome/app/nearby_share_strings.grdp`,
+`chrome/browser/resources/chromeos/nearby_share/` and
+`nearby_notification_manager.cc`), the mechanics are ours.
+
+- Quick settings tile: the icon turns Quick Share on and off, the tile opens a
+  panel with an On/Off row, Everyone / Hidden (check mark on the chosen one)
+  and "Visible to everyone, for 10 min" with a switch and a countdown. The
+  sublabel is Off, Hidden, Everyone or "Everyone, 9 min". ChromeOS has "Your
+  devices" and "Contacts" where we have "Everyone", those need a Google
+  account.
+- Send window, two steps like the ChromeOS dialog: "Quick Share / Select the
+  device you'd like to share files with" with a preview card (thumbnail for
+  a single image) and a pulse while scanning, the device list, a help line,
+  Cancel and Next. Then "Share with this device?" with the preview, the device
+  in a progress ring and "Secure connection ID". It closes as soon as the
+  transfer starts, progress goes on in notifications. A decline shows "Can't
+  share / The device you're trying to share with did not accept".
+- Notifications: "Receive with Quick Share?" / "Pixel is sharing an image
+  with you." + the secure connection ID, Accept and Decline; progress
+  "Receiving an image from Pixel" with Cancel; "Image received from Pixel"
+  with Open folder (and Copy to clipboard for one image, through wl-copy);
+  "Failed to send ... to ..."; "Device nearby is sharing / To receive and
+  accept files with people around you, become visible" with Enable and
+  Dismiss. Items are named like ChromeOS does: an image, 3 files, a video, a
+  link, text.
 
 ## Visibility
 
@@ -73,6 +104,9 @@ http and https.
   subnets, instead of a random one (and skipping the device when the random
   one happened to be ours). Matters with docker, VPNs or two network cards.
 - sending doesn't power Bluetooth on (`set_powered(true)` is gone).
+- a failed outbound connect (refused, unreachable, 10 s TCP timeout) is
+  reported as Disconnected. Upstream only logs it, and the sender would sit
+  on Connecting forever.
 
 ## Build
 

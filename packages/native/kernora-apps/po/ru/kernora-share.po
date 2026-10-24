@@ -27,53 +27,56 @@ msgstr "Quick Share"
 msgid "Could not send to %1"
 msgstr "Не удалось отправить на %1"
 
+msgid "Select the device you'd like to share files with"
+msgstr "Выберите устройство, на которое хотите отправить файлы"
+
+msgid "Quick Share is turned off"
+msgstr "Quick Share выключен"
+
+msgid "%1 Files"
+msgstr "Файлов: %1"
+
+msgid "Share with this device?"
+msgstr "Отправить на это устройство?"
+
+msgid "Scanning for nearby devices…"
+msgstr "Ищем устройства поблизости…"
+
+msgid "Turn on Quick Share to see devices nearby."
+msgstr "Включите Quick Share, чтобы увидеть устройства рядом."
+
+msgid "Turn on"
+msgstr "Включить"
+
+msgid "Secure connection ID: %1"
+msgstr "Код безопасного подключения: %1"
+
+msgid "Waiting for %1 to accept…"
+msgstr "Ждём, пока %1 примет…"
+
 msgid "Connecting…"
 msgstr "Подключение…"
 
-msgid "Waiting to accept · PIN %1"
-msgstr "Ждём подтверждения · PIN-код %1"
+msgid "Can't share"
+msgstr "Не удалось отправить"
 
-msgid "Waiting to accept"
-msgstr "Ждём подтверждения"
+msgid "The device you're trying to share with did not accept"
+msgstr "Устройство, на которое вы отправляете, не приняло передачу"
 
-msgid "Sending %1%"
-msgstr "Отправка %1%"
+msgid "Something went wrong. Please try again."
+msgstr "Что-то пошло не так. Попробуйте ещё раз."
 
-msgid "Sending…"
-msgstr "Отправка…"
+msgid "Make sure both devices are unlocked, close together and on the same Wi-Fi. If a phone isn't listed, open Quick Share on it and choose Everyone."
+msgstr "Убедитесь, что оба устройства разблокированы, находятся рядом и в одной сети Wi-Fi. Если телефона нет в списке, откройте на нём Quick Share и выберите «Все»."
 
-msgid "Sent"
-msgstr "Отправлено"
+msgid "Close"
+msgstr "Закрыть"
 
-msgid "Declined"
-msgstr "Отклонено"
+msgid "Cancel"
+msgstr "Отмена"
 
-msgid "Cancelled"
-msgstr "Отменено"
+msgid "Try again"
+msgstr "Повторить"
 
-msgid "Not sent"
-msgstr "Не отправлено"
-
-msgid "Looking for devices nearby…"
-msgstr "Ищем устройства поблизости…"
-
-msgid "Quick Share is not running"
-msgstr "Quick Share не запущен"
-
-msgid "On the phone, pull down quick settings, open Quick Share and choose Everyone. Both devices need to be on the same Wi-Fi."
-msgstr "На телефоне откройте быстрые настройки, нажмите Quick Share и выберите «Все». Оба устройства должны быть в одной сети Wi-Fi."
-
-msgid "Click to cancel"
-msgstr "Нажмите, чтобы отменить"
-
-msgid "Shown as %1"
-msgstr "Видно другим как %1"
-
-msgid "Done"
-msgstr "Готово"
-
-msgid "%1 file"
-msgid_plural "%1 files"
-msgstr[0] "%1 файл"
-msgstr[1] "%1 файла"
-msgstr[2] "%1 файлов"
+msgid "Next"
+msgstr "Далее"

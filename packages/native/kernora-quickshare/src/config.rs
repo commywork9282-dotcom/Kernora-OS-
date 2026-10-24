@@ -16,6 +16,7 @@ pub enum Mode {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Config {
+    pub enabled: bool,
     pub visibility: Mode,
     pub name: String,
     pub folder: String,
@@ -25,6 +26,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
+            enabled: true,
             visibility: Mode::Hidden,
             name: default_name(),
             folder: String::new(),

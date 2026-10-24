@@ -1,3 +1,21 @@
+kernora-quickshare (1.0.1) UNRELEASED; urgency=medium
+
+  * Notifications say what ChromeOS says: "Receive with Quick Share?",
+    "Pixel is sharing an image with you." plus the secure connection ID,
+    "Receiving / Sending ... from / to ...", "Image received from ...",
+    "Failed to send ...", "Device nearby is sharing" with Enable and
+    Dismiss. The progress goes away by itself when it's done.
+  * A single received image gets Copy to clipboard (wl-copy).
+  * A device that can't be reached ends in "Can't share" instead of
+    spinning on Connecting forever: rqs_lib reports failed connects now
+    (10 s TCP timeout) and the daemon gives up after 25 s; the stale entry
+    leaves the device list.
+  * Quick Share can be switched off completely (SetEnabled), and
+    "visible to everyone for 10 minutes" is its own switch
+    (SetHighVisibility).
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 24 Oct 2026 12:00:00 -0700
+
 kernora-quickshare (1.0.0) UNRELEASED; urgency=medium
 
   * First version: Quick Share with Android phones and other computers,

@@ -25,6 +25,7 @@ pub struct Desktop {
 }
 
 pub struct Note<'a> {
+    pub icon: &'a str,
     pub summary: &'a str,
     pub body: &'a str,
     pub actions: &'a [(&'a str, &'a str)],
@@ -106,7 +107,7 @@ impl Desktop {
                 (
                     crate::text::app_name(),
                     replaces,
-                    ICON,
+                    if note.icon.is_empty() { ICON } else { note.icon },
                     note.summary,
                     note.body,
                     actions,
@@ -209,6 +210,27 @@ impl Desktop {
         if let Err(err) = result {
             warn!("could not copy to the clipboard: {err}");
         }
+    }
+}
+
+pub fn copy_image(path: &std::path::Path, mime: &str) {
+    let Ok(file) = std::fs::File::open(path) else {
+        warn!("could not open {} to copy it", path.display());
+        return;
+    };
+    let result = Command::new("wl-copy")
+        .args(["--type", mime])
+        .stdin(Stdio::from(file))
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn();
+    match result {
+        Ok(mut child) => {
+            std::thread::spawn(move || {
+                let _ = child.wait();
+            });
+        }
+        Err(err) => warn!("could not copy the image: {err}"),
     }
 }
 

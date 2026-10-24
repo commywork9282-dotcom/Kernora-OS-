@@ -14,7 +14,7 @@ fail() {
 [[ -s "$deb" ]] || fail "binary package does not exist: $deb"
 [[ "$(dpkg-deb --field "$deb" Architecture)" == "amd64" ]] || fail "wrong architecture"
 [[ "$(dpkg-deb --field "$deb" Version)" == "$package_version" ]] || fail "wrong version"
-for dependency in bluez libdbus-1-3; do
+for dependency in bluez libdbus-1-3 wl-clipboard; do
   dpkg-deb --field "$deb" Depends | grep -Eq "(^|, )$dependency( |,|$)" \
     || fail "missing dependency: $dependency"
 done

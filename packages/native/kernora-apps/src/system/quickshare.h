@@ -18,6 +18,7 @@ class QuickShare : public QObject
     QML_SINGLETON
 
     Q_PROPERTY(bool available READ available NOTIFY changed)
+    Q_PROPERTY(bool enabled READ enabled NOTIFY changed)
     Q_PROPERTY(QString visibility READ visibility NOTIFY changed)
     Q_PROPERTY(int visibleFor READ visibleFor NOTIFY changed)
     Q_PROPERTY(QString name READ name NOTIFY changed)
@@ -31,6 +32,7 @@ public:
     explicit QuickShare(QObject *parent = nullptr);
 
     bool available() const { return m_available; }
+    bool enabled() const { return m_state.value(QStringLiteral("enabled"), true).toBool(); }
     QString visibility() const { return m_state.value(QStringLiteral("visibility")).toString(); }
     int visibleFor() const { return m_state.value(QStringLiteral("visibleFor")).toInt(); }
     QString name() const { return m_state.value(QStringLiteral("name")).toString(); }
@@ -41,6 +43,8 @@ public:
     QVariantList transfers() const { return m_state.value(QStringLiteral("transfers")).toList(); }
 
     Q_INVOKABLE void refresh();
+    Q_INVOKABLE void setEnabled(bool enabled);
+    Q_INVOKABLE void setHighVisibility(bool on);
     Q_INVOKABLE void setVisibility(const QString &mode);
     Q_INVOKABLE void setName(const QString &name);
     Q_INVOKABLE void setFolder(const QUrl &folder);

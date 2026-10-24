@@ -10,7 +10,7 @@ mod desktop;
 mod state;
 mod text;
 
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
@@ -24,14 +24,18 @@ use tracing_subscriber::EnvFilter;
 use config::{Config, Mode};
 use desktop::{Desktop, Note};
 use state::{Device, Phase, Transfer};
+use text::Items;
 
 const TEMPORARY: Duration = Duration::from_secs(600);
 const DISCOVERY: Duration = Duration::from_secs(90);
 const NEARBY_PAUSE: Duration = Duration::from_secs(180);
 const FLUSH: Duration = Duration::from_millis(250);
+const CONNECTING: Duration = Duration::from_secs(25);
 
 #[derive(Debug)]
 pub enum Command {
+    SetEnabled(bool),
+    SetHighVisibility(bool),
     SetVisibility(String),
     SetName(String),
     SetFolder(String),
@@ -56,6 +60,8 @@ enum NoteKind {
 
 struct Service {
     rqs: RQS,
+    running: bool,
+    cancelled_here: HashSet<String>,
     send_tx: mpsc::Sender<SendInfo>,
     ble_rx: broadcast::Receiver<()>,
     device_tx: broadcast::Sender<EndpointInfo>,
@@ -113,6 +119,8 @@ async fn main() -> Result<(), anyhow::Error> {
 
     let mut service = Service {
         rqs,
+        running: true,
+        cancelled_here: HashSet::new(),
         send_tx,
         ble_rx,
         device_tx,
@@ -130,6 +138,10 @@ async fn main() -> Result<(), anyhow::Error> {
         conn: conn.clone(),
         shared: shared.clone(),
     };
+    if !service.config.enabled {
+        service.rqs.stop().await;
+        service.running = false;
+    }
     service.flush();
     bus::serve(&conn, shared, commands_tx);
     info!("Quick Share is ready as {}", service.config.name);
@@ -149,7 +161,7 @@ async fn main() -> Result<(), anyhow::Error> {
                     service.device(device);
                 }
             }
-            nearby = service.ble_rx.recv() => {
+            nearby = service.ble_rx.recv(), if service.running => {
                 if let Ok(()) | Err(broadcast::error::RecvError::Lagged(_)) = nearby {
                     service.nearby().await;
                 }
@@ -208,6 +220,7 @@ impl Service {
             .download_folder()
             .unwrap_or_else(rqs_lib::utils::get_download_dir);
         let state = json!({
+            "enabled": self.config.enabled,
             "visibility": self.effective_visibility(),
             "visibleFor": visible_for,
             "name": self.config.name,
@@ -240,6 +253,23 @@ impl Service {
                 self.stop_discovery();
             }
         }
+        let stuck: Vec<Transfer> = self
+            .transfers
+            .iter_mut()
+            .filter(|t| {
+                t.outgoing
+                    && t.phase == Phase::Connecting
+                    && t.updated.is_some_and(|time| now.duration_since(time) > CONNECTING)
+            })
+            .map(|t| {
+                t.phase = Phase::Failed;
+                t.clone()
+            })
+            .collect();
+        for transfer in stuck {
+            warn!("could not reach {} in time", transfer.device);
+            self.phase_changed(&transfer).await;
+        }
         let before = self.transfers.len();
         self.transfers.retain(|t| !t.stale(now));
         if before != self.transfers.len() {
@@ -252,9 +282,8 @@ impl Service {
             for transfer in &self.transfers {
                 if transfer.phase == Phase::Transferring {
                     if let Some(path) = self.jobs.get(&transfer.id) {
-                        let title = job_title(transfer);
                         self.desktop
-                            .update_job(path, &title, &text::file_list(&transfer.files), transfer.done, transfer.total);
+                            .update_job(path, &job_title(transfer), "", transfer.done, transfer.total);
                     }
                 }
             }
@@ -262,8 +291,36 @@ impl Service {
         }
     }
 
+    async fn set_enabled(&mut self, enabled: bool) {
+        if enabled == self.config.enabled && enabled == self.running {
+            return;
+        }
+        self.config.enabled = enabled;
+        self.config.save();
+        if enabled {
+            match self.rqs.run().await {
+                Ok((send_tx, ble_rx)) => {
+                    self.send_tx = send_tx;
+                    self.ble_rx = ble_rx;
+                    self.running = true;
+                    self.apply_visibility();
+                }
+                Err(err) => error!("could not start Quick Share: {err}"),
+            }
+        } else {
+            self.temporary_until = None;
+            self.stop_discovery();
+            self.rqs.stop().await;
+            self.running = false;
+        }
+        self.dirty = true;
+    }
+
     async fn restart(&mut self) {
         self.restart_pending = false;
+        if !self.running {
+            return;
+        }
         let discovering = self.discovering_until.is_some();
         self.rqs.stop().await;
         self.devices.clear();
@@ -283,6 +340,9 @@ impl Service {
     }
 
     fn start_discovery(&mut self) {
+        if !self.running {
+            return;
+        }
         if self.discovering_until.is_none() {
             if let Err(err) = self.rqs.discovery(self.device_tx.clone()) {
                 warn!("could not look for devices: {err}");
@@ -319,6 +379,14 @@ impl Service {
 
     async fn command(&mut self, command: Command) {
         match command {
+            Command::SetEnabled(enabled) => self.set_enabled(enabled).await,
+            Command::SetHighVisibility(on) => {
+                if on && !self.running {
+                    self.set_enabled(true).await;
+                }
+                self.temporary_until = on.then(|| Instant::now() + TEMPORARY);
+                self.apply_visibility();
+            }
             Command::SetVisibility(mode) => {
                 match mode.as_str() {
                     "everyone" => {
@@ -369,7 +437,10 @@ impl Service {
             Command::Send(id, device, files) => self.send(id, device, files).await,
             Command::Accept(id) => self.answer(&id, true).await,
             Command::Decline(id) => self.answer(&id, false).await,
-            Command::Cancel(id) => self.lib_action(&id, TransferAction::TransferCancel),
+            Command::Cancel(id) => {
+                self.cancelled_here.insert(id.clone());
+                self.lib_action(&id, TransferAction::TransferCancel);
+            }
             Command::Dismiss(id) => {
                 self.transfers.retain(|t| t.id != id || !t.phase.is_over());
                 self.dirty = true;
@@ -393,6 +464,7 @@ impl Service {
                     .find(|(_, job)| **job == path)
                     .map(|(id, _)| id.clone());
                 if let Some(id) = id {
+                    self.cancelled_here.insert(id.clone());
                     self.lib_action(&id, TransferAction::TransferCancel);
                 }
             }
@@ -400,8 +472,22 @@ impl Service {
     }
 
     async fn send(&mut self, id: String, device: String, files: Vec<String>) {
+        if !self.running {
+            warn!("Quick Share is off, not sending");
+            return;
+        }
         let Some(target) = self.devices.get(&device).cloned() else {
             warn!("unknown device {device}");
+            let gone = Device {
+                id: device.clone(),
+                name: device,
+                kind: "unknown",
+                addr: String::new(),
+            };
+            let mut transfer = Transfer::outgoing(&id, &gone, &files);
+            transfer.phase = Phase::Failed;
+            self.transfers.push(transfer);
+            self.dirty = true;
             return;
         };
         let transfer = Transfer::outgoing(&id, &target, &files);
@@ -455,9 +541,9 @@ impl Service {
                 }
             }
             NoteKind::Nearby => {
+                self.notes.remove(&note);
+                self.desktop.close(note).await;
                 if action == "visible" || action == "default" {
-                    self.notes.remove(&note);
-                    self.desktop.close(note).await;
                     self.temporary_until = Some(Instant::now() + TEMPORARY);
                     self.apply_visibility();
                 }
@@ -467,13 +553,20 @@ impl Service {
                 let Some(transfer) = self.transfers.iter().find(|t| t.id == id).cloned() else {
                     return;
                 };
+                let folder = self
+                    .config
+                    .download_folder()
+                    .unwrap_or_else(rqs_lib::utils::get_download_dir);
                 match (transfer.kind, action) {
                     ("files", "default") | ("files", "folder") => {
-                        let folder = self
-                            .config
-                            .download_folder()
-                            .unwrap_or_else(rqs_lib::utils::get_download_dir);
                         desktop::launch("xdg-open", &[&folder.to_string_lossy()]);
+                    }
+                    ("files", "copy") => {
+                        if let Some(name) = transfer.files.first() {
+                            if let Some(mime) = text::image_mime(name) {
+                                desktop::copy_image(&latest_copy(&folder, name), mime);
+                            }
+                        }
                     }
                     ("url", "open") | ("url", "default") if web_link(&transfer.text) => {
                         desktop::launch("xdg-open", &[&transfer.text]);
@@ -500,7 +593,8 @@ impl Service {
     }
 
     async fn nearby(&mut self) {
-        if self.config.visibility == Mode::Everyone
+        if !self.running
+            || self.config.visibility == Mode::Everyone
             || self.temporary_until.is_some()
             || !self.config.ask_nearby
         {
@@ -517,15 +611,15 @@ impl Service {
             return;
         }
         self.last_nearby = Some(now);
-        let body = text::nearby_body(&self.config.name);
         let id = self
             .desktop
             .notify(
                 0,
                 Note {
+                    icon: "",
                     summary: text::nearby_title(),
-                    body: &body,
-                    actions: &[("visible", text::make_visible())],
+                    body: text::nearby_body(),
+                    actions: &[("visible", text::enable()), ("dismiss", text::dismiss())],
                     urgent: false,
                     urls: Vec::new(),
                     resident: false,
@@ -574,29 +668,29 @@ impl Service {
         } else {
             transfer.device.clone()
         };
+        let items = Items::of(transfer);
         match transfer.phase {
             Phase::Waiting if !transfer.outgoing && transfer.unsafe_names() => {
                 warn!("declined {}: a file name points outside the download folder", transfer.id);
                 self.lib_action(&transfer.id, TransferAction::ConsentDecline);
             }
             Phase::Waiting if !transfer.outgoing => {
-                let mut body = match transfer.kind {
-                    "files" => text::file_list(&transfer.files),
-                    _ => transfer.preview.clone(),
+                let mut body = if transfer.kind == "wifi" {
+                    text::request_wifi(&device)
+                } else {
+                    text::request_body(&device, &items)
                 };
                 if !transfer.pin.is_empty() {
-                    if !body.is_empty() {
-                        body.push('\n');
-                    }
-                    body.push_str(&text::pin(&transfer.pin));
+                    body.push('\n');
+                    body.push_str(&text::connection_id(&transfer.pin));
                 }
-                let summary = text::wants_to_share(&device);
                 let id = self
                     .desktop
                     .notify(
                         0,
                         Note {
-                            summary: &summary,
+                            icon: device_icon(transfer.device_kind),
+                            summary: text::request_title(),
                             body: &body,
                             actions: &[("accept", text::accept()), ("decline", text::decline())],
                             urgent: true,
@@ -610,13 +704,13 @@ impl Service {
                 }
             }
             Phase::Waiting => {
-                let title = text::waiting_for(&device);
-                if let Some(path) = self.desktop.open_job(&title, true).await {
+                if let Some(path) = self.desktop.open_job(&job_title(transfer), true).await {
+                    self.desktop.update_job(&path, &job_title(transfer), &text::waiting(&device), 0, 0);
                     self.jobs.insert(transfer.id.clone(), path);
                 }
             }
             Phase::Transferring => {
-                if transfer.kind == "files" && !self.jobs.contains_key(&transfer.id) {
+                if !self.jobs.contains_key(&transfer.id) {
                     if let Some(path) = self.desktop.open_job(&job_title(transfer), true).await {
                         self.jobs.insert(transfer.id.clone(), path);
                     }
@@ -625,43 +719,62 @@ impl Service {
             Phase::Finished => {
                 self.close_consent(&transfer.id).await;
                 if let Some(path) = self.jobs.remove(&transfer.id) {
-                    self.desktop.end_job(&path, None, false);
+                    self.desktop.end_job(&path, None, true);
                 }
-                if !transfer.outgoing {
+                if transfer.outgoing {
+                    let summary = text::sent(&items, &device);
+                    self.notify_plain(&summary, "").await;
+                } else {
                     self.received(transfer, &device).await;
                 }
             }
             Phase::Rejected | Phase::Cancelled | Phase::Failed => {
                 self.close_consent(&transfer.id).await;
                 if let Some(path) = self.jobs.remove(&transfer.id) {
-                    let (error, cancelled) = match transfer.phase {
-                        Phase::Rejected => (None, true),
-                        Phase::Cancelled => (Some(text::cancelled().to_string()), true),
-                        _ => (Some(text::connection_lost().to_string()), false),
-                    };
-                    self.desktop.end_job(&path, error.as_deref(), cancelled);
+                    self.desktop.end_job(&path, None, true);
                 }
-                if transfer.outgoing && transfer.phase == Phase::Rejected {
-                    let summary = text::declined_by(&device);
-                    let body = text::file_list(&transfer.files);
-                    self.desktop
-                        .notify(
-                            0,
-                            Note {
-                                summary: &summary,
-                                body: &body,
-                                actions: &[],
-                                urgent: false,
-                                urls: Vec::new(),
-                                resident: false,
-                            },
-                        )
-                        .await;
+                let here = self.cancelled_here.remove(&transfer.id);
+                let reached = transfer.outgoing || transfer.done > 0 || transfer.phase != Phase::Rejected;
+                if transfer.outgoing && transfer.phase == Phase::Failed && transfer.done == 0 {
+                    self.devices.retain(|_, d| d.addr != transfer.addr);
+                }
+                let shown_in_window = transfer.outgoing
+                    && transfer.done == 0
+                    && self.discovering_until.is_some();
+                if !here && reached && !shown_in_window {
+                    let summary = if transfer.outgoing {
+                        text::send_failed(&items, &device)
+                    } else {
+                        text::receive_failed(&items, &device)
+                    };
+                    let body = match transfer.phase {
+                        Phase::Rejected if transfer.outgoing => text::did_not_accept().to_string(),
+                        Phase::Cancelled => text::sender_cancelled(&device),
+                        _ => text::something_wrong().to_string(),
+                    };
+                    self.notify_plain(&summary, &body).await;
                 }
             }
             _ => {}
         }
         self.dirty = true;
+    }
+
+    async fn notify_plain(&mut self, summary: &str, body: &str) {
+        self.desktop
+            .notify(
+                0,
+                Note {
+                    icon: "",
+                    summary,
+                    body,
+                    actions: &[],
+                    urgent: false,
+                    urls: Vec::new(),
+                    resident: false,
+                },
+            )
+            .await;
     }
 
     async fn close_consent(&mut self, id: &str) {
@@ -681,12 +794,20 @@ impl Service {
             .config
             .download_folder()
             .unwrap_or_else(rqs_lib::utils::get_download_dir);
+        let items = Items::of(transfer);
+        let single_image = transfer.kind == "files"
+            && transfer.files.len() == 1
+            && text::image_mime(&transfer.files[0]).is_some();
         let (summary, body, actions, urls): (String, String, Vec<(&str, &str)>, Vec<String>) =
             match transfer.kind {
                 "files" => (
-                    text::received_from(device),
-                    text::file_list(&transfer.files),
-                    vec![("folder", text::open_folder())],
+                    text::received(&items, device),
+                    if transfer.files.len() == 1 { transfer.files[0].clone() } else { String::new() },
+                    if single_image {
+                        vec![("folder", text::open_folder()), ("copy", text::copy())]
+                    } else {
+                        vec![("folder", text::open_folder())]
+                    },
                     transfer
                         .files
                         .iter()
@@ -694,7 +815,7 @@ impl Service {
                         .collect(),
                 ),
                 "url" => (
-                    text::link_from(device),
+                    text::received(&items, device),
                     transfer.text.clone(),
                     if web_link(&transfer.text) {
                         vec![("open", text::open()), ("copy", text::copy())]
@@ -704,13 +825,13 @@ impl Service {
                     Vec::new(),
                 ),
                 "wifi" => (
-                    text::wifi_from(device),
-                    transfer.preview.clone(),
+                    text::wifi_received(&transfer.preview, device),
+                    String::new(),
                     vec![("connect", text::connect())],
                     Vec::new(),
                 ),
                 _ => (
-                    text::text_from(device),
+                    text::received(&items, device),
                     transfer.text.clone(),
                     vec![("copy", text::copy())],
                     Vec::new(),
@@ -723,6 +844,7 @@ impl Service {
             .notify(
                 0,
                 Note {
+                    icon: "",
                     summary: &summary,
                     body: &body,
                     actions: &actions,
@@ -738,16 +860,27 @@ impl Service {
     }
 }
 
+fn device_icon(kind: &str) -> &'static str {
+    match kind {
+        "phone" | "tablet" => "phone",
+        "computer" => "computer",
+        _ => "",
+    }
+}
+
 fn job_title(transfer: &Transfer) -> String {
     let device = if transfer.device.is_empty() {
         text::unknown_device()
     } else {
         transfer.device.clone()
     };
+    let items = Items::of(transfer);
     if transfer.outgoing {
-        text::sending_to(&device)
+        text::sending(&items, &device)
+    } else if transfer.kind == "wifi" {
+        text::receiving_wifi().to_string()
     } else {
-        text::receiving_from(&device)
+        text::receiving(&items, &device)
     }
 }
 

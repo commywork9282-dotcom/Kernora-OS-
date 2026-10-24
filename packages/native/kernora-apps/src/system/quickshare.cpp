@@ -73,6 +73,16 @@ void QuickShare::call(const QString &method, const QVariantList &arguments)
     QDBusConnection::sessionBus().asyncCall(message);
 }
 
+void QuickShare::setEnabled(bool enabled)
+{
+    call(QStringLiteral("SetEnabled"), {enabled});
+}
+
+void QuickShare::setHighVisibility(bool on)
+{
+    call(QStringLiteral("SetHighVisibility"), {on});
+}
+
 void QuickShare::setVisibility(const QString &mode)
 {
     call(QStringLiteral("SetVisibility"), {mode});

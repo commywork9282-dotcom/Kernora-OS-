@@ -64,8 +64,13 @@ def main(argv: list[str]) -> int:
         if license_text.endswith("(*)"):
             license_text = license_text[:-3].strip()
         licenses[crate] = license_text or licenses.get(crate) or OVERRIDES.get(crate[0], "see the crate")
+    vendored = set()
+    for crate in vendor.iterdir():
+        if crate.is_dir() and (crate / "Cargo.toml").is_file():
+            vendored.add(package_id(crate / "Cargo.toml"))
     (vendor / "LICENSES.txt").write_text(
-        "".join(f"{name} {version}: {licenses[(name, version)]}\n" for name, version in sorted(licenses)),
+        "".join(f"{name} {version}: {licenses[(name, version)]}\n"
+                for name, version in sorted(licenses) if (name, version) in vendored),
         encoding="utf-8",
     )
     stubbed = 0

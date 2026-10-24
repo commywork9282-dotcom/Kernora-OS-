@@ -1,3 +1,17 @@
+kernora-apps (1.1.56) UNRELEASED; urgency=medium
+
+  * Quick Share, the ChromeOS way:
+    - the send window is ChromeOS's two steps: pick a device next to a
+      preview of what you share (pulse while scanning, Cancel / Next),
+      then "Share with this device?" with the secure connection ID; it
+      closes once sending starts and progress goes on in notifications;
+    - Settings > Quick Share: a main switch, device name, device
+      visibility (Everyone / Hidden / visible to everyone for 10 min).
+  * What's new: Quick Share like on Chromebooks.
+  * Require kernora-desktop 1.4.47 and kernora-quickshare 1.0.1.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 24 Oct 2026 12:00:00 -0700
+
 kernora-apps (1.1.55) UNRELEASED; urgency=medium
 
   * Quick Share (needs kernora-quickshare):

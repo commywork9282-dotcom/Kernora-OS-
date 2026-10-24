@@ -59,6 +59,14 @@ pub fn serve(
         b.method("State", (), ("state",), |_, bus: &mut Bus, (): ()| {
             Ok((bus.state.lock().map(|s| s.clone()).unwrap_or_default(),))
         });
+        b.method("SetEnabled", ("enabled",), (), |_, bus: &mut Bus, (enabled,): (bool,)| {
+            bus.send(Command::SetEnabled(enabled));
+            Ok(())
+        });
+        b.method("SetHighVisibility", ("on",), (), |_, bus: &mut Bus, (on,): (bool,)| {
+            bus.send(Command::SetHighVisibility(on));
+            Ok(())
+        });
         b.method("SetVisibility", ("mode",), (), |_, bus: &mut Bus, (mode,): (String,)| {
             bus.send(Command::SetVisibility(mode));
             Ok(())
