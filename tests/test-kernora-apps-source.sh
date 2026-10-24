@@ -15,14 +15,14 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.54" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.55" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
 [[ -x "$package_root/debian/rules" ]] || fail "debian/rules is not executable"
 grep -Fxq 'Package: kernora-apps' "$package_root/debian/control" || fail "binary stanza is missing"
 
-for app in settings files welcome editor photos player calculator screenshot store; do
+for app in settings files welcome editor photos player calculator screenshot store share; do
   [[ -s "$package_root/apps/$app/qml/Main.qml" ]] || fail "$app has no interface"
   desktop="$package_root/apps/$app/org.kernora.$app.desktop"
   [[ -s "$desktop" ]] || fail "$app has no desktop entry"

@@ -277,7 +277,7 @@ ICONS: list[tuple[str, bool, str, list[str]]] = [
     ("queue_music", False, "actions", ["media-playlist-normal", "view-media-playlist"]),
     ("photo_library", False, "places", ["kernora-photos", "folder-image-people"]),
     ("crop", False, "actions", ["transform-crop", "image-crop"]),
-    ("share", False, "actions", ["document-share", "emblem-shared-symbolic"]),
+    ("share", False, "actions", ["document-share", "emblem-shared-symbolic", "kernora-quickshare"]),
     ("new_window", False, "actions", ["kernora-new-window"]),
     ("waving_hand", False, "actions", ["kernora-hello"]),
     ("wifi", True, "status", ["kernora-tile-wifi-on"]),

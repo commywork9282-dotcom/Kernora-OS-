@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 cmake_minimum_required(VERSION 3.25)
-project(kernora-apps VERSION 1.1.54 LANGUAGES CXX)
+project(kernora-apps VERSION 1.1.55 LANGUAGES CXX)
 
 set(QT_MIN_VERSION 6.8)
 set(KF_MIN_VERSION 6.13)
@@ -39,7 +39,7 @@ add_subdirectory(src/apps)
 add_subdirectory(src/filechooser)
 add_subdirectory(src/updatenotifier)
 
-set(KERNORA_APPS settings files welcome editor photos player calculator screenshot store)
+set(KERNORA_APPS settings files welcome editor photos player calculator screenshot store share)
 foreach(app ${KERNORA_APPS})
     install(DIRECTORY apps/${app}/qml/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/${app})
     install(FILES apps/${app}/org.kernora.${app}.desktop DESTINATION ${KDE_INSTALL_APPDIR})

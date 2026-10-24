@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.kernora.QuickShare
+Exec=/usr/bin/kernora-quickshare

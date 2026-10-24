@@ -1,0 +1,38 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: kernora-quickshare
+Source: https://kernora.invalid/
+
+Files: *
+Copyright: 2026 Kernora Developers
+License: GPL-3.0-or-later
+
+Files: vendor/rqs_lib/*
+Copyright: Martin André and the rquickshare contributors, nozwock
+License: GPL-3.0
+Comment: Quick Share protocol core from https://github.com/nozwock/rquickshare
+ (a fork of https://github.com/Martichou/rquickshare), as used by Packet.
+
+Files: vendor/*
+Copyright: the authors of each crate, see its Cargo.toml
+License: various
+ Every vendored crate keeps its own license files. The licenses are MIT,
+ Apache-2.0 (also WITH LLVM-exception), BSD-2-Clause, BSD-3-Clause,
+ BSL-1.0, MPL-2.0, Unicode-3.0 or Unlicense, as listed per crate in
+ vendor/LICENSES.txt, installed as
+ /usr/share/doc/kernora-quickshare/LICENSES.txt. Crates that Linux builds
+ never compile are reduced to their Cargo.toml.
+ .
+ vendor/rqs_lib carries patches/rqs_lib.patch from this package.
+
+License: GPL-3.0-or-later
+ This program is free software: you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by the Free
+ Software Foundation, either version 3 of the License, or (at your option)
+ any later version.
+ .
+ On Debian systems, the full text of the GNU General Public License version 3
+ can be found in /usr/share/common-licenses/GPL-3.
+
+License: GPL-3.0
+ On Debian systems, the full text of the GNU General Public License version 3
+ can be found in /usr/share/common-licenses/GPL-3.

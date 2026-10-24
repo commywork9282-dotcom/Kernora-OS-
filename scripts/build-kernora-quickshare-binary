@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in chroot cp dpkg-parsechangelog find install nproc tar unshare; do
+  require_command "$dependency"
+done
+load_upstream_config
+
+"$PROJECT_ROOT/scripts/build-kernora-quickshare-source"
+"$PROJECT_ROOT/scripts/create-qt-build-rootfs" "$PROJECT_ROOT/packages/native/kernora-quickshare/debian/control" quickshare
+
+package_root="$PROJECT_ROOT/packages/native/kernora-quickshare"
+package_version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
+SOURCE_DATE_EPOCH=$(dpkg-parsechangelog \
+  -l"$package_root/debian/changelog" -S Timestamp)
+export SOURCE_DATE_EPOCH
+source_dir="$PROJECT_ROOT/_build/source-packages"
+output_dir="$PROJECT_ROOT/_build/binary-packages"
+cache_file="$PROJECT_ROOT/_cache/chroots/trixie-amd64-buildd-quickshare.tar.xz"
+dsc_name="kernora-quickshare_${package_version}.dsc"
+tar_name="kernora-quickshare_${package_version}.tar.xz"
+binary_name="kernora-quickshare_${package_version}_${BASE_ARCH}.deb"
+jobs=$(nproc)
+
+temporary_root=$(mktemp -d /tmp/kernora-package-build.XXXXXX)
+chmod 0777 "$temporary_root"
+rootfs="$temporary_root/rootfs"
+input_dir="$temporary_root/input"
+mkdir -p "$input_dir"
+install -m 0644 "$source_dir/$dsc_name" "$input_dir/$dsc_name"
+install -m 0644 "$source_dir/$tar_name" "$input_dir/$tar_name"
+cached_rootfs="$temporary_root/build-rootfs.tar.xz"
+install -m 0644 "$cache_file" "$cached_rootfs"
+
+cleanup() {
+  set +e
+  if [[ -e "$rootfs" ]]; then
+    unshare --map-auto --setuid 0 --setgid 0 \
+      find "$rootfs" -depth -delete
+  fi
+  find "$temporary_root" -depth -delete
+}
+trap cleanup EXIT
+
+unshare --map-auto --setuid 0 --setgid 0 sh -c '
+  mkdir -p "$1"
+  tar -xJf "$2" -C "$1"
+  mkdir -p "$1/build"
+  cp "$3" "$4" "$1/build/"
+' kernora-extract "$rootfs" "$cached_rootfs" \
+  "$input_dir/$dsc_name" "$input_dir/$tar_name"
+
+unshare \
+  --map-auto \
+  --setuid 0 \
+  --setgid 0 \
+  --mount \
+  --pid \
+  --net \
+  --fork \
+  --mount-proc="$rootfs/proc" \
+  chroot "$rootfs" /bin/bash -lc '
+    set -Eeuo pipefail
+    cd /build
+    dpkg-source --extract "$1" source
+    cd source
+    DEB_BUILD_OPTIONS="parallel=$2" dpkg-buildpackage --build=binary --no-sign
+  ' kernora-build "$dsc_name" "$jobs"
+
+mkdir -p "$output_dir"
+deb="$rootfs/build/$binary_name"
+[[ -s "$deb" ]] || die "missing build artifact: $deb"
+install -m 0644 "$deb" "$output_dir/"
+for artifact in \
+  "$rootfs/build"/kernora-quickshare_"$package_version"_*.buildinfo \
+  "$rootfs/build"/kernora-quickshare_"$package_version"_*.changes; do
+  [[ -s "$artifact" ]] && install -m 0644 "$artifact" "$output_dir/"
+done
+
+"$PROJECT_ROOT/tests/test-kernora-quickshare-binary.sh"
+printf 'binary package: %s/%s\n' "$output_dir" "$binary_name"

@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-23-2",
+    "date": "2026-10-23",
+    "items": [
+      {
+        "icon": "kernora-quickshare",
+        "title": {
+          "en": "Quick Share with your phone",
+          "ru": "Quick Share с телефоном"
+        },
+        "text": {
+          "en": "Send photos and files between an Android phone and Kernora, no cables or apps. On the phone, share and pick this computer; Kernora asks first and saves to Downloads. To send from Kernora, right-click a file in Files. Both need to be on the same Wi-Fi. The Quick Share tile in quick settings makes the computer visible for 10 minutes.",
+          "ru": "Фото и файлы между Android-телефоном и Kernora без кабелей и приложений. На телефоне нажмите «Поделиться» и выберите этот компьютер: Kernora сначала спросит и сохранит всё в «Загрузки». Чтобы отправить с компьютера, нажмите правой кнопкой на файл в Файлах. Оба устройства должны быть в одной сети Wi-Fi. Плитка Quick Share в быстрых настройках делает компьютер видимым на 10 минут."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-23-1",
     "date": "2026-10-23",
     "items": [

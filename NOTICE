@@ -24,6 +24,11 @@ others, under their licences:
   * packages/native/kernora-desktop/tools/material_shapes.py is a port of
     AndroidX graphics-shapes and the Material 3 shapes, under the Apache
     License 2.0.
+  * packages/native/kernora-quickshare/ is under GPL-3.0-or-later because it
+    links rqs_lib, the Quick Share protocol core from rquickshare (Martichou,
+    nozwock's fork that Packet uses), GPL-3.0. Its source package carries the
+    Rust crates it is built from; each keeps its licence, listed in
+    /usr/share/doc/kernora-quickshare/LICENSES.txt.
 
 The ISO images are built from Debian and other packages, each under its own
 licence: the installed system lists them in /usr/share/doc/*/copyright and in

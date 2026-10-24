@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Quick Share
+Name[ru]=Quick Share
+GenericName=Send to a device nearby
+GenericName[ru]=Отправить на устройство рядом
+Comment=Send files to phones and computers nearby
+Comment[ru]=Отправка файлов на телефоны и компьютеры поблизости
+Icon=kernora-quickshare
+Exec=kernora-share %F
+Categories=Qt;Utility;
+Keywords=quick share;nearby;android;phone;send;отправить;телефон;
+NoDisplay=true
+StartupNotify=true

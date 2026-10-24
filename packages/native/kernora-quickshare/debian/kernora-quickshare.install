@@ -1,0 +1,4 @@
+data/org.kernora.quickshare.desktop usr/share/applications
+data/org.kernora.quickshare-autostart.desktop etc/xdg/autostart
+data/org.kernora.QuickShare.service usr/share/dbus-1/services
+vendor/LICENSES.txt usr/share/doc/kernora-quickshare

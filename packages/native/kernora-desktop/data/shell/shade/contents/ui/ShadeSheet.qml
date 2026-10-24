@@ -6,6 +6,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import org.kernora.system
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import "m3"
@@ -348,7 +349,8 @@ Item {
         airplane: i18n("Airplane Mode"),
         awake: i18n("Keep Awake"),
         dark: i18n("Dark Theme"),
-        screenshot: i18n("Screenshot")
+        screenshot: i18n("Screenshot"),
+        quickshare: i18n("Quick Share")
     })
 
     readonly property var tileComponents: ({
@@ -361,7 +363,8 @@ Item {
         airplane: airplaneTile,
         awake: awakeTile,
         dark: darkTile,
-        screenshot: screenshotTile
+        screenshot: screenshotTile,
+        quickshare: quickshareTile
     })
 
     Component {
@@ -501,6 +504,22 @@ Item {
             hasDetails: true
             onToggled: root.backend.toggleDark()
             onDetailsRequested: { root.backend.openSettings("appearance"); root.requestClose(); }
+        }
+    }
+    Component {
+        id: quickshareTile
+        MTile {
+            readonly property string mode: QuickShare.visibility
+            icon: "kernora-quickshare"
+            title: i18n("Quick Share")
+            subtitle: mode === "everyone" ? i18n("Everyone")
+                : mode === "temporary" ? i18np("For %1 min", "For %1 min", Math.max(1, Math.ceil(QuickShare.visibleFor / 60)))
+                : i18n("Hidden")
+            available: QuickShare.available
+            checked: mode === "everyone" || mode === "temporary"
+            hasDetails: true
+            onToggled: QuickShare.setVisibility(checked ? "hidden" : "temporary")
+            onDetailsRequested: { root.backend.openSettings("quickshare"); root.requestClose(); }
         }
     }
     Component {

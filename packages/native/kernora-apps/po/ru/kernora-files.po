@@ -437,3 +437,9 @@ msgstr[2] "%1 объектов уже есть в этой папке"
 
 msgid "Clear selection"
 msgstr "Снять выделение"
+
+msgid "Send with Quick Share"
+msgstr "Отправить через Quick Share"
+
+msgid "Only files can be sent. Compress a folder to ZIP first."
+msgstr "Отправить можно только файлы. Папку сначала сожмите в ZIP."

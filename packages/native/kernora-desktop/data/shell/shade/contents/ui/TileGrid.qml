@@ -19,7 +19,7 @@ Item {
 
     readonly property var defaultLayout: [
         ["internet", 2], ["bluetooth", 2], ["sound", 2], ["dark", 2], ["dnd", 2], ["night", 2],
-        ["mic", 1], ["airplane", 1], ["awake", 1], ["screenshot", 1]
+        ["quickshare", 2], ["mic", 1], ["airplane", 1], ["awake", 1], ["screenshot", 1]
     ]
     readonly property real gap: 8
     readonly property real cell: (width - gap * 3) / 4

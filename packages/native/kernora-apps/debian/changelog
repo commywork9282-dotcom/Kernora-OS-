@@ -1,3 +1,18 @@
+kernora-apps (1.1.55) UNRELEASED; urgency=medium
+
+  * Quick Share (needs kernora-quickshare):
+    - QuickShare singleton in org.kernora.system, fed by the daemon's
+      Changed signal;
+    - Settings > Quick Share: who can see this computer, asking when
+      someone nearby shares, name, download folder, recent transfers;
+    - kernora-share, the send window: finds devices nearby, shows the PIN
+      while the phone decides, progress and the result;
+    - Files: Send with Quick Share in the menu and the selection toolbar.
+  * What's new: Quick Share.
+  * Require kernora-desktop 1.4.46 and kernora-quickshare 1.0.0.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 23 Oct 2026 21:00:00 -0700
+
 kernora-apps (1.1.54) UNRELEASED; urgency=medium
 
   * Settings: Wallpaper & style has a Transparent panel switch (PR #4 by

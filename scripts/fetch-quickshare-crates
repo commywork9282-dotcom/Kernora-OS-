@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in chroot cp find install python3 sha256sum tar unshare xz; do
+  require_command "$dependency"
+done
+load_upstream_config
+load_quickshare_config
+
+package_root="$PROJECT_ROOT/packages/native/kernora-quickshare"
+cache_dir="$PROJECT_ROOT/_cache/quickshare"
+lock_id=$(sha256sum "$package_root/Cargo.lock" | cut -c1-16)
+tarball="$cache_dir/kernora-quickshare-vendor-$lock_id.tar.xz"
+mkdir -p "$cache_dir"
+
+if [[ -s "$tarball" ]]; then
+  actual=$(sha256sum "$tarball" | cut -d' ' -f1)
+  if [[ -n "$QUICKSHARE_VENDOR_SHA256" && "$actual" == "$QUICKSHARE_VENDOR_SHA256" ]]; then
+    printf 'quickshare crates: %s\n' "$tarball"
+    exit 0
+  fi
+  rm -f -- "$tarball"
+fi
+
+"$PROJECT_ROOT/scripts/create-qt-build-rootfs" "$package_root/debian/control" quickshare
+cache_file="$PROJECT_ROOT/_cache/chroots/trixie-amd64-buildd-quickshare.tar.xz"
+
+temporary_root=$(mktemp -d /tmp/kernora-quickshare-crates.XXXXXX)
+chmod 0777 "$temporary_root"
+rootfs="$temporary_root/rootfs"
+cleanup() {
+  set +e
+  if [[ -e "$rootfs" ]]; then
+    unshare --map-auto --setuid 0 --setgid 0 find "$rootfs" -depth -delete
+  fi
+  find "$temporary_root" -depth -delete
+}
+trap cleanup EXIT
+
+install -m 0644 "$cache_file" "$temporary_root/build-rootfs.tar.xz"
+mkdir -p "$temporary_root/input"
+cp -a "$package_root/Cargo.toml" "$package_root/Cargo.lock" "$package_root/src" "$package_root/shim" "$package_root/patches" "$temporary_root/input/"
+install -m 0644 "$package_root/tools/stub-vendor" "$temporary_root/stub-vendor"
+cp -L /etc/resolv.conf "$temporary_root/resolv.conf"
+chmod -R a+rX "$temporary_root/input"
+
+unshare --map-auto --setuid 0 --setgid 0 sh -c '
+  mkdir -p "$1"
+  tar -xJf "$2" -C "$1"
+  mkdir -p "$1/build"
+  cp -a "$3" "$1/build/crate"
+  cp "$4" "$1/etc/resolv.conf"
+' kernora-extract "$rootfs" "$temporary_root/build-rootfs.tar.xz" \
+  "$temporary_root/input" "$temporary_root/resolv.conf"
+
+unshare --map-auto --setuid 0 --setgid 0 chroot "$rootfs" \
+  /usr/bin/env -i HOME=/root PATH=/usr/sbin:/usr/bin:/sbin:/bin CARGO_HOME=/build/cargo-home \
+  /bin/bash -lc '
+    set -Eeuo pipefail
+    cd /build/crate
+    cargo vendor --locked --quiet /build/out/vendor > /dev/null
+    for patch in /build/crate/patches/*.patch; do
+      crate=$(basename "$patch" .patch)
+      patch --quiet --forward -p1 -d "/build/out/vendor/$crate" < "$patch"
+      printf "{\"files\":{},\"package\":null}" > "/build/out/vendor/$crate/.cargo-checksum.json"
+    done
+    cargo tree --locked --offline --target x86_64-unknown-linux-gnu -e normal,build \
+      --prefix none --format "{p}|{l}" | sort -u > /build/out/used.txt
+  '
+
+unshare --map-auto --setuid 0 --setgid 0 sh -c '
+  set -e
+  out="$1/build/out"
+  python3 -I "$2" "$out/vendor" "$out/used.txt"
+  mkdir -p "$out/.cargo"
+  cat > "$out/.cargo/config.toml" <<CONFIG
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/Martichou/mdns-sd?branch=unsolicited"]
+git = "https://github.com/Martichou/mdns-sd"
+branch = "unsolicited"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/nozwock/rquickshare.git?rev=c9ac93f5584a4265e8da679ad689df5be1e80c6b"]
+git = "https://github.com/nozwock/rquickshare.git"
+rev = "c9ac93f5584a4265e8da679ad689df5be1e80c6b"
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "vendor"
+CONFIG
+  tar -C "$out" --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner \
+    --mode=u+rwX,go+rX,go-w --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
+    -cf "$1/vendor.tar" .cargo vendor
+  chmod 0644 "$1/vendor.tar"
+' kernora-vendor "$rootfs" "$temporary_root/stub-vendor"
+
+unshare --map-auto --setuid 0 --setgid 0 cat "$rootfs/vendor.tar" \
+  | xz -9e -T1 > "$temporary_root/vendor.tar.xz"
+actual=$(sha256sum "$temporary_root/vendor.tar.xz" | cut -d' ' -f1)
+if [[ "$actual" != "$QUICKSHARE_VENDOR_SHA256" ]]; then
+  die "vendored crates hash $actual does not match QUICKSHARE_VENDOR_SHA256 in configs/upstream/quickshare.env"
+fi
+install -m 0644 "$temporary_root/vendor.tar.xz" "$tarball"
+printf 'quickshare crates: %s\n' "$tarball"

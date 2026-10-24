@@ -68,6 +68,8 @@ Taken in a VM with the default colour and dark theme.
   there
 - NVIDIA drivers install by themselves on PCs with an NVIDIA card
   ([docs/DRIVERS.md](docs/DRIVERS.md))
+- Quick Share with Android phones: send and receive files over Wi-Fi, no
+  app needed on the phone ([docs/QUICKSHARE.md](docs/QUICKSHARE.md))
 - Calamares as the installer, restyled to match
 - English and Russian. You pick the live session language in the boot menu
 - updates: Debian security updates (kernel too) and LibreWolf install by
@@ -121,7 +123,8 @@ into it.
 ## Layout
 
 - `packages/native/`: Kernora's own packages (`kernora-base`,
-  `kernora-archive`, `kernora-desktop`, `kernora-apps`)
+  `kernora-archive`, `kernora-desktop`, `kernora-apps`,
+  `kernora-quickshare`)
 - `packages/derived/`: patched Debian packages (`base-files`, Calamares and
   `polkit-kde-agent-1`)
 - `configs/`: upstream pins, the live image and the system identity
@@ -130,8 +133,9 @@ into it.
   [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), then
   [docs/DESKTOP.md](docs/DESKTOP.md) for the shell and design system,
   [docs/APPS.md](docs/APPS.md) for the apps,
-  [docs/UPDATES.md](docs/UPDATES.md) for updates and publishing them, and
-  [docs/DRIVERS.md](docs/DRIVERS.md) for the graphics drivers
+  [docs/UPDATES.md](docs/UPDATES.md) for updates and publishing them,
+  [docs/DRIVERS.md](docs/DRIVERS.md) for the graphics drivers and
+  [docs/QUICKSHARE.md](docs/QUICKSHARE.md) for Quick Share
 
 ## License
 

@@ -32,7 +32,7 @@ for path in "$qml/qmldir" "$qml/libkernorasystem.so" usr/share/knotifications6/k
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/shell/libkernorashell.so; do
   [[ -s "$temporary_root/$path" ]] || fail "missing $path"
 done
-for app in settings files welcome editor photos player calculator screenshot store; do
+for app in settings files welcome editor photos player calculator screenshot store share; do
   [[ -x "$temporary_root/usr/bin/kernora-$app" ]] || fail "missing kernora-$app"
   [[ -s "$temporary_root/usr/share/kernora/$app/Main.qml" ]] || fail "missing the $app interface"
   cmp -s "$package_root/apps/$app/qml/Main.qml" "$temporary_root/usr/share/kernora/$app/Main.qml" || fail "$app interface differs from the source"
@@ -45,7 +45,7 @@ grep -qx 'Exec=/usr/bin/kernora-screenshot' \
   "$temporary_root/usr/share/applications/org.kernora.screenshot.desktop" \
   || fail "Screenshot's Exec is not an absolute path; KWin would refuse it"
 
-for domain in settings files editor photos player calculator screenshot welcome system update-notifier store; do
+for domain in settings files editor photos player calculator screenshot welcome system update-notifier store share; do
   [[ -s "$temporary_root/usr/share/locale/ru/LC_MESSAGES/kernora-$domain.mo" ]] \
     || fail "Russian translation is missing: kernora-$domain"
 done

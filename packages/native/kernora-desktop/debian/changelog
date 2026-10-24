@@ -1,3 +1,11 @@
+kernora-desktop (1.4.46) UNRELEASED; urgency=medium
+
+  * Quick settings: a Quick Share tile. Tap makes this computer visible to
+    everyone for 10 minutes, the arrow opens its settings page.
+  * Icon theme: kernora-quickshare (the share symbol).
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 23 Oct 2026 21:00:00 -0700
+
 kernora-desktop (1.4.45) UNRELEASED; urgency=medium
 
   * Transparent panel (merged PR #4 by lexaaakorolevv-cyber): the panel is

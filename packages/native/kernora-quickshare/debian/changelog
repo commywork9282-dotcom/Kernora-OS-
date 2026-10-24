@@ -1,0 +1,7 @@
+kernora-quickshare (1.0.0) UNRELEASED; urgency=medium
+
+  * First version: Quick Share with Android phones and other computers,
+    built on rqs_lib from rquickshare (the core Packet uses). Incoming
+    files ask first, show the PIN and land in Downloads.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 23 Oct 2026 23:00:00 -0700

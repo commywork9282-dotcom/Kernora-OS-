@@ -216,3 +216,18 @@ msgstr "Включите Bluetooth, чтобы пользоваться устр
 
 msgid "Wi-Fi off"
 msgstr "Wi-Fi выключен"
+
+msgid "Quick Share"
+msgstr "Quick Share"
+
+msgid "Everyone"
+msgstr "Все"
+
+msgid "For %1 min"
+msgid_plural "For %1 min"
+msgstr[0] "На %1 мин"
+msgstr[1] "На %1 мин"
+msgstr[2] "На %1 мин"
+
+msgid "Hidden"
+msgstr "Скрыт"

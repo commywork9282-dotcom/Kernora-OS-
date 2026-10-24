@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# shellcheck source=lib/common.sh
+source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
+
+for dependency in cp dpkg-parsechangelog dpkg-source find install sha256sum tar xz; do
+  require_command "$dependency"
+done
+load_quickshare_config
+
+package_root="$PROJECT_ROOT/packages/native/kernora-quickshare"
+output_dir="$PROJECT_ROOT/_build/source-packages"
+mkdir -p "$output_dir"
+
+"$PROJECT_ROOT/tests/test-kernora-quickshare-source.sh"
+"$PROJECT_ROOT/scripts/fetch-quickshare-crates"
+lock_id=$(sha256sum "$package_root/Cargo.lock" | cut -c1-16)
+crates="$PROJECT_ROOT/_cache/quickshare/kernora-quickshare-vendor-$lock_id.tar.xz"
+[[ "$(sha256sum "$crates" | cut -d' ' -f1)" == "$QUICKSHARE_VENDOR_SHA256" ]] \
+  || die "the vendored crates do not match the pinned hash"
+
+package_version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
+SOURCE_DATE_EPOCH=$(dpkg-parsechangelog \
+  -l"$package_root/debian/changelog" -S Timestamp)
+export SOURCE_DATE_EPOCH
+temporary_root=$(mktemp -d "$PROJECT_ROOT/_build/.kernora-quickshare-source.XXXXXX")
+trap 'find "$temporary_root" -depth -delete' EXIT
+working_tree="$temporary_root/kernora-quickshare-$package_version"
+mkdir -p "$working_tree"
+cp -a "$package_root/." "$working_tree/"
+rm -rf "$working_tree/target"
+tar -xJf "$crates" -C "$working_tree"
+
+(
+  cd "$working_tree"
+  dpkg-source --build .
+)
+
+for artifact in "$temporary_root"/kernora-quickshare_"$package_version".*; do
+  [[ -f "$artifact" ]] || continue
+  install -m 0644 "$artifact" "$output_dir/"
+done
+
+dsc="$output_dir/kernora-quickshare_${package_version}.dsc"
+tarball="$output_dir/kernora-quickshare_${package_version}.tar.xz"
+[[ -s "$dsc" && -s "$tarball" ]] \
+  || die "kernora-quickshare source artifacts were not produced"
+printf 'source package: %s\nsource tarball: %s\n' "$dsc" "$tarball"

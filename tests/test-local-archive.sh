@@ -85,6 +85,10 @@ grep -Fxq 'Package: kernora-calamares' "$packages" \
   || fail "kernora-calamares is not indexed"
 grep -Fxq 'Package: kernora-desktop' "$sources" \
   || fail "kernora-desktop source is not indexed"
+grep -Fxq 'Package: kernora-quickshare' "$packages" \
+  || fail "kernora-quickshare is not indexed"
+grep -Fxq 'Package: kernora-quickshare' "$sources" \
+  || fail "kernora-quickshare source is not indexed"
 grep -Fxq "Origin: $DIST_NAME" "$release" || fail "wrong archive origin"
 grep -Fxq "Codename: $DIST_CODENAME" "$release" || fail "wrong archive codename"
 

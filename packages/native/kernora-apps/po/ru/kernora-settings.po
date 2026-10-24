@@ -3361,3 +3361,102 @@ msgstr "Kernora удаляет драйвер NVIDIA."
 
 msgid "The NVIDIA driver is removed and stops being used after a restart."
 msgstr "Драйвер NVIDIA удалён и перестанет использоваться после перезагрузки."
+
+msgid "Quick Share"
+msgstr "Quick Share"
+
+msgid "Send and receive files with phones nearby"
+msgstr "Обмен файлами с телефонами поблизости"
+
+msgid "Quick Share visibility"
+msgstr "Видимость в Quick Share"
+
+msgid "nearby share android phone send receive files everyone hidden"
+msgstr "nearby share android телефон отправить получить файлы все скрыт видимость"
+
+msgid "%1 minute left"
+msgid_plural "%1 minutes left"
+msgstr[0] "Осталась %1 минута"
+msgstr[1] "Осталось %1 минуты"
+msgstr[2] "Осталось %1 минут"
+
+msgid "A link"
+msgstr "Ссылка"
+
+msgid "A Wi-Fi network"
+msgstr "Сеть Wi-Fi"
+
+msgid "Text"
+msgstr "Текст"
+
+msgid "%1 · sent"
+msgstr "%1 · отправлено"
+
+msgid "%1 · received"
+msgstr "%1 · получено"
+
+msgid "%1 · declined"
+msgstr "%1 · отклонено"
+
+msgid "%1 · cancelled"
+msgstr "%1 · отменено"
+
+msgid "%1 · not finished"
+msgstr "%1 · не завершено"
+
+msgid "%1 · waiting"
+msgstr "%1 · ожидание"
+
+msgid "%1 · %2%"
+msgstr "%1 · %2%"
+
+msgid "Who can see this computer"
+msgstr "Кто видит этот компьютер"
+
+msgid "Phones and computers find it over Wi-Fi on the same network. Bluetooth helps wake up a phone that is sharing."
+msgstr "Телефоны и компьютеры находят его по Wi-Fi в той же сети. Bluetooth помогает «разбудить» телефон, который делится файлами."
+
+msgid "Quick Share is not running."
+msgstr "Quick Share не запущен."
+
+msgid "Everyone"
+msgstr "Все"
+
+msgid "Any device nearby can ask to send you files"
+msgstr "Любое устройство рядом может предложить вам файлы"
+
+msgid "Everyone for 10 minutes"
+msgstr "Все на 10 минут"
+
+msgid "Then hidden again"
+msgstr "Потом снова скрыт"
+
+msgid "Hidden"
+msgstr "Скрыт"
+
+msgid "Nobody sees this computer until you allow it"
+msgstr "Компьютер никто не видит, пока вы не разрешите"
+
+msgid "Ask when someone nearby is sharing"
+msgstr "Спрашивать, когда кто-то рядом делится"
+
+msgid "While hidden, offer to become visible when a phone nearby opens Quick Share"
+msgstr "Пока компьютер скрыт, предлагать стать видимым, когда телефон рядом открывает Quick Share"
+
+msgid "Save received files to"
+msgstr "Сохранять полученные файлы в"
+
+msgid "Recent"
+msgstr "Недавние"
+
+msgid "Unknown device"
+msgstr "Неизвестное устройство"
+
+msgid "Phones nearby see this computer by this name in Quick Share."
+msgstr "Под этим именем телефоны рядом видят компьютер в Quick Share."
+
+msgid "%1 file"
+msgid_plural "%1 files"
+msgstr[0] "%1 файл"
+msgstr[1] "%1 файла"
+msgstr[2] "%1 файлов"

@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export CARGO_HOME = $(CURDIR)/debian/cargo-home
+export CARGO_NET_OFFLINE = true
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	cargo build --release --offline --frozen $(if $(DEB_BUILD_OPTION_PARALLEL),-j $(DEB_BUILD_OPTION_PARALLEL))
+
+override_dh_auto_test:
+
+override_dh_auto_install:
+	install -D -m 0755 target/release/kernora-quickshare debian/kernora-quickshare/usr/bin/kernora-quickshare
+
+override_dh_auto_clean:
+	rm -rf target debian/cargo-home
+
+override_dh_dwz:
+
+override_dh_compress:
+	dh_compress -X LICENSES.txt
+
+override_dh_strip:
+	dh_strip --no-automatic-dbgsym

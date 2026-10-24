@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+"""usage: stub-vendor VENDOR_DIRECTORY USED_CRATES_FILE
+"""
+
+import json
+import pathlib
+import re
+import shutil
+import sys
+
+OVERRIDES = {"rqs_lib": "GPL-3.0"}
+
+
+def package_id(manifest: pathlib.Path) -> tuple[str, str]:
+    text = manifest.read_text(encoding="utf-8")
+    section = re.search(r"^\[package\]\s*$(.*?)(?=^\[|\Z)", text, re.S | re.M)
+    body = section.group(1) if section else ""
+    name = re.search(r'^name\s*=\s*"([^"]+)"', body, re.M)
+    version = re.search(r'^version\s*=\s*"([^"]+)"', body, re.M)
+    if not name or not version:
+        raise SystemExit(f"cannot read the package of {manifest}")
+    return name.group(1), version.group(1)
+
+
+def stub(crate: pathlib.Path) -> None:
+    manifest = crate / "Cargo.toml"
+    text = manifest.read_text(encoding="utf-8")
+    checksum = json.loads((crate / ".cargo-checksum.json").read_text(encoding="utf-8"))
+    for entry in sorted(crate.iterdir()):
+        if entry.name in ("Cargo.toml", ".cargo-checksum.json"):
+            continue
+        if entry.is_dir() and not entry.is_symlink():
+            shutil.rmtree(entry)
+        else:
+            entry.unlink()
+    for target in ("bench", "test", "example", "bin"):
+        text = re.sub(rf"^\[\[{target}\]\]\s*$.*?(?=^\[|\Z)", "", text, flags=re.S | re.M)
+    text = re.sub(r'^build\s*=\s*"[^"]*"\s*$', "build = false", text, flags=re.M)
+    text = re.sub(r"^\[lib\]\s*$.*?(?=^\[|\Z)", "", text, flags=re.S | re.M)
+    text = re.sub(r'^links\s*=\s*"[^"]*"\s*$', "", text, flags=re.M)
+    manifest.write_text(text + '\n[lib]\npath = "lib.rs"\n', encoding="utf-8")
+    (crate / "lib.rs").write_text("", encoding="utf-8")
+    checksum["files"] = {}
+    (crate / ".cargo-checksum.json").write_text(
+        json.dumps(checksum, sort_keys=True, separators=(",", ":")), encoding="utf-8"
+    )
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 3:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    vendor = pathlib.Path(argv[1])
+    used = set()
+    licenses = {}
+    for line in pathlib.Path(argv[2]).read_text(encoding="utf-8").splitlines():
+        package, _, license_text = line.partition("|")
+        parts = package.split()
+        if len(parts) < 2 or not parts[1].startswith("v"):
+            continue
+        crate = (parts[0], parts[1][1:])
+        used.add(crate)
+        license_text = license_text.strip()
+        if license_text.endswith("(*)"):
+            license_text = license_text[:-3].strip()
+        licenses[crate] = license_text or licenses.get(crate) or OVERRIDES.get(crate[0], "see the crate")
+    (vendor / "LICENSES.txt").write_text(
+        "".join(f"{name} {version}: {licenses[(name, version)]}\n" for name, version in sorted(licenses)),
+        encoding="utf-8",
+    )
+    stubbed = 0
+    for crate in sorted(vendor.iterdir()):
+        if not crate.is_dir() or not (crate / "Cargo.toml").is_file():
+            continue
+        if package_id(crate / "Cargo.toml") in used:
+            continue
+        stub(crate)
+        stubbed += 1
+    print(f"stubbed {stubbed} crates that Linux builds never compile")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

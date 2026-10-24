@@ -176,6 +176,14 @@ AppWindow {
     function selectedUrls(): var {
         return Object.keys(selected);
     }
+    function quickShare(): void {
+        const urls = selectedUrls().filter(u => !Files.info(u).isDir);
+        if (urls.length === 0) {
+            app.showMessage(i18n("Only files can be sent. Compress a folder to ZIP first."), "", null);
+            return;
+        }
+        Process.launchApplication("org.kernora.share", urls);
+    }
     function isSelected(url: url): bool {
         return !!selected[String(url)];
     }
@@ -688,6 +696,12 @@ AppWindow {
                         onClicked: app.copy(false)
                     }
                     ToolbarButton {
+                        visible: !app.inTrash
+                        iconName: "kernora-quickshare"
+                        text: i18n("Send with Quick Share")
+                        onClicked: app.quickShare()
+                    }
+                    ToolbarButton {
                         visible: !app.inTrash && app.selectedCount === 1
                         iconName: "edit-rename"
                         text: i18n("Rename")
@@ -745,6 +759,7 @@ AppWindow {
                 onObjectRemoved: (index, object) => openWith.removeItem(object)
             }
         }
+        QQC2.MenuItem { text: i18n("Send with Quick Share"); icon.name: "kernora-quickshare"; onTriggered: app.quickShare() }
         QQC2.MenuSeparator {}
         QQC2.MenuItem { text: i18n("Cut"); icon.name: "edit-cut"; onTriggered: app.copy(true) }
         QQC2.MenuItem { text: i18n("Copy"); icon.name: "edit-copy"; onTriggered: app.copy(false) }

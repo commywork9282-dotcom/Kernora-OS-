@@ -1,0 +1,79 @@
+# Russian translations for kernora-share package.
+# Copyright (C) 2026 THE kernora-share'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-share package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-share\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-09-25 20:40-0700\n"
+"PO-Revision-Date: 2026-09-25 20:40-0700\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Quick Share"
+msgstr "Quick Share"
+
+msgctxt "@title application name"
+msgid "Quick Share"
+msgstr "Quick Share"
+
+msgid "Could not send to %1"
+msgstr "Не удалось отправить на %1"
+
+msgid "Connecting…"
+msgstr "Подключение…"
+
+msgid "Waiting to accept · PIN %1"
+msgstr "Ждём подтверждения · PIN-код %1"
+
+msgid "Waiting to accept"
+msgstr "Ждём подтверждения"
+
+msgid "Sending %1%"
+msgstr "Отправка %1%"
+
+msgid "Sending…"
+msgstr "Отправка…"
+
+msgid "Sent"
+msgstr "Отправлено"
+
+msgid "Declined"
+msgstr "Отклонено"
+
+msgid "Cancelled"
+msgstr "Отменено"
+
+msgid "Not sent"
+msgstr "Не отправлено"
+
+msgid "Looking for devices nearby…"
+msgstr "Ищем устройства поблизости…"
+
+msgid "Quick Share is not running"
+msgstr "Quick Share не запущен"
+
+msgid "On the phone, pull down quick settings, open Quick Share and choose Everyone. Both devices need to be on the same Wi-Fi."
+msgstr "На телефоне откройте быстрые настройки, нажмите Quick Share и выберите «Все». Оба устройства должны быть в одной сети Wi-Fi."
+
+msgid "Click to cancel"
+msgstr "Нажмите, чтобы отменить"
+
+msgid "Shown as %1"
+msgstr "Видно другим как %1"
+
+msgid "Done"
+msgstr "Готово"
+
+msgid "%1 file"
+msgid_plural "%1 files"
+msgstr[0] "%1 файл"
+msgstr[1] "%1 файла"
+msgstr[2] "%1 файлов"
