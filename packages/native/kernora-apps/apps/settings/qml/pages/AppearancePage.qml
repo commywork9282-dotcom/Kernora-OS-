@@ -242,6 +242,28 @@ SettingsPage {
         }
     }
 
+    ConfigEntry {
+        id: themedApps
+        file: "kernorarc"
+        group: "Icons"
+        key: "themedApps"
+        defaultValue: true
+    }
+
+    Group {
+        title: i18n("App icons")
+
+        ListItem {
+            title: i18n("Match app icons to the system colour")
+            subtitle: i18n("Includes newly installed apps. Original icons return when turned off.")
+            icon: "preferences-desktop-icons"
+            iconStyle: "plain"
+            checkable: true
+            checked: Boolean(themedApps.value)
+            onToggled: on => themedApps.value = on
+        }
+    }
+
     Group {
         title: i18n("Colour")
         note: Appearance.busy ? i18n("Applying…") : i18n("Apps, the panel, windows and the live wallpapers take on the chosen colour.")

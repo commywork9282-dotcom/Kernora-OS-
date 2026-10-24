@@ -1,0 +1,263 @@
+#!/usr/bin/python3
+import configparser
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+from PyQt6.QtCore import QBuffer, QIODevice, QLockFile, QStandardPaths, QTimer
+from PyQt6.QtGui import QColor, QGuiApplication, QIcon, QImage, QPainter
+
+
+def config(path):
+    result = configparser.ConfigParser(interpolation=None, strict=False)
+    result.optionxform = str
+    try:
+        result.read(path, encoding="utf-8")
+    except (OSError, configparser.Error):
+        pass
+    return result
+
+
+def write(path, content):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(content, encoding="utf-8")
+    temporary.replace(path)
+
+
+def recolour(image, background, foreground):
+    image = image.convertToFormat(QImage.Format.Format_ARGB32)
+    for y in range(image.height()):
+        for x in range(image.width()):
+            pixel = image.pixelColor(x, y)
+            level = (pixel.red() * 0.2126 + pixel.green() * 0.7152 + pixel.blue() * 0.0722) / 255
+            strength = 0.55 + 0.45 * (1 - level)
+            colour = QColor(*[round(background[i] + (foreground[i] - background[i]) * strength) for i in range(3)])
+            colour.setAlpha(pixel.alpha())
+            image.setPixelColor(x, y, colour)
+    output = QImage(128, 128, QImage.Format.Format_ARGB32)
+    output.fill(0)
+    painter = QPainter(output)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    painter.setPen(QColor(0, 0, 0, 0))
+    painter.setBrush(QColor(*background))
+    painter.drawEllipse(2, 2, 124, 124)
+    painter.drawImage((128 - image.width()) // 2, (128 - image.height()) // 2, image)
+    painter.end()
+    return output
+
+
+class IconSync:
+    theme = "KernoraAutoApps"
+
+    def __init__(self, home=None, roots=None, notify=True):
+        self.home = Path(home or QStandardPaths.writableLocation(QStandardPaths.StandardLocation.GenericDataLocation))
+        self.settings = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config")))
+        self.roots = list(dict.fromkeys(roots or [self.home, *map(Path, QStandardPaths.standardLocations(QStandardPaths.StandardLocation.GenericDataLocation)), Path.home() / ".local/share/flatpak/exports/share", Path("/var/lib/flatpak/exports/share")]))
+        self.directory = self.home / "icons" / self.theme
+        self.state_path = self.directory / "state.json"
+        self.notify = notify
+        self.cache = {}
+        try:
+            self.state = json.loads(self.state_path.read_text())
+        except (OSError, ValueError):
+            self.state = {}
+
+    def settings_value(self, section, key, fallback):
+        for path in (self.settings / "kdeglobals", self.settings / "kdedefaults/kdeglobals", Path("/etc/xdg/kdeglobals")):
+            values = config(path)
+            if values.has_option(section, key):
+                return values.get(section, key)
+        return fallback
+
+    def restore(self, path, item):
+        if not path.exists() or path.read_text() != item["applied"]:
+            return False
+        if item.get("link"):
+            path.unlink()
+            path.symlink_to(item["link"])
+        elif item["source"] == str(path):
+            write(path, item["original"])
+        else:
+            path.unlink()
+        return True
+
+    def sync(self):
+        style = config(self.settings / "kernorarc")
+        enabled = style.get("Icons", "themedApps", fallback="true").lower() not in ("false", "0")
+        current = self.settings_value("Icons", "Theme", "Kernora")
+        base = self.state.get("base", "Kernora") if current == self.theme else current
+        owned = self.state.get("desktops", {})
+        if not enabled:
+            changed = False
+            for name, item in owned.items():
+                changed |= self.restore(self.home / "applications" / name, item)
+            if current == self.theme:
+                self.select_theme(base)
+            self.state = {"base": base, "desktops": {}}
+            write(self.state_path, json.dumps(self.state))
+            if changed:
+                self.refresh()
+            return
+        generation = style.get("Style", "generation", fallback="md3")
+        colour = style.get("Style", "colour", fallback="kernora")
+        if not re.fullmatch(r"[a-z0-9-]+", colour):
+            return
+        dark = not self.settings_value("General", "ColorScheme", "KernoraDark").endswith("Light")
+        palette = next((root / "kernora/palettes" / (colour + ".conf") for root in self.roots if (root / "kernora/palettes" / (colour + ".conf")).is_file()), None)
+        if palette is None:
+            return
+        values = config(palette)
+        section = generation + ("-dark" if dark else "-light")
+        background = QColor("#" + values.get(section, "primaryContainer", fallback="ffdbc9"))
+        foreground = QColor("#" + values.get(section, "primaryContainerContent", fallback="331200"))
+        if not background.isValid() or not foreground.isValid():
+            return
+        QIcon.setThemeName(base)
+        QIcon.setFallbackThemeName("hicolor")
+        QIcon.setThemeSearchPaths(list(dict.fromkeys([str(root / "icons") for root in self.roots] + QIcon.themeSearchPaths())))
+        entries = {}
+        for root in self.roots:
+            folder = root / "applications"
+            if not folder.is_dir():
+                continue
+            for path in sorted(folder.rglob("*.desktop")):
+                name = str(path.relative_to(folder)).replace("/", "-")
+                entries.setdefault(name, path)
+        changed = False
+        desktops = {}
+        images = {}
+        generated = set()
+        for name, selected in entries.items():
+            destination = self.home / "applications" / name
+            old = owned.get(name)
+            source = selected
+            try:
+                contents = selected.read_text()
+            except (OSError, UnicodeError):
+                continue
+            link = old.get("link") if old and contents == old["applied"] else None
+            if selected == destination and selected.is_symlink():
+                link = os.readlink(selected)
+                source = selected.resolve()
+            if old and selected == destination and contents == old["applied"]:
+                source = Path(old["source"])
+                if source == destination:
+                    original = old["original"]
+                elif source.is_file():
+                    original = source.read_text()
+                else:
+                    changed |= self.restore(destination, old)
+                    continue
+            else:
+                try:
+                    original = source.read_text()
+                except (OSError, UnicodeError):
+                    continue
+            if re.search(r"^Hidden\s*=\s*true\s*$", original, re.M):
+                continue
+            replacements = {}
+            for icon in re.findall(r"^Icon(?:\[[^\]\r\n]+\])?[ \t]*=[ \t]*(.*?)[ \t]*$", original, re.M):
+                if not icon or icon in replacements:
+                    continue
+                if icon not in images:
+                    resolved = QIcon(icon) if os.path.isabs(icon) else QIcon.fromTheme(icon)
+                    image = resolved.pixmap(80, 80).toImage()
+                    if image.isNull():
+                        images[icon] = None
+                    else:
+                        buffer = QBuffer()
+                        buffer.open(QIODevice.OpenModeFlag.WriteOnly)
+                        image.save(buffer, "PNG")
+                        key = hashlib.sha256(bytes(buffer.data()) + background.name().encode() + foreground.name().encode()).digest()
+                        if key not in self.cache:
+                            output = recolour(image, background.getRgb()[:3], foreground.getRgb()[:3])
+                            rendered = QBuffer()
+                            rendered.open(QIODevice.OpenModeFlag.WriteOnly)
+                            output.save(rendered, "PNG")
+                            if len(self.cache) > 2048:
+                                self.cache.clear()
+                            self.cache[key] = bytes(rendered.data())
+                        data = self.cache[key]
+                        stem = "kernora-auto-" + hashlib.sha256(icon.encode()).hexdigest()
+                        images[icon] = (stem, data)
+                item = images[icon]
+                if item is None:
+                    continue
+                stem, data = item
+                names = [stem]
+                if not os.path.isabs(icon) and re.fullmatch(r"[\w.+-]+", icon):
+                    names.append(icon)
+                for output_name in names:
+                    output = self.directory / "128x128/apps" / (output_name + ".png")
+                    generated.add(str(output))
+                    if not output.is_file() or output.read_bytes() != data:
+                        output.parent.mkdir(parents=True, exist_ok=True)
+                        temporary = output.with_suffix(".tmp")
+                        temporary.write_bytes(data)
+                        temporary.replace(output)
+                        changed = True
+                if os.path.isabs(icon):
+                    replacements[icon] = stem
+            applied = re.sub(r"^(Icon(?:\[[^\]\r\n]+\])?[ \t]*=[ \t]*)(.*?)[ \t]*$", lambda match: match[1] + replacements[match[2]] if match[2] in replacements else match[0], original, flags=re.M)
+            if applied != original:
+                if not destination.exists() or destination.read_text() != applied:
+                    write(destination, applied)
+                    changed = True
+                desktops[name] = {"source": str(source), "original": original, "applied": applied, "link": link}
+        for name, item in owned.items():
+            if name not in desktops:
+                changed |= self.restore(self.home / "applications" / name, item)
+        for filename in self.state.get("images", []):
+            path = Path(filename)
+            if filename not in generated and path.parent == self.directory / "128x128/apps" and path.exists():
+                path.unlink()
+                changed = True
+        index = "[Icon Theme]\nName=Kernora automatic app icons\nInherits=" + base + ",hicolor\nDirectories=128x128/apps\n\n[128x128/apps]\nSize=128\nType=Scalable\nMinSize=16\nMaxSize=512\nContext=Applications\n"
+        if not (self.directory / "index.theme").exists() or (self.directory / "index.theme").read_text() != index:
+            write(self.directory / "index.theme", index)
+            changed = True
+        self.state = {"base": base, "desktops": desktops, "images": sorted(generated)}
+        encoded = json.dumps(self.state)
+        if not self.state_path.exists() or self.state_path.read_text() != encoded:
+            write(self.state_path, encoded)
+        if current != self.theme or changed:
+            self.select_theme(self.theme)
+        if changed:
+            self.refresh()
+
+    def select_theme(self, theme):
+        if self.notify:
+            subprocess.run(["@KDE_INSTALL_FULL_LIBEXECDIR@/plasma-changeicons", theme], check=False, timeout=20)
+
+    def refresh(self):
+        if self.notify:
+            subprocess.run(["kbuildsycoca6", "--noincremental"], check=False, timeout=30)
+
+
+def main():
+    application = QGuiApplication(sys.argv)
+    lock_path = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.RuntimeLocation)) / "kernora-app-icons.lock"
+    lock = QLockFile(str(lock_path))
+    if not lock.tryLock():
+        return
+    synchronizer = IconSync()
+    def update():
+        try:
+            synchronizer.sync()
+        except (OSError, ValueError, configparser.Error, subprocess.SubprocessError) as error:
+            print("kernora-app-icons:", error, file=sys.stderr)
+    timer = QTimer()
+    timer.setInterval(15000)
+    timer.timeout.connect(update)
+    timer.start()
+    update()
+    application.exec()
+
+
+if __name__ == "__main__":
+    main()

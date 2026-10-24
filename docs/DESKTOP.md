@@ -158,11 +158,24 @@ has no network) and `fetch-symbols --check` verifies them during the build.
 * Every drawing is re-gridded onto 24×24 and wrapped in the Breeze
   colour-scheme stylesheet, so Plasma recolours it with the palette.
 * Aliases, including every `-symbolic` spelling, are symlinks.
-* Application icons are left alone: apps keep their own full-colour icons in
-  the launcher and the taskbar. Kernora's own applications are the exception:
-  `APP_ICONS` draws a themed icon for them — the filled symbol on a round
-  tonal container, full colour, as a Pixel themes its app icons. System
-  Settings (`preferences-system`, `systemsettings`) is drawn that way.
+* Application icons follow the system palette by default. `kernora-app-icons`
+  runs in the user session and checks installed launchers every 15 seconds,
+  including system and user Flatpak exports and local application entries.
+  It renders each icon into a tonal circle using `primaryContainer` and
+  `primaryContainerContent`, retaining its silhouette, alpha and tonal detail.
+  Palette changes and new applications are picked up automatically.
+* The generated `KernoraAutoApps` icon theme lives in the user's data folder
+  and inherits their selected icon theme. Source images stay intact. Absolute
+  icon paths, including desktop actions, use managed user launcher overrides;
+  changes to system launchers are resynchronised and removed apps are cleaned
+  up. Existing user launchers and symlinks are restored when disabled, while
+  subsequent manual edits are preserved. Settings → Wallpaper & style → App
+  icons controls `[Icons] themedApps` in `kernorarc`.
+* Apps without an installed desktop entry and icons supplied directly by a
+  running application's window are outside the icon theme lookup. Unresolvable
+  icons keep their fallback. The daemon does not require administrator rights.
+* `APP_ICONS` still provides Kernora's built-in application symbols on a
+  primary-container disc, including System Settings.
 * Every System Settings module and category has its own symbol. An unmapped
   `preferences-desktop-foo` would fall back to `preferences-desktop` and every
   module would wear the same glyph.

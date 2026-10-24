@@ -3361,3 +3361,12 @@ msgstr "Kernora удаляет драйвер NVIDIA."
 
 msgid "The NVIDIA driver is removed and stops being used after a restart."
 msgstr "Драйвер NVIDIA удалён и перестанет использоваться после перезагрузки."
+
+msgid "App icons"
+msgstr "Значки приложений"
+
+msgid "Match app icons to the system colour"
+msgstr "Перекрашивать значки в цвет системы"
+
+msgid "Includes newly installed apps. Original icons return when turned off."
+msgstr "Включая новые приложения. При отключении возвращаются исходные значки."

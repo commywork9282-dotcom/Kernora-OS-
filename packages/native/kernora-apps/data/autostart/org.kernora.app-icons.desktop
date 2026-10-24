@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Themed app icons
+Name[ru]=Перекраска значков приложений
+Exec=kernora-app-icons
+Icon=preferences-desktop-icons
+NoDisplay=true
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=2
