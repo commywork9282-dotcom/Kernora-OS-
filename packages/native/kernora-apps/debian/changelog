@@ -7,7 +7,17 @@ kernora-apps (1.1.56) UNRELEASED; urgency=medium
       closes once sending starts and progress goes on in notifications;
     - Settings > Quick Share: a main switch, device name, device
       visibility (Everyone / Hidden / visible to everyone for 10 min).
-  * What's new: Quick Share like on Chromebooks.
+  * Quick Share is a real app now, laid out like the Android one: big
+    title, Receive / Send at the bottom. Receive has "You'll appear as"
+    (name, rename, who can see you) and "Sharing with you" with the Quick
+    Share symbol in a spinning cookie shape, "Ready to receive", and
+    Accept / Decline right there when a phone shares something. While it
+    is open a hidden computer is visible to everyone for a while, like on
+    Android, and goes back to hidden on close. Send takes files from the
+    picker or drag and drop; devices are a grouped M3 Expressive list
+    with shaped avatars. Opening it from Files reuses the open window.
+  * Settings > Quick Share: the symbol on top and Send and receive.
+  * What's new: Quick Share like on Chromebooks and Android.
   * Require kernora-desktop 1.4.47 and kernora-quickshare 1.0.1.
 
  -- Kernora Developers <developers@kernora.invalid>  Sat, 24 Oct 2026 12:00:00 -0700

@@ -99,6 +99,9 @@ override_dh_auto_build:
 	  cp -a data/wallpaper/org.kernora.$$theme generated/wallpapers/; \
 	  python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.$$theme/contents/ui $$theme; \
 	done
+	set -e; for entry in $(APPLETS); do \
+	  cp generated/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js generated/plasmoids/$${entry#*:}/contents/ui/m3/; \
+	done
 	set -e; for widget in $(WIDGETS); do \
 	  target=generated/plasmoids/org.kernora.widget.$$widget; \
 	  install -d $$target; \
@@ -106,6 +109,7 @@ override_dh_auto_build:
 	  cp -a data/widgets/common/. $$target/contents/ui/; \
 	  cp generated/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js $$target/contents/ui/; \
 	  cp -a data/shell/m3 $$target/contents/ui/m3; \
+	  cp generated/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js $$target/contents/ui/m3/; \
 	  python3 $(TOOLS)/gen-qml-tokens $$target/contents/ui/m3/M3.qml; \
 	done
 	cp data/shell/shade/contents/ui/sources/BatterySource.qml generated/plasmoids/org.kernora.widget.glance/contents/ui/
@@ -136,7 +140,7 @@ override_dh_auto_build:
 	python3 $(TOOLS)/gen-qml-tokens generated/style/org/kernora/m3/M3.qml
 	cp generated/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js generated/style/org/kernora/m3/
 	python3 $(TOOLS)/gen-loading-shapes generated/style/org/kernora/m3/loadingshapes.js
-	cp generated/style/org/kernora/m3/loadingshapes.js generated/style/org/kernora/desktop/impl/
+	cp generated/style/org/kernora/m3/loadingshapes.js generated/style/org/kernora/m3/materialshapes.js generated/style/org/kernora/desktop/impl/
 	cp -a data/ui generated/style/org/kernora/ui
 	python3 $(TOOLS)/gen-translations data/shell/po generated/locale
 	set -e; for colour in $(COLOURS); do \

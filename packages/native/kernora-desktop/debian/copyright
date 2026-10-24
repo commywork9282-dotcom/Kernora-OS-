@@ -37,6 +37,12 @@ Comment: Material Symbols Rounded, weight 400, optical size 24, from
  The Kernora icon theme and the icon sheets of the Kernora Plasma theme are
  generated from these drawings.
 
+Files: data/symbols/kernora_*.svg
+Copyright: 2026 Kernora Developers
+License: GPL-2+
+Comment: Kernora's own symbols in the Material Symbols Rounded style, drawn by
+ tools/draw-symbols.
+
 Files: data/shell/clipboard/contents/ui/emoji.js
 Copyright: 1991-2024 Unicode, Inc.
 License: Unicode-License-V3

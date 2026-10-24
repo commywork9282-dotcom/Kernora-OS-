@@ -2,7 +2,7 @@
 Type=Application
 Name=Quick Share
 Exec=kernora-quickshare
-Icon=kernora-quickshare
+Icon=org.kernora.quickshare
 NoDisplay=true
 X-KDE-autostart-phase=2
 X-GNOME-Autostart-enabled=true

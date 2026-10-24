@@ -10,6 +10,7 @@ kernora-quickshare (1.0.1) UNRELEASED; urgency=medium
     spinning on Connecting forever: rqs_lib reports failed connects now
     (10 s TCP timeout) and the daemon gives up after 25 s; the stale entry
     leaves the device list.
+  * Desktop entries use the new org.kernora.quickshare app icon.
   * Quick Share can be switched off completely (SetEnabled), and
     "visible to everyone for 10 minutes" is its own switch
     (SetHighVisibility).

@@ -58,6 +58,47 @@ SettingsPage {
         }
     }
 
+    Item {
+        width: parent.width
+        implicitHeight: art.height + blurb.implicitHeight + 36
+
+        MShape {
+            id: art
+            anchors.horizontalCenter: parent.horizontalCenter
+            y: 8
+            width: 136
+            height: 136
+            shape: M3.classic ? "circle" : "cookie9"
+            color: page.on ? M3.primaryContainer : M3.surfaceContainerHighest
+            Behavior on color { ColorAnimation { duration: M3.durationMedium2 } }
+            RotationAnimator on rotation {
+                from: 0
+                to: 360
+                duration: 24000
+                loops: Animation.Infinite
+                running: page.on && art.visible && M3.motionScale > 0 && !M3.classic
+            }
+        }
+        MIcon {
+            anchors.centerIn: art
+            size: 60
+            source: "kernora-quickshare"
+            color: page.on ? M3.primaryContainerContent : M3.surfaceVariantContent
+        }
+        MText {
+            id: blurb
+            anchors.top: art.bottom
+            anchors.topMargin: 16
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: Math.min(parent.width, 420)
+            horizontalAlignment: Text.AlignHCenter
+            role: "bodyMedium"
+            color: M3.surfaceVariantContent
+            wrapMode: Text.Wrap
+            text: i18n("Share files, photos and links with Android phones and computers nearby.")
+        }
+    }
+
     HeroSwitch {
         width: parent.width
         title: i18n("Use Quick Share")
@@ -67,13 +108,26 @@ SettingsPage {
     }
 
     Group {
+        enabled: page.on
+
+        ListItem {
+            title: i18n("Send and receive")
+            subtitle: i18n("Open Quick Share")
+            icon: "kernora-quickshare"
+            accent: 0
+            chevron: true
+            onClicked: Process.startDetached("kernora-share", [])
+        }
+    }
+
+    Group {
         title: i18n("Device name")
         note: i18n("How your device appears to others")
         enabled: page.on
 
         ListItem {
             title: QuickShare.name
-            icon: "computer"
+            icon: "kernora-laptop"
             accent: 0
             chevron: true
             onClicked: nameDialog.open()
@@ -145,7 +199,7 @@ SettingsPage {
                 required property var modelData
                 title: modelData.device.length > 0 ? modelData.device : i18n("Unknown device")
                 subtitle: page.transferText(modelData)
-                icon: modelData.outgoing ? "document-send" : "folder-download"
+                icon: modelData.outgoing ? "kernora-upload" : "folder-download"
                 iconStyle: "plain"
                 interactive: modelData.phase === "finished" && !modelData.outgoing && modelData.kind === "files"
                 onClicked: Process.openUrl(Qt.resolvedUrl("file://" + QuickShare.folder))

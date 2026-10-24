@@ -39,18 +39,17 @@ Chromium: `ash/system/nearby_share/`, `chrome/app/nearby_share_strings.grdp`,
 `nearby_notification_manager.cc`), the mechanics are ours.
 
 - Quick settings tile: the icon turns Quick Share on and off, the tile opens a
-  panel with an On/Off row, Everyone / Hidden (check mark on the chosen one)
-  and "Visible to everyone, for 10 min" with a switch and a countdown. The
-  sublabel is Off, Hidden, Everyone or "Everyone, 9 min". ChromeOS has "Your
-  devices" and "Contacts" where we have "Everyone", those need a Google
-  account.
-- Send window, two steps like the ChromeOS dialog: "Quick Share / Select the
-  device you'd like to share files with" with a preview card (thumbnail for
-  a single image) and a pulse while scanning, the device list, a help line,
-  Cancel and Next. Then "Share with this device?" with the preview, the device
-  in a progress ring and "Secure connection ID". It closes as soon as the
-  transfer starts, progress goes on in notifications. A decline shows "Can't
-  share / The device you're trying to share with did not accept".
+  panel with the symbol, "Ready to receive" and the name you appear as, then
+  Everyone / Everyone for 10 minutes (with a countdown) / Hidden, and Send and
+  receive, which opens the app. The sublabel is Off, Hidden, Everyone or
+  "Everyone, 9 min". ChromeOS has "Your devices" and "Contacts" where we have
+  "Everyone", those need a Google account.
+- Sending from Files is ChromeOS's two steps: select the device next to a
+  preview of what you share (thumbnail for a single image), then "Share with
+  this device?" with the device in a progress ring and "Secure connection
+  ID". The window closes as soon as the transfer starts, progress goes on in
+  notifications. A decline shows "Can't share / The device you're trying to
+  share with did not accept".
 - Notifications: "Receive with Quick Share?" / "Pixel is sharing an image
   with you." + the secure connection ID, Accept and Decline; progress
   "Receiving an image from Pixel" with Cancel; "Image received from Pixel"
@@ -59,6 +58,31 @@ Chromium: `ash/system/nearby_share/`, `chrome/app/nearby_share_strings.grdp`,
   accept files with people around you, become visible" with Enable and
   Dismiss. Items are named like ChromeOS does: an image, 3 files, a video, a
   link, text.
+
+## Looks like Android too
+
+`kernora-share` is also the Quick Share app in the app menu, laid out like the
+Android one with M3 Expressive bits: a big title and Receive / Send at the
+bottom.
+
+- Receive: "You'll appear as" with the name (rename right there) and who can
+  see you, "Sharing with you" with the Quick Share symbol in a slowly spinning
+  cookie shape and "Ready to receive". When a phone shares something it shows
+  up in the same card with the connection ID and Accept / Decline, then the
+  progress and Open folder. Like Android, opening Receive while hidden makes
+  the computer visible to everyone for a while, closing the window hides it
+  again (unless you picked the visibility yourself).
+- Send: choose files or drop them on the window, the devices are a grouped
+  list with shaped avatars; Done when it's sent. Opening Quick Share from
+  Files while the app is open reuses the window.
+
+The symbol (a ring made of two arrows) isn't part of Material Symbols, Google
+only has it as the Quick Share logo. `tools/draw-symbols` in kernora-desktop
+draws our own version in the Material Symbols Rounded style (960 grid, 80
+units stroke, round caps) plus a filled one; it needs skia-pathops and only
+runs when the drawing changes, the SVGs are kept in `data/symbols` and the
+lock like the upstream ones. The shapes (cookie, clover, sunny...) are the
+Material 3 shape set from `MShape` in `org.kernora.m3`.
 
 ## Visibility
 

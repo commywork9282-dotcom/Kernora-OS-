@@ -21,7 +21,6 @@ ColumnLayout {
 
     readonly property bool on: QuickShare.enabled
     readonly property string mode: QuickShare.visibility
-    readonly property bool everyoneForAWhile: mode === "temporary"
 
     function remaining(seconds: int): string {
         return seconds > 60 ? i18n("%1 min", Math.ceil(seconds / 60)) : i18n("%1 sec", Math.max(1, seconds));
@@ -52,24 +51,64 @@ ColumnLayout {
         }
     }
 
-    PanelGroup {
+    Rectangle {
         Layout.fillWidth: true
+        implicitHeight: 104
+        radius: 28
+        color: panel.on ? M3.primaryContainer : M3.surfaceContainerHighest
+        Behavior on color { ColorAnimation { duration: M3.durationMedium2 } }
 
-        Item {
-            width: parent.width
-            implicitHeight: 56
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            spacing: 16
 
-            MText {
-                anchors.left: parent.left
-                anchors.leftMargin: 16
-                anchors.verticalCenter: parent.verticalCenter
-                role: "titleSmall"
-                text: panel.on ? i18n("On") : i18n("Off")
+            Item {
+                Layout.preferredWidth: 72
+                Layout.preferredHeight: 72
+
+                MShape {
+                    anchors.fill: parent
+                    shape: M3.classic ? "circle" : "cookie9"
+                    color: panel.on ? M3.primary : M3.withAlpha(M3.surfaceContent, 0.1)
+                    RotationAnimator on rotation {
+                        from: 0
+                        to: 360
+                        duration: 24000
+                        loops: Animation.Infinite
+                        running: panel.on && panel.visible && M3.motionScale > 0 && !M3.classic
+                    }
+                }
+                MIcon {
+                    anchors.centerIn: parent
+                    size: 34
+                    source: "kernora-quickshare"
+                    color: panel.on ? M3.primaryContent : M3.surfaceContent
+                }
+            }
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 2
+                MText {
+                    Layout.fillWidth: true
+                    role: "titleMedium"
+                    color: panel.on ? M3.primaryContainerContent : M3.surfaceContent
+                    text: !panel.on ? i18n("Off") : panel.mode === "hidden" ? i18n("On, hidden") : i18n("Ready to receive")
+                    elide: Text.ElideRight
+                }
+                MText {
+                    Layout.fillWidth: true
+                    role: "bodySmall"
+                    color: panel.on ? M3.primaryContainerContent : M3.surfaceVariantContent
+                    opacity: 0.85
+                    wrapMode: Text.Wrap
+                    maximumLineCount: 2
+                    elide: Text.ElideRight
+                    text: panel.on ? i18n("You'll appear as %1", QuickShare.name) : i18n("Nobody nearby can see this computer")
+                }
             }
             MSwitch {
-                anchors.right: parent.right
-                anchors.rightMargin: 12
-                anchors.verticalCenter: parent.verticalCenter
                 enabled: QuickShare.available
                 checked: panel.on
                 text: i18n("Quick Share")
@@ -85,90 +124,43 @@ ColumnLayout {
 
         PanelRow {
             width: parent.width
-            icon: "network-workgroup"
+            icon: "kernora-everyone"
             title: i18n("Everyone")
             subtitle: i18n("Any device nearby can share with you")
-            trailingIcon: panel.mode === "everyone" ? "dialog-positive" : ""
+            active: panel.mode === "everyone"
             onClicked: QuickShare.setVisibility("everyone")
+        }
+        PanelRow {
+            width: parent.width
+            icon: "kernora-timer"
+            title: i18n("Everyone for 10 minutes")
+            subtitle: panel.mode === "temporary" ? i18n("%1 left", panel.remaining(QuickShare.visibleFor)) : i18n("Then you're hidden again")
+            active: panel.mode === "temporary"
+            onClicked: QuickShare.setVisibility("temporary")
         }
         PanelRow {
             width: parent.width
             icon: "view-hidden"
             title: i18n("Hidden")
             subtitle: i18n("No one can share with you")
-            trailingIcon: panel.mode !== "everyone" ? "dialog-positive" : ""
+            active: panel.mode === "hidden"
             onClicked: QuickShare.setVisibility("hidden")
-        }
-
-        Rectangle {
-            width: parent.width - 32
-            x: 16
-            height: 1
-            color: M3.outlineVariant
-            visible: panel.mode !== "everyone"
-        }
-
-        Item {
-            width: parent.width
-            implicitHeight: 64
-            visible: panel.mode !== "everyone"
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 12
-
-                Item {
-                    Layout.preferredWidth: 36
-                    Layout.preferredHeight: 36
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: panel.everyoneForAWhile ? 12 : 18
-                        color: panel.everyoneForAWhile ? M3.primary : M3.withAlpha(M3.surfaceContent, 0.08)
-                        Behavior on radius { NumberAnimation { duration: M3.durationMedium2 } }
-                    }
-                    MIcon {
-                        anchors.centerIn: parent
-                        size: 20
-                        source: "kernora-timer"
-                        color: panel.everyoneForAWhile ? M3.primaryContent : M3.surfaceContent
-                    }
-                }
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 0
-                    MText {
-                        Layout.fillWidth: true
-                        role: "titleSmall"
-                        text: i18n("Visible to everyone")
-                        elide: Text.ElideRight
-                    }
-                    MText {
-                        Layout.fillWidth: true
-                        role: "bodySmall"
-                        color: M3.surfaceVariantContent
-                        text: panel.everyoneForAWhile ? i18n("%1 left", panel.remaining(QuickShare.visibleFor)) : i18n("For 10 min")
-                        elide: Text.ElideRight
-                    }
-                }
-                MSwitch {
-                    checked: panel.everyoneForAWhile
-                    text: i18n("Visible to everyone")
-                    onToggled: QuickShare.setHighVisibility(!panel.everyoneForAWhile)
-                }
-            }
         }
     }
 
-    MText {
+    PanelGroup {
         Layout.fillWidth: true
-        Layout.leftMargin: 8
-        Layout.rightMargin: 8
-        role: "bodySmall"
-        color: M3.surfaceVariantContent
-        wrapMode: Text.Wrap
-        text: i18n("Visible as %1. Make sure both devices are unlocked, close together and on the same Wi-Fi.", QuickShare.name)
-        visible: panel.on && QuickShare.name.length > 0
+
+        PanelRow {
+            width: parent.width
+            icon: "kernora-upload"
+            title: i18n("Send and receive")
+            subtitle: i18n("Open Quick Share")
+            trailingIcon: "go-next"
+            onClicked: {
+                panel.backend.openQuickShare();
+                panel.requestClose();
+            }
+        }
     }
 }

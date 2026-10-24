@@ -10,6 +10,6 @@ static KLocalizedString displayName()
 
 int main(int argc, char **argv)
 {
-    static const Kernora::Application application{"kernora-share", "org.kernora.share", "share", "kernora-quickshare", false};
+    static const Kernora::Application application{"kernora-share", "org.kernora.share", "share", "org.kernora.quickshare", true};
     return Kernora::run(argc, argv, application, displayName);
 }

@@ -32,6 +32,13 @@ for app in settings files welcome editor photos player calculator screenshot sto
   grep -q '^Categories=.*KDE' "$desktop" && fail "$app is filed as a KDE application"
   [[ -s "$package_root/src/apps/$app.cpp" ]] || fail "$app has no host"
 done
+grep -Fq 'key: "receive"' "$package_root/apps/share/qml/Main.qml" \
+  && grep -Fq 'key: "send"' "$package_root/apps/share/qml/Main.qml" \
+  || fail "Quick Share has no Receive and Send"
+grep -Fq '"org.kernora.quickshare", true}' "$package_root/src/apps/share.cpp" \
+  || fail "Quick Share does not reuse its window"
+grep -q '^NoDisplay=' "$package_root/apps/share/org.kernora.share.desktop" \
+  && fail "Quick Share is hidden from the app menu"
 grep -Fxq 'X-KDE-DBUS-Restricted-Interfaces=org.kde.KWin.ScreenShot2' \
   "$package_root/apps/screenshot/org.kernora.screenshot.desktop" \
   || fail "Screenshot is not allowed to ask KWin for screenshots"

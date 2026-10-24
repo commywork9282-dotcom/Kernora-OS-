@@ -169,6 +169,10 @@ Item {
         onNewData: sourceName => disconnectSource(sourceName)
     }
 
+    function openQuickShare(): void {
+        executable.connectSource("kernora-share");
+    }
+
     function openSettings(module: string): void {
         if (module.length > 0) {
             KCMUtils.KCMLauncher.openSystemSettings(module);

@@ -17,15 +17,154 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-msgid "Quick Share"
-msgstr "Quick Share"
 
 msgctxt "@title application name"
 msgid "Quick Share"
 msgstr "Quick Share"
 
+msgid "Quick Share"
+msgstr "Quick Share"
+
 msgid "Could not send to %1"
 msgstr "Не удалось отправить на %1"
+
+msgid "%1 min"
+msgstr "%1 мин"
+
+msgid "%1 sec"
+msgstr "%1 с"
+
+msgid "Quick Share is off"
+msgstr "Quick Share выключен"
+
+msgid "Visible to everyone"
+msgstr "Виден всем"
+
+msgid "Temporarily visible to everyone"
+msgstr "Временно виден всем"
+
+msgid "%1 left"
+msgstr "Осталось %1"
+
+msgid "Hidden"
+msgstr "Скрыт"
+
+msgid "a link"
+msgstr "ссылка"
+
+msgid "text"
+msgstr "текст"
+
+msgid "a Wi-Fi network"
+msgstr "сеть Wi-Fi"
+
+msgid "%1 Files"
+msgstr "Файлов: %1"
+
+msgid "Computer"
+msgstr "Компьютер"
+
+msgid "Tablet"
+msgstr "Планшет"
+
+msgid "Phone"
+msgstr "Телефон"
+
+msgid "Quick Share settings"
+msgstr "Настройки Quick Share"
+
+msgid "You'll appear as"
+msgstr "Вас увидят как"
+
+msgid "Rename"
+msgstr "Переименовать"
+
+msgid "Device visibility"
+msgstr "Видимость устройства"
+
+msgid "Sharing with you"
+msgstr "Обмен с вами"
+
+msgid "Quick Share isn't running"
+msgstr "Quick Share не запущен"
+
+msgid "%1 wants to share"
+msgstr "%1 хочет поделиться"
+
+msgid "A device nearby"
+msgstr "Устройство рядом"
+
+msgid "Receiving from %1"
+msgstr "Получаем от %1"
+
+msgid "a device nearby"
+msgstr "устройства рядом"
+
+msgid "Received from %1"
+msgstr "Получено от %1"
+
+msgid "You're hidden"
+msgstr "Вы скрыты"
+
+msgid "Ready to receive"
+msgstr "Готово к приёму"
+
+msgid "Restart your computer to start Quick Share again."
+msgstr "Перезагрузите компьютер, чтобы снова запустить Quick Share."
+
+msgid "Turn it on to share with phones and computers nearby."
+msgstr "Включите, чтобы обмениваться файлами с телефонами и компьютерами рядом."
+
+msgid "%1 · Secure connection ID: %2"
+msgstr "%1 · Код безопасного подключения: %2"
+
+msgid "%1 · %2%"
+msgstr "%1 · %2%"
+
+msgid "Nobody nearby can see this computer. Become visible to receive."
+msgstr "Этот компьютер никому не виден. Станьте видимым, чтобы получать файлы."
+
+msgid "Keep this computer unlocked. Phones nearby will see %1."
+msgstr "Не блокируйте компьютер. Телефоны рядом увидят «%1»."
+
+msgid "Decline"
+msgstr "Отклонить"
+
+msgid "Accept"
+msgstr "Принять"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Open folder"
+msgstr "Открыть папку"
+
+msgid "Done"
+msgstr "Готово"
+
+msgid "Turn on"
+msgstr "Включить"
+
+msgid "Visible for 10 min"
+msgstr "Стать видимым на 10 мин"
+
+msgid "Share with devices nearby"
+msgstr "Обмен с устройствами рядом"
+
+msgid "Choose files or drop them here. You can also right-click a file in Files and pick Send with Quick Share."
+msgstr "Выберите файлы или перетащите их сюда. А ещё можно нажать на файл правой кнопкой в «Файлах» и выбрать «Отправить через Quick Share»."
+
+msgid "Choose files"
+msgstr "Выбрать файлы"
+
+msgid "Turn on Quick Share first."
+msgstr "Сначала включите Quick Share."
+
+msgid "Ready to send"
+msgstr "Готово к отправке"
+
+msgid "Change"
+msgstr "Изменить"
 
 msgid "Select the device you'd like to share files with"
 msgstr "Выберите устройство, на которое хотите отправить файлы"
@@ -33,32 +172,32 @@ msgstr "Выберите устройство, на которое хотите 
 msgid "Quick Share is turned off"
 msgstr "Quick Share выключен"
 
-msgid "%1 Files"
-msgstr "Файлов: %1"
-
-msgid "Share with this device?"
-msgstr "Отправить на это устройство?"
-
-msgid "Scanning for nearby devices…"
+msgid "Looking for nearby devices…"
 msgstr "Ищем устройства поблизости…"
 
 msgid "Turn on Quick Share to see devices nearby."
 msgstr "Включите Quick Share, чтобы увидеть устройства рядом."
 
-msgid "Turn on"
-msgstr "Включить"
+msgid "Make sure both devices are unlocked, close together and on the same Wi-Fi. If a phone isn't listed, open Quick Share on it and choose Everyone."
+msgstr "Убедитесь, что оба устройства разблокированы, находятся рядом и в одной сети Wi-Fi. Если телефона нет в списке, откройте на нём Quick Share и выберите «Все»."
 
-msgid "Secure connection ID: %1"
-msgstr "Код безопасного подключения: %1"
-
-msgid "Waiting for %1 to accept…"
-msgstr "Ждём, пока %1 примет…"
-
-msgid "Connecting…"
-msgstr "Подключение…"
+msgid "Next"
+msgstr "Далее"
 
 msgid "Can't share"
 msgstr "Не удалось отправить"
+
+msgid "Sent"
+msgstr "Отправлено"
+
+msgid "Sending…"
+msgstr "Отправляем…"
+
+msgid "Share with this device?"
+msgstr "Отправить на это устройство?"
+
+msgid "Secure connection ID: %1"
+msgstr "Код безопасного подключения: %1"
 
 msgid "The device you're trying to share with did not accept"
 msgstr "Устройство, на которое вы отправляете, не приняло передачу"
@@ -66,17 +205,56 @@ msgstr "Устройство, на которое вы отправляете, �
 msgid "Something went wrong. Please try again."
 msgstr "Что-то пошло не так. Попробуйте ещё раз."
 
-msgid "Make sure both devices are unlocked, close together and on the same Wi-Fi. If a phone isn't listed, open Quick Share on it and choose Everyone."
-msgstr "Убедитесь, что оба устройства разблокированы, находятся рядом и в одной сети Wi-Fi. Если телефона нет в списке, откройте на нём Quick Share и выберите «Все»."
+msgid "%1 got your files."
+msgstr "Файлы доставлены на %1."
+
+msgid "%1%"
+msgstr "%1%"
+
+msgid "Waiting for %1 to accept…"
+msgstr "Ждём, пока %1 примет…"
+
+msgid "Connecting…"
+msgstr "Подключение…"
 
 msgid "Close"
 msgstr "Закрыть"
 
-msgid "Cancel"
-msgstr "Отмена"
-
 msgid "Try again"
 msgstr "Повторить"
 
-msgid "Next"
-msgstr "Далее"
+msgid "Receive"
+msgstr "Получить"
+
+msgid "Send"
+msgstr "Отправить"
+
+msgid "Everyone"
+msgstr "Все"
+
+msgid "Any device nearby can share with you"
+msgstr "Любое устройство рядом может отправлять вам файлы"
+
+msgid "Everyone for 10 minutes"
+msgstr "Все на 10 минут"
+
+msgid "Then you're hidden again"
+msgstr "Потом вы снова скрыты"
+
+msgid "No one can share with you"
+msgstr "Никто не может отправлять вам файлы"
+
+msgid "Device name"
+msgstr "Имя устройства"
+
+msgid "How your device appears to others in Quick Share."
+msgstr "Так ваше устройство видят другие в Quick Share."
+
+msgid "Choose files to send"
+msgstr "Выберите файлы для отправки"
+
+msgid "%1 file"
+msgid_plural "%1 files"
+msgstr[0] "%1 файл"
+msgstr[1] "%1 файла"
+msgstr[2] "%1 файлов"

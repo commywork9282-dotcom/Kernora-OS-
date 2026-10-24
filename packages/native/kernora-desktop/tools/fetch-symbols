@@ -50,6 +50,7 @@ def write_lock(entries: dict[str, str]) -> None:
     lines = [
         "# Material Symbols Rounded, weight 400, 24dp, from",
         f"# https://github.com/google/material-design-icons at {UPSTREAM_REF}.",
+        "# kernora_* files are Kernora's own drawings, made by tools/draw-symbols.",
         "# Format: SHA256 two-spaces filename, relative to data/symbols/.",
     ]
     for name in sorted(entries):
@@ -105,6 +106,10 @@ def fetch() -> int:
         target = ASSETS / name
         if target.exists():
             entries[name] = digest(target.read_bytes())
+            continue
+        if symbol in symbols_map.OWN:
+            print(f"[{index}/{len(wanted)}] {name}: own drawing missing, run tools/draw-symbols")
+            missing.append(f"{symbol} (fill)" if fill else symbol)
             continue
         try:
             with urllib.request.urlopen(url_for(symbol, fill), timeout=30) as response:

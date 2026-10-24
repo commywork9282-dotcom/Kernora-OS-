@@ -519,6 +519,7 @@ Item {
         MTile {
             readonly property string mode: QuickShare.visibility
             icon: "kernora-quickshare"
+            iconOn: "kernora-tile-quickshare-on"
             title: i18n("Quick Share")
             subtitle: !QuickShare.enabled ? i18n("Off")
                 : mode === "temporary" ? i18n("Everyone, %1", QuickShare.visibleFor > 60

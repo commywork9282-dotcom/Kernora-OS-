@@ -12,6 +12,7 @@ MSwitch MSwitch.qml
 MText MText.qml
 MTile MTile.qml
 MShapeEcho MShapeEcho.qml
+MShape MShape.qml
 MLinearProgress MLinearProgress.qml
 MCircularProgress MCircularProgress.qml
 MLoadingIndicator MLoadingIndicator.qml

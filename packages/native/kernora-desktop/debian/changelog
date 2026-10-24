@@ -4,6 +4,17 @@ kernora-desktop (1.4.47) UNRELEASED; urgency=medium
     Quick Share on and off, the tile opens a panel with an On/Off row,
     Everyone / Hidden and "Visible to everyone, for 10 min" with a
     countdown. Sublabels: Off, Hidden, Everyone, "Everyone, 9 min".
+  * The Quick Share panel got the M3 Expressive look: the symbol in a
+    spinning cookie shape, "Ready to receive" and the name you appear
+    as, Everyone / Everyone for 10 minutes / Hidden as rows with icons,
+    and Send and receive, which opens the app.
+  * Icons: kernora-quickshare is now the Quick Share symbol (a ring of two
+    arrows), drawn by tools/draw-symbols in the Material Symbols Rounded
+    style, with a filled one for the tile when it's on and the
+    org.kernora.quickshare app icon. Also laptop, tablet, everyone,
+    upload and filled download/upload/timer/hidden/devices symbols.
+  * m3: MShape draws any of the Material shapes, materialshapes.js ships
+    with every copy of the m3 module.
 
  -- Kernora Developers <developers@kernora.invalid>  Sat, 24 Oct 2026 12:00:00 -0700
 

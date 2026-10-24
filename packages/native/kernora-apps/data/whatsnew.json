@@ -13,6 +13,17 @@
           "en": "Sharing now works the way it does on ChromeOS: pick a device next to a preview of your files, check the secure connection ID and follow the progress in notifications. In quick settings, tap the Quick Share icon to turn it on or off, or tap the tile to choose who can see you.",
           "ru": "Отправка теперь устроена как в ChromeOS: выберите устройство рядом с превью файлов, сверьте код безопасного подключения и следите за прогрессом в уведомлениях. В быстрых настройках значок Quick Share включает и выключает его, а нажатие на плитку открывает выбор, кто вас видит."
         }
+      },
+      {
+        "icon": "folder-download",
+        "title": {
+          "en": "Quick Share app",
+          "ru": "Приложение Quick Share"
+        },
+        "text": {
+          "en": "Quick Share now has its own app with Receive and Send, like on Android: see how you appear to others, who can see you, and accept files right in the window. Find it in the app menu or open it from quick settings.",
+          "ru": "У Quick Share теперь есть своё приложение с вкладками «Получить» и «Отправить», как на Android: видно, как вас видят другие и кто может вас найти, а файлы можно принять прямо в окне. Оно есть в меню приложений и открывается из быстрых настроек."
+        }
       }
     ]
   },

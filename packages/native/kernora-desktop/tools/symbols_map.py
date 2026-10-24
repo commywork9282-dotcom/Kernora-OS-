@@ -277,7 +277,19 @@ ICONS: list[tuple[str, bool, str, list[str]]] = [
     ("queue_music", False, "actions", ["media-playlist-normal", "view-media-playlist"]),
     ("photo_library", False, "places", ["kernora-photos", "folder-image-people"]),
     ("crop", False, "actions", ["transform-crop", "image-crop"]),
-    ("share", False, "actions", ["document-share", "emblem-shared-symbolic", "kernora-quickshare"]),
+    ("share", False, "actions", ["document-share", "emblem-shared-symbolic"]),
+    ("kernora_quick_share", False, "actions", ["kernora-quickshare"]),
+    ("kernora_quick_share", True, "status", ["kernora-quickshare-on", "kernora-tile-quickshare-on"]),
+    ("laptop_chromebook", False, "devices", ["kernora-laptop"]),
+    ("group", False, "status", ["kernora-everyone"]),
+    ("group", True, "status", ["kernora-everyone-on"]),
+    ("upload", False, "actions", ["kernora-upload", "upload"]),
+    ("download", True, "places", ["kernora-download-on"]),
+    ("upload", True, "actions", ["kernora-upload-on"]),
+    ("visibility_off", True, "status", ["kernora-hidden-on"]),
+    ("timer", True, "actions", ["kernora-timer-on"]),
+    ("devices", True, "devices", ["kernora-devices-on"]),
+    ("tablet_android", False, "devices", ["kernora-tablet", "tablet"]),
     ("new_window", False, "actions", ["kernora-new-window"]),
     ("waving_hand", False, "actions", ["kernora-hello"]),
     ("wifi", True, "status", ["kernora-tile-wifi-on"]),
@@ -313,6 +325,7 @@ APP_ICONS: list[tuple[str, bool, list[str]]] = [
     ("install_desktop", True, ["org.kernora.installer", "calamares"]),
     ("storefront", True, ["org.kernora.store"]),
     ("monitor_heart", True, ["htop"]),
+    ("kernora_quick_share", False, ["org.kernora.quickshare", "org.kernora.share"]),
 ]
 
 
@@ -341,6 +354,15 @@ def contexts() -> list[str]:
         if context not in seen:
             seen.append(context)
     return sorted(seen)
+
+
+OWN = {"kernora_quick_share"}
+
+
+def credit(symbol: str) -> str:
+    if symbol in OWN:
+        return f'Kernora symbol "{symbol}", GPL-2.0-or-later'
+    return f'Material Symbols Rounded "{symbol}", Apache-2.0'
 
 
 def asset_name(symbol: str, fill: bool) -> str:

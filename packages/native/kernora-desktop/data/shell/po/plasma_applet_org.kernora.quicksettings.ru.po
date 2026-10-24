@@ -244,17 +244,32 @@ msgstr "Любое устройство рядом может отправлят
 msgid "No one can share with you"
 msgstr "Никто не может отправлять вам файлы"
 
-msgid "Visible to everyone"
-msgstr "Видимость для всех"
+msgid "Everyone for 10 minutes"
+msgstr "Все на 10 минут"
 
-msgid "For 10 min"
-msgstr "На 10 мин"
+msgid "Then you're hidden again"
+msgstr "Потом вы снова скрыты"
 
 msgid "%1 left"
 msgstr "Осталось %1"
 
-msgid "Visible as %1. Make sure both devices are unlocked, close together and on the same Wi-Fi."
-msgstr "Виден как %1. Убедитесь, что оба устройства разблокированы, рядом и в одной сети Wi-Fi."
+msgid "On, hidden"
+msgstr "Включён, скрыт"
+
+msgid "Ready to receive"
+msgstr "Готово к приёму"
+
+msgid "You'll appear as %1"
+msgstr "Вас увидят как %1"
+
+msgid "Nobody nearby can see this computer"
+msgstr "Этот компьютер никому не виден"
+
+msgid "Send and receive"
+msgstr "Отправить и получить"
+
+msgid "Open Quick Share"
+msgstr "Открыть Quick Share"
 
 msgctxt "minutes left, short"
 msgid "%1m"

@@ -300,8 +300,11 @@ KERNORA_COLOUR=blue python3 "$tools_root/gen-icon-theme" "$package_root/data/sym
   || fail "gen-icon-theme fails for a colour"
 grep -Fxq 'Inherits=Kernora,breeze-dark,breeze,hicolor' "$icons/Kernora-blue/index.theme" \
   || fail "a colour's icons do not fall back to Kernora's"
-[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 12 ]] \
-  || fail "a colour's icon theme should hold only the twelve app icons"
+[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 13 ]] \
+  || fail "a colour's icon theme should hold only the thirteen app icons"
+for icon in actions/kernora-quickshare status/kernora-tile-quickshare-on apps/org.kernora.quickshare; do
+  [[ -e "$icons/Kernora/scalable/$icon.svg" ]] || fail "the icon theme has no $icon"
+done
 find "$icons/Kernora-blue" -name 'preferences-system*' | grep -q . \
   && fail "a colour's icons would shadow preferences-system-* through KDE's generic fallback"
 rm -rf "$icons"
@@ -310,6 +313,10 @@ grep -Fq 'LookAndFeelPackage=org.kernora.desktop' "$tools_root/gen-kdeglobals" \
 PYTHONDONTWRITEBYTECODE=1 python3 "$tools_root/fetch-symbols" --check >/dev/null \
   || fail "vendored Material Symbols do not match data/symbols.lock"
 [[ -s "$data_root/symbols/LICENSE" ]] || fail "Material Symbols licence is missing"
+[[ -x "$tools_root/draw-symbols" ]] || fail "draw-symbols is missing"
+grep -Eq '^[0-9a-f]{64}  kernora_quick_share_(fill1_)?24px.svg$' "$data_root/symbols.lock" \
+  || fail "the Quick Share symbol is not in data/symbols.lock"
+grep -Fxq 'MShape MShape.qml' "$data_root/shell/m3/qmldir" || fail "m3 has no MShape"
 
 shell_root="$data_root/shell"
 for applet in launcher:org.kernora.launcher shade:org.kernora.quicksettings clipboard:org.kernora.clipboard; do

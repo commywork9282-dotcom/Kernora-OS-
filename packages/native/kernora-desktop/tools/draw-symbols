@@ -1,0 +1,157 @@
+#!/usr/bin/env python3
+"""usage: draw-symbols
+       redraws Kernora's own symbols into data/symbols; needs skia-pathops
+"""
+
+from __future__ import annotations
+
+import math
+import pathlib
+import sys
+
+import pathops
+
+PACKAGE = pathlib.Path(__file__).resolve().parent.parent
+ASSETS = PACKAGE / "data" / "symbols"
+
+CENTER = 480.0
+WEIGHT = 80.0
+RING = 360.0
+BAR = 92.0
+TIP = 14.0
+ARM = 78.0
+END = 8.0
+BADGE = 400.0
+INSET = 0.72
+
+
+def point(angle: float, radius: float) -> tuple[float, float]:
+    return CENTER + radius * math.cos(math.radians(angle)), CENTER - radius * math.sin(math.radians(angle))
+
+
+def arc(path: pathops.Path, start: float, stop: float, radius: float) -> None:
+    steps = max(1, math.ceil(abs(stop - start) / 45))
+    sweep = (stop - start) / steps
+    reach = radius * 4 / 3 * math.tan(math.radians(sweep) / 4)
+    for step in range(steps):
+        a = math.radians(start + step * sweep)
+        b = math.radians(start + (step + 1) * sweep)
+        x0, y0 = point(math.degrees(a), radius)
+        x1, y1 = point(math.degrees(b), radius)
+        path.cubicTo(
+            x0 - reach * math.sin(a), y0 - reach * math.cos(a),
+            x1 + reach * math.sin(b), y1 + reach * math.cos(b),
+            x1, y1,
+        )
+
+
+def half() -> pathops.Path:
+    join = 180 - math.degrees(math.asin(BAR / RING))
+    tip = (CENTER - TIP, CENTER - BAR)
+    stroke = pathops.Path()
+    stroke.moveTo(*point(END, RING))
+    arc(stroke, END, join, RING)
+    stroke.lineTo(*tip)
+    stroke.moveTo(tip[0] - ARM, tip[1] - ARM)
+    stroke.lineTo(*tip)
+    stroke.lineTo(tip[0] - ARM, tip[1] + ARM)
+    stroke.stroke(WEIGHT, pathops.LineCap.ROUND_CAP, pathops.LineJoin.ROUND_JOIN, 4)
+    return stroke
+
+
+def transformed(path: pathops.Path, scale: float, turn: bool) -> pathops.Path:
+    sign = -1 if turn else 1
+    out = pathops.Path()
+    pen = out.getPen()
+    path.draw(TransformPen(pen, lambda x, y: (
+        CENTER + sign * scale * (x - CENTER),
+        CENTER + sign * scale * (y - CENTER),
+    )))
+    return out
+
+
+class TransformPen:
+    def __init__(self, pen, f) -> None:
+        self.pen = pen
+        self.f = f
+
+    def moveTo(self, p) -> None:
+        self.pen.moveTo(self.f(*p))
+
+    def lineTo(self, p) -> None:
+        self.pen.lineTo(self.f(*p))
+
+    def qCurveTo(self, *points) -> None:
+        self.pen.qCurveTo(*[None if p is None else self.f(*p) for p in points])
+
+    def curveTo(self, *points) -> None:
+        self.pen.curveTo(*[self.f(*p) for p in points])
+
+    def closePath(self) -> None:
+        self.pen.closePath()
+
+    def endPath(self) -> None:
+        self.pen.endPath()
+
+
+def glyph(scale: float = 1.0) -> pathops.Path:
+    top = half()
+    top.convertConicsToQuads(0.25)
+    return pathops.op(transformed(top, scale, False), transformed(top, scale, True), pathops.PathOp.UNION)
+
+
+def disc(radius: float) -> pathops.Path:
+    path = pathops.Path()
+    path.moveTo(*point(0, radius))
+    arc(path, 0, 360, radius)
+    path.close()
+    path.convertConicsToQuads(0.25)
+    return path
+
+
+def number(value: float) -> str:
+    text = f"{value:.1f}".rstrip("0").rstrip(".")
+    return "0" if text == "-0" else text
+
+
+LETTERS = {
+    pathops.PathVerb.MOVE: "M",
+    pathops.PathVerb.LINE: "L",
+    pathops.PathVerb.QUAD: "Q",
+    pathops.PathVerb.CUBIC: "C",
+    pathops.PathVerb.CLOSE: "Z",
+}
+
+
+def svg_path(path: pathops.Path) -> str:
+    parts: list[str] = []
+    for verb, points in path:
+        coords = " ".join(f"{number(x)} {number(y - 960)}" for x, y in points)
+        parts.append(LETTERS[verb] + coords)
+    return "".join(parts)
+
+
+def write(name: str, path: pathops.Path) -> None:
+    path.simplify()
+    data = (
+        '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">'
+        f'<path d="{svg_path(path)}"/></svg>'
+    )
+    (ASSETS / name).write_text(data, encoding="utf-8")
+    print(f"drew {name}")
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 1:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    write("kernora_quick_share_24px.svg", glyph())
+    write(
+        "kernora_quick_share_fill1_24px.svg",
+        pathops.op(disc(BADGE), glyph(INSET), pathops.PathOp.DIFFERENCE),
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

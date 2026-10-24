@@ -3470,3 +3470,12 @@ msgstr "Полученные файлы"
 
 msgid "How your device appears to others in Quick Share."
 msgstr "Так ваше устройство видят другие в Quick Share."
+
+msgid "Share files, photos and links with Android phones and computers nearby."
+msgstr "Делитесь файлами, фото и ссылками с телефонами Android и компьютерами поблизости."
+
+msgid "Send and receive"
+msgstr "Отправить и получить"
+
+msgid "Open Quick Share"
+msgstr "Открыть Quick Share"
