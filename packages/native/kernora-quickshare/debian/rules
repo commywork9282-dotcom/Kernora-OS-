@@ -11,6 +11,9 @@ override_dh_auto_build:
 	cargo build --release --offline --frozen $(if $(DEB_BUILD_OPTION_PARALLEL),-j $(DEB_BUILD_OPTION_PARALLEL))
 
 override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	cargo test --release --offline --frozen --bin kernora-quickshare $(if $(DEB_BUILD_OPTION_PARALLEL),-j $(DEB_BUILD_OPTION_PARALLEL))
+endif
 
 override_dh_auto_install:
 	install -D -m 0755 target/release/kernora-quickshare debian/kernora-quickshare/usr/bin/kernora-quickshare

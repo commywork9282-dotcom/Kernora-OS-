@@ -11,6 +11,13 @@ kernora-quickshare (1.0.1) UNRELEASED; urgency=medium
     (10 s TCP timeout) and the daemon gives up after 25 s; the stale entry
     leaves the device list.
   * Desktop entries use the new org.kernora.quickshare app icon.
+  * "Device nearby is sharing" stops nagging (a tester got it every few
+    minutes, stacked in history):
+    - rqs_lib only reacts to real Quick Share adverts (0xFE2C with the
+      FC128E model ID, like ChromeOS), not to every Fast Pair gadget;
+    - one notification per sharing phone, gone ~30 s after it stops;
+    - Dismiss or closing it keeps it quiet for 15 minutes (ChromeOS);
+    - new Don't ask again button turns the prompt off.
   * Quick Share can be switched off completely (SetEnabled), and
     "visible to everyone for 10 minutes" is its own switch
     (SetHighVisibility).

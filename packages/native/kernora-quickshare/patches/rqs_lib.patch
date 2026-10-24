@@ -1,3 +1,30 @@
+--- a/src/hdl/ble.rs
++++ b/src/hdl/ble.rs
+@@ -9,6 +9,7 @@
+ use uuid::{uuid, Uuid};
+ 
+ const SERVICE_UUID_SHARING: Uuid = uuid!("0000fe2c-0000-1000-8000-00805f9b34fb");
++const MODEL_ID_SHARING: [u8; 3] = [0xfc, 0x12, 0x8e];
+ 
+ const INNER_NAME: &str = "BleListener";
+ 
+@@ -62,12 +63,15 @@
+                             //
+                             // ...The filtering is being done only here now.
+                             if let Some(service_data) = service_data.get(&SERVICE_UUID_SHARING) {
++                                if !service_data.starts_with(&MODEL_ID_SHARING) {
++                                    continue;
++                                }
+                                 let now = SystemTime::now();
+                                 // Quick Share seems to emit LE advert every 10 seconds...
+                                 // Doesn't really seem much of a spam, so we wait for 10s now
+                                 // just in case some implementation is sending it under that
+                                 // time period
+-                                if now.duration_since(last_alert)? <= Duration::from_secs(10) {
++                                if now.duration_since(last_alert).is_ok_and(|gap| gap <= Duration::from_secs(2)) {
+                                     // debug!("{INNER_NAME}: Received LE advert but last alert was {}s ago", now.duration_since(last_alert)?.as_secs());
+                                     continue;
+                                 }
 --- a/src/hdl/blea.rs
 +++ b/src/hdl/blea.rs
 @@ -21,7 +21,9 @@

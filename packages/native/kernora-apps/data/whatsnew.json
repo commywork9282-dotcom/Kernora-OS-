@@ -24,6 +24,17 @@
           "en": "Quick Share now has its own app with Receive and Send, like on Android: see how you appear to others, who can see you, and accept files right in the window. Find it in the app menu or open it from quick settings.",
           "ru": "У Quick Share теперь есть своё приложение с вкладками «Получить» и «Отправить», как на Android: видно, как вас видят другие и кто может вас найти, а файлы можно принять прямо в окне. Оно есть в меню приложений и открывается из быстрых настроек."
         }
+      },
+      {
+        "icon": "preferences-desktop-notification",
+        "title": {
+          "en": "Fewer \"nearby is sharing\" pop-ups",
+          "ru": "Меньше «рядом кто-то делится»"
+        },
+        "text": {
+          "en": "Quick Share no longer mistakes earbuds and watches for a phone that shares. The prompt shows once, goes away when the phone stops, stays quiet for 15 minutes after Dismiss, and Don't ask again turns it off.",
+          "ru": "Quick Share больше не путает наушники и часы с телефоном, который делится файлами. Подсказка появляется один раз, исчезает, когда телефон перестаёт делиться, молчит 15 минут после «Закрыть», а «Больше не спрашивать» выключает её совсем."
+        }
       }
     ]
   },

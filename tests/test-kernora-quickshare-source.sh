@@ -50,6 +50,11 @@ patch="$package_root/patches/rqs_lib.patch"
 grep -q 'has_bluetooth_adapter' "$patch" \
   || fail "rqs_lib would wait 25 seconds for bluez on computers without Bluetooth"
 grep -q 'pick_peer_ip' "$patch" || fail "discovery would pick a random address of the other device"
+grep -q '^+const MODEL_ID_SHARING: \[u8; 3\] = \[0xfc, 0x12, 0x8e\];' "$patch" \
+  || fail "every Fast Pair advert would count as someone sharing nearby"
+grep -q 'SNOOZE: Duration = Duration::from_secs(900)' "$package_root/src/nearby.rs" \
+  || fail "a dismissed nearby prompt would come back right away"
+grep -q '^\s*cargo test ' "$package_root/debian/rules" || fail "the package build skips the unit tests"
 if grep -q '^+.*set_powered(true)' "$patch"; then
   fail "sharing must not switch Bluetooth on behind the user's back"
 fi

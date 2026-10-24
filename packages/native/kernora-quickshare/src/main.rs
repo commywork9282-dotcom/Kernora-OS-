@@ -7,6 +7,7 @@ extern crate log;
 mod bus;
 mod config;
 mod desktop;
+mod nearby;
 mod state;
 mod text;
 
@@ -23,12 +24,12 @@ use tracing_subscriber::EnvFilter;
 
 use config::{Config, Mode};
 use desktop::{Desktop, Note};
+use nearby::Nearby;
 use state::{Device, Phase, Transfer};
 use text::Items;
 
 const TEMPORARY: Duration = Duration::from_secs(600);
 const DISCOVERY: Duration = Duration::from_secs(90);
-const NEARBY_PAUSE: Duration = Duration::from_secs(180);
 const FLUSH: Duration = Duration::from_millis(250);
 const CONNECTING: Duration = Duration::from_secs(25);
 
@@ -72,7 +73,7 @@ struct Service {
     transfers: Vec<Transfer>,
     notes: HashMap<u32, NoteKind>,
     jobs: HashMap<String, String>,
-    last_nearby: Option<Instant>,
+    nearby: Nearby,
     restart_pending: bool,
     dirty: bool,
     desktop: Desktop,
@@ -131,7 +132,7 @@ async fn main() -> Result<(), anyhow::Error> {
         transfers: Vec::new(),
         notes: HashMap::new(),
         jobs: HashMap::new(),
-        last_nearby: None,
+        nearby: Nearby::default(),
         restart_pending: false,
         dirty: true,
         desktop,
@@ -238,8 +239,28 @@ impl Service {
         self.dirty = false;
     }
 
+    async fn close_nearby(&mut self) {
+        let shown: Vec<u32> = self
+            .notes
+            .iter()
+            .filter(|(_, kind)| matches!(kind, NoteKind::Nearby))
+            .map(|(id, _)| *id)
+            .collect();
+        for id in shown {
+            self.notes.remove(&id);
+            self.desktop.close(id).await;
+        }
+    }
+
     async fn tick(&mut self) {
         let now = Instant::now();
+        let pointless = self.nearby.lost(now)
+            || !self.running
+            || !self.config.ask_nearby
+            || self.effective_visibility() != "hidden";
+        if pointless && self.notes.values().any(|kind| matches!(kind, NoteKind::Nearby)) {
+            self.close_nearby().await;
+        }
         if let Some(until) = self.temporary_until {
             if now >= until {
                 self.temporary_until = None;
@@ -446,8 +467,8 @@ impl Service {
                 self.dirty = true;
             }
             Command::NotificationAction(note, action) => self.note_action(note, &action).await,
-            Command::NotificationClosed(note, reason) => {
-                if let Some(NoteKind::Consent(id)) = self.notes.remove(&note) {
+            Command::NotificationClosed(note, reason) => match self.notes.remove(&note) {
+                Some(NoteKind::Consent(id)) => {
                     let waiting = self
                         .transfers
                         .iter()
@@ -456,7 +477,9 @@ impl Service {
                         self.lib_action(&id, TransferAction::ConsentDecline);
                     }
                 }
-            }
+                Some(NoteKind::Nearby) if reason == 2 => self.nearby.snooze(Instant::now()),
+                _ => {}
+            },
             Command::JobCancelled(path) => {
                 let id = self
                     .jobs
@@ -543,9 +566,17 @@ impl Service {
             NoteKind::Nearby => {
                 self.notes.remove(&note);
                 self.desktop.close(note).await;
-                if action == "visible" || action == "default" {
-                    self.temporary_until = Some(Instant::now() + TEMPORARY);
-                    self.apply_visibility();
+                match action {
+                    "visible" | "default" => {
+                        self.temporary_until = Some(Instant::now() + TEMPORARY);
+                        self.apply_visibility();
+                    }
+                    "never" => {
+                        self.config.ask_nearby = false;
+                        self.config.save();
+                        self.dirty = true;
+                    }
+                    _ => self.nearby.snooze(Instant::now()),
                 }
             }
             NoteKind::Received(id) => {
@@ -593,24 +624,17 @@ impl Service {
     }
 
     async fn nearby(&mut self) {
-        if !self.running
+        let now = Instant::now();
+        if !self.nearby.seen(now)
+            || !self.running
             || self.config.visibility == Mode::Everyone
             || self.temporary_until.is_some()
             || !self.config.ask_nearby
+            || self.nearby.snoozed(now)
+            || self.notes.values().any(|kind| matches!(kind, NoteKind::Nearby))
         {
             return;
         }
-        let now = Instant::now();
-        if self
-            .last_nearby
-            .is_some_and(|last| now.duration_since(last) < NEARBY_PAUSE)
-        {
-            return;
-        }
-        if self.notes.values().any(|kind| matches!(kind, NoteKind::Nearby)) {
-            return;
-        }
-        self.last_nearby = Some(now);
         let id = self
             .desktop
             .notify(
@@ -619,7 +643,11 @@ impl Service {
                     icon: "",
                     summary: text::nearby_title(),
                     body: text::nearby_body(),
-                    actions: &[("visible", text::enable()), ("dismiss", text::dismiss())],
+                    actions: &[
+                        ("visible", text::enable()),
+                        ("dismiss", text::dismiss()),
+                        ("never", text::never()),
+                    ],
                     urgent: false,
                     urls: Vec::new(),
                     resident: false,

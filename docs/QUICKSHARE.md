@@ -88,7 +88,12 @@ Material 3 shape set from `MShape` in `org.kernora.m3`.
 
 - **Hidden** (the default): nobody sees the computer. When a phone nearby
   opens Quick Share, its Bluetooth advert is picked up and a notification
-  offers to become visible.
+  offers to become visible. It works like ChromeOS's "Device nearby is
+  sharing": one notification per time a phone shares, it goes away by itself
+  about 30 seconds after the phone stops, Dismiss (or closing it) keeps it
+  quiet for 15 minutes, and Don't ask again turns it off for good (Settings >
+  Quick Share > Ask when a device nearby is sharing brings it back). Only
+  real Quick Share adverts count, see the patches below.
 - **Everyone for 10 minutes**: what the quick settings tile turns on.
 - **Everyone**: always visible.
 
@@ -120,6 +125,12 @@ http and https.
 
 `patches/rqs_lib.patch` is applied to the vendored copy:
 
+- the Bluetooth listener only reacts to Quick Share's own advert: service
+  0xFE2C with the model ID FC 12 8E, like ChromeOS's fast initiation
+  scanner. Upstream took anything on 0xFE2C, and that's Google Fast Pair
+  too, so earbuds, watches and phones nearby set off "someone nearby is
+  sharing" all day. It also stops the listener from dying when the clock
+  jumps back.
 - no Bluetooth adapter (nothing in `/sys/class/bluetooth`), no BLE at all.
   Upstream asks bluez anyway and the D-Bus activation hangs for 25 seconds
   at every start and every rename, with the computer invisible meanwhile.

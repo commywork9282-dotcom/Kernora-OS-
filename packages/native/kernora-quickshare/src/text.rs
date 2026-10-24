@@ -285,6 +285,10 @@ pub fn dismiss() -> &'static str {
     pick("Dismiss", "Закрыть")
 }
 
+pub fn never() -> &'static str {
+    pick("Don't ask again", "Больше не спрашивать")
+}
+
 pub fn app_name() -> &'static str {
     "Quick Share"
 }
