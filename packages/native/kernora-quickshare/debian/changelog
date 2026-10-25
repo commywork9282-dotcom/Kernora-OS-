@@ -1,3 +1,19 @@
+kernora-quickshare (1.0.2) UNRELEASED; urgency=medium
+
+  * Much less Bluetooth radio time, which can matter for Wi-Fi on cards
+    that do Wi-Fi and Bluetooth on one chip (a tester gets ~10 s Wi-Fi
+    drops while gaming):
+    - the nearby listener scans for Bluetooth LE only. btleplug asked
+      bluez for "auto" discovery, which also runs classic inquiry over and
+      over, and Quick Share only ever needs LE adverts (patches/btleplug);
+    - it only scans while the "someone nearby is sharing" prompt can show
+      up: Quick Share on, hidden, Ask when a device nearby is sharing on.
+      Visible to everyone, the prompt turned off or Quick Share off means
+      no scanning at all;
+    - stopping the listener actually stops the bluez scan now.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 25 Oct 2026 12:00:00 -0700
+
 kernora-quickshare (1.0.1) UNRELEASED; urgency=medium
 
   * Notifications say what ChromeOS says: "Receive with Quick Share?",

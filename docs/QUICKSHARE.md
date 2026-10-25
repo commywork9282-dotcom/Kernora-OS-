@@ -112,6 +112,13 @@ Accept.
   so it's Everyone or nothing.
 - Bluetooth is never switched on by Quick Share. If it's off, phones just
   aren't woken up.
+- Listening for "someone nearby is sharing" is a Bluetooth LE scan, and it
+  only runs while that prompt can actually show up: Quick Share on, hidden,
+  and Ask when a device nearby is sharing on. Visible to everyone or the
+  prompt off means no scan. Cards that do Wi-Fi and Bluetooth on one chip
+  share the radio, so a scan that never stops can cost Wi-Fi time; if Wi-Fi
+  acts up on such a card, turning the prompt off (or Bluetooth) is a quick
+  way to tell whether it's that.
 
 ## Safety
 
@@ -124,6 +131,10 @@ http and https.
 ## Patches to rqs_lib
 
 `patches/rqs_lib.patch` is applied to the vendored copy:
+
+- the nearby Bluetooth listener isn't started by `run()` any more, the
+  daemon turns it on and off with `set_nearby_listener()`, and stopping it
+  stops the bluez scan too (upstream left the discovery running).
 
 - the Bluetooth listener only reacts to Quick Share's own advert: service
   0xFE2C with the model ID FC 12 8E, like ChromeOS's fast initiation
@@ -142,6 +153,10 @@ http and https.
 - a failed outbound connect (refused, unreachable, 10 s TCP timeout) is
   reported as Disconnected. Upstream only logs it, and the sender would sit
   on Connecting forever.
+
+`patches/btleplug.patch` makes btleplug ask bluez for LE discovery instead
+of "auto". Auto also runs classic inquiry in a loop, which Quick Share never
+needs and which is the heavy part next to Wi-Fi.
 
 ## Build
 

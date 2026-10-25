@@ -15,14 +15,14 @@ for dependency in dpkg-parsechangelog grep python3; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.0.1" ]] || fail "unexpected source version"
+[[ "$version" == "1.0.2" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
 [[ -x "$package_root/debian/rules" ]] || fail "debian/rules is not executable"
 grep -Fxq 'Package: kernora-quickshare' "$package_root/debian/control" || fail "binary stanza is missing"
 grep -q -- '--offline --frozen' "$package_root/debian/rules" || fail "the build may reach the network"
-grep -Fxq 'version = "1.0.1"' "$package_root/Cargo.toml" || fail "Cargo.toml and the changelog disagree"
+grep -Fxq 'version = "1.0.2"' "$package_root/Cargo.toml" || fail "Cargo.toml and the changelog disagree"
 
 lock="$package_root/Cargo.lock"
 [[ -s "$lock" ]] || fail "Cargo.lock is missing"
@@ -52,6 +52,10 @@ grep -q 'has_bluetooth_adapter' "$patch" \
 grep -q 'pick_peer_ip' "$patch" || fail "discovery would pick a random address of the other device"
 grep -q '^+const MODEL_ID_SHARING: \[u8; 3\] = \[0xfc, 0x12, 0x8e\];' "$patch" \
   || fail "every Fast Pair advert would count as someone sharing nearby"
+grep -q '^+            transport: Some(Transport::Le),' "$package_root/patches/btleplug.patch" \
+  || fail "Bluetooth discovery would run classic inquiry next to Wi-Fi"
+grep -q '^+    pub fn set_nearby_listener' "$patch" && grep -q 'sync_nearby_listener' "$package_root/src/main.rs" \
+  || fail "the nearby Bluetooth scan would run all the time"
 grep -q 'SNOOZE: Duration = Duration::from_secs(900)' "$package_root/src/nearby.rs" \
   || fail "a dismissed nearby prompt would come back right away"
 grep -q '^\s*cargo test ' "$package_root/debian/rules" || fail "the package build skips the unit tests"

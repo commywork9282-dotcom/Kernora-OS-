@@ -8,7 +8,15 @@
  
  const INNER_NAME: &str = "BleListener";
  
-@@ -62,12 +63,15 @@
+@@ -51,6 +52,7 @@
+             tokio::select! {
+                 _ = ctk.cancelled() => {
+                     info!("{INNER_NAME}: tracker cancelled, breaking");
++                    let _ = self.adapter.stop_scan().await;
+                     break;
+                 }
+                 Some(e) = events.next() => {
+@@ -62,12 +64,15 @@
                              //
                              // ...The filtering is being done only here now.
                              if let Some(service_data) = service_data.get(&SERVICE_UUID_SHARING) {
@@ -60,10 +68,27 @@
                                          Some(_n) => _n,
 --- a/src/lib.rs
 +++ b/src/lib.rs
-@@ -156,14 +156,23 @@
+@@ -59,6 +59,7 @@
+     // Discovery token is different than ctoken because he is on his own
+     // - can be cancelled while the ctoken is still active
+     discovery_ctk: Option<CancellationToken>,
++    nearby_ctk: Option<CancellationToken>,
+ 
+     // Used to trigger a change in the mDNS visibility (and later on, BLE)
+     pub visibility_sender: Arc<Mutex<watch::Sender<Visibility>>>,
+@@ -112,6 +113,7 @@
+             tracker: None,
+             ctoken: None,
+             discovery_ctk: None,
++            nearby_ctk: None,
+             visibility_sender: Arc::new(Mutex::new(visibility_sender)),
+             visibility_receiver,
+             ble_sender,
+@@ -155,17 +157,6 @@
+         let ctk = ctoken.clone();
          tracker.spawn(async move { server.run(ctk).await });
  
-         #[cfg(feature = "experimental")]
+-        #[cfg(feature = "experimental")]
 -        {
 -            if let Ok(ble) = BleListener::new(self.ble_sender.clone())
 -                .await
@@ -72,9 +97,43 @@
 -                let ctk = ctoken.clone();
 -                tracker.spawn(async move { ble.run(ctk).await });
 -            }
+-        }
+-
+         // Start MDnsServer in own "task"
+         let mut mdns = MDnsServer::new(
+             endpoint_id[..4].try_into()?,
+@@ -195,7 +186,7 @@
+         self.discovery_ctk = Some(ctk.clone());
+ 
+         #[cfg(all(feature = "experimental", target_os = "linux"))]
+-        {
 +        if utils::has_bluetooth_adapter() {
+             let ctk_blea = ctk.clone();
+             tracker.spawn(async move {
+                 let blea = match BleAdvertiser::new().await {
+@@ -232,8 +223,45 @@
+             .send_modify(|state| *state = nv);
+     }
+ 
++    pub fn set_nearby_listener(&mut self, on: bool) {
++        if !on {
++            if let Some(ctk) = self.nearby_ctk.take() {
++                ctk.cancel();
++            }
++            return;
++        }
++        if self.nearby_ctk.is_some() {
++            return;
++        }
++
++        #[cfg(feature = "experimental")]
++        if utils::has_bluetooth_adapter() {
++            let (Some(tracker), Some(ctoken)) = (&self.tracker, &self.ctoken) else {
++                return;
++            };
++            let ctk = ctoken.child_token();
++            self.nearby_ctk = Some(ctk.clone());
 +            let ble_sender = self.ble_sender.clone();
-+            let ctk = ctoken.clone();
 +            tracker.spawn(async move {
 +                let ble = tokio::select! {
 +                    _ = ctk.cancelled() => return,
@@ -89,18 +148,15 @@
 +                    Err(err) => warn!("BleListener: {}", err),
 +                }
 +            });
-         }
++        }
++    }
++
+     pub async fn stop(&mut self) {
+         self.stop_discovery();
++        self.nearby_ctk = None;
  
-         // Start MDnsServer in own "task"
-@@ -195,7 +204,7 @@
-         self.discovery_ctk = Some(ctk.clone());
- 
-         #[cfg(all(feature = "experimental", target_os = "linux"))]
--        {
-+        if utils::has_bluetooth_adapter() {
-             let ctk_blea = ctk.clone();
-             tracker.spawn(async move {
-                 let blea = match BleAdvertiser::new().await {
+         if let Some(ctoken) = &self.ctoken {
+             ctoken.cancel();
 --- a/src/manager.rs
 +++ b/src/manager.rs
 @@ -53,8 +53,17 @@

@@ -74,6 +74,7 @@ struct Service {
     notes: HashMap<u32, NoteKind>,
     jobs: HashMap<String, String>,
     nearby: Nearby,
+    nearby_listening: bool,
     restart_pending: bool,
     dirty: bool,
     desktop: Desktop,
@@ -133,13 +134,16 @@ async fn main() -> Result<(), anyhow::Error> {
         notes: HashMap::new(),
         jobs: HashMap::new(),
         nearby: Nearby::default(),
+        nearby_listening: false,
         restart_pending: false,
         dirty: true,
         desktop,
         conn: conn.clone(),
         shared: shared.clone(),
     };
-    if !service.config.enabled {
+    if service.config.enabled {
+        service.sync_nearby_listener();
+    } else {
         service.rqs.stop().await;
         service.running = false;
     }
@@ -207,7 +211,16 @@ impl Service {
         } else {
             Visibility::Invisible
         });
+        self.sync_nearby_listener();
         self.dirty = true;
+    }
+
+    fn sync_nearby_listener(&mut self) {
+        let wanted = self.running && self.config.ask_nearby && self.effective_visibility() == "hidden";
+        if wanted != self.nearby_listening {
+            self.rqs.set_nearby_listener(wanted);
+            self.nearby_listening = wanted;
+        }
     }
 
     fn flush(&mut self) {
@@ -332,6 +345,7 @@ impl Service {
             self.temporary_until = None;
             self.stop_discovery();
             self.rqs.stop().await;
+            self.nearby_listening = false;
             self.running = false;
         }
         self.dirty = true;
@@ -344,6 +358,7 @@ impl Service {
         }
         let discovering = self.discovering_until.is_some();
         self.rqs.stop().await;
+        self.nearby_listening = false;
         self.devices.clear();
         match self.rqs.run().await {
             Ok((send_tx, ble_rx)) => {
@@ -451,6 +466,7 @@ impl Service {
             Command::SetAskNearby(enabled) => {
                 self.config.ask_nearby = enabled;
                 self.config.save();
+                self.sync_nearby_listener();
                 self.dirty = true;
             }
             Command::StartDiscovery => self.start_discovery(),
@@ -574,6 +590,7 @@ impl Service {
                     "never" => {
                         self.config.ask_nearby = false;
                         self.config.save();
+                        self.sync_nearby_listener();
                         self.dirty = true;
                     }
                     _ => self.nearby.snooze(Instant::now()),

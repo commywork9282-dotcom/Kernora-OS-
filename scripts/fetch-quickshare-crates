@@ -65,7 +65,8 @@ unshare --map-auto --setuid 0 --setgid 0 chroot "$rootfs" \
     for patch in /build/crate/patches/*.patch; do
       crate=$(basename "$patch" .patch)
       patch --quiet --forward -p1 -d "/build/out/vendor/$crate" < "$patch"
-      printf "{\"files\":{},\"package\":null}" > "/build/out/vendor/$crate/.cargo-checksum.json"
+      package=$(grep -o "\"package\":[^,}]*" "/build/out/vendor/$crate/.cargo-checksum.json" | head -n1 | cut -d: -f2-)
+      printf "{\"files\":{},\"package\":%s}" "${package:-null}" > "/build/out/vendor/$crate/.cargo-checksum.json"
     done
     cargo tree --locked --offline --target x86_64-unknown-linux-gnu -e normal,build \
       --prefix none --format "{p}|{l}" | sort -u > /build/out/used.txt

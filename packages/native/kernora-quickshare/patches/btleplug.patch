@@ -1,0 +1,11 @@
+--- a/src/bluez/adapter.rs
++++ b/src/bluez/adapter.rs
+@@ -67,7 +67,7 @@
+         let filter = DiscoveryFilter {
+             service_uuids: filter.services,
+             duplicate_data: Some(true),
+-            transport: Some(Transport::Auto),
++            transport: Some(Transport::Le),
+             ..Default::default()
+         };
+         self.session

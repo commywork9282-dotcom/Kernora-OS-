@@ -25,7 +25,7 @@ libpam-fprintd
 kernora-desktop=1.4.50
 kernora-calamares=1.4.50
 kernora-apps=1.1.59
-kernora-quickshare=1.0.1
+kernora-quickshare=1.0.2
 polkit-kde-agent-1=4:6.3.6-1kernora1
 plymouth
 plymouth-label

@@ -164,8 +164,8 @@ grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
 # The Kernora applications replace KDE's everyday tools.
 [[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.59" ]] \
   || fail "kernora-apps 1.1.59 is not installed"
-[[ "$(dpkg-query -W -f='${Version}' kernora-quickshare)" == "1.0.1" ]] \
-  || fail "kernora-quickshare 1.0.1 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-quickshare)" == "1.0.2" ]] \
+  || fail "kernora-quickshare 1.0.2 is not installed"
 for package in flatpak appstream; do
   [[ "$(dpkg-query -W -f='${Status}' "$package")" == 'install ok installed' ]] || fail "Store dependency missing: $package"
 done
