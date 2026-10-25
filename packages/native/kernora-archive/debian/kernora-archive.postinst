@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = configure ] && [ -e /etc/apt/sources.list.d/kernora-demo.sources ]; then
+    install -m 0644 /usr/share/kernora/apt/kernora-demo.sources /etc/apt/sources.list.d/kernora-demo.sources
+fi
+
+#DEBHELPER#
+
+exit 0

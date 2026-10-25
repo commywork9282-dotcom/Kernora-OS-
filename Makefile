@@ -8,7 +8,7 @@ SHELL := /bin/bash
 	kernora-quickshare-source kernora-quickshare-binary quickshare-crates \
 	calamares-source calamares-binary \
 	polkit-kde-agent-1-source polkit-kde-agent-1-binary \
-	development-archive-key archive-key local-archive publish \
+	development-archive-key archive-key local-archive publish publish-demo \
 	minimal-rootfs iso-tools librewolf live-rootfs iso iso-smoke
 
 check:
@@ -118,7 +118,12 @@ archive-key:
 	./scripts/create-archive-key
 
 publish: local-archive
+	./tests/test-publish-updates.sh
 	./scripts/publish-updates
+
+publish-demo: local-archive
+	./tests/test-publish-updates.sh
+	./scripts/publish-updates --demo
 
 live-rootfs: local-archive librewolf
 	./scripts/build-live-rootfs

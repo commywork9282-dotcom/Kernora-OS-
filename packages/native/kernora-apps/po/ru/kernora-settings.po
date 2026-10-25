@@ -3339,6 +3339,21 @@ msgstr "Удалить драйвер"
 msgid "Install drivers automatically"
 msgstr "Устанавливать драйверы автоматически"
 
+msgid "Demo updates"
+msgstr "Демо-обновления"
+
+msgid "Early access"
+msgstr "Ранний доступ"
+
+msgid "early access beta testing new versions demo"
+msgstr "ранний доступ бета тестирование новые версии демо"
+
+msgid "You get new versions before everyone else. If you turn this off, you keep them until a normal update replaces them"
+msgstr "Вы получаете новые версии раньше всех. Если выключить, они останутся, пока их не заменит обычное обновление"
+
+msgid "Get new versions before everyone else. They are still being tested and can have bugs"
+msgstr "Получайте новые версии раньше всех. Они ещё проверяются, в них могут быть ошибки"
+
 msgid "When a graphics card needs a driver, Kernora installs it and asks you to restart"
 msgstr "Если видеокарте нужен драйвер, Kernora установит его и попросит перезагрузить компьютер"
 

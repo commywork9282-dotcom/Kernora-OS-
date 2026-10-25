@@ -162,8 +162,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.59" ]] \
-  || fail "kernora-apps 1.1.59 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.60" ]] \
+  || fail "kernora-apps 1.1.60 is not installed"
 [[ "$(dpkg-query -W -f='${Version}' kernora-quickshare)" == "1.0.2" ]] \
   || fail "kernora-quickshare 1.0.2 is not installed"
 for package in flatpak appstream; do
@@ -272,6 +272,8 @@ grep -Fxq 'Suites: trixie-security' /etc/apt/sources.list.d/debian.sources \
   || fail "the image takes no Debian security updates"
 grep -Fxq 'Signed-By: /usr/share/keyrings/kernora-archive-keyring.asc' /etc/apt/sources.list.d/kernora.sources \
   || fail "the image takes no Kernora updates"
+[[ ! -e /etc/apt/sources.list.d/kernora-demo.sources ]] || fail "demo updates are on in the image"
+[[ "$(/usr/libexec/kernora-update-channel status)" == stable ]] || fail "the image is not on the normal updates"
 [[ -s /usr/share/keyrings/debian-archive-keyring.pgp ]] || fail "the Debian archive keyring is missing"
 [[ "$(dpkg-query -W -f='${Status}' unattended-upgrades)" == 'install ok installed' ]] \
   || fail "unattended-upgrades is not installed"

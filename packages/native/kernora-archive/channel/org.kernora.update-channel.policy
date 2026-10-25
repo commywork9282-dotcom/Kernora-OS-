@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<!-- SPDX-FileCopyrightText: 2026 Kernora Developers
+     SPDX-License-Identifier: GPL-2.0-or-later -->
+<policyconfig>
+  <vendor>Kernora OS</vendor>
+  <action id="org.kernora.update-channel">
+    <description>Choose where Kernora updates come from</description>
+    <description xml:lang="ru">Выбор источника обновлений Kernora</description>
+    <message>Turning demo updates on or off changes where the system gets updates</message>
+    <message xml:lang="ru">Включение или выключение демо-обновлений меняет, откуда система получает обновления</message>
+    <icon_name>system-software-update</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-update-channel</annotate>
+  </action>
+</policyconfig>

@@ -16,7 +16,7 @@ done
 # shellcheck disable=SC1091
 source "$project_root/configs/project.env"
 
-[[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)" == "1.1" ]] \
+[[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)" == "1.2" ]] \
   || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
@@ -54,6 +54,29 @@ kernora_host=${kernora_uri#https://}
 kernora_host=${kernora_host%%/*}
 grep -Fxq "Pin: origin $kernora_host" "$apt/kernora-archive.pref" \
   || fail "Kernora packages are not preferred over Debian's"
+demo_sources="$apt/kernora-demo.sources"
+[[ "$(awk '/^URIs:/ { print $2 }' "$demo_sources")" == "$DIST_UPDATES_URL" ]] \
+  || fail "the demo updates do not come from $DIST_UPDATES_URL"
+grep -Fxq "Suites: $DIST_CODENAME-demo" "$demo_sources" || fail "the demo updates use the wrong suite"
+grep -Fxq 'Signed-By: /usr/share/keyrings/kernora-archive-keyring.asc' "$demo_sources" \
+  || fail "the demo updates are not signed by the archive key"
+grep -Fxq 'apt/kernora-demo.sources usr/share/kernora/apt' "$package_root/debian/kernora-archive.install" \
+  || fail "the demo updates are not kept out of APT until turned on"
+channel="$package_root/channel/kernora-update-channel"
+[[ -x "$channel" ]] || fail "kernora-update-channel is not executable"
+sh -n "$channel" || fail "kernora-update-channel has a syntax error"
+grep -Fq 'sources=/etc/apt/sources.list.d/kernora-demo.sources' "$channel" \
+  || fail "kernora-update-channel does not manage the demo sources"
+grep -Fq 'template=/usr/share/kernora/apt/kernora-demo.sources' "$channel" \
+  || fail "kernora-update-channel does not use the shipped demo sources"
+grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-update-channel</annotate>' \
+  "$package_root/channel/org.kernora.update-channel.policy" || fail "the update channel policy names the wrong program"
+grep -Fq '<allow_active>auth_admin_keep</allow_active>' "$package_root/channel/org.kernora.update-channel.policy" \
+  || fail "changing the update channel does not ask for an administrator"
+grep -Fq 'install -m 0644 /usr/share/kernora/apt/kernora-demo.sources /etc/apt/sources.list.d/kernora-demo.sources' \
+  "$package_root/debian/kernora-archive.postinst" || fail "updates do not refresh turned-on demo sources"
+grep -Fq 'rm -f /etc/apt/sources.list.d/kernora-demo.sources' "$package_root/debian/kernora-archive.postrm" \
+  || fail "purging does not remove the demo sources"
 grep -Fq '"origin=Debian,codename=trixie-security,label=Debian-Security";' "$apt/51kernora-unattended-upgrades" \
   || fail "security updates are not installed automatically"
 grep -Fxq 'APT::Periodic::Unattended-Upgrade "1";' "$apt/21kernora-auto-upgrades" \

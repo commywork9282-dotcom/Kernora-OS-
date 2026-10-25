@@ -20,3 +20,6 @@ Description: Kernora OS package archives and updates
  Security updates from Debian, kernel updates among them, and LibreWolf
  updates are installed automatically once a day. Other updates are offered
  in Settings > Updates. Nothing is updated in the live session.
+ .
+ Demo updates, turned on in Settings > System, add a second Kernora
+ channel that gets new versions before everyone else.

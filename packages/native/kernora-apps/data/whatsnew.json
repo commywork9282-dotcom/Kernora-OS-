@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-25-2",
+    "date": "2026-10-25",
+    "items": [
+      {
+        "icon": "preferences-system-splash",
+        "title": {
+          "en": "Demo updates",
+          "ru": "Демо-обновления"
+        },
+        "text": {
+          "en": "Settings > System has a new Demo updates switch under Early access. Turn it on to get new versions before everyone else, while they are still being tested. If you turn it off, you keep what you have until the next normal update.",
+          "ru": "В «Настройки → Система» в разделе «Ранний доступ» появился переключатель «Демо-обновления». Включите его, чтобы получать новые версии раньше всех, пока они ещё проверяются. Если выключить, у вас останется то, что уже установлено, до следующего обычного обновления."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-25-1",
     "date": "2026-10-25",
     "items": [

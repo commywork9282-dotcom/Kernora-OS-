@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.59" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.60" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -98,6 +98,22 @@ assert not any(i['icon'].startswith('org.kernora.') for r in notes for i in r['i
 for release in notes:
     datetime.date.fromisoformat(release.get('date', release['id'][:10]))
 PY
+
+grep -Fq 'readonly property string channelTool: "/usr/libexec/kernora-update-channel"' \
+  "$package_root/apps/settings/qml/pages/SystemPage.qml" \
+  && grep -Fq 'Process.run("pkexec", [page.channelTool, "set", on ? "demo" : "stable"]' \
+  "$package_root/apps/settings/qml/pages/SystemPage.qml" \
+  && grep -Fq 'checked: page.channelBusy ? page.channelWanted : page.demo' \
+  "$package_root/apps/settings/qml/pages/SystemPage.qml" \
+  || fail "Settings cannot turn demo updates on and off"
+grep -q kernora-update-channel "$package_root/apps/settings/qml/pages/UpdatesPage.qml" \
+  && fail "the demo updates switch is back on the updates page"
+grep -Fq 'title: i18n("Early access")' "$package_root/apps/settings/qml/pages/SystemPage.qml" \
+  || fail "demo updates are not under Early access in System"
+grep -Eq '^ kernora-archive \(>= 1\.2\),$' "$package_root/debian/control" \
+  || fail "kernora-apps does not require the kernora-archive with demo updates"
+grep -Fq 'msgid "Demo updates"' "$package_root/po/ru/kernora-settings.po" \
+  || fail "the demo updates switch is not translated"
 
 grep -Fq 'void Files::setLockScreenPlugin' "$package_root/src/system/files.cpp" \
   && grep -Fq 'Files.syncGreeterBackground' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \

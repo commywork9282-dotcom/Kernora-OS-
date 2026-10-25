@@ -62,6 +62,7 @@ required_paths=(
   scripts/build-kernora-archive-binary
   scripts/create-archive-key
   scripts/publish-updates
+  tests/test-publish-updates.sh
   scripts/build-kernora-desktop-source
   scripts/build-kernora-desktop-binary
   scripts/create-development-archive-key

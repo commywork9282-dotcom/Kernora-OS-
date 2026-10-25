@@ -19,9 +19,41 @@ SettingsPage {
     title: i18n("System")
 
     property var timezone: ""
+    readonly property bool updating: Updates.state === Updates.Checking || Updates.state === Updates.Installing
+    readonly property string channelTool: "/usr/libexec/kernora-update-channel"
+    property string channel: ""
+    property bool channelBusy: false
+    property bool channelWanted: false
+    readonly property bool demo: channel === "demo"
+
+    function readChannel(done: var): void {
+        Process.run(page.channelTool, ["status"], (code, output) => {
+            page.channel = code === 0 ? output.trim() : "";
+            if (done) {
+                done();
+            }
+        });
+    }
+
+    function setDemo(on: bool): void {
+        page.channelWanted = on;
+        page.channelBusy = true;
+        Process.run("pkexec", [page.channelTool, "set", on ? "demo" : "stable"], code => {
+            page.readChannel(() => {
+                page.channelBusy = false;
+                if (code === 0 && Updates.available && !page.updating) {
+                    Updates.check();
+                }
+            });
+        });
+    }
+
     Component.onCompleted: {
         DBus.getProperty("system", "org.freedesktop.timedate1", "/org/freedesktop/timedate1", "org.freedesktop.timedate1", "Timezone",
                          (ok, value) => page.timezone = ok ? value : "");
+        if (!SystemInfo.live) {
+            readChannel(null);
+        }
     }
 
     ConfigEntry { id: loginMode; file: "ksmserverrc"; group: "General"; key: "loginMode"; defaultValue: "emptySession" }
@@ -69,6 +101,24 @@ SettingsPage {
             accent: 1
             chevron: true
             onClicked: page.open("StoragePage.qml", {})
+        }
+    }
+
+    Group {
+        title: i18n("Early access")
+        visible: !SystemInfo.live && page.channel.length > 0
+
+        ListItem {
+            title: i18n("Demo updates")
+            subtitle: page.demo
+                ? i18n("You get new versions before everyone else. If you turn this off, you keep them until a normal update replaces them")
+                : i18n("Get new versions before everyone else. They are still being tested and can have bugs")
+            icon: "preferences-system-splash"
+            iconStyle: "plain"
+            checkable: true
+            checked: page.channelBusy ? page.channelWanted : page.demo
+            enabled: !page.channelBusy && !page.updating
+            onToggled: on => page.setDemo(on)
         }
     }
 

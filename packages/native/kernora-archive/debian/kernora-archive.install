@@ -6,3 +6,6 @@ apt/21kernora-auto-upgrades etc/apt/apt.conf.d
 apt/51kernora-unattended-upgrades etc/apt/apt.conf.d
 systemd/apt-daily.timer.d usr/lib/systemd/system
 systemd/apt-daily-upgrade.timer.d usr/lib/systemd/system
+apt/kernora-demo.sources usr/share/kernora/apt
+channel/kernora-update-channel usr/libexec
+channel/org.kernora.update-channel.policy usr/share/polkit-1/actions

@@ -1,3 +1,12 @@
+kernora-archive (1.2) UNRELEASED; urgency=medium
+
+  * Demo updates: an opt-in second channel, ember-demo, that gets new
+    Kernora packages before everyone else. Settings > System turns it on
+    and off through /usr/libexec/kernora-update-channel; turning it off
+    keeps the demo versions until a normal update replaces them.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 25 Oct 2026 12:00:00 -0700
+
 kernora-archive (1.1) UNRELEASED; urgency=medium
 
   * Debian's non-free-firmware component, so the firmware for graphics
