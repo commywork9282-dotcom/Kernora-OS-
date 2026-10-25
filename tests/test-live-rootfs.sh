@@ -43,7 +43,7 @@ fail() {
 }
 
 grep -Fxq 'ID=kernora' /usr/lib/os-release || fail "wrong OS identity"
-[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.6.2" ]] \
+[[ "$(dpkg-query -W -f='${Version}' kernora-base)" == "1.6.3" ]] \
   || fail "kernora-base is not installed"
 for module in kcm_lookandfeel kcm_desktoptheme kcm_colors kcm_style kcm_icons kcm_cursortheme kcm_kwindecoration kcm_splashscreen; do
   [[ ! -e "/usr/lib/x86_64-linux-gnu/qt6/plugins/plasma/kcms/systemsettings/$module.so" ]] \

@@ -17,19 +17,23 @@ Depends:
  fastfetch,
  git,
  htop,
+ iw,
  lsof,
  man-db,
  openssh-client,
+ pciutils,
  rsync,
  tree,
  unzip,
+ usbutils,
  wget,
  zip
 Description: Kernora OS base system and hardware defaults
  This package depends on the Kernora-specific packages required by every
  Kernora OS installation: the system identity and the package archives
  that keep it updated. It also brings everyday command-line tools: git,
- curl, wget, htop, fastfetch, archivers and SSH.
+ curl, wget, htop, fastfetch, archivers, SSH, and lspci, lsusb and iw
+ for checking hardware.
  .
  It also provides optional hardware workarounds, including a NetworkManager
  power-saving example for the Realtek RTL8852CE wireless adapter. Examples

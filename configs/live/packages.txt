@@ -1,4 +1,4 @@
-kernora-base=1.6.2
+kernora-base=1.6.3
 linux-image-amd64=6.12.111-1
 live-boot=1:20250815~deb13u1
 systemd-sysv=257.13-1~deb13u1

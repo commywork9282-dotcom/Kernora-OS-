@@ -50,15 +50,23 @@ supported driver, nothing else gets replaced.
 
 ## Checking your card
 
+To see which card and driver you have (`lspci` comes with kernora-base
+1.6.3, older installs can use the `nmcli` line):
+
+```sh
+lspci -nnk | grep -iA3 network
+nmcli -f GENERAL.DEVICE,GENERAL.DRIVER device show
+```
+
 After reconnecting:
 
 ```sh
 nmcli -f GENERAL.DEVICE,GENERAL.DRIVER device show
-iw dev
-iw dev INTERFACE get power_save
+/usr/sbin/iw dev
+/usr/sbin/iw dev INTERFACE get power_save
 ```
 
-Replace `INTERFACE` with the Wi-Fi interface from `iw dev`. With the tweak on
+Replace `INTERFACE` with the Wi-Fi interface from `/usr/sbin/iw dev`. With the tweak on
 and a default profile you should see `Power save: off`. Then test idle, a
 big download, and suspend/resume, whatever used to make it drop.
 
