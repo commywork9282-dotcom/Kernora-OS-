@@ -1,3 +1,12 @@
+kernora-apps (1.1.57) UNRELEASED; urgency=medium
+
+  * Quick Share calmed down: flat progress while sending and receiving,
+    plain round pulses instead of spinning wavy ones, and picking a
+    phone only changes its colour, nothing rotates or bounces.
+  * Require kernora-desktop 1.4.48.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 24 Oct 2026 16:30:00 -0700
+
 kernora-apps (1.1.56) UNRELEASED; urgency=medium
 
   * Quick Share, the ChromeOS way:

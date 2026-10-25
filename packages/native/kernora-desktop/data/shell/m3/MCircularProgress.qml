@@ -9,10 +9,11 @@ Item {
     id: root
 
     property bool running: true
+    property bool wavy: true
     property color color: M3.primary
     property color trackColor: M3.secondaryContainer
 
-    readonly property bool waving: !M3.classic
+    readonly property bool waving: wavy && !M3.classic
     readonly property real size: Math.min(width, height)
     readonly property real thickness: Math.max(2, Math.round(size / 10))
     readonly property real amplitude: waving ? Math.max(1, size * 0.035) : 0

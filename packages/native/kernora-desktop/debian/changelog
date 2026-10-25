@@ -1,3 +1,10 @@
+kernora-desktop (1.4.48) UNRELEASED; urgency=medium
+
+  * Quick Share's progress in notifications is a plain bar, no waves.
+  * m3: MCircularProgress can be flat too (wavy: false).
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 24 Oct 2026 16:30:00 -0700
+
 kernora-desktop (1.4.47) UNRELEASED; urgency=medium
 
   * Quick Share in quick settings works like ChromeOS: the tile icon turns

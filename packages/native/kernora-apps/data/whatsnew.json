@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-24-2",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "icon": "kernora-quickshare",
+        "title": {
+          "en": "Calmer Quick Share",
+          "ru": "Quick Share спокойнее"
+        },
+        "text": {
+          "en": "Sending and receiving show a plain progress bar instead of waves, and picking a phone no longer makes it jump around.",
+          "ru": "Отправка и приём показывают обычную полоску прогресса вместо волн, а выбранный телефон больше не дёргается."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-24-1",
     "date": "2026-10-24",
     "items": [

@@ -43,6 +43,7 @@ ColumnLayout {
         LinearProgress {
             id: progressBar
             Layout.fillWidth: true
+            wavy: modelInterface.applicationName !== "Quick Share"
             opacity: modelInterface.jobState === NotificationManager.Notifications.JobStateSuspended ? 0.38 : 1
             value: modelInterface.percentage / 100
             indeterminate: visible && Window.window && Window.window.visible && modelInterface.percentage < 1

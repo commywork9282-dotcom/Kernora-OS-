@@ -284,14 +284,14 @@ AppWindow {
         Behavior on opacity { NumberAnimation { duration: M3.durationMedium2 } }
         Repeater {
             model: 3
-            delegate: MShape {
+            delegate: Rectangle {
                 id: ring
                 required property int index
                 anchors.centerIn: parent
                 width: pulse.width
                 height: width
-                shape: app.shapeOf
-                color: M3.withAlpha(M3.primary, 0.14)
+                radius: width / 2
+                color: M3.withAlpha(M3.primary, 0.12)
                 opacity: 0
                 scale: 0.5
                 SequentialAnimation {
@@ -301,7 +301,6 @@ AppWindow {
                     ParallelAnimation {
                         NumberAnimation { target: ring; property: "scale"; from: 0.5; to: 1; duration: 2700; easing.type: Easing.OutCubic }
                         NumberAnimation { target: ring; property: "opacity"; from: 1; to: 0; duration: 2700; easing.type: Easing.InQuad }
-                        NumberAnimation { target: ring; property: "rotation"; from: ring.index * 40; to: ring.index * 40 + 60; duration: 2700 }
                     }
                     PauseAnimation { duration: (2 - ring.index) * 900 }
                 }
@@ -412,14 +411,12 @@ AppWindow {
         signal picked()
 
         implicitHeight: 72
-        topLeftRadius: selected ? height / 2 : (index === 0 ? outer : inner)
+        topLeftRadius: index === 0 ? outer : inner
         topRightRadius: topLeftRadius
-        bottomLeftRadius: selected ? height / 2 : (index === count - 1 ? outer : inner)
+        bottomLeftRadius: index === count - 1 ? outer : inner
         bottomRightRadius: bottomLeftRadius
         color: selected ? M3.primaryContainer : M3.surfaceContainer
         Behavior on color { ColorAnimation { duration: M3.durationMedium2 } }
-        Behavior on topLeftRadius { NumberAnimation { duration: M3.durationMedium2; easing.type: Easing.OutBack } }
-        Behavior on bottomLeftRadius { NumberAnimation { duration: M3.durationMedium2; easing.type: Easing.OutBack } }
 
         MStateLayer {
             anchors.fill: parent
@@ -443,8 +440,6 @@ AppWindow {
                 icon: app.deviceIcon(row.device.kind)
                 color: row.selected ? M3.primary : M3.secondaryContainer
                 ink: row.selected ? M3.primaryContent : M3.secondaryContainerContent
-                rotation: row.selected && !M3.classic ? 30 : 0
-                Behavior on rotation { NumberAnimation { duration: M3.durationLong2; easing.type: Easing.OutBack } }
             }
             ColumnLayout {
                 Layout.fillWidth: true
@@ -730,7 +725,7 @@ AppWindow {
                                 width: 124
                                 height: 124
                                 shape: M3.classic ? "circle" : (hero.stage === "received" ? "sunny" : hero.stage === "asking" ? "softBurst" : "cookie9")
-                                spinning: hero.stage === "ready" || hero.stage === "receiving"
+                                spinning: hero.stage === "ready"
                                 color: hero.stage === "off" || hero.stage === "hidden" || hero.stage === "missing" ? M3.surfaceContainerHighest : M3.primaryContainer
                                 ink: hero.stage === "off" || hero.stage === "hidden" || hero.stage === "missing" ? M3.surfaceVariantContent : M3.primaryContainerContent
                                 icon: hero.stage === "received" ? "dialog-positive"
@@ -793,6 +788,7 @@ AppWindow {
                         }
 
                         MLinearProgress {
+                            wavy: false
                             Layout.fillWidth: true
                             Layout.leftMargin: 24
                             Layout.rightMargin: 24
@@ -1169,6 +1165,7 @@ AppWindow {
                                     anchors.fill: parent
                                     visible: !app.failed && !app.started
                                     running: visible
+                                    wavy: false
                                 }
                                 Avatar {
                                     anchors.centerIn: parent
@@ -1215,6 +1212,7 @@ AppWindow {
                             : i18n("Connecting…")
                     }
                     MLinearProgress {
+                        wavy: false
                         Layout.fillWidth: true
                         Layout.leftMargin: 32
                         Layout.rightMargin: 32
