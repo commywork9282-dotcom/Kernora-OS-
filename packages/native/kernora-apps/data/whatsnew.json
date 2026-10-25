@@ -15,6 +15,17 @@
         }
       },
       {
+        "icon": "zoom-in",
+        "title": {
+          "en": "Bigger or smaller desktop icons",
+          "ru": "Значки на рабочем столе крупнее или мельче"
+        },
+        "text": {
+          "en": "Hold Ctrl and turn the mouse wheel over the desktop to make the icons bigger or smaller.",
+          "ru": "Зажмите Ctrl и покрутите колёсико мыши над рабочим столом, чтобы сделать значки крупнее или мельче."
+        }
+      },
+      {
         "icon": "text-plain",
         "title": {
           "en": "Material icons everywhere",

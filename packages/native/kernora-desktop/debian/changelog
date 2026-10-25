@@ -8,6 +8,9 @@ kernora-desktop (1.4.50) UNRELEASED; urgency=medium
     italic name), and a copy that matches an installed launcher byte for
     byte is made executable so it starts without the untrusted warning.
     Anything else on the desktop is left alone.
+  * Ctrl + mouse wheel over the desktop makes the icons bigger or smaller
+    (the same seven sizes as in the desktop settings), and the size is
+    kept.
   * Icon theme: about 220 more KDE and freedesktop names drawn with
     Material Symbols, so menus, dialogs and files stop showing Breeze:
     file types (text, PDF, office, code, archives, packages, disk images,

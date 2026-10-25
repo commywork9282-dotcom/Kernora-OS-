@@ -297,6 +297,22 @@ FocusScope {
         property var cPress: null
         property bool doubleClickInProgress: false
         property bool renameByLabelClickInitiated: false
+        property real zoomPending: 0
+
+        onWheelMoved: wheel => {
+            if (!(wheel.modifiers & Qt.ControlModifier) || root.useListViewMode) {
+                return;
+            }
+            zoomPending += wheel.delta;
+            let size = Plasmoid.configuration.iconSize;
+            while (Math.abs(zoomPending) >= 120) {
+                size = Math.max(0, Math.min(6, size + (zoomPending > 0 ? 1 : -1)));
+                zoomPending -= zoomPending > 0 ? 120 : -120;
+            }
+            if (size !== Plasmoid.configuration.iconSize) {
+                Plasmoid.configuration.iconSize = size;
+            }
+        }
 
         acceptedButtons: {
             if (hoveredItem === null && main.isRootView) {
