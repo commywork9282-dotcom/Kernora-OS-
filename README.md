@@ -1,5 +1,7 @@
 # Kernora OS
 
+[![Discord](https://img.shields.io/badge/Discord-join%20the%20server-5865F2?logo=discord&logoColor=white)](https://discord.gg/TvxBPButVu)
+
 Kernora is a desktop Linux distro based on Debian 13 (trixie). It runs KDE
 Plasma 6, but with its own shell, apps and themes, all done in Material 3
 style. Basically I wanted Plasma to look and feel like Material You, so I
@@ -11,6 +13,10 @@ tests.
 
 It's still early. Test builds are in [Releases](https://github.com/commywork9282-dotcom/Kernora-OS-/releases).
 Packages are signed with a dev key for now, there's no release key yet.
+
+Got a bug, a question or just wanna show your setup? Come hang out on
+[Discord](https://discord.gg/TvxBPButVu), I post updates there and most of
+the testers are there too. Issues here work as well.
 
 If an older image left your installed system on a black screen, see
 [boot recovery](docs/BOOT-RECOVERY.md). Current images and updates fix the
