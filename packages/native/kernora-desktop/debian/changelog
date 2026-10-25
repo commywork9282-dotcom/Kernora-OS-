@@ -1,3 +1,23 @@
+kernora-desktop (1.4.50) UNRELEASED; urgency=medium
+
+  * Apps can be dragged from the app menu onto the desktop and they're
+    copied right away, no Copy / Move / Link menu. The menu closes after
+    the drop.
+  * App launchers on the desktop are never links any more: a link to an
+    installed launcher gets replaced by a copy (so no link emblem and no
+    italic name), and a copy that matches an installed launcher byte for
+    byte is made executable so it starts without the untrusted warning.
+    Anything else on the desktop is left alone.
+  * Icon theme: about 220 more KDE and freedesktop names drawn with
+    Material Symbols, so menus, dialogs and files stop showing Breeze:
+    file types (text, PDF, office, code, archives, packages, disk images,
+    pictures, video, music, fonts), emblems (link, locked, shared...),
+    select all / none, properties, save as, text formatting, mail, tags,
+    network and sync states, zoom, window actions and more. Crashed
+    processes viewer got a Kernora app icon.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 25 Oct 2026 13:00:00 -0700
+
 kernora-desktop (1.4.49) UNRELEASED; urgency=medium
 
   * Quick settings work with the panel on any side. With the panel on top

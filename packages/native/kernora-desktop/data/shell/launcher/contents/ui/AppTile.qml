@@ -13,12 +13,14 @@ Item {
     property string name
     property var iconSource
     property string favoriteId
+    property url url
     property bool current: false
     property real reveal: 1
     property real enterDelay: 0
 
     signal clicked()
     signal menuRequested(real x, real y)
+    signal dropped()
 
     readonly property real appear: Math.max(0, Math.min(1, (reveal - enterDelay) / 0.55))
     readonly property real pop: {
@@ -33,6 +35,31 @@ Item {
 
     Accessible.role: Accessible.Button
     Accessible.name: name
+
+    Drag.dragType: Drag.Automatic
+    Drag.supportedActions: Qt.CopyAction
+    Drag.proposedAction: Qt.CopyAction
+    Drag.mimeData: ({ "text/uri-list": root.url.toString() })
+    Drag.onDragFinished: dropAction => {
+        root.Drag.active = false;
+        if (dropAction !== Qt.IgnoreAction) {
+            root.dropped();
+        }
+    }
+
+    DragHandler {
+        id: dragger
+        target: null
+        enabled: root.url.toString().startsWith("file:")
+        onActiveChanged: {
+            if (active) {
+                icon.grabToImage(result => {
+                    root.Drag.imageSource = result.url;
+                    root.Drag.active = dragger.active;
+                });
+            }
+        }
+    }
 
     Item {
         anchors.fill: parent

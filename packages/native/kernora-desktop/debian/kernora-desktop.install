@@ -67,6 +67,7 @@ data/folderview/ConfigFilter.qml usr/share/plasma/plasmoids/org.kde.desktopconta
 data/folderview/FolderView.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
 data/folderview/KernoraIconLayout.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
 data/folderview/IconPlacement.js usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
+data/folderview/kernora-desktop-launchers usr/libexec
 data/editmode/ConfigOverlay.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
 data/panelspacer/main.qml usr/share/plasma/plasmoids/org.kde.plasma.panelspacer/contents/ui
 data/kwin-tabbox/org.kernora.switcher usr/share/kwin/tabbox

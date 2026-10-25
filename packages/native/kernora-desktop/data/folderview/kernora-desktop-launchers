@@ -1,0 +1,55 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+set -u
+
+desktop=$(xdg-user-dir DESKTOP 2>/dev/null) || desktop=
+[ -n "$desktop" ] && [ "$desktop" != "$HOME" ] || desktop="$HOME/Desktop"
+[ -d "$desktop" ] || exit 0
+
+data_dirs="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+
+installed() {
+    old_ifs=$IFS
+    IFS=:
+    for base in $data_dirs; do
+        IFS=$old_ifs
+        apps=$(readlink -f -- "$base/applications" 2>/dev/null) || continue
+        case "$1" in
+            "$apps"/*) return 0 ;;
+        esac
+        IFS=:
+    done
+    IFS=$old_ifs
+    return 1
+}
+
+launcher_named() {
+    old_ifs=$IFS
+    IFS=:
+    for base in $data_dirs; do
+        IFS=$old_ifs
+        if [ -f "$base/applications/$1" ]; then
+            printf '%s\n' "$base/applications/$1"
+            return 0
+        fi
+        IFS=:
+    done
+    IFS=$old_ifs
+    return 1
+}
+
+for entry in "$desktop"/*.desktop; do
+    name=${entry##*/}
+    if [ -L "$entry" ]; then
+        target=$(readlink -f -- "$entry") || continue
+        [ -f "$target" ] && installed "$target" || continue
+        copy="$desktop/.$name.kernora"
+        cp -- "$target" "$copy" && chmod 0755 -- "$copy" && mv -f -- "$copy" "$entry" || rm -f -- "$copy"
+    elif [ -f "$entry" ] && [ ! -x "$entry" ]; then
+        source=$(launcher_named "$name") || continue
+        cmp -s -- "$entry" "$source" && chmod +x -- "$entry"
+    fi
+done
+exit 0

@@ -169,6 +169,7 @@ FocusScope {
                     reveal: root.reveal
                     onLaunch: (model, index) => root.launchAt(model, index)
                     onMenuRequested: (tile, x, y, favoriteId) => root.showTileMenu(tile, x, y, favoriteId)
+                    onDropped: root.requestClose()
                 }
 
                 delegate: AppTile {
@@ -180,11 +181,13 @@ FocusScope {
                     name: model.display ?? ""
                     iconSource: model.decoration ?? ""
                     favoriteId: model.favoriteId ?? ""
+                    url: model.url ?? ""
                     current: GridView.isCurrentItem && grid.activeFocus
                     enterDelay: Math.min(Math.floor(index / root.columns), 6) * 0.06
                     reveal: root.reveal
                     onClicked: root.launchAt(grid.model, index)
                     onMenuRequested: (x, y) => root.showTileMenu(appTile, x, y, favoriteId)
+                    onDropped: root.requestClose()
                 }
 
                 Keys.onUpPressed: event => {

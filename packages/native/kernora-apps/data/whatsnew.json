@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-10-25-1",
+    "date": "2026-10-25",
+    "items": [
+      {
+        "icon": "apps",
+        "title": {
+          "en": "Drag apps to the desktop",
+          "ru": "Приложения на рабочий стол"
+        },
+        "text": {
+          "en": "Drag an app from the app menu onto the desktop and it lands there right away, without asking whether to copy or link. App shortcuts on the desktop no longer carry the little link badge.",
+          "ru": "Перетащите приложение из меню на рабочий стол, и ярлык сразу появится там, без вопроса «копировать или создать ссылку». Значок-ссылка на ярлыках приложений больше не показывается."
+        }
+      },
+      {
+        "icon": "text-plain",
+        "title": {
+          "en": "Material icons everywhere",
+          "ru": "Иконки Material везде"
+        },
+        "text": {
+          "en": "Files on the desktop and in menus now use Material icons too: documents, PDFs, spreadsheets, code, archives, packages, pictures, music and video, plus badges and menu actions that still looked like KDE.",
+          "ru": "Файлы на рабочем столе и в меню теперь тоже с иконками Material: документы, PDF, таблицы, код, архивы, пакеты, фото, музыка и видео, а ещё значки и пункты меню, которые до сих пор выглядели как в KDE."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-24-3",
     "date": "2026-10-24",
     "items": [

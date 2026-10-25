@@ -20,6 +20,8 @@ CONTEXT_NAMES = {
     "apps": "Applications",
     "categories": "Categories",
     "devices": "Devices",
+    "emblems": "Emblems",
+    "mimetypes": "MimeTypes",
     "places": "Places",
     "status": "Status",
 }
@@ -135,6 +137,8 @@ def main(argv: list[str]) -> int:
         source = assets / symbols_map.asset_name(symbol, fill)
         if coloured:
             names = [name for name in names if "." in name or "-" not in name]
+            if not names:
+                continue
         primary = names[0]
         for name in names:
             if name in claimed:

@@ -17,6 +17,7 @@ Column {
 
     signal launch(var model, int index)
     signal menuRequested(Item tile, real x, real y, string favoriteId)
+    signal dropped()
 
     readonly property bool hasPinned: pinned.count > 0
 
@@ -58,7 +59,9 @@ Column {
                     name: model.display ?? ""
                     iconSource: model.decoration ?? ""
                     favoriteId: model.favoriteId ?? ""
+                    url: model.url ?? ""
                     reveal: root.reveal
+                    onDropped: root.dropped()
                     onClicked: root.launch(root.model, index)
                     onMenuRequested: (x, y) => root.menuRequested(pinnedTile, x, y, favoriteId)
                 }
