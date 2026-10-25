@@ -24,6 +24,7 @@ PlasmoidItem {
 
     ShadeController {
         id: shadeController
+        inverted: Plasmoid.location === PlasmaCore.Types.TopEdge
     }
 
     fullRepresentation: StatusChip {

@@ -5,6 +5,8 @@
 
 import QtQuick
 import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
+import org.kde.plasma.plasmoid
 import "m3"
 
 Item {
@@ -14,13 +16,23 @@ Item {
     required property QtObject backend
 
     readonly property bool active: controller.opening
+    readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    readonly property bool twelveHour: !backend.timeFormat.includes("H")
+    readonly property string hourText: {
+        const hour = backend.now.getHours();
+        return twelveHour ? String(hour % 12 || 12) : String(hour).padStart(2, "0");
+    }
 
-    Layout.minimumWidth: implicitWidth
-    Layout.preferredWidth: implicitWidth
-    Layout.maximumWidth: implicitWidth
-    Layout.fillHeight: true
-    implicitWidth: content.implicitWidth + 32
-    implicitHeight: 40
+    Layout.minimumWidth: vertical ? 0 : implicitWidth
+    Layout.preferredWidth: vertical ? -1 : implicitWidth
+    Layout.maximumWidth: vertical ? Number.POSITIVE_INFINITY : implicitWidth
+    Layout.minimumHeight: vertical ? implicitHeight : 0
+    Layout.preferredHeight: vertical ? implicitHeight : -1
+    Layout.maximumHeight: vertical ? implicitHeight : Number.POSITIVE_INFINITY
+    Layout.fillHeight: !vertical
+    Layout.fillWidth: vertical
+    implicitWidth: vertical ? 40 : content.implicitWidth + 32
+    implicitHeight: vertical ? column.implicitHeight + 28 : 40
 
     Accessible.role: Accessible.Button
     Accessible.name: i18n("Quick Settings")
@@ -28,11 +40,11 @@ Item {
 
     Rectangle {
         id: pill
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        height: Math.min(parent.height, 40)
-        radius: height / 2
+        x: root.vertical ? Math.round((parent.width - width) / 2) : 0
+        y: root.vertical ? 0 : Math.round((parent.height - height) / 2)
+        width: root.vertical ? Math.min(parent.width, 40) : parent.width
+        height: root.vertical ? parent.height : Math.min(parent.height, 40)
+        radius: Math.min(width, height) / 2
         color: root.active ? M3.secondaryContainer : M3.surfaceContainerHighest
 
         Behavior on color {
@@ -49,6 +61,7 @@ Item {
             id: content
             anchors.centerIn: parent
             spacing: 8
+            visible: !root.vertical
 
             MIcon {
                 size: 20
@@ -74,12 +87,56 @@ Item {
             }
         }
 
+        ColumnLayout {
+            id: column
+            anchors.centerIn: parent
+            spacing: 6
+            visible: root.vertical
+
+            MIcon {
+                Layout.alignment: Qt.AlignHCenter
+                size: 20
+                source: root.backend.networkIcon
+                color: pill.ink
+            }
+            MIcon {
+                Layout.alignment: Qt.AlignHCenter
+                size: 20
+                source: root.backend.volumeIcon
+                color: pill.ink
+            }
+            MIcon {
+                Layout.alignment: Qt.AlignHCenter
+                size: 20
+                visible: root.backend.hasBattery
+                source: root.backend.batteryIcon
+                color: pill.ink
+            }
+            ColumnLayout {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.topMargin: 2
+                spacing: -4
+                MText {
+                    Layout.alignment: Qt.AlignHCenter
+                    role: "labelLarge"
+                    text: root.hourText
+                    color: pill.ink
+                }
+                MText {
+                    Layout.alignment: Qt.AlignHCenter
+                    role: "labelLarge"
+                    text: Qt.formatTime(root.backend.now, "mm")
+                    color: pill.ink
+                }
+            }
+        }
+
         MStateLayer {
             radius: pill.radius
             color: pill.ink
             hovered: mouse.containsMouse
             pressed: mouse.pressed && !root.controller.dragging
-            pressPoint: Qt.point(mouse.mouseX, mouse.mouseY - pill.y)
+            pressPoint: Qt.point(mouse.mouseX - pill.x, mouse.mouseY - pill.y)
         }
     }
 

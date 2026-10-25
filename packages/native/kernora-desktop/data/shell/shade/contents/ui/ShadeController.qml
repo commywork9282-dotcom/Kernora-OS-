@@ -12,6 +12,7 @@ Item {
     visible: false
 
     property real travel: 520
+    property bool inverted: false
 
     readonly property real progress: spring.value
     readonly property bool dragging: dragActive
@@ -58,7 +59,7 @@ Item {
         if (!dragActive) {
             beginDrag();
         }
-        const raw = dragOrigin + upwards / Math.max(1, travel);
+        const raw = dragOrigin + (inverted ? -upwards : upwards) / Math.max(1, travel);
         const now = Date.now();
         samples.push({ t: now, v: raw });
         while (samples.length > 2 && now - samples[0].t > 100) {
@@ -134,7 +135,7 @@ Item {
     }
 
     function wheelNotch(upwards: bool): void {
-        if (upwards) {
+        if (upwards !== inverted) {
             open();
         } else {
             close();

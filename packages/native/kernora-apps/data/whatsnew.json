@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-24-3",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "icon": "preferences-desktop-display",
+        "title": {
+          "en": "Panel on any side",
+          "ru": "Панель с любой стороны"
+        },
+        "text": {
+          "en": "Quick settings open properly with the panel on the top, left or right of the screen, and the clock and status icons fit in a side panel.",
+          "ru": "Быстрые настройки нормально открываются, когда панель сверху, слева или справа, а часы и значки помещаются в боковую панель."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-24-2",
     "date": "2026-10-24",
     "items": [

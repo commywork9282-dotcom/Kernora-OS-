@@ -1,3 +1,15 @@
+kernora-desktop (1.4.49) UNRELEASED; urgency=medium
+
+  * Quick settings work with the panel on any side. With the panel on top
+    the sheet opened above the screen and only its handle showed; on the
+    left or right it covered the panel. Now it drops down under a top
+    panel (drag and scroll the other way round) and sits next to a side
+    panel at the height of the status chip.
+  * In a vertical panel the status chip stacks the icons and shows the
+    time on two lines instead of spilling out of the panel.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 24 Oct 2026 19:30:00 -0700
+
 kernora-desktop (1.4.48) UNRELEASED; urgency=medium
 
   * Quick Share's progress in notifications is a plain bar, no waves.

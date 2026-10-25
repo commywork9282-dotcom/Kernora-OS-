@@ -18,6 +18,10 @@ PlasmaCore.Dialog {
     readonly property rect screenRect: Plasmoid.containment ? Plasmoid.containment.screenGeometry : Qt.rect(0, 0, 1280, 800)
 
     readonly property int edgeGap: 8
+    readonly property bool fromTop: Plasmoid.location === PlasmaCore.Types.TopEdge
+    readonly property bool fromLeft: Plasmoid.location === PlasmaCore.Types.LeftEdge
+    readonly property bool fromRight: Plasmoid.location === PlasmaCore.Types.RightEdge
+    readonly property bool sideways: fromLeft || fromRight
 
     type: PlasmaCore.Dialog.AppletPopup
     location: PlasmaCore.Types.Floating
@@ -58,19 +62,26 @@ PlasmaCore.Dialog {
         width: root.screenRect.width
         height: root.screenRect.height
 
+        property real anchorLeft: width - root.edgeGap
         property real anchorRight: width - root.edgeGap
         property real anchorTop: height
+        property real anchorBottom: height
 
         function alignSheet(): void {
             if (!root.anchorItem) {
                 return;
             }
-            const topRight = root.anchorItem.mapToGlobal(root.anchorItem.width, 0);
-            anchorRight = topRight.x - root.screenRect.x;
-            anchorTop = topRight.y - root.screenRect.y;
+            const topLeft = root.anchorItem.mapToGlobal(0, 0);
+            anchorLeft = topLeft.x - root.screenRect.x;
+            anchorRight = anchorLeft + root.anchorItem.width;
+            anchorTop = topLeft.y - root.screenRect.y;
+            anchorBottom = anchorTop + root.anchorItem.height;
         }
 
         readonly property real restBottom: Math.min(height - root.edgeGap, anchorTop - 8 - root.edgeGap)
+        readonly property real room: root.fromTop ? height - anchorBottom - 8 - 2 * root.edgeGap
+            : root.sideways ? height - 2 * root.edgeGap
+            : restBottom - root.edgeGap
 
         Keys.onEscapePressed: root.controller.close()
 
@@ -109,16 +120,21 @@ PlasmaCore.Dialog {
             backend: root.backend
             progress: root.controller.progress
             width: Math.min(implicitWidth, stage.width - 2 * root.edgeGap)
-            height: Math.min(implicitHeight, stage.restBottom - root.edgeGap)
+            height: Math.min(implicitHeight, stage.room)
 
-            x: Math.max(root.edgeGap, Math.min(stage.width - width - root.edgeGap, stage.anchorRight - width))
+            x: root.fromLeft ? Math.min(stage.width - width - root.edgeGap, stage.anchorRight + 18)
+                : root.fromRight ? Math.max(root.edgeGap, stage.anchorLeft - 18 - width)
+                : Math.max(root.edgeGap, Math.min(stage.width - width - root.edgeGap, stage.anchorRight - width))
 
-            readonly property real restY: stage.restBottom - height
-            readonly property real hiddenY: stage.height + 48
+            readonly property real restY: root.fromTop ? stage.anchorBottom + 8 + root.edgeGap
+                : root.sideways ? Math.max(root.edgeGap, Math.min(stage.height - root.edgeGap - height, stage.anchorBottom - height))
+                : stage.restBottom - height
+            readonly property real hiddenY: root.fromTop ? -height - 48 : stage.height + 48
             y: restY + (hiddenY - restY) * (1 - root.controller.progress)
 
-            onHeightChanged: root.controller.travel = hiddenY - restY
-            Component.onCompleted: root.controller.travel = hiddenY - restY
+            onHeightChanged: root.controller.travel = Math.abs(hiddenY - restY)
+            onRestYChanged: root.controller.travel = Math.abs(hiddenY - restY)
+            Component.onCompleted: root.controller.travel = Math.abs(hiddenY - restY)
 
             onRequestClose: root.controller.close()
             Keys.onEscapePressed: root.controller.close()
