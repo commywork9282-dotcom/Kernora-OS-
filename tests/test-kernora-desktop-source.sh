@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.50" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.51" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -547,9 +547,15 @@ grep -Fq 'color: control.selected ? M3.tertiaryContainer' "$package_root/data/st
 for script in kernora-desktop.preinst kernora-desktop.postrm; do
   grep -q '^pickers=.*\bkcm_landingpage\b' "$package_root/debian/$script" \
     && grep -Fq 'systemsettings_qwidgets/kcm_kwintabbox.so' "$package_root/debian/$script" \
-    && grep -Fq '"$tasks/ContextMenu.qml"' "$package_root/debian/$script" \
+    && grep -Fq '"$tasks/ContextMenu.qml" "$tasks/Task.qml"' "$package_root/debian/$script" \
     || fail "the KDE landing page, task switcher picker or task menu are not replaced ($script)"
 done
+! grep -Fq 'sourceComponent: busyIndicator' "$package_root/data/taskmanager/Task.qml" \
+  && grep -Fq 'running: model.IsStartup && Kirigami.Units.longDuration > 1' "$package_root/data/taskmanager/Task.qml" \
+  && grep -Fq 'NumberAnimation { target: icon; property: "scale"; to: 0.82;' "$package_root/data/taskmanager/Task.qml" \
+  && grep -Fxq 'data/taskmanager/Task.qml usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'Files: data/taskmanager/Task.qml' "$package_root/debian/copyright" \
+  || fail "starting apps still get KDE's spinner on their dock icon"
 grep -Fq 'i18nd("kernora-ui", "Unpin from panel")' "$package_root/data/taskmanager/ContextMenu.qml" \
   && ! grep -Fq 'internalAction("configure")' "$package_root/data/taskmanager/ContextMenu.qml" \
   && ! grep -Fq 'Task Manager' "$package_root/data/taskmanager/ContextMenu.qml" \

@@ -154,6 +154,7 @@ for path in \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui/FloatingToolbar.qml \
   usr/libexec/kernora-splash-wallpaper \
   usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui/ContextMenu.qml \
+  usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui/Task.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui/Page.qml \
   usr/share/locale/ru/LC_MESSAGES/kernora-ui.mo \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/M3.qml \

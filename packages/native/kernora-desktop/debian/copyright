@@ -22,6 +22,12 @@ Copyright: 2014-2015 Eike Hein <hein@kde.org>
            2026 Kernora Developers
 License: GPL-2+
 
+Files: data/taskmanager/Task.qml
+Copyright: 2012-2013 Eike Hein <hein@kde.org>
+           2024 Nate Graham <nate@kde.org>
+           2026 Kernora Developers
+License: GPL-2+
+
 Files: data/wallpapers/* data/calamares/branding/kernora/*.png
 Copyright: 2026 Kernora Developers
 License: LicenseRef-Kernora-Artwork

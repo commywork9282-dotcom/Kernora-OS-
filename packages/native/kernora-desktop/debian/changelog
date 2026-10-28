@@ -1,3 +1,12 @@
+kernora-desktop (1.4.51) UNRELEASED; urgency=medium
+
+  * Apps that are starting no longer get KDE's spinner over their dock
+    icon: the icon gently pulses until the window shows up, and stays
+    still with reduced motion. Task.qml of the task manager is diverted
+    for it, a copy of plasma-desktop 6.3.6 with only that changed.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 26 Oct 2026 12:00:00 -0700
+
 kernora-desktop (1.4.50) UNRELEASED; urgency=medium
 
   * Apps can be dragged from the app menu onto the desktop and they're

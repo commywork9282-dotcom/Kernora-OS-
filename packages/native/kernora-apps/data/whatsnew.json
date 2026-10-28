@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-26-1",
+    "date": "2026-10-26",
+    "items": [
+      {
+        "icon": "system-run",
+        "title": {
+          "en": "Calmer app start",
+          "ru": "Спокойный запуск приложений"
+        },
+        "text": {
+          "en": "While an app is starting, its icon in the dock gently pulses instead of showing KDE's spinner.",
+          "ru": "Пока приложение запускается, его значок в доке мягко пульсирует вместо крутилки KDE."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-25-2",
     "date": "2026-10-25",
     "items": [
