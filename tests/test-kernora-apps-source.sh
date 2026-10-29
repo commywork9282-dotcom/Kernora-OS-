@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.60" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.61" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -110,6 +110,20 @@ grep -q kernora-update-channel "$package_root/apps/settings/qml/pages/UpdatesPag
   && fail "the demo updates switch is back on the updates page"
 grep -Fq 'title: i18n("Early access")' "$package_root/apps/settings/qml/pages/SystemPage.qml" \
   || fail "demo updates are not under Early access in System"
+grep -Fq "project(kernora-apps VERSION $version LANGUAGES CXX)" "$package_root/CMakeLists.txt" \
+  || fail "the CMake project version is not $version"
+grep -Fq 'AppIconSync icons;' "$package_root/src/updatenotifier/main.cpp" \
+  && grep -Fq '"/Kernora/scalable/apps"' "$package_root/src/updatenotifier/appiconsync.cpp" \
+  && grep -Fq 'readEntry("themedApps", false)' "$package_root/src/updatenotifier/appiconsync.cpp" \
+  && grep -Fq 'connect(KSycoca::self(), &KSycoca::databaseChanged' "$package_root/src/updatenotifier/appiconsync.cpp" \
+  && grep -Fq 'service->noDisplay()' "$package_root/src/updatenotifier/appiconsync.cpp" \
+  && grep -Fq 'info.absolutePath().contains(QLatin1String("/apps"))' "$package_root/src/updatenotifier/appiconsync.cpp" \
+  && grep -Fq 'kernora-app-icons --self-test' "$package_root/debian/rules" \
+  || fail "app icons are not made the same size and shape"
+grep -Fq 'key: "themedApps"' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
+  && grep -Fq 'msgid "Themed app icons"' "$package_root/po/ru/kernora-settings.po" \
+  && grep -Eq '^ qt6-svg-plugins,$' "$package_root/debian/control" \
+  || fail "themed app icons cannot be turned on"
 grep -Eq '^ kernora-archive \(>= 1\.2\),$' "$package_root/debian/control" \
   || fail "kernora-apps does not require the kernora-archive with demo updates"
 grep -Fq 'msgid "Demo updates"' "$package_root/po/ru/kernora-settings.po" \

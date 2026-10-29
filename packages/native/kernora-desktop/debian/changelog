@@ -1,3 +1,12 @@
+kernora-desktop (1.4.52) UNRELEASED; urgency=medium
+
+  * Tooltips in Plasma (quick settings tiles, panel buttons) were light text
+    on the light tooltip in dark mode: the style's tooltip text now always
+    uses inverseOnSurface, matching its inverseSurface background, instead
+    of the Plasma theme's tooltip colours.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 28 Oct 2026 12:00:00 -0700
+
 kernora-desktop (1.4.51) UNRELEASED; urgency=medium
 
   * Apps that are starting no longer get KDE's spinner over their dock

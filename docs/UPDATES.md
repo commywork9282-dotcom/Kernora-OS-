@@ -58,8 +58,9 @@ opens the session's restart prompt.
 
 The events are in `kernora-updates.notifyrc`, so the notification server draws
 them like any other Kernora notification. What has been announced is kept in
-`~/.local/state/kernora-update-notifierstaterc`. The notifier exits at once in
-the live session.
+`~/.local/state/kernora-update-notifierstaterc`. In the live session the
+notifier only keeps the app icons in shape (docs/DESKTOP.md, Other apps'
+icons) and checks no updates.
 
 ## Demo updates
 

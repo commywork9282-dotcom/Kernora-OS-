@@ -280,6 +280,25 @@ SettingsPage {
                 }
             }
         }
+
+        ListItem {
+            title: i18n("Themed app icons")
+            subtitle: i18n("Apps without a Kernora icon take on the colour too")
+            icon: "preferences-desktop-icons"
+            iconStyle: "plain"
+            checkable: true
+            checked: String(themedIcons.value) === "true"
+            enabled: !Appearance.busy
+            onToggled: on => themedIcons.value = on ? "true" : "false"
+        }
+    }
+
+    ConfigEntry {
+        id: themedIcons
+        file: "kernorarc"
+        group: "Icons"
+        key: "themedApps"
+        defaultValue: "false"
     }
 
     Group {

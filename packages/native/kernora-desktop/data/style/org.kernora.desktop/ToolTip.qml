@@ -48,6 +48,25 @@ Desktop.ToolTip {
         }
     }
 
+    contentItem: Item {
+        implicitWidth: Math.min(label.maxTextLength, label.contentWidth)
+        implicitHeight: label.implicitHeight
+
+        Text {
+            id: label
+            readonly property real maxTextLength: Kirigami.Units.gridUnit * 14
+            text: control.text.replace(/(&)(?!;)\S+(?>\s)/g, "")
+            wrapMode: Text.Wrap
+            font: control.font
+            color: M3.inverseOnSurface
+            onLineLaidOut: line => {
+                if (line.implicitWidth > maxTextLength) {
+                    line.width = maxTextLength;
+                }
+            }
+        }
+    }
+
     background: Kirigami.ShadowedRectangle {
         radius: M3.classic ? M3.cornerTooltip : 6
         color: M3.inverseSurface

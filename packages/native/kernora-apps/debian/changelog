@@ -1,3 +1,23 @@
+kernora-apps (1.1.61) UNRELEASED; urgency=medium
+
+  * App icons the same size and shape everywhere, like ChromeOS: the
+    session service (kernora-update-notifier, now also in the live session)
+    redraws every app icon that Kernora has no icon for into
+    ~/.local/share/icons/Kernora. Round icons are fitted to the Kernora
+    circle, the others sit on a white circle. Redone when apps are installed
+    or removed, and when the colour or the setting changes.
+  * Settings > Wallpaper & style > Colour: "Themed app icons", off by
+    default, turns those icons into a glyph in the theme colours like
+    Kernora's own.
+  * kernora-app-icons: sync, render one icon, and a self-test that runs at
+    build time.
+  * What's new: app icons, readable tooltips.
+  * The CMake project version follows the package again (1.1.60 said
+    1.1.59 in About).
+  * Require kernora-desktop 1.4.52 and qt6-svg-plugins.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 28 Oct 2026 14:00:00 -0700
+
 kernora-apps (1.1.60) UNRELEASED; urgency=medium
 
   * Settings > System > Early access: a Demo updates switch for the

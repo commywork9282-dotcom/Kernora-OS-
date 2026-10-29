@@ -3342,6 +3342,12 @@ msgstr "Устанавливать драйверы автоматически"
 msgid "Demo updates"
 msgstr "Демо-обновления"
 
+msgid "Themed app icons"
+msgstr "Тематические значки приложений"
+
+msgid "Apps without a Kernora icon take on the colour too"
+msgstr "Приложения без значка Kernora тоже окрашиваются в цвет темы"
+
 msgid "Early access"
 msgstr "Ранний доступ"
 

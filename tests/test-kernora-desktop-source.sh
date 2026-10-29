@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.51" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.52" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -550,6 +550,9 @@ for script in kernora-desktop.preinst kernora-desktop.postrm; do
     && grep -Fq '"$tasks/ContextMenu.qml" "$tasks/Task.qml"' "$package_root/debian/$script" \
     || fail "the KDE landing page, task switcher picker or task menu are not replaced ($script)"
 done
+grep -Fq 'color: M3.inverseOnSurface' "$package_root/data/style/org.kernora.desktop/ToolTip.qml" \
+  && grep -Fq 'color: M3.inverseSurface' "$package_root/data/style/org.kernora.desktop/ToolTip.qml" \
+  || fail "tooltip text does not match the tooltip background"
 ! grep -Fq 'sourceComponent: busyIndicator' "$package_root/data/taskmanager/Task.qml" \
   && grep -Fq 'running: model.IsStartup && Kirigami.Units.longDuration > 1' "$package_root/data/taskmanager/Task.qml" \
   && grep -Fq 'NumberAnimation { target: icon; property: "scale"; to: 0.82;' "$package_root/data/taskmanager/Task.qml" \

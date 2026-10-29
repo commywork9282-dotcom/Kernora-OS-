@@ -158,11 +158,11 @@ has no network) and `fetch-symbols --check` verifies them during the build.
 * Every drawing is re-gridded onto 24×24 and wrapped in the Breeze
   colour-scheme stylesheet, so Plasma recolours it with the palette.
 * Aliases, including every `-symbolic` spelling, are symlinks.
-* Application icons are left alone: apps keep their own full-colour icons in
-  the launcher and the taskbar. Kernora's own applications are the exception:
-  `APP_ICONS` draws a themed icon for them — the filled symbol on a round
-  tonal container, full colour, as a Pixel themes its app icons. System
+* Kernora's own applications get a themed icon from `APP_ICONS`: the filled
+  symbol on a round tonal container, as a Pixel themes its app icons. System
   Settings (`preferences-system`, `systemsettings`) is drawn that way.
+* Every other app icon is redrawn per user so all of them have the same size
+  and shape, like on ChromeOS (see below).
 * Every System Settings module and category has its own symbol. An unmapped
   `preferences-desktop-foo` would fall back to `preferences-desktop` and every
   module would wear the same glyph.
@@ -171,6 +171,40 @@ has no network) and `fetch-symbols --check` verifies them during the build.
 * The Plasma theme also carries `icons/<prefix>.svg` sheets drawn from the same
   symbols, because Plasma looks there before the icon theme.
 * Names not mapped fall back to Breeze (`Inherits=breeze-dark,breeze,hicolor`).
+
+### Other apps' icons (kernora-apps)
+
+`AppIconSync` runs in the session service `kernora-update-notifier` (also in
+the live session) and writes `~/.local/share/icons/Kernora/scalable/apps/<icon>.svg`
+for every visible app whose icon Kernora doesn't draw. The user directory has
+no `index.theme`, so it joins the system `Kernora` theme and every
+`Kernora-<colour>` theme that inherits it, ahead of Breeze and hicolor. So the
+dock, the app menu, the desktop, Alt+Tab and every other place get the new
+icon without changes of their own.
+
+* The source is the icon the app would have shown otherwise: the best file in
+  an `apps` directory of `breeze-dark`, `breeze` or `hicolor` (user dirs and
+  Flatpak exports included), or `pixmaps`. Icons from other contexts are never
+  overridden, so a service that borrows an action icon doesn't change it
+  everywhere.
+* A round icon is fitted to the Kernora circle (radius 22 of 48). Anything else
+  sits at 68 % on a white circle of the same size, like ChromeOS.
+* With "Themed app icons" on (`kernorarc` `[Icons] themedApps`, Settings ›
+  Wallpaper & style › Colour, off by default) the icon becomes a glyph in the
+  colours of the active `Kernora-<colour>` theme, read from its
+  `org.kernora.settings.svg`. A round or square icon with a flat background
+  keeps whatever stands out from that background; anything else is stamped by
+  luminance, and a flat one-colour icon becomes a solid silhouette.
+* It runs at login, when KSycoca changes (apps installed or removed) and when
+  `kernorarc` or `kdeglobals` change. `~/.local/state/kernora/app-icons`
+  remembers what each file was made from, so only changed icons are redrawn
+  and icons of removed apps are deleted. Afterwards it sends KIconLoader's
+  `iconChanged` D-Bus signal and open windows and Plasma pick the icons up.
+* Icons given as an absolute path in a desktop file can't be overridden that
+  way and stay as they are.
+* `kernora-app-icons render <icon> <out.png> [--themed]` draws one icon,
+  `kernora-app-icons sync` runs a sync by hand, and
+  `kernora-app-icons --self-test` runs during the package build.
 
 ## Plasma theme
 

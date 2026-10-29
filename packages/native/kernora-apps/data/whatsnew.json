@@ -1,5 +1,44 @@
 [
   {
+    "id": "2026-10-28-1",
+    "date": "2026-10-28",
+    "items": [
+      {
+        "icon": "preferences-desktop-icons",
+        "title": {
+          "en": "App icons all the same size",
+          "ru": "Значки приложений одного размера"
+        },
+        "text": {
+          "en": "Icons of apps from Flathub and Debian now match Kernora's own: round icons fill the same circle, the others sit on a white circle, in the dock, the app menu, on the desktop and everywhere else.",
+          "ru": "Значки приложений из Flathub и Debian теперь выглядят как значки Kernora: круглые занимают тот же круг, остальные стоят на белом круге. В доке, в меню приложений, на рабочем столе и везде."
+        }
+      },
+      {
+        "icon": "color-picker",
+        "title": {
+          "en": "Themed app icons",
+          "ru": "Тематические значки"
+        },
+        "text": {
+          "en": "Like on Pixel: turn on Themed app icons in Settings > Wallpaper & style and every app icon takes on your colour.",
+          "ru": "Как на Pixel: включите «Тематические значки приложений» в «Настройки → Обои и стиль», и все значки приложений окрасятся в ваш цвет."
+        }
+      },
+      {
+        "icon": "dialog-information",
+        "title": {
+          "en": "Readable tooltips",
+          "ru": "Читаемые подсказки"
+        },
+        "text": {
+          "en": "Tooltips in quick settings and on the panel no longer show light text on a light background in dark mode.",
+          "ru": "Подсказки в быстрых настройках и на панели в тёмной теме больше не пишут светлым по светлому."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-26-1",
     "date": "2026-10-26",
     "items": [
