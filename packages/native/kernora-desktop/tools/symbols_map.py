@@ -440,6 +440,7 @@ APP_ICONS: list[tuple[str, bool, list[str]]] = [
     ("install_desktop", True, ["org.kernora.installer", "calamares"]),
     ("storefront", True, ["org.kernora.store"]),
     ("monitor_heart", True, ["htop", "utilities-system-monitor"]),
+    ("monitoring", True, ["org.kernora.taskmanager"]),
     ("bug_report", True, ["tools-report-bug"]),
     ("kernora_quick_share", False, ["org.kernora.quickshare", "org.kernora.share"]),
 ]

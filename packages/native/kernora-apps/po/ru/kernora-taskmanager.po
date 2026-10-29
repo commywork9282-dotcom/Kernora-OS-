@@ -1,0 +1,158 @@
+# Russian translations for kernora-taskmanager package.
+# Copyright (C) 2026 THE kernora-taskmanager'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-taskmanager package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-taskmanager\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-29 12:00-0700\n"
+"PO-Revision-Date: 2026-10-29 12:00-0700\n"
+"Last-Translator: Kernora Developers\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgctxt "@title application name"
+msgid "Task Manager"
+msgstr "Диспетчер задач"
+
+msgid "Task Manager"
+msgstr "Диспетчер задач"
+
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+msgid "Couldn't end %1: %2"
+msgstr "Не удалось завершить %1: %2"
+
+msgid "%1 isn't closing"
+msgstr "%1 не закрывается"
+
+msgid "Force quit"
+msgstr "Закрыть принудительно"
+
+msgid "Apps"
+msgstr "Приложения"
+
+msgid "Processes"
+msgstr "Процессы"
+
+msgid "Performance"
+msgstr "Ресурсы"
+
+msgid "Name"
+msgstr "Название"
+
+msgid "CPU"
+msgstr "Процессор"
+
+msgid "Memory"
+msgstr "Память"
+
+msgctxt "CPU share of a process"
+msgid "%1%"
+msgstr "%1%"
+
+msgid "PID %1 · %2"
+msgstr "PID %1 · %2"
+
+msgid "PID %1"
+msgstr "PID %1"
+
+msgid "%1 process"
+msgid_plural "%1 processes"
+msgstr[0] "%1 процесс"
+msgstr[1] "%1 процесса"
+msgstr[2] "%1 процессов"
+
+msgid "Nothing found"
+msgstr "Ничего не найдено"
+
+msgid "Nothing here matches “%1”."
+msgstr "Здесь нет ничего по запросу «%1»."
+
+msgid "End %1?"
+msgstr "Завершить %1?"
+
+msgid "Anything unsaved in it may be lost."
+msgstr "Всё несохранённое в нём может пропасть."
+
+msgid "Search apps"
+msgstr "Поиск приложений"
+
+msgid "End task"
+msgstr "Завершить задачу"
+
+msgid "Apps can't be listed here"
+msgstr "Приложения здесь не показать"
+
+msgid "No apps are open"
+msgstr "Нет открытых приложений"
+
+msgid "This system doesn't group processes by app."
+msgstr "Эта система не группирует процессы по приложениям."
+
+msgid "Background processes"
+msgstr "Фоновые процессы"
+
+msgid "Search processes"
+msgstr "Поиск процессов"
+
+msgid "End process"
+msgstr "Завершить процесс"
+
+msgid "No background processes"
+msgstr "Нет фоновых процессов"
+
+msgid "Mine"
+msgstr "Мои"
+
+msgid "All users"
+msgstr "Все пользователи"
+
+msgid "%1 core"
+msgid_plural "%1 cores"
+msgstr[0] "%1 ядро"
+msgstr[1] "%1 ядра"
+msgstr[2] "%1 ядер"
+
+msgid "%1 of %2 in use"
+msgstr "Занято %1 из %2"
+
+msgid "Graphics"
+msgstr "Видеокарта"
+
+msgid "%1 of %2 video memory"
+msgstr "%1 из %2 видеопамяти"
+
+msgid "This graphics card doesn't report how busy it is."
+msgstr "Эта видеокарта не сообщает, насколько она загружена."
+
+msgid "Disk"
+msgstr "Диск"
+
+msgid "Read %1 · Write %2"
+msgstr "Чтение %1 · Запись %2"
+
+msgid "Read"
+msgstr "Чтение"
+
+msgid "Write"
+msgstr "Запись"
+
+msgid "Network"
+msgstr "Сеть"
+
+msgid "Down %1 · Up %2"
+msgstr "Загрузка %1 · Отдача %2"
+
+msgid "Download"
+msgstr "Загрузка"
+
+msgid "Upload"
+msgstr "Отдача"

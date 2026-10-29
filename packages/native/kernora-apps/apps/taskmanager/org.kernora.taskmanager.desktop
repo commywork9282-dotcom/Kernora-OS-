@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Task Manager
+Name[ru]=Диспетчер задач
+GenericName=Task Manager
+GenericName[ru]=Диспетчер задач
+Comment=See what's running and how busy the computer is
+Comment[ru]=Что запущено и насколько загружен компьютер
+Icon=org.kernora.taskmanager
+Exec=kernora-taskmanager
+Categories=Qt;System;Monitor;
+Keywords=task manager;processes;cpu;memory;ram;gpu;disk;network;performance;system monitor;диспетчер задач;процессы;процессор;память;видеокарта;диск;сеть;производительность;
+StartupNotify=true
+X-KDE-Shortcuts=Ctrl+Shift+Esc,Ctrl+Esc

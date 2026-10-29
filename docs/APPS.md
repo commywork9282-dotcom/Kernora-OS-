@@ -23,6 +23,7 @@ of the shell: the same tokens, components, symbols and motion.
 | Photos (`kernora-photos`) | Gwenview | Gallery of Pictures, viewer with zoom, rotation, slideshow, details, wallpaper. |
 | Media Player (`kernora-player`) | Elisa, Dragon | Qt Multimedia over FFmpeg; video with auto-hiding controls, music with a queue from the folder. |
 | Calculator (`kernora-calculator`) | KCalc | Own expression parser (no `eval`), scientific functions, history. |
+| Task Manager (`kernora-taskmanager`) | System Monitor | Apps (ksysguard's `ApplicationDataModel`, one row per app cgroup), background processes (`ProcessDataModel`, the user's own or all) and Performance (CPU, memory, graphics, disk and network charts from ksystemstats through KQuickCharts). Ending sends SIGTERM through `ProcessController` (KAuth for other users' processes) and offers Force quit (SIGKILL) when the process is still there after five seconds. Ctrl+Shift+Esc and Ctrl+Esc open it (the entry is installed into `/usr/share/kglobalaccel`). |
 | Screenshot (`kernora-screenshot`) | Spectacle | KWin ScreenShot2 (the desktop entry must name `/usr/bin/kernora-screenshot`), area/screen/window, saved and copied. Bound to Print. |
 | Terminal | Konsole | Alacritty started as `org.kernora.terminal`, with colours generated from the tokens and switched with the theme. Ctrl+Alt+T opens it (the entry is linked into `/usr/share/kglobalaccel`). |
 | Welcome (`kernora-welcome`) | Plasma Welcome | Runs at the first logins of an installed system (`--first-run`, closes in the live session) until finished. |

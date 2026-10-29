@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.61" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.62" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -120,6 +120,27 @@ grep -Fq 'AppIconSync icons;' "$package_root/src/updatenotifier/main.cpp" \
   && grep -Fq 'info.absolutePath().contains(QLatin1String("/apps"))' "$package_root/src/updatenotifier/appiconsync.cpp" \
   && grep -Fq 'kernora-app-icons --self-test' "$package_root/debian/rules" \
   || fail "app icons are not made the same size and shape"
+for file in Main AppsPage ProcessesPage PerformancePage TaskPage UsageCard; do
+  [[ -s "$package_root/apps/taskmanager/qml/$file.qml" ]] || fail "Task Manager lacks $file.qml"
+done
+grep -Fq 'Procs.ApplicationDataModel {' "$package_root/apps/taskmanager/qml/Main.qml" \
+  && grep -Fq 'Procs.ProcessDataModel {' "$package_root/apps/taskmanager/qml/ProcessesPage.qml" \
+  && grep -Fq 'Files.exists("file:///proc/" + pid)' "$package_root/apps/taskmanager/qml/Main.qml" \
+  && grep -Fq 'Procs.ProcessController.KillSignal' "$package_root/apps/taskmanager/qml/Main.qml" \
+  && grep -Fq 'sensorId: "gpu/all/totalVram"' "$package_root/apps/taskmanager/qml/PerformancePage.qml" \
+  && grep -Fq 'direction: Charts.XYChart.ZeroAtEnd' "$package_root/apps/taskmanager/qml/UsageCard.qml" \
+  && grep -Fq 'fillMode: Charts.HistoryProxySource.FillFromStart' "$package_root/apps/taskmanager/qml/UsageCard.qml" \
+  && grep -Fq 'return pid > 0 ? [pid] : [];' "$package_root/apps/taskmanager/qml/TaskPage.qml" \
+  && grep -Fq 'onClicked: page.sortKey = key' "$package_root/apps/taskmanager/qml/TaskPage.qml" \
+  || fail "Task Manager can't list, end or chart"
+grep -Fxq 'X-KDE-Shortcuts=Ctrl+Shift+Esc,Ctrl+Esc' "$package_root/apps/taskmanager/org.kernora.taskmanager.desktop" \
+  && grep -Fq 'DESTINATION ${KDE_INSTALL_DATADIR}/kglobalaccel' "$package_root/CMakeLists.txt" \
+  && grep -q 'share taskmanager)' "$package_root/src/apps/CMakeLists.txt" \
+  || fail "Task Manager has no shortcut or is not built"
+for dependency in ksystemstats libksysguard-bin qml6-module-org-kde-ksysguard qml6-module-org-kde-kitemmodels qml6-module-org-kde-quickcharts; do
+  grep -Eq "^ $dependency,?$" "$package_root/debian/control" || fail "Task Manager needs $dependency"
+done
+msgfmt --check -o /dev/null "$package_root/po/ru/kernora-taskmanager.po" || fail "the Task Manager translation is broken"
 grep -Fq 'key: "themedApps"' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
   && grep -Fq 'msgid "Themed app icons"' "$package_root/po/ru/kernora-settings.po" \
   && grep -Eq '^ qt6-svg-plugins,$' "$package_root/debian/control" \

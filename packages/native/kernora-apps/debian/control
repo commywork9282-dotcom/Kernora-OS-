@@ -38,9 +38,11 @@ Depends:
  kde-cli-tools,
  kernora-archive (>= 1.2),
  kernora-base (>= 1.6),
- kernora-desktop (>= 1.4.52),
+ kernora-desktop (>= 1.4.53),
  kernora-quickshare (>= 1.0.1),
+ ksystemstats,
  libarchive-tools,
+ libksysguard-bin,
  packagekit,
  pkexec,
  qt6-svg-plugins,
@@ -50,8 +52,11 @@ Depends:
  powerdevil,
  qml6-module-org-kde-bluezqt,
  qml6-module-org-kde-kirigami,
+ qml6-module-org-kde-kitemmodels,
+ qml6-module-org-kde-ksysguard,
  qml6-module-org-kde-layershell,
  qml6-module-org-kde-notifications,
+ qml6-module-org-kde-quickcharts,
  qml6-module-org-kde-syntaxhighlighting,
  qml6-module-qt-labs-folderlistmodel,
  qml6-module-qtmultimedia,
@@ -69,6 +74,8 @@ Description: Kernora OS applications
     account, date and language, updates and information about the system;
   * Store: find, install, remove and update Flathub and Debian apps;
   * Files, Text Editor, Photos, Media Player, Calculator and Screenshot;
+  * Task Manager: running apps, background processes and live usage of
+    the processor, memory, graphics card, disk and network;
   * Welcome, the first-run introduction;
   * the file chooser: every program's open and save dialogs, served to
     the session through the desktop portal.

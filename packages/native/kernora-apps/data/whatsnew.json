@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-29-1",
+    "date": "2026-10-29",
+    "items": [
+      {
+        "icon": "speedometer",
+        "title": {
+          "en": "Task Manager",
+          "ru": "Диспетчер задач"
+        },
+        "text": {
+          "en": "See what's running and how busy the computer is: apps, background processes and live charts for the processor, memory, graphics card, disk and network. End anything that hangs. Open it from the app menu or with Ctrl+Shift+Esc.",
+          "ru": "Что запущено и насколько загружен компьютер: приложения, фоновые процессы и живые графики процессора, памяти, видеокарты, диска и сети. Зависшее можно завершить. Откройте из меню приложений или по Ctrl+Shift+Esc."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-28-1",
     "date": "2026-10-28",
     "items": [

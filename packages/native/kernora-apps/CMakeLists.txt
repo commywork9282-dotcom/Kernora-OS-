@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 cmake_minimum_required(VERSION 3.25)
-project(kernora-apps VERSION 1.1.61 LANGUAGES CXX)
+project(kernora-apps VERSION 1.1.62 LANGUAGES CXX)
 
 set(QT_MIN_VERSION 6.8)
 set(KF_MIN_VERSION 6.13)
@@ -39,13 +39,14 @@ add_subdirectory(src/apps)
 add_subdirectory(src/filechooser)
 add_subdirectory(src/updatenotifier)
 
-set(KERNORA_APPS settings files welcome editor photos player calculator screenshot store share)
+set(KERNORA_APPS settings files welcome editor photos player calculator screenshot store share taskmanager)
 foreach(app ${KERNORA_APPS})
     install(DIRECTORY apps/${app}/qml/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/${app})
     install(FILES apps/${app}/org.kernora.${app}.desktop DESTINATION ${KDE_INSTALL_APPDIR})
 endforeach()
 
 install(DIRECTORY apps/filechooser/qml/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/filechooser)
+install(FILES apps/taskmanager/org.kernora.taskmanager.desktop DESTINATION ${KDE_INSTALL_DATADIR}/kglobalaccel)
 
 install(FILES apps/welcome/org.kernora.welcome-autostart.desktop
         DESTINATION ${KDE_INSTALL_AUTOSTARTDIR} RENAME org.kernora.welcome.desktop)

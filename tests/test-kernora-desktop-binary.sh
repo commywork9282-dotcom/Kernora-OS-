@@ -258,6 +258,7 @@ for path in \
   usr/share/plasma/desktoptheme/kernora-light/colors \
   usr/share/icons/Kernora/scalable/apps/org.kernora.settings.svg \
   usr/share/icons/Kernora/scalable/apps/org.kernora.files.svg \
+  usr/share/icons/Kernora/scalable/apps/org.kernora.taskmanager.svg \
   usr/share/sddm/themes/kernora/Main.qml \
   usr/share/sddm/themes/kernora/metadata.desktop \
   usr/share/sddm/themes/kernora/icons/login.svg \

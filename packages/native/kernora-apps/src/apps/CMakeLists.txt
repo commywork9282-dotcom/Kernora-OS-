@@ -7,7 +7,7 @@ target_link_libraries(kernorahost PUBLIC
     KF6::CoreAddons KF6::DBusAddons KF6::I18n KF6::I18nQml)
 target_compile_definitions(kernorahost PUBLIC KERNORA_APPS_VERSION="${PROJECT_VERSION}")
 
-foreach(app settings files welcome editor photos player calculator screenshot store share)
+foreach(app settings files welcome editor photos player calculator screenshot store share taskmanager)
     add_executable(kernora-${app} ${app}.cpp)
     target_link_libraries(kernora-${app} PRIVATE kernorahost)
     target_compile_definitions(kernora-${app} PRIVATE TRANSLATION_DOMAIN="kernora-${app}")

@@ -1,3 +1,11 @@
+kernora-desktop (1.4.53) UNRELEASED; urgency=medium
+
+  * The icon of the new Task Manager (org.kernora.taskmanager): the filled
+    Material symbol "monitoring" on the round tonal container, like the
+    other Kernora apps.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 29 Oct 2026 12:00:00 -0700
+
 kernora-desktop (1.4.52) UNRELEASED; urgency=medium
 
   * Tooltips in Plasma (quick settings tiles, panel buttons) were light text

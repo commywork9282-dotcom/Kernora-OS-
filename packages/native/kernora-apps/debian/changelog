@@ -1,3 +1,24 @@
+kernora-apps (1.1.62) UNRELEASED; urgency=medium
+
+  * Task Manager (kernora-taskmanager), Ctrl+Shift+Esc or Ctrl+Esc:
+    - Apps: running apps grouped by their cgroup (ksysguard
+      ApplicationDataModel) with CPU and memory, End task;
+    - Background processes: everything else of yours, or of all users,
+      searchable, End process;
+    - Performance: live CPU, memory, graphics, disk and network charts
+      from ksystemstats (KQuickCharts). Graphics cards that don't report
+      their load say so instead of showing 0 %.
+    Click a column's header to sort by it. Ending asks first; when
+    something is still running five seconds later a "Force quit" button
+    sends SIGKILL.
+  * What's new: Task Manager.
+  * Require kernora-desktop 1.4.53 (its icon), ksystemstats, the
+    ksysguard, kitemmodels and quickcharts QML modules and
+    libksysguard-bin, whose KAuth helper ends other users' processes
+    after asking for the password.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 29 Oct 2026 12:00:00 -0700
+
 kernora-apps (1.1.61) UNRELEASED; urgency=medium
 
   * App icons the same size and shape everywhere, like ChromeOS: the
