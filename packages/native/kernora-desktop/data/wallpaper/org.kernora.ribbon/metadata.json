@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/Wallpaper",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "",
+        "Description": "Material shapes ride along a ribbon in the colours of your theme and change into new shapes at its narrowest point",
+        "Description[ru]": "Фигуры Material едут по ленте в цветах вашей темы и в самом узком месте превращаются в новые",
+        "Icon": "preferences-desktop-wallpaper",
+        "Id": "org.kernora.ribbon",
+        "License": "GPL-2.0+",
+        "Name": "Ribbon",
+        "Name[ru]": "Лента"
+    },
+    "X-KDE-ParentApp": "org.kde.plasmashell",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

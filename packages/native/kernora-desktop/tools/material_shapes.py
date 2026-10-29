@@ -332,6 +332,27 @@ def normalized(cubics: list[Cubic]) -> list[Cubic]:
     return transform_cubics(cubics, lambda p: P((p.x + ox) / side, (p.y + oy) / side))
 
 
+def polar_radii(cubics: list[Cubic], samples: int) -> list[float]:
+    tau = 2 * math.pi
+    points = []
+    for c in normalized(cubics):
+        for i in range(64):
+            p = _point_on(c, i / 64)
+            points.append((math.atan2(p.y - 0.5, p.x - 0.5) % tau, math.hypot(p.x - 0.5, p.y - 0.5)))
+    points.sort()
+    ring = [(a - tau, r) for a, r in points[-2:]] + points + [(a + tau, r) for a, r in points[:2]]
+    result = []
+    j = 0
+    for k in range(samples):
+        angle = tau * k / samples
+        while ring[j + 1][0] < angle:
+            j += 1
+        (a0, r0), (a1, r1) = ring[j], ring[j + 1]
+        f = (angle - a0) / (a1 - a0) if a1 > a0 else 0.0
+        result.append(round(r0 + (r1 - r0) * f, 4))
+    return result
+
+
 def svg_path(cubics: list[Cubic], scale: float = 1.0, digits: int = 4) -> str:
     def f(v: float) -> str:
         text = f"{v * scale:.{digits}f}".rstrip("0").rstrip(".")

@@ -1,3 +1,18 @@
+kernora-desktop (1.4.54) UNRELEASED; urgency=medium
+
+  * New live wallpaper Ribbon (org.kernora.ribbon), after a community
+    member's sketch: a dark ribbon with a narrow waist crosses a ground in
+    the theme's colour, and Material shapes ride along it. At the waist
+    each one springs into the next of sixteen shapes (cookies, clovers,
+    sunny, heart, pill, flower, gem, soft burst, triangle, arch, ghost,
+    puffy diamond) while it turns and takes a new tone. The ribbon
+    breathes and a slow ripple runs along its edges.
+  * gen-wallpaper-assets writes Ribbon's palette and morphs.js, the
+    shapes as radii round their centre; the polar sampling moved from
+    gen-loading-shapes into material_shapes.py.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 29 Oct 2026 12:00:00 -0700
+
 kernora-desktop (1.4.53) UNRELEASED; urgency=medium
 
   * The icon of the new Task Manager (org.kernora.taskmanager): the filled

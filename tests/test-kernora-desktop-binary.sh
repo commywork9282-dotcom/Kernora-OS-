@@ -128,6 +128,12 @@ for path in \
   usr/share/plasma/wallpapers/org.kernora.pastel/contents/ui/palettes/kernora.qml \
   usr/share/plasma/wallpapers/org.kernora.pastel/contents/ui/palettes/blue-grey.qml \
   usr/share/locale/ru/LC_MESSAGES/plasma_wallpaper_org.kernora.pastel.mo \
+  usr/share/plasma/wallpapers/org.kernora.ribbon/metadata.json \
+  usr/share/plasma/wallpapers/org.kernora.ribbon/contents/ui/Scene.qml \
+  usr/share/plasma/wallpapers/org.kernora.ribbon/contents/ui/morphs.js \
+  usr/share/plasma/wallpapers/org.kernora.ribbon/contents/ui/palettes/kernora.qml \
+  usr/share/plasma/wallpapers/org.kernora.ribbon/contents/ui/palettes/blue-grey.qml \
+  usr/share/locale/ru/LC_MESSAGES/plasma_wallpaper_org.kernora.ribbon.mo \
   usr/share/Kvantum/Kernora/Kernora.kvconfig \
   usr/share/Kvantum/Kernora/Kernora.svg \
   usr/share/Kvantum/Kernora/KernoraDark.kvconfig \

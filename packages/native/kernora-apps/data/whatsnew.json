@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-29-2",
+    "date": "2026-10-29",
+    "items": [
+      {
+        "icon": "preferences-desktop-wallpaper",
+        "title": {
+          "en": "Ribbon live wallpaper",
+          "ru": "Живые обои «Лента»"
+        },
+        "text": {
+          "en": "Shapes ride along a ribbon in your theme's colour and change into new ones at its narrowest point: sixteen Material shapes, from cookies and clovers to a heart and a ghost. Thanks to the community member who drew the idea. Pick it in Settings, Wallpaper & style.",
+          "ru": "Фигуры едут по ленте в цвете вашей темы и в самом узком месте превращаются в новые: шестнадцать фигур Material, от печенья и клевера до сердца и призрака. Спасибо участнику сообщества, который нарисовал идею. Выберите их в Настройках, «Обои и стиль»."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-29-1",
     "date": "2026-10-29",
     "items": [

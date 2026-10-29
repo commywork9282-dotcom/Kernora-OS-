@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.53" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.54" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -35,7 +35,7 @@ grep -Eq '^ calamares \(>= [^)]*kernora[0-9]+\),$' "$control" \
   || fail "installer configuration does not depend on the Kernora calamares"
 
 data_root="$package_root/data"
-for wallpaper in shapes rhythm starfall pastel; do
+for wallpaper in shapes rhythm starfall pastel ribbon; do
   for file in metadata.json contents/ui/main.qml contents/ui/Scene.qml contents/ui/config.qml contents/config/main.xml; do
     [[ -s "$data_root/wallpaper/org.kernora.$wallpaper/$file" ]] \
       || fail "the $wallpaper wallpaper lacks $file"
@@ -43,6 +43,22 @@ for wallpaper in shapes rhythm starfall pastel; do
   [[ -s "$package_root/data/shell/po/plasma_wallpaper_org.kernora.$wallpaper.ru.po" ]] \
     || fail "the $wallpaper wallpaper has no Russian translation"
 done
+grep -Fq 'import "morphs.js" as Morphs' "$data_root/wallpaper/org.kernora.ribbon/contents/ui/Scene.qml" \
+  && grep -Fq 'readonly property int to: (5 * slot + 1) % scene.kinds' "$data_root/wallpaper/org.kernora.ribbon/contents/ui/Scene.qml" \
+  && grep -Fq '"ribbon": {' "$package_root/tools/gen-wallpaper-assets" \
+  || fail "Ribbon's shapes do not change into one another"
+ribbon_assets=$(mktemp -d)
+python3 "$package_root/tools/gen-wallpaper-assets" "$ribbon_assets" ribbon >/dev/null \
+  && python3 - "$ribbon_assets/morphs.js" <<'PY' || fail "gen-wallpaper-assets does not write Ribbon's morphs"
+import json, re, sys
+text = open(sys.argv[1]).read()
+samples = int(re.search(r"var samples = (\d+);", text).group(1))
+names = json.loads(re.search(r"var names = (\[.*?\]);", text).group(1))
+shapes = json.loads(re.search(r"var shapes = (\[.*\]);", text, re.S).group(1))
+assert len(names) == len(shapes) == 16 and "puffy" not in names
+assert all(len(radii) == samples and 0.2 < min(radii) and max(radii) < 0.75 for radii in shapes)
+PY
+rm -rf "$ribbon_assets"
 [[ ! -e "$data_root/wallpaper/org.kernora.tower" ]] || fail "Tower is back"
 [[ ! -e "$package_root/data/shell/po/plasma_wallpaper_org.kernora.tower.ru.po" ]] || fail "Tower still has a translation"
 grep -q '"tower"' "$package_root/tools/gen-wallpaper-assets" && fail "gen-wallpaper-assets still has a Tower palette"
@@ -570,7 +586,7 @@ grep -Fq 'i18nd("plasmashellprivateplugin", "Download New Plasma Widgets")' "$pa
   || fail "the widgets menu still offers the KDE store or clips its labels"
 grep -Fq 'readonly property real handleX: track.level * (width - slot)' "$package_root/data/osd/KernoraOsdItem.qml" \
   || fail "the volume pop-up is not the expressive slider"
-for wallpaper in shapes pastel rhythm starfall; do
+for wallpaper in shapes pastel rhythm starfall ribbon; do
   main="$package_root/data/wallpaper/org.kernora.$wallpaper/contents/ui/main.qml"
   grep -Fq 'readonly property bool lockScreen: typeof authenticator !== "undefined"' "$main" \
     && grep -Fq 'function phaseAt(time: double): real {' "$main" \

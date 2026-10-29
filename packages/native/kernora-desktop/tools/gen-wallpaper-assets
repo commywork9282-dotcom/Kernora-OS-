@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""usage: gen-wallpaper-assets OUTPUT_DIRECTORY [rhythm|starfall|pastel]
+"""usage: gen-wallpaper-assets OUTPUT_DIRECTORY [rhythm|starfall|pastel|ribbon]
 """
 
 from __future__ import annotations
@@ -107,7 +107,14 @@ THEMES = {
         "base": (None, 40), "light": (None, 24), "deep": (None, 36),
         "rose": (352, 48, "fixed"), "amber": (78, 36, "fixed"), "plum": (305, 24, "fixed"),
     },
+    "ribbon": {
+        "base": (None, 40), "band": (None, 34), "light": (None, 10), "soft": (None, 20), "accent": (101, 26),
+    },
 }
+
+MORPH_SEQUENCE = ["cookie4", "cookie12", "clover4", "sunny", "heart", "cookie9", "pill", "flower",
+                  "gem", "softBurst", "triangle", "clover8", "arch", "verySunny", "ghostish", "puffyDiamond"]
+MORPH_SAMPLES = 120
 THEME_TONES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 34, 38, 42, 46, 50, 55,
                60, 65, 70, 75, 80, 85, 88, 90, 92, 94, 96, 98]
 
@@ -210,6 +217,16 @@ def main(argv: list[str]) -> int:
             + ",\n".join(f" {json.dumps(name)}: {json.dumps(data, separators=(',', ':'))}"
                           for name, data in shape_data.items())
             + "\n};\n",
+            encoding="utf-8",
+        )
+    if theme == "ribbon" and design.COLOUR == design.DEFAULT_COLOUR:
+        definitions = material_shapes.shape_definitions()
+        radii = [material_shapes.polar_radii(definitions[name], MORPH_SAMPLES) for name in MORPH_SEQUENCE]
+        (output / "morphs.js").write_text(
+            HEADER.format(what="Material 3 Expressive shapes as radii round their centre, for morphing.")
+            + f"var samples = {MORPH_SAMPLES};\n"
+            + f"var names = {json.dumps(MORPH_SEQUENCE)};\n"
+            + f"var shapes = {json.dumps(radii, separators=(',', ':'))};\n",
             encoding="utf-8",
         )
     palettes = output / "palettes"

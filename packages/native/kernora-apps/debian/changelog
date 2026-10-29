@@ -1,3 +1,10 @@
+kernora-apps (1.1.63) UNRELEASED; urgency=medium
+
+  * What's new: the Ribbon live wallpaper.
+  * Require kernora-desktop 1.4.54, which carries it.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 29 Oct 2026 12:00:00 -0700
+
 kernora-apps (1.1.62) UNRELEASED; urgency=medium
 
   * Task Manager (kernora-taskmanager), Ctrl+Shift+Esc or Ctrl+Esc:

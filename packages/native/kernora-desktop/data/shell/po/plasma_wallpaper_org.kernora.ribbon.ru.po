@@ -1,0 +1,26 @@
+# Russian translation of the Kernora Ribbon wallpaper.
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-desktop 1.4\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Motion"
+msgstr "Движение"
+
+msgid "Calm"
+msgstr "Спокойно"
+
+msgid "Moderate"
+msgstr "Умеренно"
+
+msgid "Lively"
+msgstr "Живо"
+
+msgid "Save energy"
+msgstr "Экономия энергии"
+
+msgid "Pause while a window covers the desktop"
+msgstr "Останавливать, когда окно закрывает рабочий стол"

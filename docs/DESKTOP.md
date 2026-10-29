@@ -573,6 +573,23 @@ Settings and Welcome load `Scene.qml` directly for previews
   keep their night blue in every colour theme (a third `"fixed"` field in
   `THEMES` pins a family's hue); the horizon glow and the meteors take the
   theme's colour.
+* **Ribbon** (`org.kernora.ribbon`, 224 s), from a community member's
+  sketch: a dark ribbon with a narrow waist crosses a ground in the theme's
+  colour, and Material shapes ride along it from left to right. At the
+  waist each shape springs into the next one (an overshooting ease, a
+  quarter turn, a squeeze and a blend into its new tone), so the shapes
+  leave as different ones from those that came in. The sixteen shapes are
+  sampled as radii round their centre (`morphs.js`, written by
+  `gen-wallpaper-assets` with `material_shapes.polar_radii`, which the
+  loading indicator uses too); every Material shape except `puffy` is
+  star-shaped about its centre, so any two morph cleanly. Item *j* enters
+  as shape `5j mod 16` and leaves as the one after it: five is coprime
+  with sixteen, so both sides of the waist go through every shape, and
+  sixteen items a loop close the loop. The ribbon breathes, its waist
+  sways and a ripple runs along it six times a loop. Tones: light 92,
+  soft 80 and a tertiary accent (the seed's hue + 60) at 85; the shapes
+  and the ribbon are sized from `min(width × 1.35, height)` so portrait
+  screens keep the ribbon full.
 
 Picture wallpapers are not installed. kernora-desktop no longer ships one,
 and Breeze's (`breeze-wallpaper`, a dependency of `breeze`) is removed from
