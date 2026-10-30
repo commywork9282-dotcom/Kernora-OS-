@@ -38,7 +38,7 @@ Depends:
  kde-cli-tools,
  kernora-archive (>= 1.2),
  kernora-base (>= 1.6),
- kernora-desktop (>= 1.4.54),
+ kernora-desktop (>= 1.4.55),
  kernora-quickshare (>= 1.0.1),
  ksystemstats,
  libarchive-tools,

@@ -13,16 +13,19 @@ import org.kde.kirigami as Kirigami
 import org.kde.plasma.private.shell
 import org.kernora.m3
 import org.kernora.ui as UI
+import "widgets.js" as Widgets
 
 Item {
     id: main
 
-    readonly property string kernoraPrefix: "org.kernora.widget."
+    readonly property string kernoraPrefix: Widgets.kernoraPrefix
     readonly property bool forPanel: !!containment && containment.containmentType == 1
     readonly property int cardSpacing: 12
-    readonly property int cardHeight: 228
+    readonly property int cardHeight: 236
     readonly property var kernoraOrder: ["clock", "glance", "weather", "calendar", "battery", "media", "photo", "note"]
-    property var kernoraKinds: []
+    readonly property var pendingUninstalls: pendingUninstallTimer.applets
+    property var kernoraShown: []
+    property var otherShown: []
 
     property QtObject containment
     property PlasmaCore.Dialog sidePanel
@@ -44,24 +47,34 @@ Item {
         return i18nd("plasma_shell_org.kde.plasma.desktop", text);
     }
 
-    function rank(kind: string): int {
-        const position = kernoraOrder.indexOf(kind);
+    function kernoraRank(pluginName: string): int {
+        const position = kernoraOrder.indexOf(pluginName.slice(kernoraPrefix.length));
         return position < 0 ? kernoraOrder.length : position;
     }
 
-    function before(kind: string, other: string): bool {
-        return rank(kind) < rank(other) || (rank(kind) === rank(other) && kind < other);
-    }
-
-    function refreshKinds(): void {
-        const kinds = [];
-        for (let i = 0; i < kernoraWidgets.count; ++i) {
-            const item = kernoraWidgets.itemAt(i);
-            if (item && item.shown) {
-                kinds.push(item.kind);
+    function shownIn(repeater: Repeater, rank: var): var {
+        const cards = [];
+        for (let i = 0; i < repeater.count; ++i) {
+            const card = repeater.itemAt(i);
+            if (card && card.shown) {
+                cards.push(card);
             }
         }
-        kernoraKinds = kinds;
+        cards.sort((a, b) => rank(a.pluginName) - rank(b.pluginName) || a.title.localeCompare(b.title));
+        return cards.map(card => card.pluginName);
+    }
+
+    function refresh(): void {
+        kernoraShown = shownIn(kernoraWidgets, kernoraRank);
+        otherShown = shownIn(otherWidgets, pluginName => Widgets.rank(pluginName, forPanel));
+    }
+
+    function gridHeight(count: int): real {
+        return count === 0 ? 0 : Math.ceil(count / 2) * (cardHeight + cardSpacing) - cardSpacing;
+    }
+
+    function addApplet(pluginName: string): void {
+        widgetExplorer.addApplet(pluginName);
     }
 
     function removeInstances(pluginName: string): void {
@@ -79,7 +92,7 @@ Item {
     }
 
     function toggleUninstall(pluginName: string): void {
-        const pending = pendingUninstallTimer.applets;
+        const pending = pendingUninstallTimer.applets.slice();
         const index = pending.indexOf(pluginName);
         if (index > -1) {
             pending.splice(index, 1);
@@ -93,6 +106,8 @@ Item {
             pendingUninstallTimer.stop();
         }
     }
+
+    onForPanelChanged: Qt.callLater(refresh)
 
     onPreventWindowHideChanged: {
         if (!preventWindowHide && !sidePanel.active) {
@@ -261,172 +276,30 @@ Item {
                     Item {
                         id: kernoraGrid
                         width: parent.width
-                        implicitHeight: main.kernoraKinds.length === 0 ? 0
-                            : Math.ceil(main.kernoraKinds.length / 2) * (main.cardHeight + main.cardSpacing) - main.cardSpacing
+                        implicitHeight: main.gridHeight(main.kernoraShown.length)
                         height: implicitHeight
 
                         Repeater {
                             id: kernoraWidgets
 
-                            onItemAdded: Qt.callLater(main.refreshKinds)
-                            onItemRemoved: Qt.callLater(main.refreshKinds)
+                            onItemAdded: Qt.callLater(main.refresh)
+                            onItemRemoved: Qt.callLater(main.refresh)
 
-                            delegate: Item {
-                                id: card
-
-                                required property var model
-                                required property int index
-                                readonly property string pluginName: model.pluginName
-                                readonly property string kind: pluginName.slice(main.kernoraPrefix.length)
-
-                                readonly property bool shown: !main.forPanel && pluginName.startsWith(main.kernoraPrefix)
-                                readonly property int slot: main.kernoraKinds.filter(other => main.before(other, card.kind)).length
-
-                                visible: shown
-                                x: (slot % 2) * (width + main.cardSpacing)
-                                y: Math.floor(slot / 2) * (height + main.cardSpacing)
+                            delegate: WidgetCard {
+                                id: kernoraCard
+                                explorer: main
+                                shown: !main.forPanel && kernoraCard.pluginName.startsWith(main.kernoraPrefix)
+                                slot: main.kernoraShown.indexOf(kernoraCard.pluginName)
+                                spacing: main.cardSpacing
+                                pendingUninstalls: main.pendingUninstalls
                                 width: (kernoraGrid.width - main.cardSpacing) / 2
                                 height: main.cardHeight
-
-                                Accessible.role: Accessible.Button
-                                Accessible.name: model.name
-                                Accessible.description: model.description
-
-                                Kirigami.ShadowedRectangle {
-                                    id: cardSurface
-                                    readonly property var shadowSpec: M3.elevationOf("card")
-                                    anchors.fill: parent
-                                    radius: M3.classic ? M3.cornerCard : 24
-                                    color: !M3.classic ? M3.surfaceContainerHigh : M3.dark ? M3.surfaceContainerHighest : M3.surfaceContainerLowest
-                                    shadow.size: M3.classic ? shadowSpec.blur * 2 : 0
-                                    shadow.yOffset: M3.classic ? shadowSpec.offset : 0
-                                    shadow.color: Qt.rgba(0, 0, 0, shadowSpec.opacity)
-
-                                    MStateLayer {
-                                        radius: cardSurface.radius
-                                        hovered: cardHover.hovered
-                                        pressed: cardTap.pressed
-                                        dragged: cardDrag.active
-                                        pressPoint: Qt.point(cardTap.mouseX, cardTap.mouseY)
-                                    }
-                                }
-
-                                Rectangle {
-                                    id: stage
-                                    x: 8
-                                    y: 8
-                                    width: parent.width - 16
-                                    height: 132
-                                    radius: M3.classic ? M3.cornerCardInner : cardSurface.radius - 8
-                                    color: M3.classic ? M3.withAlpha(M3.surfaceContent, M3.dark ? 0.06 : 0.04) : M3.surfaceContainerLowest
-
-                                    WidgetPreview {
-                                        anchors.fill: parent
-                                        kind: card.kind
-                                        icon: card.model.decoration
-                                    }
-
-                                    Rectangle {
-                                        id: badge
-                                        readonly property bool removing: badgeHover.hovered && !cardDrag.active
-                                        visible: card.model.running > 0
-                                        anchors.top: parent.top
-                                        anchors.right: parent.right
-                                        anchors.margins: 8
-                                        height: 28
-                                        width: Math.max(28, badgeRow.implicitWidth + 14)
-                                        radius: 14
-                                        color: removing ? M3.inverseSurface : M3.primary
-
-                                        Accessible.role: Accessible.Button
-                                        Accessible.name: main.shell("Remove all instances")
-
-                                        Row {
-                                            id: badgeRow
-                                            anchors.centerIn: parent
-                                            spacing: 2
-
-                                            MIcon {
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                size: 18
-                                                source: badge.removing ? "window-close" : "checkmark"
-                                                color: badge.removing ? M3.inverseOnSurface : M3.primaryContent
-                                            }
-                                            MText {
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                visible: card.model.running > 1
-                                                role: "labelMedium"
-                                                text: card.model.running
-                                                color: badge.removing ? M3.inverseOnSurface : M3.primaryContent
-                                            }
-                                        }
-
-                                        HoverHandler {
-                                            id: badgeHover
-                                            margin: 6
-                                        }
-
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            anchors.margins: -6
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: main.removeInstances(card.pluginName)
-                                        }
-                                    }
-                                }
-
-                                ColumnLayout {
-                                    anchors.top: stage.bottom
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.margins: 14
-                                    anchors.topMargin: 12
-                                    spacing: 2
-
-                                    MText {
-                                        Layout.fillWidth: true
-                                        role: "titleSmall"
-                                        text: card.model.name
-                                        elide: Text.ElideRight
-                                    }
-                                    MText {
-                                        Layout.fillWidth: true
-                                        role: "bodySmall"
-                                        text: card.model.description
-                                        color: M3.surfaceVariantContent
-                                        wrapMode: Text.Wrap
-                                        elide: Text.ElideRight
-                                        maximumLineCount: 3
-                                    }
-                                }
-
-                                HoverHandler {
-                                    id: cardHover
-                                    cursorShape: Qt.PointingHandCursor
-                                }
-
-                                MouseArea {
-                                    id: cardTap
-                                    anchors.fill: parent
-                                    z: -1
-                                    onClicked: widgetExplorer.addApplet(card.pluginName)
-                                }
-
-                                WidgetDrag {
-                                    id: cardDrag
-                                    anchors.fill: parent
-                                    z: -2
-                                    pluginName: card.pluginName
-                                    preview: stage
-                                    onStarted: main.draggingWidget = true
-                                    onFinished: main.draggingWidget = false
-                                }
                             }
                         }
                     }
 
                     MText {
-                        visible: otherList.implicitHeight > 0
+                        visible: otherGrid.implicitHeight > 0
                         topPadding: kernoraGrid.implicitHeight > 0 ? 12 : 0
                         leftPadding: 4
                         role: "titleSmall"
@@ -434,74 +307,27 @@ Item {
                         text: main.tr("Other widgets")
                     }
 
-                    Column {
-                        id: otherList
+                    Item {
+                        id: otherGrid
                         width: parent.width
-                        spacing: 2
+                        implicitHeight: main.gridHeight(main.otherShown.length)
+                        height: implicitHeight
 
                         Repeater {
                             id: otherWidgets
 
-                            delegate: UI.ListItem {
-                                id: row
+                            onItemAdded: Qt.callLater(main.refresh)
+                            onItemRemoved: Qt.callLater(main.refresh)
 
-                                required property var model
-                                required property int index
-                                readonly property string pluginName: model.pluginName
-                                readonly property bool pendingUninstall: pendingUninstallTimer.applets.indexOf(pluginName) > -1
-
-                                visible: main.forPanel || !pluginName.startsWith("org.kernora.")
-                                enabled: model.isSupported
-                                opacity: pendingUninstall ? 0.6 : (enabled ? 1 : 0.38)
-                                title: model.name
-                                subtitle: model.isSupported ? model.description : model.unsupportedMessage
-                                onClicked: widgetExplorer.addApplet(row.pluginName)
-
-                                leading: Component {
-                                    Rectangle {
-                                        implicitWidth: 40
-                                        implicitHeight: 40
-                                        radius: 20
-                                        color: M3.surfaceContainerHighest
-
-                                        Kirigami.Icon {
-                                            anchors.centerIn: parent
-                                            implicitWidth: 24
-                                            implicitHeight: 24
-                                            source: row.model.decoration
-                                            animated: false
-                                        }
-                                    }
-                                }
-
-                                trailing: Component {
-                                    Row {
-                                        MIconButton {
-                                            visible: row.model.running > 0
-                                            icon: "edit-clear-all"
-                                            text: main.shell("Remove all instances")
-                                            onClicked: main.removeInstances(row.pluginName)
-                                        }
-                                        MIconButton {
-                                            visible: row.model.local
-                                            icon: row.pendingUninstall ? "edit-undo" : "edit-delete"
-                                            text: row.pendingUninstall ? main.shell("Undo uninstall")
-                                                                       : i18ndc("plasma_shell_org.kde.plasma.desktop", "@info:tooltip uninstall a widget", "Uninstall")
-                                            onClicked: main.toggleUninstall(row.pluginName)
-                                        }
-                                    }
-                                }
-
-                                WidgetDrag {
-                                    id: rowDrag
-                                    anchors.fill: parent
-                                    z: -1
-                                    enabled: !row.pendingUninstall
-                                    pluginName: row.pluginName
-                                    preview: row
-                                    onStarted: main.draggingWidget = true
-                                    onFinished: main.draggingWidget = false
-                                }
+                            delegate: WidgetCard {
+                                id: otherCard
+                                explorer: main
+                                shown: main.forPanel || !otherCard.pluginName.startsWith("org.kernora.")
+                                slot: main.otherShown.indexOf(otherCard.pluginName)
+                                spacing: main.cardSpacing
+                                pendingUninstalls: main.pendingUninstalls
+                                width: (otherGrid.width - main.cardSpacing) / 2
+                                height: main.cardHeight
                             }
                         }
                     }
@@ -527,7 +353,7 @@ Item {
     UI.EmptyState {
         anchors.centerIn: parent
         width: parent.width - 48
-        visible: !setModelTimer.running && kernoraGrid.implicitHeight === 0 && otherList.implicitHeight === 0
+        visible: !setModelTimer.running && kernoraGrid.implicitHeight === 0 && otherGrid.implicitHeight === 0
         icon: "search"
         title: searchInput.text.length > 0 ? main.shell("No widgets matched the search terms") : main.shell("No widgets available")
     }

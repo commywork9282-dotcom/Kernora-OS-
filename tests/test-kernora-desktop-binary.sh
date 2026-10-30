@@ -76,6 +76,9 @@ for path in \
   usr/share/icons/Kernora/scalable/status/audio-volume-high.svg \
   usr/share/icons/Kernora/scalable/status/audio-volume-high-symbolic.svg \
   usr/share/icons/Kernora/scalable/actions/system-shutdown.svg \
+  usr/share/icons/Kernora/scalable/categories/ksysguardd.svg \
+  usr/share/icons/Kernora/scalable/categories/kernora-analog-clock.svg \
+  usr/share/icons/Kernora/scalable/devices/device-notifier.svg \
   usr/share/locale/ru/LC_MESSAGES/plasma_applet_org.kernora.launcher.mo \
   usr/share/locale/ru/LC_MESSAGES/plasma_applet_org.kernora.quicksettings.mo \
   usr/share/locale/ru/LC_MESSAGES/plasma_applet_org.kernora.clipboard.mo \
@@ -356,6 +359,9 @@ for path in \
   "$shell/explorer/WidgetExplorer.qml" \
   "$shell/explorer/WidgetPreview.qml" \
   "$shell/explorer/WidgetDrag.qml" \
+  "$shell/explorer/WidgetCard.qml" \
+  "$shell/explorer/OtherPreview.qml" \
+  "$shell/explorer/widgets.js" \
   "$shell/explorer/MaterialShape.qml" \
   "$shell/explorer/materialshapes.js" \
   "$shell/views/DesktopEditMode.qml" \

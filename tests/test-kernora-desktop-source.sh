@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.54" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.55" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -323,6 +323,25 @@ for icon in actions/kernora-quickshare status/kernora-tile-quickshare-on apps/or
 done
 find "$icons/Kernora-blue" -name 'preferences-system*' | grep -q . \
   && fail "a colour's icons would shadow preferences-system-* through KDE's generic fallback"
+python3 - "$package_root/data/explorer" "$icons/Kernora" <<'PY' || fail "the widget picker uses an icon or a preview Kernora does not have"
+import pathlib, re, sys
+explorer, theme = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+table = (explorer / "widgets.js").read_text()
+preview = (explorer / "OtherPreview.qml").read_text()
+names = set(re.findall(r'(?:icon|badge|glyph|trailing): "([^"]+)"', table))
+for group in re.findall(r'buttons: \[([^\]]*)\]', table):
+    names.update(re.findall(r'"([^"]+)"', group))
+names.update(re.findall(r'(?:source|icon): "([^"]+)"', preview))
+for group in re.findall(r'model: \[([^\]]*)\]', preview, re.S):
+    names.update(re.findall(r'"([a-z][a-z0-9.-]*)"', group))
+names -= {"primary", "secondary", "tertiary"}
+have = {path.stem for path in theme.glob("scalable/*/*.svg")} | {"start-here-kde-symbolic"}
+missing = sorted(names - have)
+assert not missing, missing
+cases = set(re.findall(r'case "([a-z]+)":', preview)) | {"glyph", "button"}
+kinds = set(re.findall(r'(?:preview|content): "([a-z]+)"', table))
+assert kinds <= cases, sorted(kinds - cases)
+PY
 rm -rf "$icons"
 grep -Fq 'LookAndFeelPackage=org.kernora.desktop' "$tools_root/gen-kdeglobals" \
   || fail "Kernora look-and-feel is not the system default"
@@ -580,6 +599,10 @@ grep -Fq 'i18nd("kernora-ui", "Unpin from panel")' "$package_root/data/taskmanag
   && ! grep -Fq 'Task Manager' "$package_root/data/taskmanager/ContextMenu.qml" \
   && grep -Fxq 'data/taskmanager/ContextMenu.qml usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui' "$package_root/debian/kernora-desktop.install" \
   || fail "the task icon menu still talks about the KDE task manager"
+grep -Fq 'delegate: WidgetCard {' "$package_root/data/explorer/WidgetExplorer.qml" \
+  && grep -Fq 'sourceComponent: card.kernora ? kernoraPreview : otherPreview' "$package_root/data/explorer/WidgetCard.qml" \
+  && grep -Fq 'cp data/explorer/*.qml data/explorer/*.js' "$package_root/debian/rules" \
+  || fail "widgets from KDE are not shown as cards with Material previews"
 grep -Fq 'i18nd("plasmashellprivateplugin", "Download New Plasma Widgets")' "$package_root/data/explorer/WidgetExplorer.qml" \
   && grep -Fq '.filter(action => !action.separator && action.text.length > 0 && action.text !== store)' "$package_root/data/explorer/WidgetExplorer.qml" \
   && grep -Fq 'readonly property real widestRow' "$package_root/data/shell/m3/MMenu.qml" \

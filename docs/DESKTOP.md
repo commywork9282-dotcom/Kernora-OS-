@@ -411,12 +411,19 @@ then drops them, which keeps it from ever collapsing into an icon.
 
 Kernora replaces Plasma's widget explorer
 (`data/explorer/WidgetExplorer.qml`, diverted): a search bar, a Kernora
-section of cards whose previews (`WidgetPreview.qml`) are drawn on Material
-shapes and tick when the widget is on the desktop (the tick removes them
-again), and the other widgets as a list. A tap adds a widget, dragging it
-(`WidgetDrag.qml`, MIME `text/x-plasmoidservicename`) drops it where it
-should go. On a panel the Kernora widgets give way to the panel applets.
-The Kernora cards come in a fixed order, the clock first. Plasma 6 hides
+section and an "Other widgets" section, both made of the same cards
+(`WidgetCard.qml`). A card shows a preview drawn in Material, the widget's
+name next to a Pixel style icon (a Material symbol on a circle in the theme
+colour) and a tick when the widget is in use (the tick removes it again).
+Kernora's previews live in `WidgetPreview.qml`; the widgets that come with
+Plasma get theirs from `OtherPreview.qml`, picked by the table in
+`widgets.js`, which also gives each one its icon and a group (time, system
+monitor, files, media, system, input, panel). Widgets the table does not
+know keep their own icon on a Material shape. A tap adds a widget, dragging
+it (`WidgetDrag.qml`, MIME `text/x-plasmoidservicename`) drops it where it
+should go. On a panel the Kernora widgets give way to the panel applets and
+the panel group comes first. The Kernora cards come in a fixed order, the
+clock first. Plasma 6 hides
 "Add or Manage Widgets…" from the desktop's right-click menu; the
 `kernora_add_widgets_menu` kconf_update script turns it back on
 (`[ActionPlugins][0][RightButton;NoModifier] add widgets=true` in

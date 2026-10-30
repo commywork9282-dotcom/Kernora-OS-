@@ -116,7 +116,7 @@ override_dh_auto_build:
 	cp data/shell/shade/contents/ui/sources/MediaSource.qml data/shell/shade/contents/ui/WavyProgress.qml \
 	  generated/plasmoids/org.kernora.widget.media/contents/ui/
 	install -d generated/explorer
-	cp data/explorer/*.qml data/widgets/common/MaterialShape.qml generated/explorer/
+	cp data/explorer/*.qml data/explorer/*.js data/widgets/common/MaterialShape.qml generated/explorer/
 	cp generated/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js generated/explorer/
 	set -e; for colour in $(EXTRA_COLOURS); do \
 	  KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.shapes/contents/ui; \

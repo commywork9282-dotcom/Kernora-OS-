@@ -1,3 +1,21 @@
+kernora-desktop (1.4.55) UNRELEASED; urgency=medium
+
+  * Widget picker: widgets from KDE are cards like Kernora's own now, each
+    with a Material preview drawn for it (clock faces, a month, charts for
+    the system monitor sensors, a folder, sliders, device and network
+    lists, panel pieces on a little panel) and a Pixel style icon, a
+    Material symbol on a circle in the theme colour, next to its name.
+    Kernora's cards get the same icon. Desktop widgets come first, grouped
+    by kind; on a panel the panel widgets lead.
+  * widgets.js maps each known widget to its icon, group and preview;
+    unknown widgets keep their own icon on a Material shape.
+  * Icon theme: Material symbols for ksysguardd, plasmavault,
+    device-notifier, org.kde.plasma.pager, org.kde.plasma.folder,
+    distribute-horizontal-x, filename-divider and draw-freehand, plus
+    analog and digital clock, bar chart, dock and menu symbols.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 29 Oct 2026 20:00:00 -0700
+
 kernora-desktop (1.4.54) UNRELEASED; urgency=medium
 
   * New live wallpaper Ribbon (org.kernora.ribbon), after a community

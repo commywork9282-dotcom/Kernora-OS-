@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-29-3",
+    "date": "2026-10-29",
+    "items": [
+      {
+        "icon": "preferences-desktop-widgets",
+        "title": {
+          "en": "A preview for every widget",
+          "ru": "Превью для каждого виджета"
+        },
+        "text": {
+          "en": "In the widget list, the widgets that came with KDE are now cards like Kernora's own: each one shows a small Material preview of what it looks like, and its icon sits on a circle in your colour, like on Pixel. Desktop widgets come first, the panel ones further down.",
+          "ru": "В списке виджетов виджеты из KDE теперь выглядят как карточки Kernora: у каждого маленькое превью в стиле Material, а значок стоит на круге вашего цвета, как на Pixel. Сначала идут виджеты для рабочего стола, ниже — для панели."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-29-2",
     "date": "2026-10-29",
     "items": [
