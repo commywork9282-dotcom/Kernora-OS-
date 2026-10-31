@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-31-4",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Android apps without the extras",
+          "ru": "Android-приложения без лишнего"
+        },
+        "text": {
+          "en": "Android apps no longer pop up an on-screen keyboard: you type with your own keyboard, like in any other app. Android doesn't ask you to finish setting up the device anymore, and its \"isn't responding\" windows stay out of the way.",
+          "ru": "Android-приложения больше не открывают экранную клавиатуру: вы печатаете на своей, как в любой другой программе. Android больше не просит завершить настройку устройства, а его окна «приложение не отвечает» не мешают."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-31-3",
     "date": "2026-10-31",
     "items": [

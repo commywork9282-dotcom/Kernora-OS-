@@ -167,6 +167,16 @@ a window back if it ends up letterboxed. Every app is handled once
 (`/var/lib/kernora/android/windows`); Android remembers the size per app, also
 when the user changes it.
 
+Only apps: the sync also turns off Android's on-screen keyboards (`ime
+disable` for every enabled one and `show_ime_with_hard_keyboard 0`), so the
+physical keyboard types into the app and no keyboard window opens; hides
+the "isn't responding" and "has stopped" dialogs (`hide_error_dialogs 1`);
+and keeps the device set up (`device_provisioned`, `user_setup_complete`)
+with Google's and LineageOS's setup wizards and the LineageOS updater
+disabled, so nothing asks to finish setting up the device. Windows of
+Android's keyboard, Settings search, setup and speech services get hidden
+desktop entries with the Kernora icon.
+
 Identity: `waydroid.cfg` gets `ro.product.waydroid.brand`/`manufacturer`
 Kernora and `model` "Kernora Laptop" or "Kernora PC" (from `hostnamectl
 chassis`), which the image uses for `ro.product.*`, so Android settings and

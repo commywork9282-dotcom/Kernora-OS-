@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.58" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.59" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -323,6 +323,13 @@ grep -Fq 'android wm density "$density"' "$android/kernora-android-sync" \
   && grep -Fq 'def kernora_density()' "$android/kernora-android-session" \
   && grep -Fq 'PathChanged=%h/.config/kwinoutputconfig.json' "$android/kernora-android-sync.path" \
   || fail "Android apps do not use Kernora's scale and device name"
+grep -Fq 'setting secure show_ime_with_hard_keyboard 0' "$android/kernora-android-sync" \
+  && grep -Fq 'android ime disable "$keyboard"' "$android/kernora-android-sync" \
+  && grep -Fq 'setting global hide_error_dialogs 1' "$android/kernora-android-sync" \
+  && grep -Fq 'setting secure user_setup_complete 1' "$android/kernora-android-sync" \
+  && grep -Fq 'com.google.android.setupwizard' "$android/kernora-android-sync" \
+  && [[ -s "$android/applications/waydroid.com.android.inputmethod.latin.desktop" ]] \
+  || fail "Android still shows its keyboard, error dialogs or setup"
 grep -Fq '"ro.product.waydroid.model": model' "$android/kernora-android" \
   && grep -Fq '"persist.waydroid.fake_wifi": "*"' "$android/kernora-android" \
   && grep -Fq 'Kernora Laptop' "$android/kernora-android" \

@@ -1,3 +1,10 @@
+kernora-apps (1.1.69) UNRELEASED; urgency=medium
+
+  * What's new: Android apps without the on-screen keyboard and setup
+    prompts.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 23:00:00 -0700
+
 kernora-apps (1.1.68) UNRELEASED; urgency=medium
 
   * Settings > Android apps: the progress shows a percentage from the

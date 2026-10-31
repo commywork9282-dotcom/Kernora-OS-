@@ -39,9 +39,23 @@ model=$(android getprop ro.product.model | tr -d '\r')
 if [[ -n $model && $(android settings get global device_name | tr -d '\r') != "$model" ]]; then
   android settings put global device_name "$model" > /dev/null
 fi
-if android pm list packages -e org.lineageos.waydroidupdater | grep -q .; then
-  android pm disable-user --user 0 org.lineageos.waydroidupdater > /dev/null
-fi
+setting() {
+  [[ $(android settings get "$1" "$2" | tr -d '\r') == "$3" ]] && return 1
+  android settings put "$1" "$2" "$3" > /dev/null
+}
+setting global device_provisioned 1
+setting secure user_setup_complete 1
+setting global hide_error_dialogs 1
+setting secure show_ime_with_hard_keyboard 0
+for keyboard in $(android ime list -s | tr -d '\r'); do
+  android ime disable "$keyboard" > /dev/null
+  android am force-stop "${keyboard%%/*}" > /dev/null
+done
+for package in org.lineageos.waydroidupdater com.google.android.setupwizard org.lineageos.setupwizard; do
+  if android pm list packages -e "$package" | tr -d '\r' | grep -qx "package:$package"; then
+    android pm disable-user --user 0 "$package" > /dev/null
+  fi
+done
 packages=$(android pm list packages -s | sed -n 's/^package://p' | tr -d '\r' | grep -E '^[A-Za-z0-9_.]+$' | LC_ALL=C sort)
 if [[ -n $packages ]]; then
   install -d -m 0755 "$state_dir"

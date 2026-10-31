@@ -1,3 +1,17 @@
+kernora-desktop (1.4.59) UNRELEASED; urgency=medium
+
+  * Android apps keep to apps: the sync turns off Android's on-screen
+    keyboards (the physical keyboard types straight into the app, and the
+    keyboard no longer opens as a big window of its own), hides Android's
+    "isn't responding" and "has stopped" dialogs (hide_error_dialogs),
+    marks the device as set up and turns off Google's and LineageOS's
+    setup wizards, so nothing asks to finish setting up the device.
+  * Hidden entries with the Kernora icon for more Android windows: the
+    keyboard, Settings search, the setup wizard, device provisioning and
+    speech services.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 23:00:00 -0700
+
 kernora-desktop (1.4.58) UNRELEASED; urgency=medium
 
   * Android apps open in computer-sized windows: the new
