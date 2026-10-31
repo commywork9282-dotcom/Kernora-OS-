@@ -10,14 +10,15 @@ only.
 ## Turning it on
 
 Nothing Android is installed until the user asks for it in
-**Settings › Android apps**. The page offers two images:
+**Settings › Android apps**. The page offers two images as a radio list;
+Google Play comes first, is marked as recommended and is picked by default:
 
 | Choice | Image | Download | On disk |
 | --- | --- | --- | --- |
-| Android | `VANILLA` | about 1 GB | about 2.3 GB |
-| Android with Google Play | `GAPPS` | about 1.4 GB | about 3 GB |
+| Google Play and APK files (recommended) | `GAPPS` | about 1.4 GB | about 3 GB |
+| APK files only | `VANILLA` | about 1 GB | about 2.3 GB |
 
-`Turn on` runs `pkexec /usr/libexec/kernora-android request setup-vanilla`
+`Set up` runs `pkexec /usr/libexec/kernora-android request setup-vanilla`
 (or `setup-gapps`; polkit action `org.kernora.android`). The request starts
 `kernora-android@setup-vanilla.service`, which runs as root:
 
@@ -161,7 +162,10 @@ Setting up or removing Android apps stops a running update first.
 
 `.apk` files open in **Android App Installer** (`kernora-apkinstaller`,
 `application/vnd.android.package-archive` in `/etc/xdg/mimeapps.list`), a
-frameless Material dialog in the Pixel style. Files shows each APK with the
+frameless dialog laid out like Android's own installer: the current step on
+top ("Install this app?", "Installing…", "App installed"), the app icon, name
+and version in the middle, a short reason only when something is wrong, and
+a tonal and a filled button at the end. Files shows each APK with the
 app's own icon (`Android.iconOf`, read in a worker thread and cached). The
 installer reads the file itself (`src/system/apk.cpp`) before anything is installed:
 
@@ -178,7 +182,9 @@ installer reads the file itself (`src/system/apk.cpp`) before anything is instal
 
 The installer then starts Android if needed and runs `waydroid app install`.
 It checks `waydroid app list` afterwards, because the command exits 0 even
-when Android refuses the package.
+when Android refuses the package. The command also returns before Android
+has finished installing, so the installer asks again every 2 seconds for up
+to a minute; a big app like Termux takes several seconds.
 
 Settings lists the user's Android apps and opens them. Uninstalling goes
 through Android's own dialog

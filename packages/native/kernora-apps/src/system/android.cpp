@@ -36,6 +36,8 @@ const QString Waydroid = QStringLiteral("waydroid");
 const QString SessionStarter = QStringLiteral("/usr/libexec/kernora-android-session");
 constexpr int IconSize = 192;
 constexpr int InstallTimeout = 10 * 60 * 1000;
+constexpr int InstallPoll = 2000;
+constexpr int InstallChecks = 30;
 
 void reply(QObject *context, const QJSValue &callback, const QJSValueList &arguments)
 {
@@ -217,11 +219,18 @@ bool Android::hasApp(const QString &package) const
     return QFileInfo::exists(applicationsFolder() + QStringLiteral("/waydroid.") + package + QStringLiteral(".desktop"));
 }
 
-void Android::listPackages(const QString &package, const QJSValue &callback)
+void Android::waitForPackage(const QString &package, const QJSValue &callback, int attempts)
 {
     run(this, quietProcess(this, Waydroid, {QStringLiteral("app"), QStringLiteral("list")}), 60000,
-        [this, package, callback](bool, const QString &output) {
-            reply(this, callback, {QJSValue(listed(output, package))});
+        [this, package, callback, attempts](bool, const QString &output) {
+            const bool found = listed(output, package);
+            if (found || attempts <= 1) {
+                reply(this, callback, {QJSValue(found)});
+                return;
+            }
+            QTimer::singleShot(InstallPoll, this, [this, package, callback, attempts] {
+                waitForPackage(package, callback, attempts - 1);
+            });
         });
 }
 
@@ -235,7 +244,7 @@ void Android::install(const QUrl &file, const QString &package, const QJSValue &
                 return;
             }
             QTimer::singleShot(1000, this, [this, package, callback] {
-                listPackages(package, callback);
+                waitForPackage(package, callback, InstallChecks);
             });
         });
 }

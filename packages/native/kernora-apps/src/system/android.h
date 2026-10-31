@@ -45,7 +45,7 @@ Q_SIGNALS:
 
 private:
     void scan();
-    void listPackages(const QString &package, const QJSValue &callback);
+    void waitForPackage(const QString &package, const QJSValue &callback, int attempts);
     QString applicationsFolder() const;
     static QString iconCache(const QString &path);
 

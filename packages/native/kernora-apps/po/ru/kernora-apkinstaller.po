@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kernora-apkinstaller\n"
 "Report-Msgid-Bugs-To: dev@kernora.invalid\n"
-"POT-Creation-Date: 2026-10-30 21:36-0700\n"
+"POT-Creation-Date: 2026-10-31 13:11-0700\n"
 "PO-Revision-Date: 2026-10-30 16:22-0700\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -30,114 +30,122 @@ msgid "%1 KB"
 msgstr "%1 КБ"
 
 #: apps/apkinstaller/qml/Main.qml:132
-msgid "Install an Android app"
-msgstr "Установка приложения Android"
+msgid "Install an app"
+msgstr "Установка приложения"
 
 #: apps/apkinstaller/qml/Main.qml:135
-msgid "This file isn't an app"
-msgstr "Это не приложение"
+msgid "Can't open this file"
+msgstr "Не удаётся открыть файл"
 
-#: apps/apkinstaller/qml/Main.qml:142
-msgid "Choose an APK file to install the app on this computer."
-msgstr "Выберите APK-файл, чтобы установить приложение на компьютер."
-
-#: apps/apkinstaller/qml/Main.qml:145
-msgid "This file can't be opened. It may be damaged or not fully downloaded."
-msgstr "Не удаётся открыть файл. Возможно, он повреждён или скачан не до конца."
-
-#: apps/apkinstaller/qml/Main.qml:146
-msgid "Apps install from APK files. App bundles in other formats aren't supported yet."
-msgstr "Приложения устанавливаются из APK-файлов. Наборы в других форматах пока не поддерживаются."
-
-#: apps/apkinstaller/qml/Main.qml:150
-msgid "Getting ready…"
-msgstr "Подготовка…"
-
-#: apps/apkinstaller/qml/Main.qml:152
+#: apps/apkinstaller/qml/Main.qml:140
 msgid "Installing…"
 msgstr "Установка…"
 
-#: apps/apkinstaller/qml/Main.qml:152
+#: apps/apkinstaller/qml/Main.qml:140
 msgid "Updating…"
 msgstr "Обновление…"
 
-#: apps/apkinstaller/qml/Main.qml:154
+#: apps/apkinstaller/qml/Main.qml:142
 msgid "App installed"
 msgstr "Приложение установлено"
 
-#: apps/apkinstaller/qml/Main.qml:154
+#: apps/apkinstaller/qml/Main.qml:142
 msgid "App updated"
 msgstr "Приложение обновлено"
 
-#: apps/apkinstaller/qml/Main.qml:156
-msgid "The app couldn't be installed."
-msgstr "Не удалось установить приложение."
+#: apps/apkinstaller/qml/Main.qml:144
+msgid "App not installed"
+msgstr "Приложение не установлено"
 
-#: apps/apkinstaller/qml/Main.qml:159
-msgid "This app is made only for phones with ARM processors, so it doesn't run on this computer."
-msgstr "Это приложение сделано только для телефонов с процессорами ARM, поэтому на этом компьютере оно не работает."
+#: apps/apkinstaller/qml/Main.qml:147
+msgid "Can't install this app"
+msgstr "Не удаётся установить приложение"
 
-#: apps/apkinstaller/qml/Main.qml:162
-msgid "This app is made for newer phones and doesn't run here yet."
-msgstr "Это приложение для более новых телефонов и здесь пока не работает."
+#: apps/apkinstaller/qml/Main.qml:150
+msgid "Set up Android apps first"
+msgstr "Сначала настройте Android-приложения"
 
-#: apps/apkinstaller/qml/Main.qml:165
-msgid "Android apps work after Kernora is installed on this computer."
-msgstr "Приложения Android заработают после установки Kernora на компьютер."
+#: apps/apkinstaller/qml/Main.qml:152
+msgid "Install this app?"
+msgstr "Установить приложение?"
 
-#: apps/apkinstaller/qml/Main.qml:168
-msgid "Set up Android apps in Settings, then install this app."
-msgstr "Настройте Android-приложения в Настройках, а затем установите это приложение."
+#: apps/apkinstaller/qml/Main.qml:152
+msgid "Update this app?"
+msgstr "Обновить приложение?"
+
+#: apps/apkinstaller/qml/Main.qml:157
+msgid "Choose an APK file."
+msgstr "Выберите APK-файл."
+
+#: apps/apkinstaller/qml/Main.qml:160
+msgid "It may be damaged or not fully downloaded."
+msgstr "Возможно, он повреждён или скачан не полностью."
+
+#: apps/apkinstaller/qml/Main.qml:161
+msgid "Only APK files can be installed."
+msgstr "Устанавливать можно только APK-файлы."
+
+#: apps/apkinstaller/qml/Main.qml:164
+msgid "Something went wrong. Try again."
+msgstr "Что-то пошло не так. Попробуйте ещё раз."
 
 #: apps/apkinstaller/qml/Main.qml:170
-msgid "Do you want to install this app?"
-msgstr "Установить это приложение?"
+msgid "It only runs on phones with ARM processors."
+msgstr "Оно работает только на телефонах с процессорами ARM."
 
-#: apps/apkinstaller/qml/Main.qml:170
-msgid "Do you want to update this app?"
-msgstr "Обновить это приложение?"
+#: apps/apkinstaller/qml/Main.qml:173
+msgid "It's made for newer phones and doesn't run here yet."
+msgstr "Оно сделано для более новых телефонов и пока здесь не работает."
 
-#: apps/apkinstaller/qml/Main.qml:317
+#: apps/apkinstaller/qml/Main.qml:176
+msgid "Android apps work once Kernora is installed on this computer."
+msgstr "Android-приложения заработают, когда Kernora будет установлена на компьютер."
+
+#: apps/apkinstaller/qml/Main.qml:179
+msgid "Turn them on in Settings, then open this file again."
+msgstr "Включите их в Настройках и откройте этот файл снова."
+
+#: apps/apkinstaller/qml/Main.qml:301
 msgid "Version %1 · %2"
 msgstr "Версия %1 · %2"
 
-#: apps/apkinstaller/qml/Main.qml:351
+#: apps/apkinstaller/qml/Main.qml:335
 msgid "Cancel"
 msgstr "Отмена"
 
-#: apps/apkinstaller/qml/Main.qml:357
-msgid "Choose a file"
-msgstr "Выбрать файл"
-
-#: apps/apkinstaller/qml/Main.qml:365
-msgid "Set up"
-msgstr "Настроить"
-
-#: apps/apkinstaller/qml/Main.qml:373
-msgid "Install"
-msgstr "Установить"
-
-#: apps/apkinstaller/qml/Main.qml:373
-msgid "Try again"
-msgstr "Повторить"
-
-#: apps/apkinstaller/qml/Main.qml:373
-msgid "Update"
-msgstr "Обновить"
-
-#: apps/apkinstaller/qml/Main.qml:380
+#: apps/apkinstaller/qml/Main.qml:341
 msgid "Done"
 msgstr "Готово"
 
-#: apps/apkinstaller/qml/Main.qml:386
+#: apps/apkinstaller/qml/Main.qml:346
+msgid "Choose file"
+msgstr "Выбрать файл"
+
+#: apps/apkinstaller/qml/Main.qml:351
+msgid "Open Settings"
+msgstr "Открыть Настройки"
+
+#: apps/apkinstaller/qml/Main.qml:359
+msgid "Install"
+msgstr "Установить"
+
+#: apps/apkinstaller/qml/Main.qml:359
+msgid "Try again"
+msgstr "Повторить"
+
+#: apps/apkinstaller/qml/Main.qml:359
+msgid "Update"
+msgstr "Обновить"
+
+#: apps/apkinstaller/qml/Main.qml:364
 msgid "Open"
 msgstr "Открыть"
 
-#: apps/apkinstaller/qml/Main.qml:409
+#: apps/apkinstaller/qml/Main.qml:387
 msgid "Choose an Android app"
 msgstr "Выберите приложение Android"
 
-#: apps/apkinstaller/qml/Main.qml:410
+#: apps/apkinstaller/qml/Main.qml:388
 msgid "Android apps (*.apk)"
 msgstr "Приложения Android (*.apk)"
 
@@ -154,6 +162,30 @@ msgstr "© 2026 Kernora OS"
 #: src/apps/host.cpp:67
 msgid "Files or pages to open."
 msgstr "Файлы или страницы для открытия."
+
+#~ msgid "This file isn't an app"
+#~ msgstr "Это не приложение"
+
+#~ msgid "Choose an APK file to install the app on this computer."
+#~ msgstr "Выберите APK-файл, чтобы установить приложение на компьютер."
+
+#~ msgid "Apps install from APK files. App bundles in other formats aren't supported yet."
+#~ msgstr "Приложения устанавливаются из APK-файлов. Наборы в других форматах пока не поддерживаются."
+
+#~ msgid "Getting ready…"
+#~ msgstr "Подготовка…"
+
+#~ msgid "The app couldn't be installed."
+#~ msgstr "Не удалось установить приложение."
+
+#~ msgid "This app is made only for phones with ARM processors, so it doesn't run on this computer."
+#~ msgstr "Это приложение сделано только для телефонов с процессорами ARM, поэтому на этом компьютере оно не работает."
+
+#~ msgid "Set up Android apps in Settings, then install this app."
+#~ msgstr "Настройте Android-приложения в Настройках, а затем установите это приложение."
+
+#~ msgid "Set up"
+#~ msgstr "Настроить"
 
 #~ msgid "The app is installed. You can find it with your other apps."
 #~ msgstr "Приложение установлено. Оно появится рядом с другими приложениями."

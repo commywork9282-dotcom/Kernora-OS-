@@ -34,12 +34,12 @@ Window {
     readonly property bool update: readable && Android.hasApp(apk.package)
     readonly property bool canInstall: readable && apk.compatible && !tooNew && androidReady
     readonly property bool working: phase === "starting" || phase === "installing"
-    readonly property bool problem: (file.length > 0 && !readable) || phase === "failed"
-                                    || (readable && phase === "idle" && (!apk.compatible || tooNew))
+    readonly property bool blocked: readable && phase === "idle" && (!apk.compatible || tooNew)
+    readonly property bool needsSetup: readable && phase === "idle" && !blocked && androidLoaded && !androidReady
 
     flags: Qt.Dialog | Qt.FramelessWindowHint
     color: "transparent"
-    width: 400 + margin * 2
+    width: 380 + margin * 2
     height: card.implicitHeight + margin * 2
     visible: true
     title: app.label.length > 0 ? app.label : i18n("Android App Installer")
@@ -127,47 +127,58 @@ Window {
         onActivated: app.leave()
     }
 
-    readonly property string headline: {
+    readonly property string step: {
         if (file.length === 0) {
-            return i18n("Install an Android app");
+            return i18n("Install an app");
         }
         if (!readable) {
-            return i18n("This file isn't an app");
-        }
-        return app.label;
-    }
-
-    readonly property string message: {
-        if (file.length === 0) {
-            return i18n("Choose an APK file to install the app on this computer.");
-        }
-        if (!readable) {
-            return apk.error === "unreadable" ? i18n("This file can't be opened. It may be damaged or not fully downloaded.")
-                                              : i18n("Apps install from APK files. App bundles in other formats aren't supported yet.");
+            return i18n("Can't open this file");
         }
         switch (phase) {
         case "starting":
-            return i18n("Getting ready…");
         case "installing":
             return update ? i18n("Updating…") : i18n("Installing…");
         case "installed":
             return update ? i18n("App updated") : i18n("App installed");
         case "failed":
-            return i18n("The app couldn't be installed.");
+            return i18n("App not installed");
+        }
+        if (blocked || (androidLoaded && android.live === "yes")) {
+            return i18n("Can't install this app");
+        }
+        if (needsSetup) {
+            return i18n("Set up Android apps first");
+        }
+        return update ? i18n("Update this app?") : i18n("Install this app?");
+    }
+
+    readonly property string message: {
+        if (file.length === 0) {
+            return i18n("Choose an APK file.");
+        }
+        if (!readable) {
+            return apk.error === "unreadable" ? i18n("It may be damaged or not fully downloaded.")
+                                              : i18n("Only APK files can be installed.");
+        }
+        if (phase === "failed") {
+            return i18n("Something went wrong. Try again.");
+        }
+        if (phase !== "idle") {
+            return "";
         }
         if (!apk.compatible) {
-            return i18n("This app is made only for phones with ARM processors, so it doesn't run on this computer.");
+            return i18n("It only runs on phones with ARM processors.");
         }
         if (tooNew) {
-            return i18n("This app is made for newer phones and doesn't run here yet.");
+            return i18n("It's made for newer phones and doesn't run here yet.");
         }
         if (androidLoaded && android.live === "yes") {
-            return i18n("Android apps work after Kernora is installed on this computer.");
+            return i18n("Android apps work once Kernora is installed on this computer.");
         }
-        if (androidLoaded && !androidReady) {
-            return i18n("Set up Android apps in Settings, then install this app.");
+        if (needsSetup) {
+            return i18n("Turn them on in Settings, then open this file again.");
         }
-        return update ? i18n("Do you want to update this app?") : i18n("Do you want to install this app?");
+        return "";
     }
 
     MultiEffect {
@@ -175,7 +186,7 @@ Window {
         anchors.fill: card
         shadowEnabled: true
         shadowColor: "#000000"
-        shadowOpacity: 0.45
+        shadowOpacity: 0.4
         shadowBlur: 1.0
         shadowVerticalOffset: 8
         blurMax: 48
@@ -188,9 +199,9 @@ Window {
         x: app.margin
         y: app.margin
         width: app.width - app.margin * 2
-        implicitHeight: content.implicitHeight + 56
+        implicitHeight: content.implicitHeight + 48
         height: implicitHeight
-        radius: M3.classic ? M3.cornerCard : 28
+        radius: M3.classic ? M3.cornerDialog : 28
         color: M3.surfaceContainerHigh
         opacity: 0
         scale: 0.92
@@ -221,86 +232,59 @@ Window {
             }
         }
 
-        MMorph {
-            id: doneMorph
-            active: app.phase === "installed"
-            dampingRatio: M3.springExpressiveDefaultDamping
-            response: M3.springExpressiveDefaultResponse
-        }
-
         ColumnLayout {
             id: content
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.margins: 28
+            anchors.margins: 24
             spacing: 0
+
+            MText {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                role: "titleMedium"
+                color: M3.surfaceVariantContent
+                text: app.step
+                wrapMode: Text.Wrap
+            }
 
             Item {
                 Layout.alignment: Qt.AlignHCenter
-                implicitWidth: 128
-                implicitHeight: 128
+                Layout.topMargin: 24
+                implicitWidth: 72
+                implicitHeight: 72
 
-                MShape {
-                    id: halo
+                Rectangle {
                     anchors.fill: parent
-                    shape: M3.classic ? "circle" : (app.phase === "installed" ? "sunny" : (app.working ? "cookie12" : "cookie9"))
-                    color: app.problem ? M3.errorContainer : (app.phase === "installed" ? M3.tertiaryContainer : M3.primaryContainer)
-                    scale: 0.94 + 0.06 * doneMorph.value
-                    Behavior on color { ColorAnimation { duration: M3.durationMedium2 } }
-                    RotationAnimator on rotation {
-                        from: 0
-                        to: 360
-                        duration: 6000
-                        loops: Animation.Infinite
-                        running: app.working && halo.visible && M3.motionScale > 0 && !M3.classic
-                    }
-                }
-                MIcon {
-                    anchors.centerIn: parent
                     visible: appIcon.status !== Image.Ready
-                    size: 48
-                    source: app.problem ? "dialog-error" : "kernora-apk-install"
-                    color: app.problem ? M3.errorContainerContent : M3.primaryContainerContent
+                    radius: width / 2
+                    color: app.readable ? M3.primaryContainer : M3.surfaceContainerHighest
+                    MIcon {
+                        anchors.centerIn: parent
+                        size: 36
+                        source: "kernora-apk-install"
+                        color: app.readable ? M3.primaryContainerContent : M3.surfaceVariantContent
+                    }
                 }
                 Image {
                     id: appIcon
-                    anchors.centerIn: parent
-                    width: 80
-                    height: 80
+                    anchors.fill: parent
                     source: app.readable ? (app.apk.icon || "") : ""
                     sourceSize: Qt.size(192, 192)
                     fillMode: Image.PreserveAspectFit
                     smooth: true
                     mipmap: true
                 }
-                Rectangle {
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.margins: 10
-                    width: 32
-                    height: 32
-                    radius: 16
-                    color: M3.primary
-                    border.width: 3
-                    border.color: card.color
-                    scale: doneMorph.value
-                    visible: scale > 0.01
-                    MIcon {
-                        anchors.centerIn: parent
-                        size: 20
-                        source: "checkmark"
-                        color: M3.primaryContent
-                    }
-                }
             }
 
             MText {
                 Layout.fillWidth: true
-                Layout.topMargin: 20
+                Layout.topMargin: 16
+                visible: app.readable
                 horizontalAlignment: Text.AlignHCenter
                 role: "headlineSmall"
-                text: app.headline
+                text: app.label
                 wrapMode: Text.Wrap
                 maximumLineCount: 2
                 elide: Text.ElideRight
@@ -321,67 +305,61 @@ Window {
 
             MText {
                 Layout.fillWidth: true
-                Layout.topMargin: 20
+                Layout.topMargin: 16
+                visible: text.length > 0
                 horizontalAlignment: Text.AlignHCenter
-                role: app.phase === "installed" ? "titleMedium" : "bodyLarge"
-                color: app.problem ? M3.error : M3.surfaceContent
+                role: "bodyMedium"
+                color: M3.surfaceContent
                 text: app.message
                 wrapMode: Text.Wrap
             }
 
             LinearProgress {
                 Layout.fillWidth: true
-                Layout.topMargin: 16
-                Layout.leftMargin: 24
-                Layout.rightMargin: 24
+                Layout.topMargin: 24
                 visible: app.working
                 indeterminate: true
             }
 
             RowLayout {
                 Layout.fillWidth: true
-                Layout.topMargin: 28
+                Layout.topMargin: 24
                 spacing: 8
 
-                MButton {
+                Item {
                     Layout.fillWidth: true
-                    visible: app.phase !== "installed"
-                    enabled: !app.working
+                }
+                MButton {
+                    visible: !app.working && app.phase !== "installed"
                     variant: "tonal"
                     text: i18n("Cancel")
                     onClicked: app.leave()
                 }
                 MButton {
-                    Layout.fillWidth: true
-                    visible: app.file.length === 0 || !app.readable
-                    text: i18n("Choose a file")
-                    icon: "document-open"
-                    onClicked: fileDialog.open()
-                }
-                MButton {
-                    Layout.fillWidth: true
-                    visible: app.readable && app.androidLoaded && !app.androidReady && app.android.live !== "yes"
-                             && app.apk.compatible && !app.tooNew
-                    text: i18n("Set up")
-                    icon: "kernora-android"
-                    onClicked: Process.startDetached("kernora-settings", ["android"])
-                }
-                MButton {
-                    Layout.fillWidth: true
-                    visible: app.canInstall && app.phase !== "installed"
-                    enabled: app.phase === "idle" || app.phase === "failed"
-                    text: app.phase === "failed" ? i18n("Try again") : (app.update ? i18n("Update") : i18n("Install"))
-                    onClicked: app.install()
-                }
-                MButton {
-                    Layout.fillWidth: true
                     visible: app.phase === "installed"
                     variant: "tonal"
                     text: i18n("Done")
                     onClicked: app.leave()
                 }
                 MButton {
-                    Layout.fillWidth: true
+                    visible: app.file.length === 0 || !app.readable
+                    text: i18n("Choose file")
+                    onClicked: fileDialog.open()
+                }
+                MButton {
+                    visible: app.needsSetup && app.android.live !== "yes"
+                    text: i18n("Open Settings")
+                    onClicked: {
+                        Process.startDetached("kernora-settings", ["android"]);
+                        app.leave();
+                    }
+                }
+                MButton {
+                    visible: app.canInstall && !app.working && app.phase !== "installed"
+                    text: app.phase === "failed" ? i18n("Try again") : (app.update ? i18n("Update") : i18n("Install"))
+                    onClicked: app.install()
+                }
+                MButton {
                     visible: app.phase === "installed"
                     text: i18n("Open")
                     onClicked: {

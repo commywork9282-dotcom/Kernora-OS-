@@ -1,3 +1,20 @@
+kernora-apps (1.1.67) UNRELEASED; urgency=medium
+
+  * Settings > Android apps: a radio list instead of side-by-side cards,
+    with "Google Play and APK files" first, marked as recommended and
+    picked by default. Shorter texts on the page.
+  * Android App Installer follows Android's own installer: the current
+    step on top, the app icon, name and version in the middle, a short
+    reason only when something is wrong, and the actions at the end.
+  * The app splash shows the plain app icon with the loading indicator.
+  * Android App Installer waits up to a minute for Android to finish
+    installing before it reports the result. Big apps like Termux showed
+    "App not installed" although Android installed them a few seconds
+    later.
+  * What's new: Google Play is the recommended choice.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 16:00:00 -0700
+
 kernora-apps (1.1.66) UNRELEASED; urgency=medium
 
   * Settings > Android apps shows how much time is left while the image

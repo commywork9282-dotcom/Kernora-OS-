@@ -100,36 +100,17 @@ Window {
             width: parent.width - 48
             spacing: 0
 
-            Item {
+            AppIcon {
                 Layout.alignment: Qt.AlignHCenter
-                implicitWidth: 144
-                implicitHeight: 144
-
-                MShape {
-                    id: halo
-                    anchors.fill: parent
-                    shape: M3.classic ? "circle" : "cookie12"
-                    color: M3.primaryContainer
-                    RotationAnimator on rotation {
-                        from: 0
-                        to: 360
-                        duration: 12000
-                        loops: Animation.Infinite
-                        running: halo.visible && M3.motionScale > 0 && !M3.classic
-                    }
-                }
-                AppIcon {
-                    anchors.centerIn: parent
-                    size: 96
-                    name: splash.app.icon || "org.kernora.android"
-                }
+                size: 96
+                name: splash.app.icon || "org.kernora.android"
             }
 
             MText {
                 Layout.fillWidth: true
                 Layout.topMargin: 20
                 horizontalAlignment: Text.AlignHCenter
-                role: "titleLarge"
+                role: "headlineSmall"
                 text: splash.app.name || ""
                 elide: Text.ElideRight
             }
@@ -139,7 +120,6 @@ Window {
                 Layout.topMargin: 16
                 implicitWidth: 48
                 implicitHeight: 48
-                contained: true
             }
         }
     }

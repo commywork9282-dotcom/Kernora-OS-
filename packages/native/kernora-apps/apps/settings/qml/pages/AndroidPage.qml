@@ -22,7 +22,7 @@ SettingsPage {
     readonly property string store: "com.android.vending"
     property var info: ({})
     property bool loaded: false
-    property string choice: "vanilla"
+    property string choice: "gapps"
     property bool actionFailed: false
     property real requestedAt: 0
     property string androidId: ""
@@ -111,15 +111,11 @@ SettingsPage {
                 return i18n("Android apps are getting an update. They open again once it's done.");
             case "downloading":
                 if (remaining >= 60) {
-                    return i18np("About %1 minute left. You can keep using the computer.",
-                                 "About %1 minutes left. You can keep using the computer.", Math.ceil(remaining / 60));
+                    return i18np("About %1 minute left", "About %1 minutes left", Math.ceil(remaining / 60));
                 }
-                if (remaining >= 0) {
-                    return i18n("Less than a minute left. You can keep using the computer.");
-                }
-                return i18n("This takes a few minutes. You can keep using the computer.");
+                return remaining >= 0 ? i18n("Less than a minute left") : i18n("This takes a few minutes");
             default:
-                return i18n("This takes a few minutes. You can keep using the computer.");
+                return i18n("This takes a few minutes");
             }
         }
         if (failed) {
@@ -129,123 +125,40 @@ SettingsPage {
         return "";
     }
 
-    component Choice: Item {
-        id: card
+    component Choice: ListItem {
+        id: option
 
         property string value
-        property string icon
-        property string title
-        property string text
-        property string amount
+        property bool recommended: false
         readonly property bool selected: page.choice === value
 
-        implicitHeight: body.implicitHeight + 40
-        activeFocusOnTab: true
         Accessible.role: Accessible.RadioButton
-        Accessible.name: title
         Accessible.checked: selected
-        Keys.onSpacePressed: page.choice = value
-        Keys.onReturnPressed: page.choice = value
-
-        MMorph {
-            id: selectMorph
-            active: card.selected
-            dampingRatio: M3.springExpressiveDefaultDamping
-            response: M3.springExpressiveDefaultResponse
-        }
-
-        Rectangle {
-            id: surface
-            anchors.fill: parent
-            radius: M3.classic ? M3.cornerCard : 20 + 12 * selectMorph.value
-            color: card.selected ? M3.secondaryContainer : M3.surfaceContainerHigh
-            Behavior on color { ColorAnimation { duration: M3.durationShort4 } }
-
-            MStateLayer {
-                radius: surface.radius
-                color: M3.surfaceContent
-                hovered: mouse.containsMouse
-                pressed: mouse.pressed
-                focused: card.activeFocus
-                pressPoint: Qt.point(mouse.mouseX, mouse.mouseY)
+        leading: Component {
+            QQC2.RadioButton {
+                checked: option.selected
+                focusPolicy: Qt.NoFocus
+                onClicked: page.choice = option.value
+                Accessible.ignored: true
             }
         }
-
-        ColumnLayout {
-            id: body
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.margins: 20
-            spacing: 12
-
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 12
-
-                Item {
-                    implicitWidth: 48
-                    implicitHeight: 48
-                    MShape {
-                        anchors.fill: parent
-                        shape: M3.classic ? "circle" : (card.selected ? "cookie9" : "circle")
-                        color: card.selected ? M3.primary : M3.secondaryContainer
-                        rotation: 45 * selectMorph.value
-                    }
-                    MIcon {
-                        anchors.centerIn: parent
-                        size: 24
-                        source: card.icon
-                        color: card.selected ? M3.primaryContent : M3.secondaryContainerContent
-                    }
-                }
-                Item {
-                    Layout.fillWidth: true
-                }
-                Rectangle {
-                    implicitWidth: 28
-                    implicitHeight: 28
-                    radius: 14
-                    color: M3.primary
-                    scale: selectMorph.value
-                    opacity: selectMorph.value
-                    MIcon {
-                        anchors.centerIn: parent
-                        size: 20
-                        source: "checkmark"
-                        color: M3.primaryContent
-                    }
+        trailing: Component {
+            Rectangle {
+                visible: option.recommended
+                implicitWidth: badge.implicitWidth + 24
+                implicitHeight: 28
+                radius: M3.classic ? 4 : 14
+                color: M3.tertiaryContainer
+                MText {
+                    id: badge
+                    anchors.centerIn: parent
+                    role: "labelLarge"
+                    text: i18n("Recommended")
+                    color: M3.tertiaryContainerContent
                 }
             }
-            MText {
-                Layout.fillWidth: true
-                role: "titleMedium"
-                text: card.title
-                color: card.selected ? M3.secondaryContainerContent : M3.surfaceContent
-                wrapMode: Text.Wrap
-            }
-            MText {
-                Layout.fillWidth: true
-                role: "bodyMedium"
-                text: card.text
-                color: card.selected ? M3.secondaryContainerContent : M3.surfaceVariantContent
-                wrapMode: Text.Wrap
-            }
-            MText {
-                Layout.fillWidth: true
-                role: "labelLarge"
-                text: card.amount
-                color: card.selected ? M3.secondaryContainerContent : M3.primary
-            }
         }
-
-        MouseArea {
-            id: mouse
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: page.choice = card.value
-        }
+        onClicked: page.choice = value
     }
 
     Item {
@@ -268,13 +181,6 @@ SettingsPage {
             color: page.ready ? M3.primaryContainer : M3.surfaceContainerHighest
             scale: 0.92 + 0.08 * readyMorph.value
             Behavior on color { ColorAnimation { duration: M3.durationMedium2 } }
-            RotationAnimator on rotation {
-                from: 0
-                to: 360
-                duration: 24000
-                loops: Animation.Infinite
-                running: page.busy && art.visible && M3.motionScale > 0 && !M3.classic
-            }
         }
         MIcon {
             anchors.centerIn: art
@@ -292,8 +198,8 @@ SettingsPage {
             role: "bodyMedium"
             color: M3.surfaceVariantContent
             wrapMode: Text.Wrap
-            text: page.live ? i18n("Android apps work after Kernora is installed on this computer.")
-                            : i18n("Apps made for Android phones and tablets, in their own windows, right next to your other apps.")
+            text: page.live ? i18n("Android apps work once Kernora is installed on this computer.")
+                            : i18n("Apps for phones and tablets, each in its own window.")
         }
     }
 
@@ -366,34 +272,20 @@ SettingsPage {
     }
 
     Group {
-        title: i18n("Where your apps come from")
-        note: i18n("Android apps take about 3 GB of disk space. Banking apps and games with anti-cheat only run on phones.")
+        title: i18n("Get apps from")
+        note: i18n("Needs about 3 GB of space. Banking apps and games with anti-cheat don't work here.")
         visible: page.loaded && !page.live && !page.ready && !page.busy
 
-        GridLayout {
-            width: parent.width
-            columns: width > 520 ? 2 : 1
-            columnSpacing: 12
-            rowSpacing: 12
-
-            Choice {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                value: "vanilla"
-                icon: "kernora-apk-install"
-                title: i18n("APK files")
-                text: i18n("Install apps from APK files and from open app stores like F-Droid.")
-                amount: i18n("About 1 GB to download")
-            }
-            Choice {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                value: "gapps"
-                icon: "kernora-google-play"
-                title: i18n("Google Play")
-                text: i18n("APK files plus the Play Store and Google services. Google asks you to register this computer once.")
-                amount: i18n("About 1.4 GB to download")
-            }
+        Choice {
+            value: "gapps"
+            recommended: true
+            title: i18n("Google Play and APK files")
+            subtitle: i18n("Like on an Android phone · about 1.4 GB to download")
+        }
+        Choice {
+            value: "vanilla"
+            title: i18n("APK files only")
+            subtitle: i18n("No Google services · about 1 GB to download")
         }
     }
 

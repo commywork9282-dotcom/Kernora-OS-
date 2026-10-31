@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-31-2",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "icon": "kernora-google-play",
+        "title": {
+          "en": "Google Play is the recommended choice",
+          "ru": "Google Play — рекомендуемый вариант"
+        },
+        "text": {
+          "en": "When you set up Android apps, Google Play and APK files together now come first and are picked for you, so apps install the way they do on an Android phone. Installing an APK file also looks like it does on Android now: the app, its version and two clear buttons.",
+          "ru": "При настройке Android-приложений вариант «Google Play и APK-файлы» теперь стоит первым и выбран сразу, так что приложения ставятся так же, как на телефоне Android. Установка APK-файла тоже выглядит как на Android: приложение, его версия и две понятные кнопки."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-31-1",
     "date": "2026-10-31",
     "items": [
