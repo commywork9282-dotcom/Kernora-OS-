@@ -1,0 +1,75 @@
+# Dutch translation of Kernora Calculator.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-calculator\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-31 13:44+0100\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/calculator/qml/Main.qml:25
+msgid "Calculator"
+msgstr "Rekenmachine"
+
+#: apps/calculator/qml/Main.qml:105
+msgid "Not a number"
+msgstr "Geen getal"
+
+#: apps/calculator/qml/Main.qml:113
+msgid "Can't calculate this"
+msgstr "Dit kan niet worden berekend"
+
+#: apps/calculator/qml/Main.qml:120
+msgid "Copied"
+msgstr "Gekopieerd"
+
+#: apps/calculator/qml/Main.qml:180 apps/calculator/qml/Main.qml:248
+msgid "History"
+msgstr "Geschiedenis"
+
+#: apps/calculator/qml/Main.qml:186
+msgid "DEG"
+msgstr "GRD"
+
+#: apps/calculator/qml/Main.qml:186
+msgid "RAD"
+msgstr "RAD"
+
+#: apps/calculator/qml/Main.qml:192
+msgid "Copy the result"
+msgstr "Uitkomst kopiëren"
+
+#: apps/calculator/qml/Main.qml:198
+msgid "Delete"
+msgstr "Verwijderen"
+
+#: apps/calculator/qml/Main.qml:247
+msgid "Back"
+msgstr "Terug"
+
+#: apps/calculator/qml/Main.qml:249
+msgid "Clear"
+msgstr "Wissen"
+
+#: apps/calculator/qml/Main.qml:276
+msgid "Results appear here"
+msgstr "Uitkomsten verschijnen hier"
+
+#: src/apps/calculator.cpp:8
+msgctxt "@title application name"
+msgid "Calculator"
+msgstr "Rekenmachine"
+
+#: src/apps/host.cpp:59
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:67
+msgid "Files or pages to open."
+msgstr "Bestanden of pagina's om te openen."

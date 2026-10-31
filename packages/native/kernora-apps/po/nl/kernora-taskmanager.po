@@ -1,0 +1,216 @@
+# Dutch translation of Kernora Taskmanager.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-tasks\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-31 13:44+0100\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/taskmanager/qml/AppsPage.qml:11 apps/taskmanager/qml/Main.qml:144
+msgid "Apps"
+msgstr "Apps"
+
+#
+#: apps/taskmanager/qml/AppsPage.qml:12
+msgid "Search apps"
+msgstr "Apps zoeken"
+
+#: apps/taskmanager/qml/AppsPage.qml:13
+msgid "End task"
+msgstr "Taak beëindigen"
+
+#: apps/taskmanager/qml/AppsPage.qml:15
+msgid "Apps can't be listed here"
+msgstr "Apps kunnen hier niet worden weergegeven"
+
+#: apps/taskmanager/qml/AppsPage.qml:15
+msgid "No apps are open"
+msgstr "Er zijn geen apps geopend"
+
+#: apps/taskmanager/qml/AppsPage.qml:16
+msgid "This system doesn't group processes by app."
+msgstr "Dit systeem groepeert processen niet per app."
+
+#: apps/taskmanager/qml/Main.qml:25
+msgid "Task Manager"
+msgstr "Taakbeheer"
+
+#
+#: apps/taskmanager/qml/Main.qml:60
+msgid "Couldn't end %1: %2"
+msgstr "%1 kon niet worden beëindigd: %2"
+
+#: apps/taskmanager/qml/Main.qml:103
+msgid "%1 isn't closing"
+msgstr "%1 sluit niet af"
+
+#
+#: apps/taskmanager/qml/Main.qml:103
+msgid "Force quit"
+msgstr "Geforceerd beëindigen"
+
+#: apps/taskmanager/qml/Main.qml:149
+msgid "Processes"
+msgstr "Processen"
+
+#: apps/taskmanager/qml/Main.qml:154
+#: apps/taskmanager/qml/PerformancePage.qml:61
+msgid "Performance"
+msgstr "Prestaties"
+
+#: apps/taskmanager/qml/PerformancePage.qml:71
+#: apps/taskmanager/qml/TaskPage.qml:169
+msgid "CPU"
+msgstr "CPU"
+
+#: apps/taskmanager/qml/PerformancePage.qml:80
+msgid "%1 core"
+msgid_plural "%1 cores"
+msgstr[0] "%1 kern"
+msgstr[1] "%1 kernen"
+
+#: apps/taskmanager/qml/PerformancePage.qml:87
+#: apps/taskmanager/qml/TaskPage.qml:175
+msgid "Memory"
+msgstr "Geheugen"
+
+#: apps/taskmanager/qml/PerformancePage.qml:90
+msgid "%1 of %2 in use"
+msgstr "%1 van %2 in gebruik"
+
+#: apps/taskmanager/qml/PerformancePage.qml:94
+msgid "Graphics"
+msgstr "Grafisch"
+
+#: apps/taskmanager/qml/PerformancePage.qml:104
+msgid "%1 of %2 video memory"
+msgstr "%1 van %2 videogeheugen"
+
+#
+#: apps/taskmanager/qml/PerformancePage.qml:108
+msgid "This graphics card doesn't report how busy it is."
+msgstr "Deze videokaart meldt niet hoe druk hij is."
+
+#: apps/taskmanager/qml/PerformancePage.qml:112
+msgid "Disk"
+msgstr "Schijf"
+
+#
+#: apps/taskmanager/qml/PerformancePage.qml:116
+msgid "Read %1 · Write %2"
+msgstr "Lezen %1 · Schrijven %2"
+
+#: apps/taskmanager/qml/PerformancePage.qml:119
+msgid "Read"
+msgstr "Lezen"
+
+#
+#: apps/taskmanager/qml/PerformancePage.qml:120
+msgid "Write"
+msgstr "Schrijven"
+
+#: apps/taskmanager/qml/PerformancePage.qml:123
+msgid "Network"
+msgstr "Netwerk"
+
+#: apps/taskmanager/qml/PerformancePage.qml:127
+msgid "Down %1 · Up %2"
+msgstr "Omlaag %1 · Omhoog %2"
+
+#: apps/taskmanager/qml/PerformancePage.qml:130
+msgid "Download"
+msgstr "Download"
+
+#: apps/taskmanager/qml/PerformancePage.qml:131
+msgid "Upload"
+msgstr "Upload"
+
+#: apps/taskmanager/qml/ProcessesPage.qml:17
+msgid "Background processes"
+msgstr "Achtergrondprocessen"
+
+#
+#: apps/taskmanager/qml/ProcessesPage.qml:18
+msgid "Search processes"
+msgstr "Processen zoeken"
+
+#
+#: apps/taskmanager/qml/ProcessesPage.qml:19
+msgid "End process"
+msgstr "Proces beëindigen"
+
+#
+#: apps/taskmanager/qml/ProcessesPage.qml:21
+msgid "No background processes"
+msgstr "Geen achtergrondprocessen"
+
+#: apps/taskmanager/qml/ProcessesPage.qml:68
+msgid "Mine"
+msgstr "Van mij"
+
+#: apps/taskmanager/qml/ProcessesPage.qml:69
+msgid "All users"
+msgstr "Alle gebruikers"
+
+#
+#: apps/taskmanager/qml/TaskPage.qml:75
+msgctxt "CPU share of a process"
+msgid "%1%"
+msgstr "%1%"
+
+#: apps/taskmanager/qml/TaskPage.qml:163
+msgid "Name"
+msgstr "Naam"
+
+#: apps/taskmanager/qml/TaskPage.qml:205
+msgid "PID %1"
+msgstr "PID %1"
+
+#: apps/taskmanager/qml/TaskPage.qml:205
+msgid "PID %1 · %2"
+msgstr "PID %1 · %2"
+
+#
+#: apps/taskmanager/qml/TaskPage.qml:207
+msgid "%1 process"
+msgid_plural "%1 processes"
+msgstr[0] "%1 proces"
+msgstr[1] "%1 processen"
+
+#
+#: apps/taskmanager/qml/TaskPage.qml:291
+msgid "Nothing found"
+msgstr "Niets gevonden"
+
+#: apps/taskmanager/qml/TaskPage.qml:292
+msgid "Nothing here matches “%1”."
+msgstr "Niets hier komt overeen met “%1”."
+
+#
+#: apps/taskmanager/qml/TaskPage.qml:301
+msgid "End %1?"
+msgstr "%1 beëindigen?"
+
+#: apps/taskmanager/qml/TaskPage.qml:302
+msgid "Anything unsaved in it may be lost."
+msgstr "Alles wat niet is opgeslagen, kan verloren gaan."
+
+#: src/apps/host.cpp:59
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:67
+msgid "Files or pages to open."
+msgstr "Bestanden of pagina's om te openen."
+
+#: src/apps/taskmanager.cpp:8
+msgctxt "@title application name"
+msgid "Task Manager"
+msgstr "Taakbeheer"

@@ -1,0 +1,136 @@
+# Dutch translation of Kernora Photos.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-photos\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-31 13:44+0100\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/photos/qml/Main.qml:26
+msgid "Photos"
+msgstr "Foto's"
+
+#: apps/photos/qml/Main.qml:90
+msgid "Moved to the trash"
+msgstr "Naar de prullenbak verplaatst"
+
+#: apps/photos/qml/Main.qml:131
+msgid "Back"
+msgstr "Terug"
+
+#: apps/photos/qml/Main.qml:138
+msgid "Pictures"
+msgstr "Afbeeldingen"
+
+#: apps/photos/qml/Main.qml:142
+msgid "Open in Files"
+msgstr "Openen in Bestanden"
+
+#: apps/photos/qml/Main.qml:220
+msgid "No pictures yet"
+msgstr "Nog geen afbeeldingen"
+
+#: apps/photos/qml/Main.qml:221
+msgid "Pictures you save to the Pictures folder, and screenshots, show up here."
+msgstr "Afbeeldingen die je in de map Afbeeldingen opslaat en schermafbeeldingen verschijnen hier."
+
+#: apps/photos/qml/Main.qml:317
+msgid "Back to the gallery"
+msgstr "Terug naar de galerij"
+
+#: apps/photos/qml/Main.qml:330
+msgid "%1 of %2"
+msgstr "%1 van %2"
+
+#: apps/photos/qml/Main.qml:335 apps/photos/qml/Main.qml:359
+msgid "Rotate left"
+msgstr "Linksom draaien"
+
+#: apps/photos/qml/Main.qml:336 apps/photos/qml/Main.qml:360
+msgid "Rotate right"
+msgstr "Rechtsom draaien"
+
+#: apps/photos/qml/Main.qml:337 apps/photos/qml/Main.qml:361
+msgid "Slideshow"
+msgstr "Diavoorstelling"
+
+#: apps/photos/qml/Main.qml:338 apps/photos/qml/Main.qml:362
+#: apps/photos/qml/Main.qml:414
+msgid "Details"
+msgstr "Details"
+
+#: apps/photos/qml/Main.qml:339 apps/photos/qml/Main.qml:363
+msgid "Full screen"
+msgstr "Volledig scherm"
+
+#: apps/photos/qml/Main.qml:344 apps/photos/qml/Main.qml:367
+msgid "More"
+msgstr "Meer"
+
+#: apps/photos/qml/Main.qml:381
+msgid "Previous"
+msgstr "Vorige"
+
+#: apps/photos/qml/Main.qml:390
+msgid "Next"
+msgstr "Volgende"
+
+#: apps/photos/qml/Main.qml:415
+msgid "Name"
+msgstr "Naam"
+
+#: apps/photos/qml/Main.qml:417
+msgid "Size"
+msgstr "Grootte"
+
+#: apps/photos/qml/Main.qml:418
+msgid "%1 × %2 pixels · %3"
+msgstr "%1 × %2 pixels · %3"
+
+#: apps/photos/qml/Main.qml:419
+msgid "Modified"
+msgstr "Gewijzigd"
+
+#: apps/photos/qml/Main.qml:421
+msgid "Folder"
+msgstr "Map"
+
+#: apps/photos/qml/Main.qml:438
+msgid "Set as wallpaper"
+msgstr "Als achtergrond instellen"
+
+#: apps/photos/qml/Main.qml:442
+msgid "Wallpaper changed"
+msgstr "Achtergrond gewijzigd"
+
+#: apps/photos/qml/Main.qml:445
+msgid "Show in Files"
+msgstr "Tonen in Bestanden"
+
+#: apps/photos/qml/Main.qml:447
+msgid "Open with another app"
+msgstr "Openen met een andere app"
+
+#: apps/photos/qml/Main.qml:452
+msgid "Move to trash"
+msgstr "Naar prullenbak"
+
+#: src/apps/host.cpp:59
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:67
+msgid "Files or pages to open."
+msgstr "Bestanden of pagina's om te openen."
+
+#: src/apps/photos.cpp:8
+msgctxt "@title application name"
+msgid "Photos"
+msgstr "Foto's"
