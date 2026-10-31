@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.57" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.58" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -183,7 +183,7 @@ bash -n "$android/kernora-android" && bash -n "$android/waydroid" \
 [[ -x "$android/kernora-android" && -x "$android/kernora-android-session" && -x "$android/waydroid" ]] \
   || fail "the Android tools are not executable"
 grep -Fq 'Suites: trixie-backports' "$android/kernora-android.sources" \
-  && grep -Fq 'apt_get install --no-install-recommends waydroid' "$android/kernora-android" \
+  && grep -Fq 'install --no-install-recommends waydroid' "$android/kernora-android" \
   && grep -Fq 'persist.waydroid.multi_windows' "$android/kernora-android" \
   || fail "kernora-android does not set Waydroid up from backports with separate windows"
 grep -Fq 'ExecStart=/usr/libexec/kernora-android %i' "$android/kernora-android@.service" \
@@ -285,6 +285,58 @@ with tempfile.TemporaryDirectory() as folder:
         same = hashlib.sha256(handle.read()).digest() == hashlib.sha256(data).digest()
 sys.exit(0 if same and took < 10 else 1)
 EOF
+[[ -x "$android/kernora-android-windows" ]] \
+  && grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-windows</annotate>' "$android/org.kernora.android.policy" \
+  && grep -Fq 'WINDOWS = "/usr/libexec/kernora-android-windows"' "$android/kernora-android-session" \
+  && grep -Fxq 'data/android/kernora-android-windows usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  && timeout 60 python3 -I - "$android/kernora-android-windows" <<'EOF' \
+  || fail "Android apps do not open in computer-sized windows"
+import importlib.machinery
+import importlib.util
+import sys
+
+loader = importlib.machinery.SourceFileLoader("windows", sys.argv[1])
+windows = importlib.util.module_from_spec(importlib.util.spec_from_loader("windows", loader))
+loader.exec_module(windows)
+dump = """  * Task{8589fef #230 type=standard A=10127:org.fossify.math U=0 visible=true visibleRequested=true mode=freeform translucent=false sz=1}
+    mBounds=Rect(495, 32 - 944, 809)
+    * Hist  #0: ActivityRecord{873deea u0 org.fossify.math/.activities.MainActivity} t230}
+      requestedOrientation=SCREEN_ORIENTATION_UNSPECIFIED
+  * Task{8175f4 #1 type=home U=0 visible=true visibleRequested=true mode=fullscreen translucent=false sz=1}
+  * Task{aa11 #231 type=standard A=10130:com.example.game U=0 visible=true visibleRequested=true mode=freeform translucent=false sz=1}
+    mBounds=Rect(500, 40 - 940, 800)
+      requestedOrientation=SCREEN_ORIENTATION_SENSOR_PORTRAIT
+      * Task{8589fef #230 type=standard A=10127:org.fossify.math U=0 visible=true visibleRequested=true mode=freeform translucent=false sz=1}
+        bounds=[200,90][1240,750]
+"""
+windows.android = lambda *args, **kwargs: dump
+found = windows.tasks()
+left, top, right, bottom = windows.target((1439, 841), 0)
+sys.exit(0 if sorted(found) == [230, 231]
+         and found[230]["bounds"] == (495, 32, 944, 809)
+         and found[231]["orientations"] & windows.PORTRAIT
+         and right - left > bottom - top and right <= 1439 and bottom <= 841 else 1)
+EOF
+grep -Fq 'android wm density "$density"' "$android/kernora-android-sync" \
+  && grep -Fq 'settings put global device_name' "$android/kernora-android-sync" \
+  && grep -Fq '"$state_dir/google"' "$android/kernora-android-sync" \
+  && grep -Fq 'def kernora_density()' "$android/kernora-android-session" \
+  && grep -Fq 'PathChanged=%h/.config/kwinoutputconfig.json' "$android/kernora-android-sync.path" \
+  || fail "Android apps do not use Kernora's scale and device name"
+grep -Fq '"ro.product.waydroid.model": model' "$android/kernora-android" \
+  && grep -Fq '"persist.waydroid.fake_wifi": "*"' "$android/kernora-android" \
+  && grep -Fq 'Kernora Laptop' "$android/kernora-android" \
+  || fail "Android does not call this computer a Kernora laptop or PC"
+grep -Fq 'APT::Status-Fd=3' "$android/kernora-android" \
+  && grep -Fq 'finish ready' "$android/kernora-android" \
+  && grep -Fq 'PathChanged=/var/lib/kernora/android/done' "$android/kernora-android-done.path" \
+  && grep -Fq 'ExecStart=/usr/libexec/kernora-android-session --done' "$android/kernora-android-done.service" \
+  && grep -Fq 'default.target.wants/kernora-android-done.path' "$package_root/debian/kernora-desktop.links" \
+  && grep -Fq 'if len(sys.argv) > 1 and sys.argv[1] == "--google":' "$android/kernora-android-session" \
+  && grep -Fq '"sys.user.0.ce_available"' "$android/kernora-android-session" \
+  && grep -Fq '"systemd-run", "--user"' "$android/kernora-android-session" \
+  && grep -Fq "s/^ *Accounts: " "$android/kernora-android-sync" \
+  || fail "setting up Android apps does not show its whole progress or tell when it is done"
 grep -Fq 'kernora-appsplash' "$android/waydroid" \
   && ! grep -Fq 'Starting Android' "$android/kernora-android-session" \
   || fail "opening an Android app still talks about starting Android"

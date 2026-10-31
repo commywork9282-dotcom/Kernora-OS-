@@ -1,3 +1,32 @@
+kernora-desktop (1.4.58) UNRELEASED; urgency=medium
+
+  * Android apps open in computer-sized windows: the new
+    /usr/libexec/kernora-android-windows (started through polkit once
+    Android has booted) follows Android's wm_create_task events and gives
+    every app's first window a landscape size of about three quarters of
+    the screen. Apps that ask for portrait only, see-through windows and
+    Android's own dialogs keep their size, and a window that ends up
+    letterboxed goes back. Android remembers the size per app afterwards.
+  * Android uses Kernora's scale: the sync sets the density to 160 times
+    the scale of the main screen and follows scale changes.
+  * Android calls this computer "Kernora Laptop" or "Kernora PC" (from
+    the chassis) instead of "WayDroid x86_64 Device", in Google Play too,
+    and apps see a Wi-Fi connection so downloads and updates are not
+    held back. Existing setups get this once no app is open.
+  * Setting up shows one progress from the start, including Waydroid's
+    own packages, and the bytes downloaded. When the setup ends, a
+    notification says so and opens Settings.
+  * The sync keeps the Google device ID and whether a Google account is
+    signed in in /var/lib/kernora/android/google for the Google Play
+    steps in Settings; "kernora-android-session --google" starts Android
+    and waits for the ID.
+  * Waiting for Android also counts three seconds after
+    sys.user.0.ce_available as ready: Waydroid missed the unlock event on
+    a first boot with Google Play, so nothing after boot ran.
+  * The download shows the time left only after five seconds of data.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 20:00:00 -0700
+
 kernora-desktop (1.4.57) UNRELEASED; urgency=medium
 
   * Android apps download their image much faster: the new

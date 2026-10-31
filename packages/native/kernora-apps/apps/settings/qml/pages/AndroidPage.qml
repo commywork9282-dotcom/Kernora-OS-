@@ -5,6 +5,7 @@
 
 pragma ComponentBehavior: Bound
 
+import QtCore as Core
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
@@ -25,8 +26,8 @@ SettingsPage {
     property string choice: "gapps"
     property bool actionFailed: false
     property real requestedAt: 0
-    property string androidId: ""
     property bool faster: false
+    property bool googleWorking: false
 
     readonly property bool live: info.live === "yes"
     readonly property bool ready: info.ready === "yes" && info.installed === "yes"
@@ -40,9 +41,14 @@ SettingsPage {
     readonly property bool google: info.kind === "gapps"
     readonly property int progress: Number(info.progress || 0)
     readonly property int remaining: (info.remaining || "") === "" ? -1 : Number(info.remaining)
+    readonly property real bytes: Number(info.bytes || 0)
+    readonly property real bytesTotal: Number(info.bytes_total || 0)
+    readonly property bool setupStage: busy && (status === "installing" || status === "downloading" || status === "unpacking")
+    readonly property string googleId: info.google_id || ""
+    readonly property bool googleSignedIn: Number(info.google_accounts || 0) > 0
     readonly property var userApps: Android.apps.filter(app => app.package !== page.store)
 
-    function refresh(): void {
+    function refresh(done) {
         Process.run(page.tool, ["status"], (code, output) => {
             const values = {};
             for (const line of output.split("\n")) {
@@ -53,6 +59,9 @@ SettingsPage {
             }
             page.info = values;
             page.loaded = true;
+            if (done) {
+                done();
+            }
         });
         Process.run("systemctl", ["--user", "is-enabled", "kernora-android.service"], (code, output) => {
             page.faster = output.trim() === "enabled";
@@ -71,7 +80,46 @@ SettingsPage {
     }
 
     function size(bytes: real): string {
-        return i18n("%1 GB", (bytes / 1073741824).toLocaleString(Qt.locale(), "f", 1));
+        return bytes >= 1073741824 ? i18n("%1 GB", (bytes / 1073741824).toLocaleString(Qt.locale(), "f", 1))
+                                   : i18n("%1 MB", Math.round(bytes / 1048576));
+    }
+
+    function registerWithGoogle(): void {
+        if (page.googleId.length > 0) {
+            Android.copyText(page.googleId);
+            Process.openUrl("https://www.google.com/android/uncertified");
+            remembered.googleRegistered = true;
+            remembered.restartPending = true;
+            page.notify(i18n("Code copied. Paste it on Google's page."));
+            return;
+        }
+        page.googleWorking = true;
+        Process.run("/usr/libexec/kernora-android-session", ["--google"], () => {
+            page.refresh(() => {
+                page.googleWorking = false;
+                if (page.googleId.length > 0) {
+                    page.registerWithGoogle();
+                } else {
+                    page.notify(i18n("The code isn't ready yet. Try again in a minute."));
+                }
+            });
+        });
+    }
+
+    function openStore(): void {
+        if (!remembered.restartPending) {
+            Android.launch(page.store);
+            return;
+        }
+        remembered.restartPending = false;
+        Process.run("systemctl", ["--user", "stop", "kernora-android.service"], () => Android.launch(page.store));
+    }
+
+    Core.Settings {
+        id: remembered
+        category: "AndroidApps"
+        property bool googleRegistered: false
+        property bool restartPending: false
     }
 
     Component.onCompleted: refresh()
@@ -109,11 +157,20 @@ SettingsPage {
                 return i18n("Every Android app and its data are being deleted from this computer.");
             case "updating":
                 return i18n("Android apps are getting an update. They open again once it's done.");
-            case "downloading":
-                if (remaining >= 60) {
-                    return i18np("About %1 minute left", "About %1 minutes left", Math.ceil(remaining / 60));
+            case "installing":
+                return i18n("Getting ready");
+            case "downloading": {
+                const parts = [];
+                if (bytesTotal > 0) {
+                    parts.push(i18n("%1 of %2", size(bytes), size(bytesTotal)));
                 }
-                return remaining >= 0 ? i18n("Less than a minute left") : i18n("This takes a few minutes");
+                if (remaining >= 60) {
+                    parts.push(i18np("About %1 minute left", "About %1 minutes left", Math.ceil(remaining / 60)));
+                } else if (remaining >= 0) {
+                    parts.push(i18n("Less than a minute left"));
+                }
+                return parts.length > 0 ? parts.join(" · ") : i18n("This takes a few minutes");
+            }
             default:
                 return i18n("This takes a few minutes");
             }
@@ -232,7 +289,7 @@ SettingsPage {
                     color: summary.ink
                 }
                 MText {
-                    visible: page.busy && page.status === "downloading"
+                    visible: page.setupStage && page.progress > 0
                     role: "titleLarge"
                     text: i18n("%1%", page.progress)
                     color: M3.primary
@@ -249,7 +306,7 @@ SettingsPage {
             LinearProgress {
                 Layout.fillWidth: true
                 visible: page.busy
-                indeterminate: page.status !== "downloading"
+                indeterminate: !page.setupStage || page.progress === 0
                 value: page.progress / 100
             }
             RowLayout {
@@ -304,6 +361,53 @@ SettingsPage {
     }
 
     Group {
+        title: i18n("Finish setting up Google Play")
+        note: i18n("Google asks to register computers that run Android apps. You only do this once.")
+        visible: page.ready && !page.busy && page.google && !page.googleSignedIn
+
+        ListItem {
+            title: i18n("Register this computer")
+            subtitle: page.googleWorking ? i18n("Getting the code, this takes a minute the first time…")
+                                         : i18n("Opens Google's page with the code copied. Paste it there and press Register.")
+            maximumSubtitleLines: 3
+            interactive: false
+            leading: Component {
+                Step {
+                    number: 1
+                    done: remembered.googleRegistered
+                }
+            }
+            trailing: Component {
+                MButton {
+                    enabled: !page.googleWorking
+                    variant: remembered.googleRegistered ? "tonal" : "filled"
+                    text: remembered.googleRegistered ? i18n("Again") : i18n("Register")
+                    onClicked: page.registerWithGoogle()
+                }
+            }
+        }
+        ListItem {
+            title: i18n("Sign in to Google Play")
+            subtitle: i18n("Google can take a few minutes to accept the code. If Google Play says this device isn't certified, wait a little and try again.")
+            maximumSubtitleLines: 3
+            interactive: false
+            leading: Component {
+                Step {
+                    number: 2
+                    done: false
+                }
+            }
+            trailing: Component {
+                MButton {
+                    variant: remembered.googleRegistered ? "filled" : "tonal"
+                    text: i18n("Open")
+                    onClicked: page.openStore()
+                }
+            }
+        }
+    }
+
+    Group {
         title: i18n("Your apps")
         visible: page.ready && !page.busy
 
@@ -351,31 +455,31 @@ SettingsPage {
             icon: "kernora-google-play"
             iconStyle: "plain"
             chevron: true
-            onClicked: Android.launch(page.store)
+            onClicked: page.openStore()
         }
     }
 
-    Group {
-        title: i18n("Google Play")
-        note: i18n("Before you sign in to the Play Store, register this computer with Google: copy the device ID and paste it on Google's page.")
-        visible: page.ready && !page.busy && page.google
-
-        ListItem {
-            title: i18n("Register with Google")
-            subtitle: page.androidId.length > 0 ? i18n("Device ID: %1", page.androidId) : i18n("Shows the device ID and opens Google's page")
-            icon: "kernora-google-play"
-            iconStyle: "plain"
-            chevron: true
-            onClicked: Process.run("pkexec", [page.tool, "android-id"], (code, output) => {
-                page.androidId = output.trim();
-                if (page.androidId.length > 0) {
-                    Android.copyText(page.androidId);
-                    page.notify(i18n("Device ID copied"));
-                    Process.openUrl("https://www.google.com/android/uncertified");
-                } else {
-                    page.notify(i18n("Open Google Play once, then try again"));
-                }
-            })
+    component Step: Rectangle {
+        id: step
+        property int number
+        property bool done
+        implicitWidth: 32
+        implicitHeight: 32
+        radius: 16
+        color: done ? M3.primary : M3.secondaryContainer
+        MText {
+            anchors.centerIn: parent
+            visible: !step.done
+            role: "labelLarge"
+            text: step.number
+            color: M3.secondaryContainerContent
+        }
+        MIcon {
+            anchors.centerIn: parent
+            visible: step.done
+            size: 20
+            source: "checkmark"
+            color: M3.primaryContent
         }
     }
 

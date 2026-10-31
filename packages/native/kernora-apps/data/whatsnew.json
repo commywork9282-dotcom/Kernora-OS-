@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-31-3",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Android apps open like computer apps",
+          "ru": "Android-приложения открываются как программы для компьютера"
+        },
+        "text": {
+          "en": "Android apps now open in wide windows sized for a computer and match the scale of the rest of Kernora, and Android calls this computer Kernora Laptop or Kernora PC instead of a tablet. Setting them up shows the progress from the very first second and tells you when everything is ready, and Settings takes you through signing in to Google Play in two steps.",
+          "ru": "Android-приложения теперь открываются в широких окнах размером для компьютера и совпадают по масштабу с остальной Kernora, а сам Android называет этот компьютер Kernora Laptop или Kernora PC, а не планшетом. Настройка показывает прогресс с первой секунды и сообщает, когда всё готово, а вход в Google Play в Настройках разбит на два шага."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-31-2",
     "date": "2026-10-31",
     "items": [

@@ -132,6 +132,9 @@ data/android/kernora-android-fetch usr/libexec
 data/android/kernora-android-sync usr/libexec
 data/android/kernora-android-sync.path usr/lib/systemd/user
 data/android/kernora-android-sync.service usr/lib/systemd/user
+data/android/kernora-android-windows usr/libexec
+data/android/kernora-android-done.path usr/lib/systemd/user
+data/android/kernora-android-done.service usr/lib/systemd/user
 generated/android/KernoraCaption.apk usr/share/kernora/android
 data/android/waydroid usr/bin
 data/android/kernora-android@.service usr/lib/systemd/system

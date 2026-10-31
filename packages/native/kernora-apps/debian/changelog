@@ -1,3 +1,16 @@
+kernora-apps (1.1.68) UNRELEASED; urgency=medium
+
+  * Settings > Android apps: the progress shows a percentage from the
+    start (Waydroid's packages too) and the size downloaded so far.
+  * Google Play sign-in in two steps: "Register this computer" starts
+    Android if needed, waits for the Google device ID, copies it and
+    opens Google's page; "Sign in to Google Play" restarts Android once
+    after registering and opens the Play Store. The steps go away once a
+    Google account is signed in, and they come before the app list.
+  * What's new: Android apps open like computer apps.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 20:00:00 -0700
+
 kernora-apps (1.1.67) UNRELEASED; urgency=medium
 
   * Settings > Android apps: a radio list instead of side-by-side cards,

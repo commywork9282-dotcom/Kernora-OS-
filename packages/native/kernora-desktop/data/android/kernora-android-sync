@@ -6,10 +6,12 @@ state_dir=/var/lib/kernora/android
 seed=${1:-}
 mode=${2:-}
 style=${3:-TONAL_SPOT}
+density=${4:-}
 
 [[ $seed =~ ^[0-9A-Fa-f]{6}$ ]] || exit 2
 [[ $mode == dark || $mode == light ]] || exit 2
 [[ $style == TONAL_SPOT || $style == SPRITZ ]] || exit 2
+[[ -z $density || ( $density =~ ^[0-9]{3}$ && $density -ge 100 && $density -le 480 ) ]] || exit 2
 (( EUID == 0 )) || exit 1
 [[ -x $real ]] || exit 0
 "$real" status 2>/dev/null | grep -q 'Session:.*RUNNING' || exit 0
@@ -28,6 +30,15 @@ night=no
 if [[ $(android cmd uimode night) != "Night mode: $night" ]]; then
   android cmd uimode night "$night" > /dev/null
 fi
+if [[ -n $density ]]; then
+  current=$(android wm density | sed -n 's/^Override density: //p' | tr -d '\r')
+  [[ -n $current ]] || current=$(android wm density | sed -n 's/^Physical density: //p' | tr -d '\r')
+  [[ $current == "$density" ]] || android wm density "$density" > /dev/null
+fi
+model=$(android getprop ro.product.model | tr -d '\r')
+if [[ -n $model && $(android settings get global device_name | tr -d '\r') != "$model" ]]; then
+  android settings put global device_name "$model" > /dev/null
+fi
 if android pm list packages -e org.lineageos.waydroidupdater | grep -q .; then
   android pm disable-user --user 0 org.lineageos.waydroidupdater > /dev/null
 fi
@@ -37,4 +48,13 @@ if [[ -n $packages ]]; then
   printf '%s\n' "$packages" > "$state_dir/system-packages.new"
   chmod 0644 "$state_dir/system-packages.new"
   mv "$state_dir/system-packages.new" "$state_dir/system-packages"
+fi
+if android pm list packages -s com.google.android.gsf | grep -q .; then
+  id=$(android sqlite3 -cmd ".timeout 8000" /data/data/com.google.android.gsf/databases/gservices.db \
+    "select value from main where name = 'android_id';" | tr -cd '0-9')
+  accounts=$(android dumpsys account | sed -n 's/^ *Accounts: \([0-9]*\).*/\1/p' | head -n 1)
+  install -d -m 0755 "$state_dir"
+  printf 'android_id=%s\naccounts=%s\ntime=%s\n' "$id" "$accounts" "$(date +%s)" > "$state_dir/google.new"
+  chmod 0644 "$state_dir/google.new"
+  mv "$state_dir/google.new" "$state_dir/google"
 fi

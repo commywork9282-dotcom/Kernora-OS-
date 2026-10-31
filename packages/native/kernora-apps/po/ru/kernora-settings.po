@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kernora-settings\n"
 "Report-Msgid-Bugs-To: dev@kernora.invalid\n"
-"POT-Creation-Date: 2026-10-31 13:11-0700\n"
+"POT-Creation-Date: 2026-10-31 14:22-0700\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -113,7 +113,7 @@ msgid "APK files, Google Play"
 msgstr "APK-файлы, Google Play"
 
 #: apps/settings/qml/components/Catalog.qml:21
-#: apps/settings/qml/pages/AndroidPage.qml:19
+#: apps/settings/qml/pages/AndroidPage.qml:20
 msgid "Android apps"
 msgstr "Приложения Android"
 
@@ -453,8 +453,7 @@ msgid "apk android app install phone"
 msgstr "apk android приложение установить телефон андроид"
 
 #: apps/settings/qml/components/Catalog.qml:67
-#: apps/settings/qml/pages/AndroidPage.qml:349
-#: apps/settings/qml/pages/AndroidPage.qml:359
+#: apps/settings/qml/pages/AndroidPage.qml:406
 msgid "Google Play"
 msgstr "Google Play"
 
@@ -463,7 +462,7 @@ msgid "play store google services register device"
 msgstr "play маркет google сервисы регистрация устройство"
 
 #: apps/settings/qml/components/Catalog.qml:68
-#: apps/settings/qml/pages/AndroidPage.qml:406
+#: apps/settings/qml/pages/AndroidPage.qml:510
 msgid "Remove Android apps"
 msgstr "Удалить Android-приложения"
 
@@ -770,7 +769,7 @@ msgid "early access beta testing new versions demo"
 msgstr "ранний доступ бета тестирование новые версии демо"
 
 #: apps/settings/qml/components/Catalog.qml:100
-#: apps/settings/qml/pages/AndroidPage.qml:398
+#: apps/settings/qml/pages/AndroidPage.qml:502
 #: apps/settings/qml/pages/StoragePage.qml:20
 #: apps/settings/qml/pages/SystemPage.qml:98
 msgid "Storage"
@@ -1333,80 +1332,100 @@ msgstr "Повторите пароль"
 msgid "Can install software and change settings for everyone"
 msgstr "Может устанавливать программы и менять настройки для всех"
 
-#: apps/settings/qml/pages/AndroidPage.qml:74
+#: apps/settings/qml/pages/AndroidPage.qml:83
 msgid "%1 GB"
 msgstr "%1 ГБ"
 
-#: apps/settings/qml/pages/AndroidPage.qml:90
+#: apps/settings/qml/pages/AndroidPage.qml:84
+msgid "%1 MB"
+msgstr "%1 МБ"
+
+#: apps/settings/qml/pages/AndroidPage.qml:93
+msgid "Code copied. Paste it on Google's page."
+msgstr "Код скопирован. Вставьте его на странице Google."
+
+#: apps/settings/qml/pages/AndroidPage.qml:103
+msgid "The code isn't ready yet. Try again in a minute."
+msgstr "Код ещё не готов. Попробуйте через минуту."
+
+#: apps/settings/qml/pages/AndroidPage.qml:138
 msgid "Removing Android apps…"
 msgstr "Удаление Android-приложений…"
 
-#: apps/settings/qml/pages/AndroidPage.qml:92
+#: apps/settings/qml/pages/AndroidPage.qml:140
 msgid "Updating…"
 msgstr "Обновление…"
 
-#: apps/settings/qml/pages/AndroidPage.qml:94
+#: apps/settings/qml/pages/AndroidPage.qml:142
 msgid "Almost ready…"
 msgstr "Почти готово…"
 
-#: apps/settings/qml/pages/AndroidPage.qml:96
+#: apps/settings/qml/pages/AndroidPage.qml:144
 msgid "Setting up Android apps…"
 msgstr "Настройка Android-приложений…"
 
-#: apps/settings/qml/pages/AndroidPage.qml:100
+#: apps/settings/qml/pages/AndroidPage.qml:148
 msgid "Android apps couldn't be set up"
 msgstr "Не удалось настроить Android-приложения"
 
-#: apps/settings/qml/pages/AndroidPage.qml:100
+#: apps/settings/qml/pages/AndroidPage.qml:148
 msgid "No internet connection"
 msgstr "Нет подключения к интернету"
 
-#: apps/settings/qml/pages/AndroidPage.qml:109
+#: apps/settings/qml/pages/AndroidPage.qml:157
 msgid "Every Android app and its data are being deleted from this computer."
 msgstr "Все Android-приложения и их данные удаляются с компьютера."
 
-#: apps/settings/qml/pages/AndroidPage.qml:111
+#: apps/settings/qml/pages/AndroidPage.qml:159
 msgid "Android apps are getting an update. They open again once it's done."
 msgstr "Android-приложения обновляются. Они снова откроются, когда обновление закончится."
 
-#: apps/settings/qml/pages/AndroidPage.qml:114
+#: apps/settings/qml/pages/AndroidPage.qml:161
+msgid "Getting ready"
+msgstr "Подготовка"
+
+#: apps/settings/qml/pages/AndroidPage.qml:165
+msgid "%1 of %2"
+msgstr "%1 из %2"
+
+#: apps/settings/qml/pages/AndroidPage.qml:168
 msgid "About %1 minute left"
 msgid_plural "About %1 minutes left"
 msgstr[0] "Осталось около %1 минуты"
 msgstr[1] "Осталось около %1 минут"
 msgstr[2] "Осталось около %1 минут"
 
-#: apps/settings/qml/pages/AndroidPage.qml:116
+#: apps/settings/qml/pages/AndroidPage.qml:170
 msgid "Less than a minute left"
 msgstr "Осталось меньше минуты"
 
-#: apps/settings/qml/pages/AndroidPage.qml:116
-#: apps/settings/qml/pages/AndroidPage.qml:118
+#: apps/settings/qml/pages/AndroidPage.qml:172
+#: apps/settings/qml/pages/AndroidPage.qml:175
 msgid "This takes a few minutes"
 msgstr "Это займёт несколько минут"
 
-#: apps/settings/qml/pages/AndroidPage.qml:122
+#: apps/settings/qml/pages/AndroidPage.qml:179
 msgid "Everything apps need is downloaded from the internet. Connect to a network and try again."
 msgstr "Всё нужное для приложений скачивается из интернета. Подключитесь к сети и попробуйте ещё раз."
 
-#: apps/settings/qml/pages/AndroidPage.qml:123
+#: apps/settings/qml/pages/AndroidPage.qml:180
 msgid "Check the internet connection and that there is enough free space, then try again."
 msgstr "Проверьте подключение к интернету и свободное место на диске, затем попробуйте ещё раз."
 
-#: apps/settings/qml/pages/AndroidPage.qml:156
+#: apps/settings/qml/pages/AndroidPage.qml:213
 #: apps/settings/qml/pages/DisplayPage.qml:282
 msgid "Recommended"
 msgstr "Рекомендуется"
 
-#: apps/settings/qml/pages/AndroidPage.qml:201
+#: apps/settings/qml/pages/AndroidPage.qml:258
 msgid "Android apps work once Kernora is installed on this computer."
 msgstr "Android-приложения заработают, когда Kernora будет установлена на компьютер."
 
-#: apps/settings/qml/pages/AndroidPage.qml:202
+#: apps/settings/qml/pages/AndroidPage.qml:259
 msgid "Apps for phones and tablets, each in its own window."
 msgstr "Приложения для телефонов и планшетов, каждое в своём окне."
 
-#: apps/settings/qml/pages/AndroidPage.qml:237
+#: apps/settings/qml/pages/AndroidPage.qml:294
 #: apps/settings/qml/pages/BluetoothDevicePage.qml:52
 #: apps/settings/qml/pages/DisplayArrangementPage.qml:282
 #: apps/settings/qml/pages/DisplayPage.qml:226
@@ -1422,121 +1441,137 @@ msgstr "Приложения для телефонов и планшетов, к
 msgid "%1%"
 msgstr "%1%"
 
-#: apps/settings/qml/pages/AndroidPage.qml:261
+#: apps/settings/qml/pages/AndroidPage.qml:318
 msgid "Cancel"
 msgstr "Отмена"
 
-#: apps/settings/qml/pages/AndroidPage.qml:266
+#: apps/settings/qml/pages/AndroidPage.qml:323
 #: apps/settings/qml/pages/DriversPage.qml:219
 msgid "Try again"
 msgstr "Попробовать снова"
 
-#: apps/settings/qml/pages/AndroidPage.qml:275
+#: apps/settings/qml/pages/AndroidPage.qml:332
 msgid "Get apps from"
 msgstr "Откуда брать приложения"
 
-#: apps/settings/qml/pages/AndroidPage.qml:276
+#: apps/settings/qml/pages/AndroidPage.qml:333
 msgid "Needs about 3 GB of space. Banking apps and games with anti-cheat don't work here."
 msgstr "Нужно около 3 ГБ места. Банковские приложения и игры с античитом здесь не работают."
 
-#: apps/settings/qml/pages/AndroidPage.qml:282
+#: apps/settings/qml/pages/AndroidPage.qml:339
 msgid "Google Play and APK files"
 msgstr "Google Play и APK-файлы"
 
-#: apps/settings/qml/pages/AndroidPage.qml:283
+#: apps/settings/qml/pages/AndroidPage.qml:340
 msgid "Like on an Android phone · about 1.4 GB to download"
 msgstr "Как на телефоне Android · скачается около 1,4 ГБ"
 
-#: apps/settings/qml/pages/AndroidPage.qml:287
+#: apps/settings/qml/pages/AndroidPage.qml:344
 msgid "APK files only"
 msgstr "Только APK-файлы"
 
-#: apps/settings/qml/pages/AndroidPage.qml:288
+#: apps/settings/qml/pages/AndroidPage.qml:345
 msgid "No Google services · about 1 GB to download"
 msgstr "Без сервисов Google · скачается около 1 ГБ"
 
-#: apps/settings/qml/pages/AndroidPage.qml:300
+#: apps/settings/qml/pages/AndroidPage.qml:357
 msgid "Set up"
 msgstr "Настроить"
 
-#: apps/settings/qml/pages/AndroidPage.qml:307
+#: apps/settings/qml/pages/AndroidPage.qml:364
 msgid "Your apps"
 msgstr "Ваши приложения"
 
-#: apps/settings/qml/pages/AndroidPage.qml:325
+#: apps/settings/qml/pages/AndroidPage.qml:382
 msgid "Uninstall"
 msgstr "Удалить"
 
-#: apps/settings/qml/pages/AndroidPage.qml:334
+#: apps/settings/qml/pages/AndroidPage.qml:391
 #: apps/settings/qml/pages/NotificationAppsPage.qml:57
 msgid "No apps yet"
 msgstr "Пока нет приложений"
 
-#: apps/settings/qml/pages/AndroidPage.qml:335
+#: apps/settings/qml/pages/AndroidPage.qml:392
 msgid "Open an APK file to install an app"
 msgstr "Откройте APK-файл, чтобы установить приложение"
 
-#: apps/settings/qml/pages/AndroidPage.qml:335
+#: apps/settings/qml/pages/AndroidPage.qml:392
 msgid "Open an APK file, or get apps from Google Play"
 msgstr "Откройте APK-файл или найдите приложения в Google Play"
 
-#: apps/settings/qml/pages/AndroidPage.qml:341
+#: apps/settings/qml/pages/AndroidPage.qml:398
 msgid "Install an app from an APK file"
 msgstr "Установить приложение из APK-файла"
 
-#: apps/settings/qml/pages/AndroidPage.qml:350
+#: apps/settings/qml/pages/AndroidPage.qml:407
 msgid "Find and install apps"
 msgstr "Поиск и установка приложений"
 
-#: apps/settings/qml/pages/AndroidPage.qml:360
-msgid "Before you sign in to the Play Store, register this computer with Google: copy the device ID and paste it on Google's page."
-msgstr "Перед входом в Play Маркет зарегистрируйте компьютер в Google: скопируйте идентификатор устройства и вставьте его на странице Google."
+#: apps/settings/qml/pages/AndroidPage.qml:440
+msgid "Finish setting up Google Play"
+msgstr "Завершите настройку Google Play"
 
-#: apps/settings/qml/pages/AndroidPage.qml:364
-msgid "Register with Google"
-msgstr "Регистрация в Google"
+#: apps/settings/qml/pages/AndroidPage.qml:441
+msgid "Google asks to register computers that run Android apps. You only do this once."
+msgstr "Google просит зарегистрировать компьютер, на котором работают Android-приложения. Это нужно сделать один раз."
 
-#: apps/settings/qml/pages/AndroidPage.qml:365
-msgid "Device ID: %1"
-msgstr "Идентификатор устройства: %1"
+#: apps/settings/qml/pages/AndroidPage.qml:445
+msgid "Register this computer"
+msgstr "Зарегистрируйте компьютер"
 
-#: apps/settings/qml/pages/AndroidPage.qml:365
-msgid "Shows the device ID and opens Google's page"
-msgstr "Показывает идентификатор устройства и открывает страницу Google"
+#: apps/settings/qml/pages/AndroidPage.qml:446
+msgid "Getting the code, this takes a minute the first time…"
+msgstr "Получаем код, в первый раз это займёт минуту…"
 
-#: apps/settings/qml/pages/AndroidPage.qml:373
-msgid "Device ID copied"
-msgstr "Идентификатор скопирован"
+#: apps/settings/qml/pages/AndroidPage.qml:447
+msgid "Opens Google's page with the code copied. Paste it there and press Register."
+msgstr "Откроется страница Google, а код уже будет скопирован. Вставьте его и нажмите «Зарегистрировать»."
 
-#: apps/settings/qml/pages/AndroidPage.qml:376
-msgid "Open Google Play once, then try again"
-msgstr "Откройте Google Play один раз и попробуйте снова"
+#: apps/settings/qml/pages/AndroidPage.qml:460
+msgid "Again"
+msgstr "Ещё раз"
 
-#: apps/settings/qml/pages/AndroidPage.qml:386
+#: apps/settings/qml/pages/AndroidPage.qml:460
+msgid "Register"
+msgstr "Зарегистрировать"
+
+#: apps/settings/qml/pages/AndroidPage.qml:466
+msgid "Sign in to Google Play"
+msgstr "Войдите в Google Play"
+
+#: apps/settings/qml/pages/AndroidPage.qml:467
+msgid "Google can take a few minutes to accept the code. If Google Play says this device isn't certified, wait a little and try again."
+msgstr "Google принимает код несколько минут. Если Google Play пишет, что устройство не сертифицировано, подождите немного и попробуйте снова."
+
+#: apps/settings/qml/pages/AndroidPage.qml:479
+msgid "Open"
+msgstr "Открыть"
+
+#: apps/settings/qml/pages/AndroidPage.qml:490
 msgid "Open apps faster"
 msgstr "Открывать приложения быстрее"
 
-#: apps/settings/qml/pages/AndroidPage.qml:387
+#: apps/settings/qml/pages/AndroidPage.qml:491
 msgid "Keeps Android apps ready from the moment you sign in. Uses about 1 GB of memory."
 msgstr "Android-приложения готовы к запуску сразу после входа в систему. Занимает около 1 ГБ памяти."
 
-#: apps/settings/qml/pages/AndroidPage.qml:399
+#: apps/settings/qml/pages/AndroidPage.qml:503
 msgid "Android apps and their data"
 msgstr "Android-приложения и их данные"
 
-#: apps/settings/qml/pages/AndroidPage.qml:407
+#: apps/settings/qml/pages/AndroidPage.qml:511
 msgid "Deletes every Android app and its data"
 msgstr "Удаляет все Android-приложения и их данные"
 
-#: apps/settings/qml/pages/AndroidPage.qml:417
+#: apps/settings/qml/pages/AndroidPage.qml:521
 msgid "Remove Android apps?"
 msgstr "Удалить Android-приложения?"
 
-#: apps/settings/qml/pages/AndroidPage.qml:418
+#: apps/settings/qml/pages/AndroidPage.qml:522
 msgid "Every Android app and all of its data are deleted from this computer. You can set them up again later."
 msgstr "Все Android-приложения и их данные будут удалены с компьютера. Их можно будет настроить снова."
 
-#: apps/settings/qml/pages/AndroidPage.qml:419
+#: apps/settings/qml/pages/AndroidPage.qml:523
 #: apps/settings/qml/pages/AutostartPage.qml:51
 #: apps/settings/qml/pages/InputPage.qml:72
 msgid "Remove"
@@ -3888,6 +3923,24 @@ msgctxt "@title application name"
 msgid "Settings"
 msgstr "Настройки"
 
+#~ msgid "Before you sign in to the Play Store, register this computer with Google: copy the device ID and paste it on Google's page."
+#~ msgstr "Перед входом в Play Маркет зарегистрируйте компьютер в Google: скопируйте идентификатор устройства и вставьте его на странице Google."
+
+#~ msgid "Register with Google"
+#~ msgstr "Регистрация в Google"
+
+#~ msgid "Device ID: %1"
+#~ msgstr "Идентификатор устройства: %1"
+
+#~ msgid "Shows the device ID and opens Google's page"
+#~ msgstr "Показывает идентификатор устройства и открывает страницу Google"
+
+#~ msgid "Device ID copied"
+#~ msgstr "Идентификатор скопирован"
+
+#~ msgid "Open Google Play once, then try again"
+#~ msgstr "Откройте Google Play один раз и попробуйте снова"
+
 #~ msgid "About %1 minute left. You can keep using the computer."
 #~ msgid_plural "About %1 minutes left. You can keep using the computer."
 #~ msgstr[0] "Осталось около %1 минуты. Компьютером можно пользоваться."
@@ -3923,9 +3976,6 @@ msgstr "Настройки"
 
 #~ msgid "Android"
 #~ msgstr "Android"
-
-#~ msgid "Android with Google Play"
-#~ msgstr "Android с Google Play"
 
 #~ msgid "Turn on"
 #~ msgstr "Включить"

@@ -1,0 +1,142 @@
+#!/usr/bin/python3
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+import os
+import re
+import subprocess
+import sys
+import time
+
+REAL = "/usr/bin/waydroid.waydroid"
+DONE = "/var/lib/kernora/android/windows"
+SKIP = {
+    "android",
+    "com.android.launcher3",
+    "com.android.packageinstaller",
+    "com.android.permissioncontroller",
+    "com.android.systemui",
+    "com.google.android.packageinstaller",
+    "com.google.android.permissioncontroller",
+}
+PORTRAIT = {
+    "SCREEN_ORIENTATION_PORTRAIT",
+    "SCREEN_ORIENTATION_REVERSE_PORTRAIT",
+    "SCREEN_ORIENTATION_SENSOR_PORTRAIT",
+    "SCREEN_ORIENTATION_USER_PORTRAIT",
+}
+TASK = re.compile(r"^(\s*)\* Task\{\w+ #(\d+) type=(\w+) (?:A=\d+:|I=)([\w.]+)\S*.* mode=(\S+) translucent=(\w+)")
+BOUNDS = re.compile(r"mBounds=Rect\((-?\d+), (-?\d+) - (-?\d+), (-?\d+)\)")
+
+
+def android(*command: str, timeout: float = 30) -> str:
+    try:
+        return subprocess.run([REAL, "shell", "--", *command], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                              stderr=subprocess.DEVNULL, text=True, timeout=timeout, check=False).stdout
+    except subprocess.TimeoutExpired:
+        return ""
+
+
+def handled() -> set[str]:
+    try:
+        with open(DONE, encoding="utf-8") as handle:
+            return set(handle.read().split())
+    except OSError:
+        return set()
+
+
+def remember(package: str) -> None:
+    os.makedirs(os.path.dirname(DONE), exist_ok=True)
+    with open(DONE, "a", encoding="utf-8") as handle:
+        handle.write(package + "\n")
+
+
+def tasks() -> dict[int, dict]:
+    found: dict[int, dict] = {}
+    current = None
+    for line in android("dumpsys", "activity", "activities").splitlines():
+        match = TASK.match(line)
+        if match:
+            task_id = int(match.group(2))
+            current = None
+            if task_id not in found and match.group(3) == "standard":
+                current = {"package": match.group(4), "freeform": match.group(5) == "freeform",
+                           "translucent": match.group(6) == "true", "bounds": None, "orientations": set(),
+                           "letterboxed": False}
+                found[task_id] = current
+            continue
+        if current is None:
+            continue
+        bounds = BOUNDS.search(line)
+        if bounds and current["bounds"] is None:
+            current["bounds"] = tuple(int(value) for value in bounds.groups())
+        if "requestedOrientation=" in line:
+            current["orientations"].add(line.split("requestedOrientation=", 1)[1].strip())
+        if "areBoundsLetterboxed=true" in line:
+            current["letterboxed"] = True
+    return found
+
+
+def display() -> tuple[int, int] | None:
+    output = android("wm", "size")
+    match = re.search(r"Override size: (\d+)x(\d+)", output) or re.search(r"Physical size: (\d+)x(\d+)", output)
+    return (int(match.group(1)), int(match.group(2))) if match else None
+
+
+def target(size: tuple[int, int], count: int) -> tuple[int, int, int, int]:
+    width_screen, height_screen = size
+    width = round(width_screen * 0.72)
+    height = round(min(height_screen * 0.86, width * 0.66))
+    shift = 32 * (count % 5)
+    left = min(max(0, (width_screen - width) // 2 - 64 + shift), width_screen - width)
+    top = min(max(0, (height_screen - height) // 2 - 32 + shift), height_screen - height)
+    return left, top, left + width, top + height
+
+
+def widen(task_id: int, count: int) -> bool:
+    task = tasks().get(task_id)
+    if task is None or not task["freeform"] or task["translucent"] or task["bounds"] is None:
+        return False
+    package = task["package"]
+    if package in SKIP or package in handled():
+        return False
+    if task["orientations"] & PORTRAIT:
+        remember(package)
+        return False
+    size = display()
+    if size is None:
+        return False
+    left, top, right, bottom = target(size, count)
+    old = task["bounds"]
+    if (old[2] - old[0]) * (old[3] - old[1]) >= (right - left) * (bottom - top):
+        remember(package)
+        return False
+    android("am", "task", "resize", str(task_id), str(left), str(top), str(right), str(bottom))
+    time.sleep(1)
+    after = tasks().get(task_id)
+    if after is not None and after["letterboxed"]:
+        android("am", "task", "resize", str(task_id), *(str(value) for value in old))
+    remember(package)
+    return True
+
+
+def main() -> int:
+    if os.geteuid() != 0 or not os.path.exists(REAL):
+        return 1
+    stream = subprocess.Popen([REAL, "shell", "--", "logcat", "-b", "events", "-v", "raw", "-T", "1", "wm_create_task:I", "*:S"],
+                              stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    time.sleep(1)
+    count = 0
+    for task_id in sorted(tasks()):
+        count += widen(task_id, count)
+    for line in stream.stdout:
+        match = re.match(r"\[\d+,(\d+)\]", line.strip())
+        if not match:
+            continue
+        time.sleep(0.6)
+        count += widen(int(match.group(1)), count)
+    return stream.wait()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

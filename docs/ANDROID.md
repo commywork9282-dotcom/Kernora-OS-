@@ -53,10 +53,20 @@ images itself as before. It prints `progress DONE TOTAL SECONDS_LEFT`, which
 Settings shows as the time left.
 
 Progress goes to `/var/lib/kernora/android/state`
-(`status`, `kind`, `progress`, `remaining`, `time`), and `kernora-android status` prints it
-together with what is installed, the image size and whether a job runs. The
+(`status`, `kind`, `progress`, `remaining`, `bytes`, `bytes_total`, `time`),
+and `kernora-android status` prints it together with what is installed, the
+image size, whether a job runs and the Google state (below). The percentage
+covers the whole setup, so it moves from the first second: Waydroid's own
+packages 0–12 % (apt's `APT::Status-Fd` download and install progress), the
+images 12–92 %, unpacking and the first `waydroid init` up to 100 %. The
 download can be cancelled (`request cancel`); a cancelled or failed download
 leaves no image behind. The live session refuses the setup.
+
+When the setup ends, `kernora-android` writes `/var/lib/kernora/android/done`
+(`status`, `kind`, `time`). The user path unit `kernora-android-done.path`
+runs `kernora-android-session --done`, which shows a notification once per
+setup ("Android apps are ready", or that it failed) and opens
+**Settings › Android apps** when it is clicked.
 
 `Remove Android` (`request remove`) stops the container, purges `waydroid`
 with the packages it brought, deletes `/var/lib/waydroid` and, for every
@@ -89,7 +99,9 @@ and puts a wrapper in its place. For `app launch`, `app install`,
   part of `graphical-session.target`);
 - waits until `sys.boot_completed` is `1` and the session has logged
   "Android with user 0 is ready" (the launch is lost in the two seconds
-  between them), at most five minutes.
+  between them), at most five minutes. Waydroid does not always get the
+  unlock event (it missed it on a first boot with Google Play), so three
+  seconds after `sys.user.0.ce_available` turns `true` count as ready too.
 
 When an app is opened while the runtime is not up, the wrapper shows
 `kernora-appsplash`: a frameless card with the app's own icon and name and
@@ -138,8 +150,32 @@ allowed for the active user without a password) runs inside Android with
   about Waydroid.
 
 It runs from `kernora-android.service` once Android is up, and from the user
-path unit `kernora-android-sync.path` whenever `kdeglobals` or `kernorarc`
-change.
+path unit `kernora-android-sync.path` whenever `kdeglobals`, `kernorarc` or
+`kwinoutputconfig.json` change.
+
+Scale and size: the sync also sets Android's density to 160 × the scale of
+the main screen (`kscreen-doctor -j`), so Android apps are as big as the rest
+of Kernora. Android 13 gives a new freeform window a phone-sized default
+(412×732 dp), which made apps look like phone apps on the desktop.
+`kernora-android-windows` (root through the polkit action
+`org.kernora.android.windows`, started after boot) follows Android's
+`wm_create_task` events and resizes the first window of every app to a
+landscape window of about 72 % of the screen width
+(`am task resize`). It leaves alone apps that ask for portrait only,
+see-through windows and Android's permission and installer dialogs, and puts
+a window back if it ends up letterboxed. Every app is handled once
+(`/var/lib/kernora/android/windows`); Android remembers the size per app, also
+when the user changes it.
+
+Identity: `waydroid.cfg` gets `ro.product.waydroid.brand`/`manufacturer`
+Kernora and `model` "Kernora Laptop" or "Kernora PC" (from `hostnamectl
+chassis`), which the image uses for `ro.product.*`, so Android settings and
+Google Play name the computer that way; the sync copies the model into
+`device_name`. Android already reports `android.hardware.type.pc`.
+`persist.waydroid.fake_wifi=*` lets apps see a Wi-Fi connection, so apps that
+only download or update on Wi-Fi do. The properties take effect with
+`waydroid upgrade -o`, which `kernora-android refresh` (package upgrade) and
+the daily update run once no app is open.
 
 Graphics: Waydroid uses the first render node that is not NVIDIA's. On a
 computer with only an NVIDIA card, or in a VM without one, Android renders
@@ -192,10 +228,14 @@ through Android's own dialog
 `waydroid app remove` fails with code -3 on the LineageOS 20 image and still
 exits 0. The list follows the `waydroid.*.desktop` files, which Waydroid
 deletes when the package goes. With the
-Google Play image it also reads the Google Services device ID
-(`kernora-android android-id`, root, needs Android running), copies it and
-opens `google.com/android/uncertified`, where the user registers the
-computer before signing in to the Play Store.
+Google Play image it shows two steps until a Google account is signed in.
+"Register this computer" uses the Google Services device ID that the sync
+keeps in `/var/lib/kernora/android/google` (with the number of Google
+accounts); if there is none yet, `kernora-android-session --google` starts
+Android and waits for it. Settings copies the ID and opens
+`google.com/android/uncertified`. "Sign in to Google Play" restarts Android
+once after registering, so Google Play sees the change, and opens the Play
+Store.
 
 ## What does not work
 

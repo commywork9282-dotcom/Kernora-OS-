@@ -3,6 +3,7 @@ set -u
 
 state_dir=/var/lib/kernora/android
 state_file=$state_dir/state
+done_file=$state_dir/done
 work=/var/lib/waydroid
 config=$work/waydroid.cfg
 images=$work/images
@@ -16,6 +17,8 @@ fetch=/usr/libexec/kernora-android-fetch
 kind=
 progress=0
 remaining=
+bytes=
+bytes_total=
 
 read_state() {
   sed -n "s/^$1=//p" "$state_file" 2>/dev/null | head -n 1
@@ -23,8 +26,16 @@ read_state() {
 
 record() {
   mkdir -p "$state_dir"
-  printf 'status=%s\nkind=%s\nprogress=%s\nremaining=%s\ntime=%s\n' "$1" "$kind" "$progress" "$remaining" "$(date +%s)" > "$state_file.new"
+  printf 'status=%s\nkind=%s\nprogress=%s\nremaining=%s\nbytes=%s\nbytes_total=%s\ntime=%s\n' \
+    "$1" "$kind" "$progress" "$remaining" "$bytes" "$bytes_total" "$(date +%s)" > "$state_file.new"
   mv "$state_file.new" "$state_file"
+}
+
+finish() {
+  record "$1"
+  printf 'status=%s\nkind=%s\ntime=%s\n' "$1" "$kind" "$(date +%s)" > "$done_file.new"
+  chmod 0644 "$done_file.new"
+  mv "$done_file.new" "$done_file"
 }
 
 installed() {
@@ -56,12 +67,30 @@ apt_get() {
     -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold "$@"
 }
 
+apt_progress() {
+  local kind item share rest
+  while IFS=: read -r kind item share rest; do
+    [[ $share =~ ^[0-9]+ ]] || continue
+    case $kind in
+      dlstatus) progress=$(( 3 + BASH_REMATCH[0] * 6 / 100 )) ;;
+      pmstatus) progress=$(( 9 + BASH_REMATCH[0] * 3 / 100 )) ;;
+      *) continue ;;
+    esac
+    record installing
+  done
+}
+
 install_packages() {
   install -m 0644 "$template" "$sources"
   installed && return 0
   apt_get update || true
-  apt_get update -o Dir::Etc::SourceList="$sources" -o Dir::Etc::SourceParts=- -o APT::Get::List-Cleanup=0 \
-    && apt_get install --no-install-recommends waydroid
+  progress=2
+  record installing
+  apt_get update -o Dir::Etc::SourceList="$sources" -o Dir::Etc::SourceParts=- -o APT::Get::List-Cleanup=0 || return 1
+  progress=3
+  record installing
+  apt_get -o APT::Status-Fd=3 install --no-install-recommends waydroid 3>&1 1>&2 | apt_progress
+  return "${PIPESTATUS[0]}"
 }
 
 fetch_images() {
@@ -72,13 +101,15 @@ fetch_images() {
       case $word in
         progress)
           [[ $done =~ ^[0-9]+$ && $total =~ ^[0-9]+$ && $left =~ ^-?[0-9]+$ ]] && (( total > 0 )) || continue
-          progress=$(( done * 90 / total ))
+          progress=$(( 12 + done * 80 / total ))
           remaining=
           (( left >= 0 )) && remaining=$left
+          bytes=$done
+          bytes_total=$total
           record downloading
           ;;
         verifying | unpacking)
-          progress=92
+          progress=93
           remaining=
           record unpacking
           ;;
@@ -96,7 +127,9 @@ download_images() {
   [[ $kind == gapps ]] && type=GAPPS
   if ! fetch_images "$type"; then
     echo "kernora-android: the quick download did not work, Waydroid downloads the image itself" >&2
-    progress=0
+    progress=12
+    bytes=
+    bytes_total=
     record downloading
   fi
   PYTHONUNBUFFERED=1 "$real" init -f -s "$type" 2>&1 | stdbuf -oL tr '\r' '\n' | {
@@ -110,9 +143,9 @@ download_images() {
             (( total > 0 )) || continue
             share=$(( done * 100 / total ))
             if [[ $part == system ]]; then
-              progress=$(( share * 80 / 100 ))
+              progress=$(( 12 + share * 68 / 100 ))
             else
-              progress=$(( 85 + share * 12 / 100 ))
+              progress=$(( 82 + share * 10 / 100 ))
             fi
             if (( progress != shown )); then
               shown=$progress
@@ -125,8 +158,8 @@ download_images() {
           part=vendor
           ;;
         *Validating* | *Extracting*)
-          progress=97
-          [[ $part == system ]] && progress=82
+          progress=93
+          [[ $part == system ]] && progress=81
           record unpacking
           ;;
       esac
@@ -141,20 +174,50 @@ discard_images() {
   rm -rf --one-file-system "$images" "$work/cache_http" "$config"
 }
 
-configure() {
-  python3 - "$config" <<'EOF'
+device_model() {
+  case $(hostnamectl chassis 2>/dev/null) in
+    laptop | convertible | tablet | handset) echo "Kernora Laptop" ;;
+    *) echo "Kernora PC" ;;
+  esac
+}
+
+write_properties() {
+  python3 - "$config" "$(device_model)" <<'EOF'
 import configparser
 import sys
 
-path = sys.argv[1]
+path, model = sys.argv[1:3]
 cfg = configparser.ConfigParser()
 cfg.read(path)
 if not cfg.has_section("properties"):
     cfg.add_section("properties")
-cfg["properties"]["persist.waydroid.multi_windows"] = "true"
+wanted = {
+    "persist.waydroid.multi_windows": "true",
+    "persist.waydroid.fake_wifi": "*",
+    "ro.product.waydroid.brand": "Kernora",
+    "ro.product.waydroid.manufacturer": "Kernora",
+    "ro.product.waydroid.model": model,
+}
+for key, value in wanted.items():
+    cfg["properties"][key] = value
 with open(path, "w") as handle:
     cfg.write(handle)
 EOF
+}
+
+properties_pending() {
+  local key value
+  while IFS='=' read -r key value; do
+    key=${key% }
+    value=${value# }
+    [[ $key == ro.product.waydroid.* || $key == persist.waydroid.* ]] || continue
+    grep -Fxq "$key=$value" "$work/waydroid_base.prop" 2>/dev/null || return 0
+  done < <(sed -n '/^\[properties\]/,/^\[/p' "$config")
+  return 1
+}
+
+configure() {
+  write_properties
   "$real" upgrade -o
   install_overlay
 }
@@ -182,24 +245,30 @@ setup_android() {
     return 1
   fi
   echo "kernora-android: setting up Android ($kind)"
+  progress=1
   record installing
   if ! install_packages; then
     echo "kernora-android: Waydroid could not be installed" >&2
-    record failed
+    finish failed
     return 1
   fi
+  progress=12
   record downloading
   if ! download_images; then
     echo "kernora-android: the Android image could not be downloaded" >&2
     discard_images
-    record failed
+    finish failed
     return 1
   fi
   rm -rf "$work/cache_http"
+  progress=97
+  bytes=
+  bytes_total=
+  record unpacking
   configure
   systemctl enable --now waydroid-container.service
   progress=100
-  record ready
+  finish ready
   echo "kernora-android: Android is ready"
 }
 
@@ -207,9 +276,18 @@ session_active() {
   "$real" status 2>/dev/null | grep -q 'Session:.*RUNNING'
 }
 
+apply_properties() {
+  write_properties
+  if properties_pending && ! session_active; then
+    echo "kernora-android: applying the device properties"
+    "$real" upgrade -o > /dev/null && install_overlay
+  fi
+}
+
 update_android() {
   initialized || return 0
   live_session && return 0
+  apply_properties
   online || return 0
   PYTHONUNBUFFERED=1 "$fetch" download 2>&1 | grep -v '^progress '
   (( PIPESTATUS[0] == 0 )) || return 0
@@ -278,9 +356,12 @@ print_status() {
     container=$(systemctl is-active waydroid-container.service 2>/dev/null)
   fi
   status=$(read_state status)
-  printf 'installed=%s\nready=%s\nkind=%s\nstatus=%s\nprogress=%s\nremaining=%s\ntime=%s\nsize=%s\ncontainer=%s\njob=%s\nlive=%s\n' \
-    "$installed_flag" "$ready" "$(current_kind)" "${status:-}" "$(read_state progress)" "$(read_state remaining)" "$(read_state time)" \
+  printf 'installed=%s\nready=%s\nkind=%s\nstatus=%s\nprogress=%s\nremaining=%s\nbytes=%s\nbytes_total=%s\ntime=%s\nsize=%s\ncontainer=%s\njob=%s\nlive=%s\n' \
+    "$installed_flag" "$ready" "$(current_kind)" "${status:-}" "$(read_state progress)" "$(read_state remaining)" \
+    "$(read_state bytes)" "$(read_state bytes_total)" "$(read_state time)" \
     "${size:-0}" "${container:-inactive}" "$job" "$(live_session && echo yes || echo no)"
+  printf 'google_id=%s\ngoogle_accounts=%s\n' \
+    "$(sed -n 's/^android_id=//p' "$state_dir/google" 2>/dev/null)" "$(sed -n 's/^accounts=//p' "$state_dir/google" 2>/dev/null)"
 }
 
 print_android_id() {
@@ -319,7 +400,10 @@ case ${1:-} in
     ;;
   refresh)
     require_root
-    initialized && install_overlay
+    if initialized; then
+      install_overlay
+      apply_properties
+    fi
     ;;
   update)
     require_root

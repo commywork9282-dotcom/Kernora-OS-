@@ -80,14 +80,17 @@ class Progress:
 
     def report(self) -> None:
         rate = 0.0
+        samples = 0
         last = self.done
         while not self.stopped.wait(1):
             with self.lock:
                 done, total = self.done, self.total
             step = max(0, done - last)
             last = done
+            if step > 0:
+                samples += 1
             rate = step if rate == 0 else 0.8 * rate + 0.2 * step
-            left = round((total - done) / rate) if rate > 0 else -1
+            left = round((total - done) / rate) if rate > 0 and samples >= 5 else -1
             print(f"progress {min(done, total)} {total} {left}", flush=True)
 
     def stop(self) -> None:

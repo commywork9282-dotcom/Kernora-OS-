@@ -32,4 +32,17 @@
     </defaults>
     <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-sync</annotate>
   </action>
+  <action id="org.kernora.android.windows">
+    <description>Open Android apps in computer-sized windows</description>
+    <description xml:lang="ru">Открытие Android-приложений в окнах для компьютера</description>
+    <message>Android apps open in windows sized for a computer</message>
+    <message xml:lang="ru">Android-приложения открываются в окнах размером для компьютера</message>
+    <icon_name>org.kernora.android</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-windows</annotate>
+  </action>
 </policyconfig>

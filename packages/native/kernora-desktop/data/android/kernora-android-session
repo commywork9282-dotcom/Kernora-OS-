@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import configparser
+import json
 import os
 import pathlib
 import re
@@ -13,7 +14,9 @@ import time
 REAL = "/usr/bin/waydroid.waydroid"
 UNIT = "kernora-android.service"
 SYNC = "/usr/libexec/kernora-android-sync"
-SYSTEM_PACKAGES = pathlib.Path("/var/lib/kernora/android/system-packages")
+WINDOWS = "/usr/libexec/kernora-android-windows"
+STATE = pathlib.Path("/var/lib/kernora/android")
+SYSTEM_PACKAGES = STATE / "system-packages"
 STORE = "com.android.vending"
 WAIT = 300
 
@@ -22,11 +25,17 @@ TEXT = {
         "source": "Android-приложения",
         "starting": ("Открываем приложение", "Это займёт несколько секунд."),
         "failed": ("Приложение не открылось", "Попробуйте ещё раз. Если не поможет, перезагрузите компьютер."),
+        "ready-gapps": ("Android-приложения готовы", "Осталось войти в Google Play. Нажмите, чтобы продолжить."),
+        "ready-vanilla": ("Android-приложения готовы", "Откройте любой APK-файл, чтобы установить приложение."),
+        "setup-failed": ("Не удалось настроить Android-приложения", "Нажмите, чтобы попробовать ещё раз."),
     },
     "en": {
         "source": "Android apps",
         "starting": ("Opening the app", "This takes a few seconds."),
         "failed": ("The app didn't open", "Try again. If that doesn't help, restart the computer."),
+        "ready-gapps": ("Android apps are ready", "Sign in to Google Play to finish. Click to continue."),
+        "ready-vanilla": ("Android apps are ready", "Open any APK file to install an app."),
+        "setup-failed": ("Android apps couldn't be set up", "Click to try again."),
     },
 }
 
@@ -48,11 +57,15 @@ def session_running() -> bool:
     return quiet("busctl", "--user", "status", "id.waydro.Session").returncode == 0
 
 
-def booted() -> bool:
+def android_prop(name: str) -> str:
     try:
-        return quiet(REAL, "prop", "get", "sys.boot_completed", timeout=20).stdout.strip() == "1"
+        return quiet(REAL, "prop", "get", name, timeout=20).stdout.strip()
     except subprocess.TimeoutExpired:
-        return False
+        return ""
+
+
+def booted() -> bool:
+    return android_prop("sys.boot_completed") == "1"
 
 
 def unit_failed() -> bool:
@@ -66,23 +79,33 @@ def session_started() -> float | None:
     return time.time() - (time.monotonic() - int(value) / 1000000)
 
 
+UNLOCKED_AT: list[float] = []
+
+
 def unlocked(since: float | None) -> bool:
     if since is None:
         time.sleep(3)
         return True
     log = quiet("journalctl", "--user", "-u", UNIT, "--since", f"@{int(since) - 1}", "-o", "cat", "--no-pager").stdout
-    return "is ready" in log
+    if "is ready" in log:
+        return True
+    if android_prop("sys.user.0.ce_available") != "true":
+        return False
+    if not UNLOCKED_AT:
+        UNLOCKED_AT.append(time.monotonic())
+    return time.monotonic() - UNLOCKED_AT[0] >= 3
 
 
-def notify(key: str, timeout: int) -> int:
+def notify(key: str, timeout: int, clickable: bool = False) -> int:
     if os.environ.get("KERNORA_ANDROID_QUIET") or (key == "starting" and os.environ.get("KERNORA_ANDROID_SPLASH")):
         return 0
     texts = TEXT.get(language(), TEXT["en"])
     title, body = texts[key]
+    actions = '["default", ""]' if clickable else "[]"
     result = quiet("gdbus", "call", "--session", "--dest", "org.freedesktop.Notifications",
                    "--object-path", "/org/freedesktop/Notifications",
                    "--method", "org.freedesktop.Notifications.Notify",
-                   texts["source"], "0", "org.kernora.android", title, body, "[]", "{}", str(timeout))
+                   texts["source"], "0", "org.kernora.android", title, body, actions, "{}", str(timeout))
     found = re.search(r"uint32 (\d+)", result.stdout)
     return int(found.group(1)) if found else 0
 
@@ -112,6 +135,19 @@ def setting(name: str, group: str, key: str, fallback: str) -> str:
         if value is not None:
             return value
     return fallback
+
+
+def kernora_density() -> str:
+    try:
+        outputs = json.loads(quiet("kscreen-doctor", "-j", timeout=10).stdout).get("outputs", [])
+    except (subprocess.TimeoutExpired, ValueError, AttributeError):
+        return ""
+    enabled = [output for output in outputs if output.get("enabled")]
+    if not enabled:
+        return ""
+    primary = min(enabled, key=lambda output: output.get("priority") or 99)
+    scale = float(primary.get("scale") or 1)
+    return str(min(480, max(100, round(160 * scale))))
 
 
 def kernora_theme() -> tuple[str, str, str]:
@@ -147,8 +183,9 @@ def sync() -> int:
     if not session_running():
         return 0
     seed, mode, style = kernora_theme()
+    density = kernora_density()
     try:
-        quiet("pkexec", SYNC, seed, mode, style, timeout=180)
+        quiet("pkexec", SYNC, seed, mode, style, *([density] if density else []), timeout=180)
     except subprocess.TimeoutExpired:
         pass
     hide_system_apps()
@@ -162,8 +199,72 @@ def sync_after_boot() -> int:
         if not session_running():
             return 0
         if booted() and unlocked(since):
+            subprocess.Popen(["pkexec", WINDOWS], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL, start_new_session=True)
             return sync()
         time.sleep(2)
+    return 1
+
+
+def read_state(name: str) -> dict[str, str]:
+    try:
+        lines = (STATE / name).read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return {}
+    return dict(line.split("=", 1) for line in lines if "=" in line)
+
+
+def wait_for_click(notification: int, command: list[str]) -> None:
+    if not notification:
+        return
+    monitor = subprocess.Popen(["gdbus", "monitor", "--session", "--dest", "org.freedesktop.Notifications",
+                                "--object-path", "/org/freedesktop/Notifications"],
+                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    try:
+        for line in monitor.stdout:
+            if f"(uint32 {notification}, 'default')" in line and "ActionInvoked" in line:
+                quiet("systemd-run", "--user", "--collect", "--quiet", "--", *command, timeout=30)
+                break
+            if f"NotificationClosed (uint32 {notification}," in line:
+                break
+    finally:
+        monitor.terminate()
+
+
+def setup_done() -> int:
+    done = read_state("done")
+    stamp = done.get("time", "")
+    seen = pathlib.Path(os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))) / "kernora" / "android-done"
+    try:
+        if seen.read_text(encoding="utf-8").strip() == stamp:
+            return 0
+    except OSError:
+        pass
+    seen.parent.mkdir(parents=True, exist_ok=True)
+    seen.write_text(stamp + "\n", encoding="utf-8")
+    if done.get("status") == "ready":
+        key = "ready-gapps" if done.get("kind") == "gapps" else "ready-vanilla"
+    elif done.get("status") == "failed":
+        key = "setup-failed"
+    else:
+        return 0
+    wait_for_click(notify(key, 0, clickable=True), ["kernora-settings", "android"])
+    return 0
+
+
+def google() -> int:
+    if not session_running() and quiet("systemctl", "--user", "start", UNIT).returncode != 0:
+        return 1
+    since = session_started()
+    deadline = time.monotonic() + WAIT
+    while time.monotonic() < deadline:
+        if booted() and unlocked(since):
+            sync()
+            if read_state("google").get("android_id"):
+                return 0
+            time.sleep(8)
+        else:
+            time.sleep(2)
     return 1
 
 
@@ -172,6 +273,10 @@ def main() -> int:
         return sync()
     if len(sys.argv) > 1 and sys.argv[1] == "--sync-after-boot":
         return sync_after_boot()
+    if len(sys.argv) > 1 and sys.argv[1] == "--done":
+        return setup_done()
+    if len(sys.argv) > 1 and sys.argv[1] == "--google":
+        return google()
     if session_running() and booted() and unlocked(session_started()):
         return 0
     notification = notify("starting", 0)
