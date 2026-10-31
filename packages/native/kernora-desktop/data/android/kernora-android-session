@@ -103,14 +103,25 @@ def read_ini(path: str) -> configparser.ConfigParser:
     return parser
 
 
+def setting(name: str, group: str, key: str, fallback: str) -> str:
+    home = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+    folders = [home, os.path.join(home, "kdedefaults")]
+    folders += [folder for folder in os.environ.get("XDG_CONFIG_DIRS", "/usr/share/kernora/xdg:/etc/xdg").split(":") if folder]
+    for folder in folders:
+        value = read_ini(os.path.join(folder, name)).get(group, key, fallback=None)
+        if value is not None:
+            return value
+    return fallback
+
+
 def kernora_theme() -> tuple[str, str, str]:
-    colour = read_ini("~/.config/kernorarc").get("Style", "colour", fallback="kernora")
+    colour = setting("kernorarc", "Style", "colour", "kernora")
     if not re.fullmatch(r"[a-z-]+", colour):
         colour = "kernora"
     seed = read_ini(f"/usr/share/kernora/palettes/{colour}.conf").get("Colour", "seed", fallback="ff6a1e")
     if not re.fullmatch(r"[0-9A-Fa-f]{6}", seed):
         seed = "ff6a1e"
-    scheme = read_ini("~/.config/kdeglobals").get("General", "ColorScheme", fallback="KernoraDark")
+    scheme = setting("kdeglobals", "General", "ColorScheme", "KernoraDark")
     return seed, "light" if scheme.endswith("Light") else "dark", "SPRITZ" if colour == "grey" else "TONAL_SPOT"
 
 

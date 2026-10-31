@@ -201,6 +201,8 @@ bash -n "$android/kernora-android-sync" && [[ -x "$android/kernora-android-sync"
   && grep -Fq 'pm list packages -s' "$android/kernora-android-sync" \
   && grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-sync</annotate>' "$android/org.kernora.android.policy" \
   && grep -Fq 'PathChanged=%h/.config/kdeglobals' "$android/kernora-android-sync.path" \
+  && grep -Fq 'PathChanged=%h/.config/kdedefaults/kdeglobals' "$android/kernora-android-sync.path" \
+  && grep -Fq '"kdedefaults"' "$android/kernora-android-session" \
   && grep -Fq -- '--sync-after-boot' "$android/kernora-android.service" \
   || fail "Android apps do not follow the Kernora colour and theme"
 grep -Fq 'ExecStart=/usr/libexec/kernora-android update' "$android/kernora-android-update.service" \

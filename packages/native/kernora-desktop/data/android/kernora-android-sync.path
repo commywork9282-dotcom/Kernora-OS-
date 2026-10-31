@@ -3,6 +3,7 @@ Description=Android apps follow the Kernora colour and theme
 
 [Path]
 PathChanged=%h/.config/kdeglobals
+PathChanged=%h/.config/kdedefaults/kdeglobals
 PathChanged=%h/.config/kernorarc
 
 [Install]
