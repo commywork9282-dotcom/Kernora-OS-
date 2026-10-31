@@ -126,6 +126,14 @@ data/drivers/kernora-drivers.service usr/lib/systemd/system
 data/drivers/kernora-drivers.timer usr/lib/systemd/system
 data/drivers/kernora-drivers@.service usr/lib/systemd/system
 data/drivers/org.kernora.drivers.policy usr/share/polkit-1/actions
+data/android/kernora-android usr/libexec
+data/android/kernora-android-session usr/libexec
+data/android/waydroid usr/bin
+data/android/kernora-android@.service usr/lib/systemd/system
+data/android/kernora-android.service usr/lib/systemd/user
+data/android/kernora-android.sources usr/share/kernora/apt
+data/android/org.kernora.android.policy usr/share/polkit-1/actions
+data/android/Waydroid.desktop usr/share/applications
 data/greeter/kernora-greeter-background usr/libexec
 data/greeter/kernora-splash-wallpaper usr/libexec
 data/greeter/org.kernora.greeter-background.policy usr/share/polkit-1/actions

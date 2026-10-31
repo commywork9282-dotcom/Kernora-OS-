@@ -1,3 +1,18 @@
+kernora-apps (1.1.65) UNRELEASED; urgency=medium
+
+  * Settings > Android apps: choose plain Android or Android with Google
+    Play, download it with progress, start and stop it, open Android's
+    own settings, see and uninstall Android apps, register with Google
+    and remove Android again.
+  * Android App Installer opens .apk files: it reads the name, version
+    and icon (adaptive and vector icons included) from the file itself,
+    warns about apps made only for ARM phones or for newer Android, and
+    installs or updates the app.
+  * What's new: Android apps.
+  * Require kernora-desktop 1.4.56, which carries the Android service.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 30 Oct 2026 20:00:00 -0700
+
 kernora-apps (1.1.64) UNRELEASED; urgency=medium
 
   * What's new: previews and Material icons for every widget.

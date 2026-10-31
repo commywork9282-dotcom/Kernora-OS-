@@ -1,0 +1,17 @@
+#!/bin/bash
+real=/usr/bin/waydroid.waydroid
+
+if [[ ! -x $real ]]; then
+  echo "waydroid: Android apps are off; turn them on in Settings > Android" >&2
+  exit 1
+fi
+
+if (( EUID != 0 )); then
+  case "${1:-} ${2:-}" in
+    "app launch" | "app install" | "app intent" | "app remove" | "show-full-ui "*)
+      /usr/libexec/kernora-android-session || exit 1
+      ;;
+  esac
+fi
+
+exec "$real" "$@"

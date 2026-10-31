@@ -475,6 +475,20 @@ dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -
   || fail "the graphics driver check is not enabled on installation"
 dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -q "'kernora-drivers.service'" \
   && fail "installing the package would run the driver install inside the dpkg transaction"
+[[ -x "$temporary_root/desktop/usr/libexec/kernora-android" ]] \
+  && [[ -x "$temporary_root/desktop/usr/libexec/kernora-android-session" ]] \
+  && [[ -x "$temporary_root/desktop/usr/bin/waydroid" ]] \
+  && [[ -s "$temporary_root/desktop/usr/lib/systemd/system/kernora-android@.service" ]] \
+  && [[ -s "$temporary_root/desktop/usr/lib/systemd/user/kernora-android.service" ]] \
+  && [[ -s "$temporary_root/desktop/usr/share/kernora/apt/kernora-android.sources" ]] \
+  && [[ -s "$temporary_root/desktop/usr/share/polkit-1/actions/org.kernora.android.policy" ]] \
+  && grep -Fxq 'NoDisplay=true' "$temporary_root/desktop/usr/share/applications/Waydroid.desktop" \
+  || fail "the Android tools are incomplete"
+for icon in apps/org.kernora.android.svg apps/waydroid.svg apps/org.kernora.apkinstaller.svg \
+    categories/kernora-android.svg mimetypes/application-vnd.android.package-archive.svg; do
+  find "$temporary_root/desktop/usr/share/icons" -path "*/$icon" -print -quit | grep -q . \
+    || fail "the icon theme has no $icon"
+done
 [[ "$(readlink "$temporary_root/desktop/usr/share/kglobalaccel/org.kernora.terminal.desktop")" == */applications/org.kernora.terminal.desktop ]] \
   || fail "kglobalaccel does not see the terminal's launch shortcut"
 grep -Fxq 'Icon=org.kernora.terminal' "$temporary_root/desktop/etc/skel/.local/share/applications/Alacritty.desktop" \

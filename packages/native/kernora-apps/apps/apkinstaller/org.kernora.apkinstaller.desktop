@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Android App Installer
+Name[ru]=Установка приложений Android
+Comment=Install Android apps from APK files
+Comment[ru]=Установка приложений Android из APK-файлов
+Icon=org.kernora.apkinstaller
+Exec=kernora-apkinstaller %f
+MimeType=application/vnd.android.package-archive;
+Categories=Qt;System;
+NoDisplay=true
+StartupNotify=true

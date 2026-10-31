@@ -1,3 +1,22 @@
+kernora-desktop (1.4.56) UNRELEASED; urgency=medium
+
+  * Android apps, first demo: /usr/libexec/kernora-android sets Android up
+    on request from Settings. It adds Debian's trixie-backports for
+    Waydroid only, installs Waydroid without recommends, downloads the
+    LineageOS 20 image the user picked (plain or with Google Play) with
+    progress in /var/lib/kernora/android/state, turns on separate windows
+    for every app and starts the container. It can cancel the download,
+    print the Google device ID and remove Android with every user's data.
+  * /usr/bin/waydroid is diverted to a wrapper: launching, installing or
+    removing an app first starts the kernora-android user service and
+    waits until Android has finished booting, with a "Starting Android"
+    notification, so an app opens on the first try from anywhere.
+  * Waydroid's own launcher entry and APK handler are diverted; .apk files
+    open in Kernora's installer.
+  * Icon theme: Android, APK and APK installer symbols.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 30 Oct 2026 20:00:00 -0700
+
 kernora-desktop (1.4.55) UNRELEASED; urgency=medium
 
   * Widget picker: widgets from KDE are cards like Kernora's own now, each

@@ -1,0 +1,12 @@
+[Unit]
+Description=Android apps
+PartOf=graphical-session.target
+After=graphical-session.target
+ConditionPathExists=/var/lib/waydroid/waydroid.cfg
+
+[Service]
+Type=dbus
+BusName=id.waydro.Session
+ExecStart=/usr/bin/waydroid.waydroid session start
+ExecStop=/usr/bin/waydroid.waydroid session stop
+TimeoutStopSec=30

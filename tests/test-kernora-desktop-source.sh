@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.55" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.56" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -176,6 +176,32 @@ grep -Fq 'OnActiveSec=90s' "$drivers/kernora-drivers.timer" \
   || fail "the driver check is not scheduled"
 grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-drivers</annotate>' "$drivers/org.kernora.drivers.policy" \
   || fail "Settings cannot run kernora-drivers"
+android="$package_root/data/android"
+bash -n "$android/kernora-android" && bash -n "$android/waydroid" \
+  && python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' "$android/kernora-android-session" \
+  || fail "the Android tools are not valid"
+[[ -x "$android/kernora-android" && -x "$android/kernora-android-session" && -x "$android/waydroid" ]] \
+  || fail "the Android tools are not executable"
+grep -Fq 'Suites: trixie-backports' "$android/kernora-android.sources" \
+  && grep -Fq 'apt_get install --no-install-recommends waydroid' "$android/kernora-android" \
+  && grep -Fq 'persist.waydroid.multi_windows' "$android/kernora-android" \
+  || fail "kernora-android does not set Waydroid up from backports with separate windows"
+grep -Fq 'ExecStart=/usr/libexec/kernora-android %i' "$android/kernora-android@.service" \
+  && grep -Fq 'BusName=id.waydro.Session' "$android/kernora-android.service" \
+  && grep -Fq 'ExecStart=/usr/bin/waydroid.waydroid session start' "$android/kernora-android.service" \
+  && grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android</annotate>' "$android/org.kernora.android.policy" \
+  || fail "Settings cannot run kernora-android"
+grep -Fq 'real=/usr/bin/waydroid.waydroid' "$android/waydroid" \
+  && grep -Fq '/usr/libexec/kernora-android-session' "$android/waydroid" \
+  && grep -Fq "stdbuf -oL tr" "$android/kernora-android" \
+  || fail "Android apps do not wait for Android to boot"
+for script in preinst postrm; do
+  grep -Fq '/usr/share/applications/waydroid.app.install.desktop; do' "$package_root/debian/kernora-desktop.$script" \
+    && grep -Fq -- '--divert "$file.waydroid" "$file"' "$package_root/debian/kernora-desktop.$script" \
+    || fail "$script does not divert Waydroid's command and entries"
+done
+grep -Fxq 'application/vnd.android.package-archive=org.kernora.apkinstaller.desktop;' "$package_root/data/xdg-mimeapps/mimeapps.list" \
+  || fail "APK files do not open in the installer"
 grep -Fxq '  - shellprocess@drivers' "$package_root/data/calamares/settings.conf" \
   && grep -Fq 'kernora-drivers install --target' "$package_root/data/calamares/modules/shellprocess-drivers.conf" \
   || fail "the installer does not install graphics drivers"
@@ -316,8 +342,8 @@ KERNORA_COLOUR=blue python3 "$tools_root/gen-icon-theme" "$package_root/data/sym
   || fail "gen-icon-theme fails for a colour"
 grep -Fxq 'Inherits=Kernora,breeze-dark,breeze,hicolor' "$icons/Kernora-blue/index.theme" \
   || fail "a colour's icons do not fall back to Kernora's"
-[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 14 ]] \
-  || fail "a colour's icon theme should hold only the fourteen app icons"
+[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 16 ]] \
+  || fail "a colour's icon theme should hold only the sixteen app icons"
 for icon in actions/kernora-quickshare status/kernora-tile-quickshare-on apps/org.kernora.quickshare; do
   [[ -e "$icons/Kernora/scalable/$icon.svg" ]] || fail "the icon theme has no $icon"
 done

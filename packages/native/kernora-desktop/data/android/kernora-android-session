@@ -1,0 +1,112 @@
+#!/usr/bin/python3
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+import os
+import re
+import subprocess
+import sys
+import time
+
+REAL = "/usr/bin/waydroid.waydroid"
+UNIT = "kernora-android.service"
+WAIT = 300
+
+TEXT = {
+    "ru": {
+        "starting": ("Запуск Android", "Приложение откроется через несколько секунд."),
+        "failed": ("Android не запустился", "Попробуйте ещё раз. Если не поможет, перезагрузите компьютер."),
+    },
+    "en": {
+        "starting": ("Starting Android", "Your app opens in a few seconds."),
+        "failed": ("Android didn't start", "Try again. If that doesn't help, restart the computer."),
+    },
+}
+
+
+def language() -> str:
+    for variable in ("LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG"):
+        value = os.environ.get(variable, "")
+        if value:
+            return value.split(":")[0].split("_")[0]
+    return "en"
+
+
+def quiet(*command: str, timeout: float | None = None) -> subprocess.CompletedProcess:
+    return subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
+                          timeout=timeout, check=False)
+
+
+def session_running() -> bool:
+    return quiet("busctl", "--user", "status", "id.waydro.Session").returncode == 0
+
+
+def booted() -> bool:
+    try:
+        return quiet(REAL, "prop", "get", "sys.boot_completed", timeout=20).stdout.strip() == "1"
+    except subprocess.TimeoutExpired:
+        return False
+
+
+def unit_failed() -> bool:
+    return quiet("systemctl", "--user", "-q", "is-failed", UNIT).returncode == 0
+
+
+def session_started() -> float | None:
+    value = quiet("systemctl", "--user", "show", "-p", "ExecMainStartTimestampMonotonic", "--value", UNIT).stdout.strip()
+    if not value.isdigit() or int(value) == 0:
+        return None
+    return time.time() - (time.monotonic() - int(value) / 1000000)
+
+
+def unlocked(since: float | None) -> bool:
+    if since is None:
+        time.sleep(3)
+        return True
+    log = quiet("journalctl", "--user", "-u", UNIT, "--since", f"@{int(since) - 1}", "-o", "cat", "--no-pager").stdout
+    return "is ready" in log
+
+
+def notify(key: str, timeout: int) -> int:
+    if os.environ.get("KERNORA_ANDROID_QUIET"):
+        return 0
+    title, body = TEXT.get(language(), TEXT["en"])[key]
+    result = quiet("gdbus", "call", "--session", "--dest", "org.freedesktop.Notifications",
+                   "--object-path", "/org/freedesktop/Notifications",
+                   "--method", "org.freedesktop.Notifications.Notify",
+                   "Android", "0", "org.kernora.android", title, body, "[]", "{}", str(timeout))
+    found = re.search(r"uint32 (\d+)", result.stdout)
+    return int(found.group(1)) if found else 0
+
+
+def close(notification: int) -> None:
+    if notification:
+        quiet("gdbus", "call", "--session", "--dest", "org.freedesktop.Notifications",
+              "--object-path", "/org/freedesktop/Notifications",
+              "--method", "org.freedesktop.Notifications.CloseNotification", str(notification))
+
+
+def main() -> int:
+    if session_running() and booted() and unlocked(session_started()):
+        return 0
+    notification = notify("starting", 0)
+    if not session_running() and quiet("systemctl", "--user", "start", UNIT).returncode != 0:
+        close(notification)
+        notify("failed", 8000)
+        return 1
+    since = session_started()
+    deadline = time.monotonic() + WAIT
+    while time.monotonic() < deadline:
+        if booted() and unlocked(since):
+            close(notification)
+            return 0
+        if unit_failed():
+            break
+        time.sleep(1)
+    close(notification)
+    notify("failed", 8000)
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

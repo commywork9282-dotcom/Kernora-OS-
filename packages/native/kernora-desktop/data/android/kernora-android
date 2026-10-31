@@ -1,0 +1,274 @@
+#!/bin/bash
+set -u
+
+state_dir=/var/lib/kernora/android
+state_file=$state_dir/state
+work=/var/lib/waydroid
+config=$work/waydroid.cfg
+images=$work/images
+sources=/etc/apt/sources.list.d/kernora-android.sources
+template=/usr/share/kernora/apt/kernora-android.sources
+real=/usr/bin/waydroid.waydroid
+
+kind=
+progress=0
+
+read_state() {
+  sed -n "s/^$1=//p" "$state_file" 2>/dev/null | head -n 1
+}
+
+record() {
+  mkdir -p "$state_dir"
+  printf 'status=%s\nkind=%s\nprogress=%s\ntime=%s\n' "$1" "$kind" "$progress" "$(date +%s)" > "$state_file.new"
+  mv "$state_file.new" "$state_file"
+}
+
+installed() {
+  dpkg-query -W -f='${db:Status-Abbrev}\n' waydroid 2>/dev/null | grep -q '^ii'
+}
+
+initialized() {
+  [[ -s $config && -s $images/system.img && -s $images/vendor.img ]]
+}
+
+current_kind() {
+  case $(sed -n 's/^system_ota *= *//p' "$config" 2>/dev/null) in
+    */GAPPS.json) echo gapps ;;
+    */VANILLA.json) echo vanilla ;;
+  esac
+}
+
+live_session() {
+  [[ -e /run/live/medium ]]
+}
+
+online() {
+  getent ahosts deb.debian.org > /dev/null 2>&1 && getent ahosts ota.waydro.id > /dev/null 2>&1
+}
+
+apt_get() {
+  DEBIAN_FRONTEND=noninteractive apt-get -q -y \
+    -o DPkg::Lock::Timeout=900 \
+    -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold "$@"
+}
+
+install_packages() {
+  install -m 0644 "$template" "$sources"
+  installed && return 0
+  apt_get update || true
+  apt_get update -o Dir::Etc::SourceList="$sources" -o Dir::Etc::SourceParts=- -o APT::Get::List-Cleanup=0 \
+    && apt_get install --no-install-recommends waydroid
+}
+
+download_images() {
+  local type=VANILLA
+  [[ $kind == gapps ]] && type=GAPPS
+  PYTHONUNBUFFERED=1 "$real" init -f -s "$type" 2>&1 | stdbuf -oL tr '\r' '\n' | {
+    local line part=system shown=-1 done total share
+    while IFS= read -r line; do
+      case $line in
+        *'[Downloading]'*)
+          if [[ $line =~ ([0-9]+)(\.[0-9]+)?\ MB/([0-9]+)(\.[0-9]+)?\ MB ]]; then
+            done=${BASH_REMATCH[1]}
+            total=${BASH_REMATCH[3]}
+            (( total > 0 )) || continue
+            share=$(( done * 100 / total ))
+            if [[ $part == system ]]; then
+              progress=$(( share * 80 / 100 ))
+            else
+              progress=$(( 85 + share * 12 / 100 ))
+            fi
+            if (( progress != shown )); then
+              shown=$progress
+              record downloading
+            fi
+          fi
+          continue
+          ;;
+        *Downloading\ http*vendor*)
+          part=vendor
+          ;;
+        *Validating* | *Extracting*)
+          progress=97
+          [[ $part == system ]] && progress=82
+          record unpacking
+          ;;
+      esac
+      printf '%s\n' "$line"
+    done
+  }
+  local status=("${PIPESTATUS[@]}")
+  (( status[0] == 0 )) && initialized
+}
+
+discard_images() {
+  rm -rf --one-file-system "$images" "$work/cache_http" "$config"
+}
+
+configure() {
+  python3 - "$config" <<'EOF'
+import configparser
+import sys
+
+path = sys.argv[1]
+cfg = configparser.ConfigParser()
+cfg.read(path)
+if not cfg.has_section("properties"):
+    cfg.add_section("properties")
+cfg["properties"]["persist.waydroid.multi_windows"] = "true"
+with open(path, "w") as handle:
+    cfg.write(handle)
+EOF
+  "$real" upgrade -o
+}
+
+setup_android() {
+  kind=$1
+  progress=0
+  if live_session; then
+    record live
+    return 1
+  fi
+  if initialized && [[ $(current_kind) == "$kind" ]]; then
+    progress=100
+    record ready
+    return 0
+  fi
+  if ! online; then
+    record offline
+    return 1
+  fi
+  echo "kernora-android: setting up Android ($kind)"
+  record installing
+  if ! install_packages; then
+    echo "kernora-android: Waydroid could not be installed" >&2
+    record failed
+    return 1
+  fi
+  record downloading
+  if ! download_images; then
+    echo "kernora-android: the Android image could not be downloaded" >&2
+    discard_images
+    record failed
+    return 1
+  fi
+  rm -rf "$work/cache_http"
+  configure
+  systemctl enable --now waydroid-container.service
+  progress=100
+  record ready
+  echo "kernora-android: Android is ready"
+}
+
+user_homes() {
+  getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 { print $6 }'
+}
+
+remove_android() {
+  kind=$(current_kind)
+  progress=0
+  record removing
+  systemctl disable --now waydroid-container.service 2>/dev/null || true
+  local home
+  while IFS= read -r home; do
+    [[ -n $home && -d $home ]] || continue
+    rm -rf --one-file-system "$home/.local/share/waydroid"
+    rm -f "$home"/.local/share/applications/waydroid.*.desktop
+  done < <(user_homes)
+  if installed; then
+    apt_get purge --autoremove waydroid
+  fi
+  rm -rf --one-file-system "$work"
+  rm -f "$sources"
+  apt_get update > /dev/null 2>&1 || true
+  kind=
+  record removed
+}
+
+cancel_setup() {
+  case $(read_state status) in
+    downloading | unpacking) ;;
+    *) return 1 ;;
+  esac
+  systemctl stop 'kernora-android@setup-*.service' 2>/dev/null || true
+  discard_images
+  kind=$(read_state kind)
+  progress=0
+  record cancelled
+}
+
+print_status() {
+  local status installed_flag=no ready=no size=0 container=inactive job=no
+  installed && installed_flag=yes
+  systemctl list-units --no-legend --state=activating,active 'kernora-android@*' 2>/dev/null | grep -q . && job=yes
+  initialized && ready=yes
+  if [[ $ready == yes ]]; then
+    size=$(du -sb --apparent-size "$images" 2>/dev/null | cut -f1)
+    container=$(systemctl is-active waydroid-container.service 2>/dev/null)
+  fi
+  status=$(read_state status)
+  printf 'installed=%s\nready=%s\nkind=%s\nstatus=%s\nprogress=%s\ntime=%s\nsize=%s\ncontainer=%s\njob=%s\nlive=%s\n' \
+    "$installed_flag" "$ready" "$(current_kind)" "${status:-}" "$(read_state progress)" "$(read_state time)" \
+    "${size:-0}" "${container:-inactive}" "$job" "$(live_session && echo yes || echo no)"
+}
+
+print_android_id() {
+  initialized || return 1
+  "$real" shell -- sqlite3 /data/data/com.google.android.gsf/databases/gservices.db \
+    "select value from main where name = 'android_id';" 2>/dev/null | tr -cd '0-9'
+  echo
+}
+
+with_lock() {
+  mkdir -p "$state_dir"
+  exec 9> "$state_dir/lock" || { echo "kernora-android: cannot open $state_dir/lock" >&2; exit 1; }
+  flock -w 3600 9 || { echo "kernora-android: another Android job did not finish" >&2; exit 1; }
+  "$@"
+}
+
+require_root() {
+  (( EUID == 0 )) || { echo "kernora-android: run as root" >&2; exit 1; }
+}
+
+case ${1:-} in
+  status)
+    print_status
+    ;;
+  setup-vanilla | setup-gapps)
+    require_root
+    with_lock setup_android "${1#setup-}"
+    ;;
+  remove)
+    require_root
+    with_lock remove_android
+    ;;
+  android-id)
+    require_root
+    print_android_id
+    ;;
+  request)
+    require_root
+    case ${2:-} in
+      setup-vanilla | setup-gapps)
+        kind=${2#setup-}
+        if live_session; then
+          record live
+          exit 0
+        fi
+        record installing
+        systemctl start --no-block "kernora-android@${2}.service"
+        ;;
+      remove)
+        systemctl start --no-block kernora-android@remove.service
+        ;;
+      cancel)
+        cancel_setup
+        ;;
+      *) exit 2 ;;
+    esac
+    ;;
+  *)
+    echo "usage: kernora-android status|setup-vanilla|setup-gapps|remove|android-id|request setup-vanilla|setup-gapps|remove|cancel" >&2
+    exit 2
+    ;;
+esac

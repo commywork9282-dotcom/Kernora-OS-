@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Android
+Comment=Android apps on Kernora
+Comment[ru]=Приложения Android в Kernora
+Exec=waydroid show-full-ui
+Icon=org.kernora.android
+NoDisplay=true

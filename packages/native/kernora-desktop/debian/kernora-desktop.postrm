@@ -55,6 +55,11 @@ if [ "$1" = remove ] || [ "$1" = abort-install ] || [ "$1" = disappear ]; then
         dpkg-divert --package kernora-desktop --remove --rename \
             --divert "$file.kde" "$file"
     done
+    for file in /usr/bin/waydroid /usr/share/applications/Waydroid.desktop \
+            /usr/share/applications/waydroid.app.install.desktop; do
+        dpkg-divert --package kernora-desktop --remove --rename \
+            --divert "$file.waydroid" "$file"
+    done
 fi
 
 #DEBHELPER#

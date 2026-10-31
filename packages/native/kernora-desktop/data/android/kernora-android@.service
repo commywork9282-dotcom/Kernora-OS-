@@ -1,0 +1,8 @@
+[Unit]
+Description=Android apps: %i
+ConditionPathExists=!/run/live/medium
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/kernora-android %i
+Nice=10

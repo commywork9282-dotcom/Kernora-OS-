@@ -5,6 +5,8 @@ ecm_add_qml_module(kernorasystem URI "org.kernora.system" VERSION 1.0 GENERATE_P
 
 target_sources(kernorasystem PRIVATE
     accounts.cpp accounts.h
+    android.cpp android.h
+    apk.cpp apk.h
     appearance.cpp appearance.h
     autostart.cpp autostart.h
     config.cpp config.h
@@ -24,8 +26,8 @@ target_sources(kernorasystem PRIVATE
 )
 
 target_link_libraries(kernorasystem PRIVATE
-    Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::DBus Qt6::Widgets
-    KF6::ConfigCore KF6::CoreAddons KF6::I18n KF6::KIOCore KF6::KIOFileWidgets KF6::KIOGui KF6::KIOWidgets KF6::Service
+    Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::DBus Qt6::Widgets Qt6::Svg
+    KF6::Archive KF6::ConfigCore KF6::CoreAddons KF6::I18n KF6::KIOCore KF6::KIOFileWidgets KF6::KIOGui KF6::KIOWidgets KF6::Service
     KF6::Screen
     PK::packagekitqt6
     PkgConfig::LIBCRYPT

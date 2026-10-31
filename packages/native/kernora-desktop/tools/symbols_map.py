@@ -279,6 +279,8 @@ ICONS: list[tuple[str, bool, str, list[str]]] = [
     ("dock_to_bottom", False, "categories", ["kernora-dock"]),
     ("menu", False, "actions", ["kernora-menu"]),
     ("draw", False, "actions", ["draw-freehand"]),
+    ("android", False, "categories", ["kernora-android"]),
+    ("apk_install", False, "actions", ["kernora-apk-install"]),
     ("functions", False, "actions", ["kernora-functions", "format-text-symbol"]),
     ("repeat", False, "actions", ["media-playlist-repeat"]),
     ("repeat_one", False, "actions", ["media-playlist-repeat-song"]),
@@ -430,6 +432,7 @@ ICONS: list[tuple[str, bool, str, list[str]]] = [
     ("movie", False, "mimetypes", ["video-mp4", "video-x-matroska", "video-webm", "video-quicktime", "video-x-msvideo", "video-mpeg", "video-ogg", "video-x-flv"]),
     ("music_note", False, "mimetypes", ["audio-mpeg", "audio-x-wav", "audio-flac", "audio-ogg", "audio-x-vorbis+ogg", "audio-mp4", "audio-aac", "audio-x-opus+ogg", "audio-x-mpegurl"]),
     ("folder_zip", False, "mimetypes", ["application-zip", "application-x-tar", "application-x-compressed-tar", "application-x-xz-compressed-tar", "application-x-bzip-compressed-tar", "application-x-zstd-compressed-tar", "application-x-7z-compressed", "application-x-rar", "application-vnd.rar", "application-gzip", "application-x-xz", "application-x-bzip", "application-zstd"]),
+    ("apk_document", False, "mimetypes", ["application-vnd.android.package-archive"]),
     ("deployed_code", False, "mimetypes", ["application-vnd.debian.binary-package", "application-x-deb", "application-x-rpm", "application-vnd.flatpak", "application-vnd.flatpak.ref", "application-vnd.appimage", "application-x-sharedlib"]),
     ("album", False, "mimetypes", ["application-x-cd-image", "application-x-iso9660-image", "application-x-raw-disk-image"]),
     ("font_download", False, "mimetypes", ["font-ttf", "font-otf", "font-woff", "application-x-font-ttf"]),
@@ -453,6 +456,8 @@ APP_ICONS: list[tuple[str, bool, list[str]]] = [
     ("monitoring", True, ["org.kernora.taskmanager"]),
     ("bug_report", True, ["tools-report-bug"]),
     ("kernora_quick_share", False, ["org.kernora.quickshare", "org.kernora.share"]),
+    ("android", False, ["org.kernora.android", "waydroid"]),
+    ("apk_install", True, ["org.kernora.apkinstaller"]),
 ]
 
 

@@ -102,8 +102,8 @@ done
   || fail "sddm is not installed"
 
 # The Kernora Material 3 shell and what it is set in.
-[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.55" ]] \
-  || fail "kernora-desktop 1.4.55 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.56" ]] \
+  || fail "kernora-desktop 1.4.56 is not installed"
 for applet in org.kernora.launcher org.kernora.quicksettings; do
   [[ -s "/usr/share/plasma/plasmoids/$applet/contents/ui/main.qml" ]] \
     || fail "Kernora shell applet is missing: $applet"
@@ -162,8 +162,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.64" ]] \
-  || fail "kernora-apps 1.1.64 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.65" ]] \
+  || fail "kernora-apps 1.1.65 is not installed"
 [[ "$(dpkg-query -W -f='${Version}' kernora-quickshare)" == "1.0.2" ]] \
   || fail "kernora-quickshare 1.0.2 is not installed"
 for package in flatpak appstream; do

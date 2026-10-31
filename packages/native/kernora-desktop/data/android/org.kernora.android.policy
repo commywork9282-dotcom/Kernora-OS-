@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<!-- SPDX-FileCopyrightText: 2026 Kernora Developers
+     SPDX-License-Identifier: GPL-2.0-or-later -->
+<policyconfig>
+  <vendor>Kernora OS</vendor>
+  <action id="org.kernora.android">
+    <description>Manage Android apps</description>
+    <description xml:lang="ru">Управление приложениями Android</description>
+    <message>Turning Android apps on or off changes the system</message>
+    <message xml:lang="ru">Включение или удаление приложений Android изменяет систему</message>
+    <icon_name>org.kernora.android</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android</annotate>
+  </action>
+</policyconfig>

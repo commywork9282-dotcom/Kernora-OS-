@@ -42,6 +42,11 @@ if [ "$1" = install ] || [ "$1" = upgrade ]; then
         dpkg-divert --package kernora-desktop --add --rename \
             --divert "$file.kde" "$file"
     done
+    for file in /usr/bin/waydroid /usr/share/applications/Waydroid.desktop \
+            /usr/share/applications/waydroid.app.install.desktop; do
+        dpkg-divert --package kernora-desktop --add --rename \
+            --divert "$file.waydroid" "$file"
+    done
 fi
 
 #DEBHELPER#

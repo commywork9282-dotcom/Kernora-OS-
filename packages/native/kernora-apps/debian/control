@@ -11,6 +11,7 @@ Build-Depends:
  libcrypt-dev,
  libappstreamqt-dev,
  libflatpak-dev,
+ libkf6archive-dev,
  libkf6config-dev,
  libkf6coreaddons-dev,
  libkf6dbusaddons-dev,
@@ -24,7 +25,8 @@ Build-Depends:
  libpackagekitqt6-dev,
  pkgconf,
  qt6-base-dev,
- qt6-declarative-dev
+ qt6-declarative-dev,
+ qt6-svg-dev
 Rules-Requires-Root: no
 
 Package: kernora-apps
@@ -38,13 +40,14 @@ Depends:
  kde-cli-tools,
  kernora-archive (>= 1.2),
  kernora-base (>= 1.6),
- kernora-desktop (>= 1.4.55),
+ kernora-desktop (>= 1.4.56),
  kernora-quickshare (>= 1.0.1),
  ksystemstats,
  libarchive-tools,
  libksysguard-bin,
  packagekit,
  pkexec,
+ qt6-image-formats-plugins,
  qt6-svg-plugins,
  plasma-nm,
  plasma-pa,
@@ -76,6 +79,7 @@ Description: Kernora OS applications
   * Files, Text Editor, Photos, Media Player, Calculator and Screenshot;
   * Task Manager: running apps, background processes and live usage of
     the processor, memory, graphics card, disk and network;
+  * Android App Installer: installs Android apps from APK files;
   * Welcome, the first-run introduction;
   * the file chooser: every program's open and save dialogs, served to
     the session through the desktop portal.
