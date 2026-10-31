@@ -297,7 +297,7 @@ SettingsPage {
             icon: "kernora-android"
             iconStyle: "plain"
             chevron: true
-            enabled: Android.running
+            enabled: Android.running && !page.starting
             onClicked: Process.run("pkexec", [page.tool, "android-id"], (code, output) => {
                 page.androidId = output.trim();
                 if (page.androidId.length > 0) {

@@ -214,7 +214,7 @@ print_status() {
 
 print_android_id() {
   initialized || return 1
-  "$real" shell -- sqlite3 /data/data/com.google.android.gsf/databases/gservices.db \
+  "$real" shell -- sqlite3 -cmd ".timeout 8000" /data/data/com.google.android.gsf/databases/gservices.db \
     "select value from main where name = 'android_id';" 2>/dev/null | tr -cd '0-9'
   echo
 }
