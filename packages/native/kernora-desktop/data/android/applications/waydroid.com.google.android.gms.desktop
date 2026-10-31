@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Google
+Name[ru]=Google
+Icon=org.kernora.android
+Exec=true
+NoDisplay=true

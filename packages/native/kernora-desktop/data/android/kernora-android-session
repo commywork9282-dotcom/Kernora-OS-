@@ -2,7 +2,9 @@
 # SPDX-FileCopyrightText: 2026 Kernora Developers
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import configparser
 import os
+import pathlib
 import re
 import subprocess
 import sys
@@ -10,16 +12,21 @@ import time
 
 REAL = "/usr/bin/waydroid.waydroid"
 UNIT = "kernora-android.service"
+SYNC = "/usr/libexec/kernora-android-sync"
+SYSTEM_PACKAGES = pathlib.Path("/var/lib/kernora/android/system-packages")
+STORE = "com.android.vending"
 WAIT = 300
 
 TEXT = {
     "ru": {
-        "starting": ("Запуск Android", "Приложение откроется через несколько секунд."),
-        "failed": ("Android не запустился", "Попробуйте ещё раз. Если не поможет, перезагрузите компьютер."),
+        "source": "Android-приложения",
+        "starting": ("Открываем приложение", "Это займёт несколько секунд."),
+        "failed": ("Приложение не открылось", "Попробуйте ещё раз. Если не поможет, перезагрузите компьютер."),
     },
     "en": {
-        "starting": ("Starting Android", "Your app opens in a few seconds."),
-        "failed": ("Android didn't start", "Try again. If that doesn't help, restart the computer."),
+        "source": "Android apps",
+        "starting": ("Opening the app", "This takes a few seconds."),
+        "failed": ("The app didn't open", "Try again. If that doesn't help, restart the computer."),
     },
 }
 
@@ -68,13 +75,14 @@ def unlocked(since: float | None) -> bool:
 
 
 def notify(key: str, timeout: int) -> int:
-    if os.environ.get("KERNORA_ANDROID_QUIET"):
+    if os.environ.get("KERNORA_ANDROID_QUIET") or (key == "starting" and os.environ.get("KERNORA_ANDROID_SPLASH")):
         return 0
-    title, body = TEXT.get(language(), TEXT["en"])[key]
+    texts = TEXT.get(language(), TEXT["en"])
+    title, body = texts[key]
     result = quiet("gdbus", "call", "--session", "--dest", "org.freedesktop.Notifications",
                    "--object-path", "/org/freedesktop/Notifications",
                    "--method", "org.freedesktop.Notifications.Notify",
-                   "Android", "0", "org.kernora.android", title, body, "[]", "{}", str(timeout))
+                   texts["source"], "0", "org.kernora.android", title, body, "[]", "{}", str(timeout))
     found = re.search(r"uint32 (\d+)", result.stdout)
     return int(found.group(1)) if found else 0
 
@@ -86,7 +94,73 @@ def close(notification: int) -> None:
               "--method", "org.freedesktop.Notifications.CloseNotification", str(notification))
 
 
+def read_ini(path: str) -> configparser.ConfigParser:
+    parser = configparser.ConfigParser(strict=False, interpolation=None)
+    try:
+        parser.read(os.path.expanduser(path), encoding="utf-8")
+    except (configparser.Error, UnicodeDecodeError):
+        pass
+    return parser
+
+
+def kernora_theme() -> tuple[str, str, str]:
+    colour = read_ini("~/.config/kernorarc").get("Style", "colour", fallback="kernora")
+    if not re.fullmatch(r"[a-z-]+", colour):
+        colour = "kernora"
+    seed = read_ini(f"/usr/share/kernora/palettes/{colour}.conf").get("Colour", "seed", fallback="ff6a1e")
+    if not re.fullmatch(r"[0-9A-Fa-f]{6}", seed):
+        seed = "ff6a1e"
+    scheme = read_ini("~/.config/kdeglobals").get("General", "ColorScheme", fallback="KernoraDark")
+    return seed, "light" if scheme.endswith("Light") else "dark", "SPRITZ" if colour == "grey" else "TONAL_SPOT"
+
+
+def hide_system_apps() -> None:
+    try:
+        system = set(SYSTEM_PACKAGES.read_text(encoding="utf-8").split()) - {STORE}
+    except OSError:
+        return
+    folder = pathlib.Path(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))) / "applications"
+    for entry in folder.glob("waydroid.*.desktop"):
+        if entry.name[len("waydroid."):-len(".desktop")] not in system:
+            continue
+        lines = entry.read_text(encoding="utf-8").splitlines()
+        if "NoDisplay=true" in lines:
+            continue
+        lines = [line for line in lines if not line.startswith("NoDisplay=")]
+        index = lines.index("[Desktop Entry]") + 1 if "[Desktop Entry]" in lines else 0
+        lines.insert(index, "NoDisplay=true")
+        entry.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def sync() -> int:
+    if not session_running():
+        return 0
+    seed, mode, style = kernora_theme()
+    try:
+        quiet("pkexec", SYNC, seed, mode, style, timeout=180)
+    except subprocess.TimeoutExpired:
+        pass
+    hide_system_apps()
+    return 0
+
+
+def sync_after_boot() -> int:
+    since = session_started()
+    deadline = time.monotonic() + WAIT
+    while time.monotonic() < deadline:
+        if not session_running():
+            return 0
+        if booted() and unlocked(since):
+            return sync()
+        time.sleep(2)
+    return 1
+
+
 def main() -> int:
+    if len(sys.argv) > 1 and sys.argv[1] == "--sync":
+        return sync()
+    if len(sys.argv) > 1 and sys.argv[1] == "--sync-after-boot":
+        return sync_after_boot()
     if session_running() and booted() and unlocked(session_started()):
         return 0
     notification = notify("starting", 0)

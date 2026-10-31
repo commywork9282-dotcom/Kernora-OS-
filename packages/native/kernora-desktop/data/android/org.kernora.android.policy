@@ -19,4 +19,17 @@
     </defaults>
     <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android</annotate>
   </action>
+  <action id="org.kernora.android.sync">
+    <description>Keep Android apps in step with Kernora</description>
+    <description xml:lang="ru">Согласование приложений Android с Kernora</description>
+    <message>Android apps follow the colour and the dark theme of Kernora</message>
+    <message xml:lang="ru">Приложения Android следуют цвету и тёмной теме Kernora</message>
+    <icon_name>org.kernora.android</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-sync</annotate>
+  </action>
 </policyconfig>

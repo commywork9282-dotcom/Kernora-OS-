@@ -7,6 +7,7 @@ import QtQuick
 import QtQuick.Layouts
 import org.kernora.m3
 import org.kernora.ui
+import org.kernora.system
 import "kinds.js" as Kinds
 
 Item {
@@ -32,6 +33,24 @@ Item {
 
     readonly property string kind: Kinds.kindOf(fileName, fileIsDir)
     readonly property bool thumbnail: !fileIsDir && Kinds.hasThumbnail(fileName)
+    property string appIcon: ""
+    readonly property Component preview: thumbnail ? picture : (appIcon.length > 0 ? packageIcon : symbol)
+
+    function loadAppIcon(): void {
+        appIcon = "";
+        if (kind !== "android") {
+            return;
+        }
+        const wanted = String(fileUrl);
+        Android.iconOf(fileUrl, icon => {
+            if (String(root.fileUrl) === wanted) {
+                root.appIcon = icon;
+            }
+        });
+    }
+
+    onFileUrlChanged: loadAppIcon()
+    Component.onCompleted: loadAppIcon()
 
     opacity: cut ? 0.5 : 1
 
@@ -92,6 +111,25 @@ Item {
         }
     }
 
+    Component {
+        id: packageIcon
+        Rectangle {
+            radius: root.list ? width / 2 : (M3.classic ? M3.cornerImage : 16)
+            color: root.list ? "transparent" : M3.surfaceContainerHighest
+            Image {
+                anchors.centerIn: parent
+                width: root.list ? parent.width : Math.round(parent.height * 0.72)
+                height: width
+                source: root.appIcon
+                sourceSize: Qt.size(192, 192)
+                fillMode: Image.PreserveAspectFit
+                asynchronous: true
+                smooth: true
+                mipmap: true
+            }
+        }
+    }
+
     ColumnLayout {
         visible: !root.list
         anchors.fill: parent
@@ -101,7 +139,7 @@ Item {
         Loader {
             Layout.fillWidth: true
             Layout.preferredHeight: width * 0.78
-            sourceComponent: root.thumbnail ? picture : symbol
+            sourceComponent: root.preview
         }
         MText {
             Layout.fillWidth: true
@@ -129,7 +167,7 @@ Item {
         Loader {
             Layout.preferredWidth: 40
             Layout.preferredHeight: 40
-            sourceComponent: root.thumbnail ? picture : symbol
+            sourceComponent: root.preview
         }
         MText {
             Layout.fillWidth: true

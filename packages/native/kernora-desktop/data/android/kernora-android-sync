@@ -1,0 +1,40 @@
+#!/bin/bash
+set -u
+
+real=/usr/bin/waydroid.waydroid
+state_dir=/var/lib/kernora/android
+seed=${1:-}
+mode=${2:-}
+style=${3:-TONAL_SPOT}
+
+[[ $seed =~ ^[0-9A-Fa-f]{6}$ ]] || exit 2
+[[ $mode == dark || $mode == light ]] || exit 2
+[[ $style == TONAL_SPOT || $style == SPRITZ ]] || exit 2
+(( EUID == 0 )) || exit 1
+[[ -x $real ]] || exit 0
+"$real" status 2>/dev/null | grep -q 'Session:.*RUNNING' || exit 0
+
+android() {
+  timeout 20 "$real" shell -- "$@" < /dev/null 2>/dev/null | cat
+}
+
+"$real" container unfreeze > /dev/null 2>&1 || true
+json="{\"android.theme.customization.color_source\":\"preset\",\"android.theme.customization.system_palette\":\"${seed^^}\",\"android.theme.customization.accent_color\":\"${seed^^}\",\"android.theme.customization.theme_style\":\"$style\"}"
+if [[ $(android settings get secure theme_customization_overlay_packages) != "$json" ]]; then
+  android settings put secure theme_customization_overlay_packages "$json" > /dev/null
+fi
+night=no
+[[ $mode == dark ]] && night=yes
+if [[ $(android cmd uimode night) != "Night mode: $night" ]]; then
+  android cmd uimode night "$night" > /dev/null
+fi
+if android pm list packages -e org.lineageos.waydroidupdater | grep -q .; then
+  android pm disable-user --user 0 org.lineageos.waydroidupdater > /dev/null
+fi
+packages=$(android pm list packages -s | sed -n 's/^package://p' | tr -d '\r' | grep -E '^[A-Za-z0-9_.]+$' | LC_ALL=C sort)
+if [[ -n $packages ]]; then
+  install -d -m 0755 "$state_dir"
+  printf '%s\n' "$packages" > "$state_dir/system-packages.new"
+  chmod 0644 "$state_dir/system-packages.new"
+  mv "$state_dir/system-packages.new" "$state_dir/system-packages"
+fi

@@ -2,13 +2,31 @@
 real=/usr/bin/waydroid.waydroid
 
 if [[ ! -x $real ]]; then
-  echo "waydroid: Android apps are off; turn them on in Settings > Android" >&2
+  echo "waydroid: Android apps are not set up; set them up in Settings > Android apps" >&2
   exit 1
 fi
 
 if (( EUID != 0 )); then
   case "${1:-} ${2:-}" in
-    "app launch" | "app install" | "app intent" | "app remove" | "show-full-ui "*)
+    "app launch")
+      if [[ -z ${KERNORA_ANDROID_QUIET:-} ]] && command -v kernora-appsplash > /dev/null \
+          && ! busctl --user status id.waydro.Session > /dev/null 2>&1; then
+        ready="${XDG_RUNTIME_DIR:-/tmp}/kernora-app-$$"
+        rm -f "$ready"
+        kernora-appsplash "${3:-}" "$ready" > /dev/null 2>&1 &
+        if ! KERNORA_ANDROID_SPLASH=1 /usr/libexec/kernora-android-session; then
+          : > "$ready"
+          exit 1
+        fi
+        "$real" "$@"
+        status=$?
+        sleep 1.5
+        : > "$ready"
+        exit "$status"
+      fi
+      /usr/libexec/kernora-android-session || exit 1
+      ;;
+    "app install" | "app intent" | "app remove" | "show-full-ui "*)
       /usr/libexec/kernora-android-session || exit 1
       ;;
   esac

@@ -19,8 +19,10 @@
 #include <QGuiApplication>
 #include <QJSEngine>
 #include <QLocale>
+#include <QPointer>
 #include <QProcess>
 #include <QStandardPaths>
+#include <QThreadPool>
 #include <QTimer>
 
 #include <algorithm>
@@ -149,6 +151,15 @@ void Android::scan()
     }
 }
 
+QString Android::iconCache(const QString &path)
+{
+    const QFileInfo info(path);
+    const QString cache = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QStringLiteral("/icons");
+    QDir().mkpath(cache);
+    const QByteArray key = (info.absoluteFilePath() + QString::number(info.lastModified().toMSecsSinceEpoch())).toUtf8();
+    return cache + QLatin1Char('/') + QString::fromLatin1(QCryptographicHash::hash(key, QCryptographicHash::Sha1).toHex()) + QStringLiteral(".png");
+}
+
 QVariantMap Android::inspect(const QUrl &file) const
 {
     const QString path = file.isLocalFile() ? file.toLocalFile() : file.toString();
@@ -168,15 +179,37 @@ QVariantMap Android::inspect(const QUrl &file) const
                        {QStringLiteral("fileName"), info.fileName()},
                        {QStringLiteral("icon"), QString()}};
     if (!package.icon.isNull()) {
-        const QString cache = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QStringLiteral("/icons");
-        QDir().mkpath(cache);
-        const QByteArray key = (info.absoluteFilePath() + QString::number(info.lastModified().toMSecsSinceEpoch())).toUtf8();
-        const QString target = cache + QLatin1Char('/') + QString::fromLatin1(QCryptographicHash::hash(key, QCryptographicHash::Sha1).toHex()) + QStringLiteral(".png");
+        const QString target = iconCache(path);
         if (package.icon.save(target, "PNG")) {
             result.insert(QStringLiteral("icon"), QUrl::fromLocalFile(target).toString());
         }
     }
     return result;
+}
+
+void Android::iconOf(const QUrl &file, const QJSValue &callback)
+{
+    const QString path = file.isLocalFile() ? file.toLocalFile() : file.toString();
+    const QString target = iconCache(path);
+    if (QFileInfo::exists(target)) {
+        reply(this, callback, {QJSValue(QUrl::fromLocalFile(target).toString())});
+        return;
+    }
+    const int request = ++m_nextRequest;
+    m_iconRequests.insert(request, callback);
+    const QString language = QLocale::system().name();
+    QPointer<Android> self(this);
+    QThreadPool::globalInstance()->start([self, request, path, target, language] {
+        const Apk::Package package = Apk::read(path, language, IconSize);
+        const bool saved = !package.icon.isNull() && package.icon.save(target, "PNG");
+        QMetaObject::invokeMethod(QCoreApplication::instance(), [self, request, target, saved] {
+            if (!self) {
+                return;
+            }
+            const QJSValue callback = self->m_iconRequests.take(request);
+            reply(self, callback, {QJSValue(saved ? QUrl::fromLocalFile(target).toString() : QString())});
+        }, Qt::QueuedConnection);
+    });
 }
 
 bool Android::hasApp(const QString &package) const

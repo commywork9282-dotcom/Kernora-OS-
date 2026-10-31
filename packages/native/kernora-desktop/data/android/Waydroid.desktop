@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=Android
+Name=Android apps
+Name[ru]=Android-приложения
 Comment=Android apps on Kernora
 Comment[ru]=Приложения Android в Kernora
 Exec=waydroid show-full-ui

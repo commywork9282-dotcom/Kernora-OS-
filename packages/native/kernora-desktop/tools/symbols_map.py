@@ -281,6 +281,8 @@ ICONS: list[tuple[str, bool, str, list[str]]] = [
     ("draw", False, "actions", ["draw-freehand"]),
     ("android", False, "categories", ["kernora-android"]),
     ("apk_install", False, "actions", ["kernora-apk-install"]),
+    ("picture_in_picture_alt", False, "actions", ["kernora-picture-in-picture"]),
+    ("shop", False, "actions", ["kernora-google-play"]),
     ("functions", False, "actions", ["kernora-functions", "format-text-symbol"]),
     ("repeat", False, "actions", ["media-playlist-repeat"]),
     ("repeat_one", False, "actions", ["media-playlist-repeat-song"]),

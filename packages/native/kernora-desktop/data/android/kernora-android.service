@@ -8,5 +8,9 @@ ConditionPathExists=/var/lib/waydroid/waydroid.cfg
 Type=dbus
 BusName=id.waydro.Session
 ExecStart=/usr/bin/waydroid.waydroid session start
+ExecStartPost=/bin/sh -c '/usr/libexec/kernora-android-session --sync-after-boot > /dev/null 2>&1 &'
 ExecStop=/usr/bin/waydroid.waydroid session stop
 TimeoutStopSec=30
+
+[Install]
+WantedBy=graphical-session.target

@@ -39,7 +39,7 @@ add_subdirectory(src/apps)
 add_subdirectory(src/filechooser)
 add_subdirectory(src/updatenotifier)
 
-set(KERNORA_APPS settings files welcome editor photos player calculator screenshot store share taskmanager apkinstaller)
+set(KERNORA_APPS settings files welcome editor photos player calculator screenshot store share taskmanager apkinstaller appsplash)
 foreach(app ${KERNORA_APPS})
     install(DIRECTORY apps/${app}/qml/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/${app})
     install(FILES apps/${app}/org.kernora.${app}.desktop DESTINATION ${KDE_INSTALL_APPDIR})

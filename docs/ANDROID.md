@@ -50,10 +50,16 @@ Waydroid loads it with its own device names (`anbox-binder` and so on) and
 remembers them in `waydroid.cfg`; Kernora does not set module options, so the
 names never disagree after a reboot.
 
-## Starting Android
+## Opening an app
 
-Android does not run all the time. It starts the first time an Android app
-is opened and keeps running until the user stops it in Settings or logs out.
+Users see apps, not a second system: nothing in the interface names
+Waydroid, nothing "starts Android", and Android's own launcher and settings
+are not offered. Nothing is locked either: the `waydroid` command keeps
+working in a terminal.
+
+The Android runtime starts the first time an Android app is opened (or at
+sign-in with **Open apps faster**, which enables the user unit) and runs
+until the user logs out.
 
 kernora-desktop diverts `/usr/bin/waydroid` to `/usr/bin/waydroid.waydroid`
 and puts a wrapper in its place. For `app launch`, `app install`,
@@ -63,29 +69,80 @@ and puts a wrapper in its place. For `app launch`, `app install`,
 - starts the user service `kernora-android.service`
   (`waydroid session start`, `Type=dbus`, `BusName=id.waydro.Session`,
   part of `graphical-session.target`);
-- waits until `sys.boot_completed` is `1`, at most five minutes, showing a
-  "Starting Android" notification unless `KERNORA_ANDROID_QUIET` is set.
+- waits until `sys.boot_completed` is `1` and the session has logged
+  "Android with user 0 is ready" (the launch is lost in the two seconds
+  between them), at most five minutes.
 
-Without the wait, `waydroid app launch` right after the session starts is
-lost: the session's D-Bus name appears long before Android has booted.
-The first boot takes about 100 seconds in a VM with software rendering;
-later boots about 40.
+When an app is opened while the runtime is not up, the wrapper shows
+`kernora-appsplash`: a frameless card with the app's own icon and name and
+the Expressive loading indicator. The splash takes the app's desktop file
+name (`waydroid.<package>`), so the dock shows the app's icon from the
+first moment; it fades out 1.5 seconds after the launch.
 
 Waydroid writes `~/.local/share/applications/waydroid.<package>.desktop`
 for each app with a launcher activity while the session runs, and hides
-LineageOS' own apps. Its own `Waydroid.desktop` and its APK handler
-`waydroid.app.install.desktop` are diverted too; Kernora ships a hidden
-`Waydroid.desktop` named Android in their place.
+LineageOS' own apps. Its own `Waydroid.desktop`, its APK handler and its
+`market://` handler are diverted; Kernora ships hidden entries without the
+Waydroid name in their place, plus hidden entries with the Kernora icon for
+the windows Android opens by itself (permissions, the package installer,
+Google sign-in, system dialogs).
+
+## Looking like Kernora
+
+`tools/gen-android-overlay` builds `KernoraCaption.apk` when the package is
+built: a static resource overlay for `android`, written without aapt (its
+own binary XML and resource table) and signed (APK v1, `openssl smime`)
+with AOSP's public platform test key, which the Waydroid images are signed
+with (`userdebug/test-keys`). The platform signature lets it replace any
+framework resource. It gives the caption that Android draws over every app
+window the Kernora title bar: the Material surface container colour,
+Material Symbols Rounded for back, minimise, maximise and close, and the
+pressed circles of the Kernora decoration (Waydroid takes the pointer over
+the caption to move the window, so there is no hover). The setup and every
+package update copy it to
+`/var/lib/waydroid/overlay/system/product/overlay/KernoraCaption/`.
+
+`/usr/libexec/kernora-android-sync` (polkit `org.kernora.android.sync`,
+allowed for the active user without a password) runs inside Android with
+`waydroid shell`:
+
+- `settings put secure theme_customization_overlay_packages` with the
+  Kernora seed (`seed=` in `/usr/share/kernora/palettes/<colour>.conf`) as
+  a preset Material You palette, so Android's system colours and every
+  Material You app take the Kernora colour; Grey uses `SPRITZ`, the rest
+  `TONAL_SPOT`;
+- `cmd uimode night yes|no` from the light or dark Kernora scheme (the
+  `ui_night_mode` setting alone is only read at boot);
+- writes `pm list packages -s` to
+  `/var/lib/kernora/android/system-packages`; the user side then hides the
+  desktop entries of those packages, except the Play Store;
+- disables `org.lineageos.waydroidupdater`, whose notifications would talk
+  about Waydroid.
+
+It runs from `kernora-android.service` once Android is up, and from the user
+path unit `kernora-android-sync.path` whenever `kdeglobals` or `kernorarc`
+change.
 
 Graphics: Waydroid uses the first render node that is not NVIDIA's. On a
 computer with only an NVIDIA card, or in a VM without one, Android renders
 in software (SwiftShader).
 
+## Updates
+
+The `waydroid` package and its libraries update with the system from
+trixie-backports. The image updates itself: `kernora-android-update.timer`
+runs `kernora-android update` daily; when Waydroid's OTA channel has a newer
+system or vendor image and no app is open, it runs `waydroid upgrade`
+(the properties in `waydroid.cfg` and the overlay stay) and Settings shows
+"Updating…" meanwhile.
+
 ## Installing an app
 
 `.apk` files open in **Android App Installer** (`kernora-apkinstaller`,
-`application/vnd.android.package-archive` in `/etc/xdg/mimeapps.list`). It
-reads the file itself (`src/system/apk.cpp`) before anything is installed:
+`application/vnd.android.package-archive` in `/etc/xdg/mimeapps.list`), a
+frameless Material dialog in the Pixel style. Files shows each APK with the
+app's own icon (`Android.iconOf`, read in a worker thread and cached). The
+installer reads the file itself (`src/system/apk.cpp`) before anything is installed:
 
 - the ZIP central directory, so APK signature blocks do not get in the way
   (KZip reads entries in order and stops at the signing block);
@@ -102,8 +159,8 @@ The installer then starts Android if needed and runs `waydroid app install`.
 It checks `waydroid app list` afterwards, because the command exits 0 even
 when Android refuses the package.
 
-Settings lists the installed Android apps, opens them and opens Android's
-own settings app. Uninstalling goes through Android's own dialog
+Settings lists the user's Android apps and opens them. Uninstalling goes
+through Android's own dialog
 (`waydroid app intent android.intent.action.DELETE package:<name>`):
 `waydroid app remove` fails with code -3 on the LineageOS 20 image and still
 exits 0. The list follows the `waydroid.*.desktop` files, which Waydroid

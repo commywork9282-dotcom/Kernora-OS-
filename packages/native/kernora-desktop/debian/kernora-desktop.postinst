@@ -15,6 +15,9 @@ if [ "$1" = configure ]; then
         sed -i 's/^wallpaper=org\.kernora\.tower$/wallpaper=org.kernora.shapes/' "$greeter"
     fi
     /usr/libexec/kernora-splash-wallpaper || true
+    if [ -s /var/lib/waydroid/waydroid.cfg ]; then
+        /usr/libexec/kernora-android refresh || true
+    fi
     /usr/libexec/kernora-boot-theme || true
     active=$(/usr/sbin/plymouth-set-default-theme 2>/dev/null || true)
     splash=/usr/share/plymouth/themes/${active:-kernora}

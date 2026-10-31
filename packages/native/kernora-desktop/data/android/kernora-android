@@ -6,6 +6,8 @@ state_file=$state_dir/state
 work=/var/lib/waydroid
 config=$work/waydroid.cfg
 images=$work/images
+overlay_source=/usr/share/kernora/android/KernoraCaption.apk
+overlay_target=$work/overlay/system/product/overlay/KernoraCaption
 sources=/etc/apt/sources.list.d/kernora-android.sources
 template=/usr/share/kernora/apt/kernora-android.sources
 real=/usr/bin/waydroid.waydroid
@@ -120,6 +122,13 @@ with open(path, "w") as handle:
     cfg.write(handle)
 EOF
   "$real" upgrade -o
+  install_overlay
+}
+
+install_overlay() {
+  [[ -s $overlay_source ]] || return 0
+  install -d -m 0755 "$overlay_target"
+  install -m 0644 "$overlay_source" "$overlay_target/KernoraCaption.apk"
 }
 
 setup_android() {
@@ -158,6 +167,60 @@ setup_android() {
   progress=100
   record ready
   echo "kernora-android: Android is ready"
+}
+
+newer_image() {
+  python3 - "$config" <<'EOF'
+import configparser
+import json
+import sys
+import urllib.request
+
+cfg = configparser.ConfigParser()
+cfg.read(sys.argv[1])
+section = cfg["waydroid"]
+
+
+def newest(url):
+    with urllib.request.urlopen(url, timeout=30) as response:
+        return max(int(item["datetime"]) for item in json.load(response)["response"])
+
+
+try:
+    newer = (newest(section["system_ota"]) > int(section["system_datetime"])
+             or newest(section["vendor_ota"]) > int(section["vendor_datetime"]))
+except Exception:
+    sys.exit(2)
+sys.exit(0 if newer else 1)
+EOF
+}
+
+session_active() {
+  "$real" status 2>/dev/null | grep -q 'Session:.*RUNNING'
+}
+
+update_android() {
+  initialized || return 0
+  live_session && return 0
+  online || return 0
+  newer_image || return 0
+  if session_active; then
+    echo "kernora-android: a newer image is out; it is installed once no app is open"
+    return 0
+  fi
+  kind=$(current_kind)
+  progress=0
+  record updating
+  echo "kernora-android: updating the image"
+  if PYTHONUNBUFFERED=1 "$real" upgrade; then
+    install_overlay
+    echo "kernora-android: the image is up to date"
+  else
+    echo "kernora-android: the image could not be updated" >&2
+  fi
+  rm -rf "$work/cache_http"
+  progress=100
+  record ready
 }
 
 user_homes() {
@@ -246,6 +309,14 @@ case ${1:-} in
     require_root
     print_android_id
     ;;
+  refresh)
+    require_root
+    initialized && install_overlay
+    ;;
+  update)
+    require_root
+    with_lock update_android
+    ;;
   request)
     require_root
     case ${2:-} in
@@ -268,7 +339,7 @@ case ${1:-} in
     esac
     ;;
   *)
-    echo "usage: kernora-android status|setup-vanilla|setup-gapps|remove|android-id|request setup-vanilla|setup-gapps|remove|cancel" >&2
+    echo "usage: kernora-android status|setup-vanilla|setup-gapps|remove|android-id|refresh|update|request setup-vanilla|setup-gapps|remove|cancel" >&2
     exit 2
     ;;
 esac

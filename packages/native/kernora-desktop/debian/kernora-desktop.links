@@ -1,3 +1,4 @@
 usr/lib/x86_64-linux-gnu/qt6/plugins/kf6/kirigami/platform/org.kde.desktop.so usr/lib/x86_64-linux-gnu/qt6/plugins/kf6/kirigami/platform/org.kernora.desktop.so
 usr/share/applications/org.kernora.terminal.desktop usr/share/kglobalaccel/org.kernora.terminal.desktop
 etc/skel/.face etc/skel/.face.icon
+usr/lib/systemd/user/kernora-android-sync.path usr/lib/systemd/user/default.target.wants/kernora-android-sync.path

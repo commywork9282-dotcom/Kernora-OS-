@@ -135,7 +135,7 @@ grep -Fq 'Procs.ApplicationDataModel {' "$package_root/apps/taskmanager/qml/Main
   || fail "Task Manager can't list, end or chart"
 grep -Fxq 'X-KDE-Shortcuts=Ctrl+Shift+Esc,Ctrl+Esc' "$package_root/apps/taskmanager/org.kernora.taskmanager.desktop" \
   && grep -Fq 'DESTINATION ${KDE_INSTALL_DATADIR}/kglobalaccel' "$package_root/CMakeLists.txt" \
-  && grep -q 'share taskmanager apkinstaller)' "$package_root/src/apps/CMakeLists.txt" \
+  && grep -q 'share taskmanager apkinstaller appsplash)' "$package_root/src/apps/CMakeLists.txt" \
   || fail "Task Manager has no shortcut or is not built"
 for dependency in ksystemstats libksysguard-bin qml6-module-org-kde-ksysguard qml6-module-org-kde-kitemmodels qml6-module-org-kde-quickcharts; do
   grep -Eq "^ $dependency,?$" "$package_root/debian/control" || fail "Task Manager needs $dependency"
@@ -205,7 +205,7 @@ grep -Fq '{ id: "android", title: i18n("Android apps")' "$package_root/apps/sett
 grep -Fxq 'MimeType=application/vnd.android.package-archive;' "$package_root/apps/apkinstaller/org.kernora.apkinstaller.desktop" \
   && grep -Fq 'Android.inspect(url)' "$package_root/apps/apkinstaller/qml/Main.qml" \
   && grep -Fq 'Android.install(app.file, app.apk.package' "$package_root/apps/apkinstaller/qml/Main.qml" \
-  && grep -q 'taskmanager apkinstaller)' "$package_root/src/apps/CMakeLists.txt" \
+  && grep -q 'taskmanager apkinstaller appsplash)' "$package_root/src/apps/CMakeLists.txt" \
   || fail "the APK installer is missing"
 grep -Fq 'adaptive-icon' "$package_root/src/system/apk.cpp" \
   && grep -Fq 'QSvgRenderer renderer(vectorToSvg(elements));' "$package_root/src/system/apk.cpp" \
@@ -215,6 +215,20 @@ for dependency in libkf6archive-dev qt6-svg-dev qt6-image-formats-plugins; do
   grep -Eq "^ $dependency,?$" "$package_root/debian/control" || fail "the APK reader needs $dependency"
 done
 msgfmt --check -o /dev/null "$package_root/po/ru/kernora-apkinstaller.po" || fail "the APK installer translation is broken"
+grep -Fq 'QGuiApplication::setDesktopFileName(QStringLiteral("waydroid.") + argument);' "$package_root/src/apps/appsplash.cpp" \
+  && grep -Fq 'MLoadingIndicator {' "$package_root/apps/appsplash/qml/Main.qml" \
+  && msgfmt --check -o /dev/null "$package_root/po/ru/kernora-appsplash.po" \
+  || fail "Android apps open without their splash"
+grep -Fq 'flags: Qt.Dialog | Qt.FramelessWindowHint' "$package_root/apps/apkinstaller/qml/Main.qml" \
+  && grep -Fq 'app.startSystemMove();' "$package_root/apps/apkinstaller/qml/Main.qml" \
+  || fail "the APK installer is not a Material dialog"
+grep -Fq 'android: ["apk"]' "$package_root/apps/files/qml/kinds.js" \
+  && grep -Fq 'Android.iconOf(fileUrl' "$package_root/apps/files/qml/FileItem.qml" \
+  && grep -Fq 'void Android::iconOf(' "$package_root/src/system/android.cpp" \
+  || fail "Files does not show the icons of APK files"
+! grep -Fq 'Android.openSettings()' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq '"kernora-android.service"' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  || fail "Settings still opens Android's own settings or has no faster start"
 grep -Fq 'msgid "Android apps"' "$package_root/po/ru/kernora-settings.po" \
   || fail "the Android page is not translated"
 

@@ -1,0 +1,439 @@
+#!/usr/bin/env python3
+"""usage: gen-android-overlay OUTPUT.apk
+"""
+
+from __future__ import annotations
+
+import base64
+import hashlib
+import io
+import pathlib
+import re
+import struct
+import subprocess
+import sys
+import tempfile
+import zipfile
+
+TOOLS = pathlib.Path(__file__).resolve().parent
+PACKAGE = TOOLS.parent
+SYMBOLS = PACKAGE / "data" / "symbols"
+KEY = PACKAGE / "data" / "android" / "aosp-platform.pk8"
+CERT = PACKAGE / "data" / "android" / "aosp-platform.x509.pem"
+
+OVERLAY = "org.kernora.overlay.caption"
+ANDROID_NS = "http://schemas.android.com/apk/res/android"
+STAMP = (2009, 1, 1, 0, 0, 0)
+
+ATTR = {
+    "targetPackage": 0x01010021,
+    "hasCode": 0x0101000c,
+    "priority": 0x0101001c,
+    "state_window_focused": 0x0101009d,
+    "state_pressed": 0x010100a7,
+    "drawable": 0x01010199,
+    "shape": 0x0101019a,
+    "color": 0x010101a5,
+    "versionCode": 0x0101021b,
+    "versionName": 0x0101021c,
+    "minSdkVersion": 0x0101020c,
+    "targetSdkVersion": 0x01010270,
+    "alpha": 0x0101031f,
+    "state_hovered": 0x01010367,
+    "height": 0x01010155,
+    "width": 0x01010159,
+    "tint": 0x01010121,
+    "viewportWidth": 0x01010402,
+    "viewportHeight": 0x01010403,
+    "fillColor": 0x01010404,
+    "pathData": 0x01010405,
+    "scaleX": 0x01010324,
+    "scaleY": 0x01010325,
+    "translateX": 0x0101045a,
+    "translateY": 0x0101045b,
+    "isStatic": 0x0101055a,
+}
+
+TONES = ["0", "10", "50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "1000"]
+PALETTES = {"neutral1": 0x0106001d, "neutral2": 0x0106002a, "accent1": 0x01060037}
+TRANSPARENT = 0x0106000d
+WHITE = 0x0106000b
+
+
+def system(palette: str, tone: str) -> int:
+    return PALETTES[palette] + TONES.index(tone)
+
+
+class Value:
+    def __init__(self, kind: int, data: int = 0, text: str | None = None, local: tuple[str, str] | None = None):
+        self.kind = kind
+        self.data = data
+        self.text = text
+        self.local = local
+
+
+def dp(value: float) -> Value:
+    if float(value).is_integer():
+        return Value(0x05, (int(value) << 8) | 0x01)
+    return Value(0x05, ((round(value * 128) & 0xFFFFFF) << 8) | (1 << 4) | 0x01)
+
+
+def real(value: float) -> Value:
+    return Value(0x04, struct.unpack("<I", struct.pack("<f", value))[0])
+
+
+def flag(value: bool) -> Value:
+    return Value(0x12, 0xFFFFFFFF if value else 0)
+
+
+def number(value: int) -> Value:
+    return Value(0x10, value)
+
+
+def argb(value: int) -> Value:
+    return Value(0x1C, value)
+
+
+def text(value: str) -> Value:
+    return Value(0x03, text=value)
+
+
+def ref(kind: str, name: str) -> Value:
+    return Value(0x01, local=(kind, name))
+
+
+def framework(resource: int) -> Value:
+    return Value(0x01, resource)
+
+
+class Pool:
+    def __init__(self, strings: list[str]):
+        self.strings = strings
+
+    def index(self, value: str) -> int:
+        return self.strings.index(value)
+
+    def encode(self) -> bytes:
+        offsets = b""
+        data = b""
+        for value in self.strings:
+            offsets += struct.pack("<I", len(data))
+            encoded = value.encode("utf-16-le")
+            length = len(value.encode("utf-16-le")) // 2
+            if length > 0x7FFF:
+                data += struct.pack("<HH", 0x8000 | (length >> 16), length & 0xFFFF)
+            else:
+                data += struct.pack("<H", length)
+            data += encoded + b"\x00\x00"
+        while len(data) % 4:
+            data += b"\x00"
+        header = 28
+        start = header + len(offsets)
+        body = offsets + data
+        return struct.pack("<HHIIIIII", 0x0001, header, header + len(body), len(self.strings), 0, 0, start, 0) + body
+
+
+class Element:
+    def __init__(self, name: str, attributes: dict[str, Value] | None = None, children: list[Element] | None = None):
+        self.name = name
+        self.attributes = attributes or {}
+        self.children = children or []
+
+    def walk(self):
+        yield self
+        for child in self.children:
+            yield from child.walk()
+
+
+def compile_xml(root: Element, resolve) -> bytes:
+    android = sorted({name for element in root.walk() for name in element.attributes if name in ATTR},
+                     key=lambda name: ATTR[name])
+    strings = list(android)
+
+    def add(value: str) -> None:
+        if value not in strings:
+            strings.append(value)
+
+    add("android")
+    add(ANDROID_NS)
+    for element in root.walk():
+        add(element.name)
+        for name, value in element.attributes.items():
+            add(name)
+            if value.kind == 0x03:
+                add(value.text)
+    pool = Pool(strings)
+    chunks = [pool.encode()]
+    chunks.append(struct.pack("<HHI", 0x0180, 8, 8 + 4 * len(android)) + b"".join(struct.pack("<I", ATTR[n]) for n in android))
+    chunks.append(struct.pack("<HHIII", 0x0100, 16, 24, 1, 0xFFFFFFFF) + struct.pack("<II", pool.index("android"), pool.index(ANDROID_NS)))
+
+    def element_chunks(element: Element) -> None:
+        attributes = sorted(element.attributes.items(), key=lambda item: ATTR.get(item[0], 0xFFFFFFFF))
+        body = b""
+        for name, value in attributes:
+            namespace = pool.index(ANDROID_NS) if name in ATTR else 0xFFFFFFFF
+            data = value.data
+            raw = 0xFFFFFFFF
+            if value.kind == 0x03:
+                data = pool.index(value.text)
+                raw = data
+            elif value.local:
+                data = resolve(*value.local)
+            body += struct.pack("<IIIHBBI", namespace, pool.index(name), raw, 8, 0, value.kind, data)
+        extension = struct.pack("<IIHHHHHH", 0xFFFFFFFF, pool.index(element.name), 20, 20, len(attributes), 0, 0, 0)
+        size = 16 + len(extension) + len(body)
+        chunks.append(struct.pack("<HHIII", 0x0102, 16, size, 1, 0xFFFFFFFF) + extension + body)
+        for child in element.children:
+            element_chunks(child)
+        chunks.append(struct.pack("<HHIII", 0x0103, 16, 24, 1, 0xFFFFFFFF) + struct.pack("<II", 0xFFFFFFFF, pool.index(element.name)))
+
+    element_chunks(root)
+    chunks.append(struct.pack("<HHIII", 0x0101, 16, 24, 1, 0xFFFFFFFF) + struct.pack("<II", pool.index("android"), pool.index(ANDROID_NS)))
+    body = b"".join(chunks)
+    return struct.pack("<HHI", 0x0003, 8, 8 + len(body)) + body
+
+
+def symbol_path(name: str) -> str:
+    content = (SYMBOLS / f"{name}_24px.svg").read_text(encoding="utf-8")
+    return re.search(r'<path d="([^"]+)"', content).group(1)
+
+
+def glyph(symbol: str, tint: str) -> Element:
+    size = 32.0
+    side = 19.2
+    scale = side / 960
+    offset = (size - side) / 2
+    return Element("vector", {
+        "width": dp(32), "height": dp(32),
+        "viewportWidth": real(size), "viewportHeight": real(size),
+        "tint": ref("color", tint),
+    }, [Element("group", {
+        "scaleX": real(scale), "scaleY": real(scale),
+        "translateX": real(offset), "translateY": real(offset + side),
+    }, [Element("path", {"fillColor": framework(WHITE), "pathData": text(symbol_path(symbol))})])])
+
+
+def oval(colour: str) -> Element:
+    return Element("shape", {"shape": number(1)}, [Element("solid", {"color": ref("color", colour)})])
+
+
+def solid(colour: str) -> Element:
+    return Element("shape", {"shape": number(0)}, [Element("solid", {"color": ref("color", colour)})])
+
+
+def selector(items: list[tuple[dict[str, Value], Value]], key: str) -> Element:
+    return Element("selector", children=[Element("item", {**states, key: value}) for states, value in items])
+
+
+def layers(*drawables: str) -> Element:
+    return Element("layer-list", children=[Element("item", {"drawable": ref("drawable", name)}) for name in drawables])
+
+
+COLOURS = {
+    "kernora_caption": (framework(system("neutral1", "50")), framework(system("neutral1", "900"))),
+    "kernora_caption_inactive": (framework(system("neutral1", "10")), framework(system("neutral1", "900"))),
+    "kernora_ink": (framework(system("neutral2", "700")), framework(system("neutral2", "200"))),
+    "kernora_ink_inactive": (framework(system("neutral2", "500")), framework(system("neutral2", "400"))),
+    "kernora_ink_strong": (framework(system("neutral1", "900")), framework(system("neutral1", "100"))),
+    "kernora_close_container": (argb(0xFFF9DEDC), argb(0xFF8C1D18)),
+    "kernora_close_ink": (argb(0xFF410E0B), argb(0xFFF9DEDC)),
+}
+
+HOVERED = {"state_hovered": flag(True)}
+PRESSED = {"state_pressed": flag(True)}
+UNFOCUSED = {"state_window_focused": flag(False)}
+
+COLOUR_FILES = {
+    "kernora_caption_tint": selector([
+        (HOVERED, ref("color", "kernora_ink_strong")),
+        (UNFOCUSED, ref("color", "kernora_ink_inactive")),
+        ({}, ref("color", "kernora_ink")),
+    ], "color"),
+    "kernora_close_tint": selector([
+        (HOVERED, ref("color", "kernora_close_ink")),
+        (UNFOCUSED, ref("color", "kernora_ink_inactive")),
+        ({}, ref("color", "kernora_ink")),
+    ], "color"),
+    "kernora_hover_fill": Element("selector", children=[Element("item", {"color": ref("color", "kernora_ink_strong"), "alpha": real(0.10)})]),
+    "kernora_press_fill": Element("selector", children=[Element("item", {"color": ref("color", "kernora_ink_strong"), "alpha": real(0.18)})]),
+}
+
+BUTTONS = {
+    "back": ("arrow_back", False),
+    "pip": ("picture_in_picture_alt", False),
+    "minimize": ("remove", False),
+    "maximize": ("crop_square", False),
+    "close": ("close", True),
+}
+
+DRAWABLE_FILES: dict[str, Element] = {
+    "decor_caption_title_focused": solid("kernora_caption"),
+    "decor_caption_title_unfocused": solid("kernora_caption_inactive"),
+    "kernora_circle_hover": oval("kernora_hover_fill"),
+    "kernora_circle_pressed": oval("kernora_press_fill"),
+    "kernora_circle_close": oval("kernora_close_container"),
+    "kernora_state": selector([
+        (PRESSED, ref("drawable", "kernora_circle_pressed")),
+        (HOVERED, ref("drawable", "kernora_circle_hover")),
+        ({}, framework(TRANSPARENT)),
+    ], "drawable"),
+    "kernora_state_close": selector([
+        (PRESSED, ref("drawable", "kernora_circle_close")),
+        (HOVERED, ref("drawable", "kernora_circle_close")),
+        ({}, framework(TRANSPARENT)),
+    ], "drawable"),
+}
+for button, (symbol, close) in BUTTONS.items():
+    DRAWABLE_FILES[f"kernora_glyph_{button}"] = glyph(symbol, "kernora_close_tint" if close else "kernora_caption_tint")
+    DRAWABLE_FILES[f"kernora_button_{button}"] = layers("kernora_state_close" if close else "kernora_state", f"kernora_glyph_{button}")
+
+DRAWABLE_ALIASES = {f"decor_{button}_button_{shade}": f"kernora_button_{button}" for button in BUTTONS for shade in ("dark", "light")}
+
+
+class Table:
+    def __init__(self) -> None:
+        self.types = ["color", "drawable"]
+        self.entries: dict[str, list[tuple[str, Value | None, Value | None]]] = {"color": [], "drawable": []}
+        for name, (day, night) in COLOURS.items():
+            self.entries["color"].append((name, day, night))
+        for name in COLOUR_FILES:
+            self.entries["color"].append((name, text(f"res/color/{name}.xml"), None))
+        for name in DRAWABLE_FILES:
+            self.entries["drawable"].append((name, text(f"res/drawable/{name}.xml"), None))
+        for alias, target in DRAWABLE_ALIASES.items():
+            self.entries["drawable"].append((alias, text(f"res/drawable/{target}.xml"), None))
+
+    def resolve(self, kind: str, name: str) -> int:
+        names = [entry[0] for entry in self.entries[kind]]
+        return (0x7F << 24) | ((self.types.index(kind) + 1) << 16) | names.index(name)
+
+    def encode(self) -> bytes:
+        values: list[str] = []
+        for kind in self.types:
+            for _name, day, night in self.entries[kind]:
+                for value in (day, night):
+                    if value is not None and value.kind == 0x03 and value.text not in values:
+                        values.append(value.text)
+        value_pool = Pool(values)
+        type_pool = Pool(self.types)
+        keys = [name for kind in self.types for name, _day, _night in self.entries[kind]]
+        key_pool = Pool(keys)
+
+        def config(night: bool) -> bytes:
+            data = bytearray(64)
+            struct.pack_into("<I", data, 0, 64)
+            if night:
+                data[29] = 0x20
+            return bytes(data)
+
+        def type_chunk(type_id: int, entries, night: bool) -> bytes:
+            offsets = b""
+            body = b""
+            for name, day, dark in entries:
+                value = dark if night else day
+                if value is None:
+                    offsets += struct.pack("<I", 0xFFFFFFFF)
+                    continue
+                offsets += struct.pack("<I", len(body))
+                data = value.data
+                if value.kind == 0x03:
+                    data = value_pool.index(value.text)
+                elif value.local:
+                    data = self.resolve(*value.local)
+                body += struct.pack("<HHI", 8, 0, key_pool.index(name)) + struct.pack("<HBBI", 8, 0, value.kind, data)
+            header = 20 + 64
+            start = header + len(offsets)
+            return struct.pack("<HHIBBHII", 0x0201, header, start + len(body), type_id, 0, 0, len(entries), start) + config(night) + offsets + body
+
+        package_body = b""
+        for index, kind in enumerate(self.types):
+            entries = self.entries[kind]
+            type_id = index + 1
+            flags = b"".join(struct.pack("<I", 0x1000 if night is not None else 0) for _n, _d, night in entries)
+            package_body += struct.pack("<HHIBBHI", 0x0202, 16, 16 + len(flags), type_id, 0, 0, len(entries)) + flags
+            package_body += type_chunk(type_id, entries, False)
+            if any(night is not None for _n, _d, night in entries):
+                package_body += type_chunk(type_id, entries, True)
+        header = 288
+        types_blob = type_pool.encode()
+        keys_blob = key_pool.encode()
+        name = OVERLAY.encode("utf-16-le").ljust(256, b"\x00")
+        package = (struct.pack("<HHII", 0x0200, header, header + len(types_blob) + len(keys_blob) + len(package_body), 0x7F)
+                   + name + struct.pack("<IIIII", header, len(self.types), header + len(types_blob), len(keys), 0)
+                   + types_blob + keys_blob + package_body)
+        values_blob = value_pool.encode()
+        return struct.pack("<HHII", 0x0002, 12, 12 + len(values_blob) + len(package), 1) + values_blob + package
+
+
+def manifest() -> Element:
+    return Element("manifest", {
+        "package": text(OVERLAY),
+        "versionCode": number(1),
+        "versionName": text("1"),
+    }, [
+        Element("uses-sdk", {"minSdkVersion": number(29), "targetSdkVersion": number(29)}),
+        Element("overlay", {"targetPackage": text("android"), "isStatic": flag(True), "priority": number(900)}),
+        Element("application", {"hasCode": flag(False)}),
+    ])
+
+
+def digest(data: bytes) -> str:
+    return base64.b64encode(hashlib.sha256(data).digest()).decode()
+
+
+def sign(files: dict[str, bytes]) -> dict[str, bytes]:
+    sections = {name: f"Name: {name}\r\nSHA-256-Digest: {digest(data)}\r\n\r\n".encode() for name, data in files.items()}
+    main = "Manifest-Version: 1.0\r\nCreated-By: Kernora\r\n\r\n".encode()
+    manifest_mf = main + b"".join(sections.values())
+    signature = ("Signature-Version: 1.0\r\nCreated-By: Kernora\r\n"
+                 f"SHA-256-Digest-Manifest: {digest(manifest_mf)}\r\n\r\n").encode()
+    signature += b"".join(f"Name: {name}\r\nSHA-256-Digest: {digest(section)}\r\n\r\n".encode() for name, section in sections.items())
+    with tempfile.TemporaryDirectory() as directory:
+        folder = pathlib.Path(directory)
+        (folder / "CERT.SF").write_bytes(signature)
+        subprocess.run(["openssl", "pkcs8", "-inform", "DER", "-nocrypt", "-in", str(KEY), "-out", str(folder / "key.pem")],
+                       check=True, capture_output=True)
+        subprocess.run(["openssl", "smime", "-sign", "-binary", "-noattr", "-md", "sha256", "-outform", "DER",
+                        "-signer", str(CERT), "-inkey", str(folder / "key.pem"),
+                        "-in", str(folder / "CERT.SF"), "-out", str(folder / "CERT.RSA")],
+                       check=True, capture_output=True)
+        block = (folder / "CERT.RSA").read_bytes()
+    return {"META-INF/MANIFEST.MF": manifest_mf, "META-INF/CERT.SF": signature, "META-INF/CERT.RSA": block}
+
+
+def write_apk(path: pathlib.Path, files: dict[str, bytes]) -> None:
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        for name, data in files.items():
+            info = zipfile.ZipInfo(name, STAMP)
+            info.compress_type = zipfile.ZIP_STORED
+            info.create_system = 0
+            if name == "resources.arsc":
+                header = 30 + len(name.encode())
+                padding = (4 - (buffer.tell() + header) % 4) % 4
+                info.extra = b"\x00" * padding
+            archive.writestr(info, data)
+    path.write_bytes(buffer.getvalue())
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 2:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    table = Table()
+    files: dict[str, bytes] = {"AndroidManifest.xml": compile_xml(manifest(), table.resolve)}
+    files["resources.arsc"] = table.encode()
+    for name, element in COLOUR_FILES.items():
+        files[f"res/color/{name}.xml"] = compile_xml(element, table.resolve)
+    for name, element in DRAWABLE_FILES.items():
+        files[f"res/drawable/{name}.xml"] = compile_xml(element, table.resolve)
+    files.update(sign(files))
+    output = pathlib.Path(argv[1])
+    output.parent.mkdir(parents=True, exist_ok=True)
+    write_apk(output, files)
+    print(f"android overlay: {output}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

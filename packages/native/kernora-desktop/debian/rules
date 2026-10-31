@@ -131,6 +131,7 @@ override_dh_auto_build:
 	    KERNORA_COLOUR=$$colour KERNORA_GENERATION=$$generation python3 $(TOOLS)/gen-gtk-theme generated/gtk-themes; \
 	  done; \
 	done
+	python3 $(TOOLS)/gen-android-overlay generated/android/KernoraCaption.apk
 	install -d generated/style/org/kernora
 	cp -a data/style/org.kernora.desktop generated/style/org/kernora/desktop
 	cp -a data/shell/m3 generated/style/org/kernora/desktop/impl
@@ -182,8 +183,11 @@ override_dh_auto_build:
 	cp -a data/sddm-theme/kernora generated/sddm/kernora
 	python3 $(TOOLS)/gen-greeter-palette $(SYMBOLS) generated/sddm/kernora
 
+override_dh_installsystemduser:
+	dh_installsystemduser --no-enable
+
 override_dh_installsystemd:
-	dh_installsystemd -pkernora-desktop kernora-drivers.timer kernora-panic-report.service
+	dh_installsystemd -pkernora-desktop kernora-drivers.timer kernora-panic-report.service kernora-android-update.timer
 
 override_dh_auto_clean:
 	rm -rf generated $(TOOLS)/__pycache__

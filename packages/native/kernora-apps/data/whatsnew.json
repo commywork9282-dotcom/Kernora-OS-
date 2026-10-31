@@ -7,11 +7,11 @@
         "icon": "kernora-android",
         "title": {
           "en": "Android apps (demo)",
-          "ru": "Приложения Android (демо)"
+          "ru": "Android-приложения (демо)"
         },
         "text": {
-          "en": "Kernora can run Android apps now. Turn Android on in Settings, Android apps: pick plain Android or Android with Google Play, and Kernora downloads it for you. Then open any .apk file to install the app. Every Android app gets its own window and sits with your other apps. This is an early demo, so tell us what works and what doesn't.",
-          "ru": "Kernora теперь умеет запускать приложения Android. Включите Android в Настройках, раздел «Приложения Android»: выберите обычный Android или Android с Google Play, и Kernora сама его скачает. Потом откройте любой .apk-файл, чтобы установить приложение. Каждое Android-приложение открывается в своём окне и стоит рядом с остальными. Это ранняя демо-версия, расскажите нам, что работает, а что нет."
+          "en": "Kernora runs apps made for Android phones now. Set them up once in Settings, Android apps: pick APK files or Google Play, and Kernora downloads everything they need. Then open any .apk file to install an app. Each one gets its own window in your colours, sits with your other apps and keeps itself up to date. This is an early demo, so tell us what works and what doesn't.",
+          "ru": "Kernora теперь запускает приложения для телефонов на Android. Один раз настройте их в Настройках, раздел «Android-приложения»: выберите APK-файлы или Google Play, и Kernora сама скачает всё нужное. Потом откройте любой .apk-файл, чтобы установить приложение. Каждое открывается в своём окне в ваших цветах, стоит рядом с остальными приложениями и обновляется само. Это ранняя демо-версия, расскажите нам, что работает, а что нет."
         }
       }
     ]

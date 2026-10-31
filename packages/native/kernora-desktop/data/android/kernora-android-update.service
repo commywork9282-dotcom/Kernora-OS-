@@ -1,0 +1,11 @@
+[Unit]
+Description=Update the image behind Android apps
+ConditionPathExists=/var/lib/waydroid/waydroid.cfg
+ConditionPathExists=!/run/live/medium
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/kernora-android update
+Nice=10
+IOSchedulingClass=idle

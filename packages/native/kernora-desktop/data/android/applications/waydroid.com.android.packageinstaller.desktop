@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=App installer
+Name[ru]=Установка приложений
+Icon=org.kernora.android
+Exec=true
+NoDisplay=true

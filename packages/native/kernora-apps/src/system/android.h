@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <QHash>
 #include <QJSValue>
 #include <QObject>
 #include <QUrl>
@@ -28,6 +29,7 @@ public:
     QVariantList apps() const { return m_apps; }
 
     Q_INVOKABLE QVariantMap inspect(const QUrl &file) const;
+    Q_INVOKABLE void iconOf(const QUrl &file, const QJSValue &callback);
     Q_INVOKABLE bool hasApp(const QString &package) const;
     Q_INVOKABLE void install(const QUrl &file, const QString &package, const QJSValue &callback = QJSValue());
     Q_INVOKABLE bool uninstall(const QString &package);
@@ -45,9 +47,12 @@ private:
     void scan();
     void listPackages(const QString &package, const QJSValue &callback);
     QString applicationsFolder() const;
+    static QString iconCache(const QString &path);
 
     bool m_running = false;
     QVariantList m_apps;
     QFileSystemWatcher *m_watcher = nullptr;
     QDBusServiceWatcher *m_session = nullptr;
+    QHash<int, QJSValue> m_iconRequests;
+    int m_nextRequest = 0;
 };

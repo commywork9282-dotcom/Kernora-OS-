@@ -483,8 +483,14 @@ dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -
   && [[ -s "$temporary_root/desktop/usr/share/kernora/apt/kernora-android.sources" ]] \
   && [[ -s "$temporary_root/desktop/usr/share/polkit-1/actions/org.kernora.android.policy" ]] \
   && grep -Fxq 'NoDisplay=true' "$temporary_root/desktop/usr/share/applications/Waydroid.desktop" \
+  && [[ -x "$temporary_root/desktop/usr/libexec/kernora-android-sync" ]] \
+  && [[ -s "$temporary_root/desktop/usr/share/kernora/android/KernoraCaption.apk" ]] \
+  && [[ -s "$temporary_root/desktop/usr/lib/systemd/system/kernora-android-update.timer" ]] \
+  && [[ -L "$temporary_root/desktop/usr/lib/systemd/user/default.target.wants/kernora-android-sync.path" ]] \
+  && [[ -s "$temporary_root/desktop/usr/share/applications/waydroid.com.android.permissioncontroller.desktop" ]] \
+  && [[ -s "$temporary_root/desktop/usr/share/applications/waydroid.market.desktop" ]] \
   || fail "the Android tools are incomplete"
-for icon in apps/org.kernora.android.svg apps/waydroid.svg apps/org.kernora.apkinstaller.svg \
+for icon in apps/org.kernora.android.svg apps/waydroid.svg apps/org.kernora.apkinstaller.svg actions/kernora-google-play.svg \
     categories/kernora-android.svg mimetypes/application-vnd.android.package-archive.svg; do
   find "$temporary_root/desktop/usr/share/icons" -path "*/$icon" -print -quit | grep -q . \
     || fail "the icon theme has no $icon"

@@ -3,7 +3,7 @@ Section: x11
 Priority: optional
 Maintainer: Kernora Developers <developers@kernora.invalid>
 Standards-Version: 4.7.4
-Build-Depends: debhelper-compat (= 13), fonts-roboto-unhinted, grub-common, librsvg2-bin, python3
+Build-Depends: debhelper-compat (= 13), fonts-roboto-unhinted, grub-common, librsvg2-bin, openssl, python3
 Rules-Requires-Root: no
 
 Package: kernora-desktop

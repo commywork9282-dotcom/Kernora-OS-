@@ -19,24 +19,27 @@ SettingsPage {
     title: i18n("Android apps")
 
     readonly property string tool: "/usr/libexec/kernora-android"
+    readonly property string store: "com.android.vending"
     property var info: ({})
     property bool loaded: false
     property string choice: "vanilla"
     property bool actionFailed: false
-    property bool starting: false
     property real requestedAt: 0
     property string androidId: ""
+    property bool faster: false
 
     readonly property bool live: info.live === "yes"
     readonly property bool ready: info.ready === "yes" && info.installed === "yes"
     readonly property string status: info.status || ""
+    readonly property var working: ["installing", "downloading", "unpacking", "removing", "updating"]
     readonly property bool jobRunning: info.job === "yes"
     readonly property bool fresh: Number(info.time || 0) >= requestedAt - 1 && Date.now() / 1000 - requestedAt < 20
-    readonly property bool busy: ["installing", "downloading", "unpacking", "removing"].includes(status) && (jobRunning || fresh)
-    readonly property bool stalled: ["installing", "downloading", "unpacking", "removing"].includes(status) && !busy
+    readonly property bool busy: working.includes(status) && (jobRunning || fresh)
+    readonly property bool stalled: working.includes(status) && status !== "updating" && !busy
     readonly property bool failed: !busy && (status === "failed" || status === "offline" || stalled || actionFailed)
     readonly property bool google: info.kind === "gapps"
     readonly property int progress: Number(info.progress || 0)
+    readonly property var userApps: Android.apps.filter(app => app.package !== page.store)
 
     function refresh(): void {
         Process.run(page.tool, ["status"], (code, output) => {
@@ -49,6 +52,9 @@ SettingsPage {
             }
             page.info = values;
             page.loaded = true;
+        });
+        Process.run("systemctl", ["--user", "is-enabled", "kernora-android.service"], (code, output) => {
+            page.faster = output.trim() === "enabled";
         });
     }
 
@@ -77,58 +83,187 @@ SettingsPage {
     }
 
     readonly property string headline: {
-        if (!loaded) {
-            return "";
-        }
         if (busy) {
             switch (status) {
-            case "installing":
-                return i18n("Getting Android ready…");
-            case "downloading":
-                return i18n("Downloading Android… %1%", progress);
-            case "unpacking":
-                return i18n("Unpacking Android…");
             case "removing":
-                return i18n("Removing Android…");
+                return i18n("Removing Android apps…");
+            case "updating":
+                return i18n("Updating…");
+            case "unpacking":
+                return i18n("Almost ready…");
+            default:
+                return i18n("Setting up Android apps…");
             }
         }
         if (failed) {
-            return status === "offline" ? i18n("No internet connection") : i18n("Android couldn't be turned on");
+            return status === "offline" ? i18n("No internet connection") : i18n("Android apps couldn't be set up");
         }
         return "";
     }
 
     readonly property string detail: {
         if (busy) {
-            return status === "removing" ? i18n("Android apps and their data are being deleted from this computer.")
-                                         : i18n("This takes a few minutes. You can keep using the computer.");
+            switch (status) {
+            case "removing":
+                return i18n("Every Android app and its data are being deleted from this computer.");
+            case "updating":
+                return i18n("Android apps are getting an update. They open again once it's done.");
+            default:
+                return i18n("This takes a few minutes. You can keep using the computer.");
+            }
         }
         if (failed) {
-            return status === "offline" ? i18n("Android is downloaded from the internet. Connect to a network and try again.")
+            return status === "offline" ? i18n("Everything apps need is downloaded from the internet. Connect to a network and try again.")
                                         : i18n("Check the internet connection and that there is enough free space, then try again.");
         }
         return "";
+    }
+
+    component Choice: Item {
+        id: card
+
+        property string value
+        property string icon
+        property string title
+        property string text
+        property string amount
+        readonly property bool selected: page.choice === value
+
+        implicitHeight: body.implicitHeight + 40
+        activeFocusOnTab: true
+        Accessible.role: Accessible.RadioButton
+        Accessible.name: title
+        Accessible.checked: selected
+        Keys.onSpacePressed: page.choice = value
+        Keys.onReturnPressed: page.choice = value
+
+        MMorph {
+            id: selectMorph
+            active: card.selected
+            dampingRatio: M3.springExpressiveDefaultDamping
+            response: M3.springExpressiveDefaultResponse
+        }
+
+        Rectangle {
+            id: surface
+            anchors.fill: parent
+            radius: M3.classic ? M3.cornerCard : 20 + 12 * selectMorph.value
+            color: card.selected ? M3.secondaryContainer : M3.surfaceContainerHigh
+            Behavior on color { ColorAnimation { duration: M3.durationShort4 } }
+
+            MStateLayer {
+                radius: surface.radius
+                color: M3.surfaceContent
+                hovered: mouse.containsMouse
+                pressed: mouse.pressed
+                focused: card.activeFocus
+                pressPoint: Qt.point(mouse.mouseX, mouse.mouseY)
+            }
+        }
+
+        ColumnLayout {
+            id: body
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: 20
+            spacing: 12
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 12
+
+                Item {
+                    implicitWidth: 48
+                    implicitHeight: 48
+                    MShape {
+                        anchors.fill: parent
+                        shape: M3.classic ? "circle" : (card.selected ? "cookie9" : "circle")
+                        color: card.selected ? M3.primary : M3.secondaryContainer
+                        rotation: 45 * selectMorph.value
+                    }
+                    MIcon {
+                        anchors.centerIn: parent
+                        size: 24
+                        source: card.icon
+                        color: card.selected ? M3.primaryContent : M3.secondaryContainerContent
+                    }
+                }
+                Item {
+                    Layout.fillWidth: true
+                }
+                Rectangle {
+                    implicitWidth: 28
+                    implicitHeight: 28
+                    radius: 14
+                    color: M3.primary
+                    scale: selectMorph.value
+                    opacity: selectMorph.value
+                    MIcon {
+                        anchors.centerIn: parent
+                        size: 20
+                        source: "checkmark"
+                        color: M3.primaryContent
+                    }
+                }
+            }
+            MText {
+                Layout.fillWidth: true
+                role: "titleMedium"
+                text: card.title
+                color: card.selected ? M3.secondaryContainerContent : M3.surfaceContent
+                wrapMode: Text.Wrap
+            }
+            MText {
+                Layout.fillWidth: true
+                role: "bodyMedium"
+                text: card.text
+                color: card.selected ? M3.secondaryContainerContent : M3.surfaceVariantContent
+                wrapMode: Text.Wrap
+            }
+            MText {
+                Layout.fillWidth: true
+                role: "labelLarge"
+                text: card.amount
+                color: card.selected ? M3.secondaryContainerContent : M3.primary
+            }
+        }
+
+        MouseArea {
+            id: mouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: page.choice = card.value
+        }
     }
 
     Item {
         width: parent.width
         implicitHeight: art.height + blurb.implicitHeight + 36
 
+        MMorph {
+            id: readyMorph
+            active: page.ready
+            dampingRatio: M3.springExpressiveDefaultDamping
+            response: M3.springExpressiveDefaultResponse
+        }
         MShape {
             id: art
             anchors.horizontalCenter: parent.horizontalCenter
             y: 8
             width: 136
             height: 136
-            shape: M3.classic ? "circle" : "cookie9"
+            shape: M3.classic ? "circle" : (page.ready ? "sunny" : "cookie9")
             color: page.ready ? M3.primaryContainer : M3.surfaceContainerHighest
+            scale: 0.92 + 0.08 * readyMorph.value
             Behavior on color { ColorAnimation { duration: M3.durationMedium2 } }
             RotationAnimator on rotation {
                 from: 0
                 to: 360
                 duration: 24000
                 loops: Animation.Infinite
-                running: (Android.running || page.busy) && art.visible && M3.motionScale > 0 && !M3.classic
+                running: page.busy && art.visible && M3.motionScale > 0 && !M3.classic
             }
         }
         MIcon {
@@ -148,7 +283,7 @@ SettingsPage {
             color: M3.surfaceVariantContent
             wrapMode: Text.Wrap
             text: page.live ? i18n("Android apps work after Kernora is installed on this computer.")
-                            : i18n("Install Android apps from APK files. Each app opens in its own window, next to your other apps.")
+                            : i18n("Apps made for Android phones and tablets, in their own windows, right next to your other apps.")
         }
     }
 
@@ -170,12 +305,22 @@ SettingsPage {
             anchors.margins: 24
             spacing: 12
 
-            MText {
+            RowLayout {
                 Layout.fillWidth: true
-                role: "titleLarge"
-                text: page.headline
-                wrapMode: Text.Wrap
-                color: summary.ink
+                spacing: 12
+                MText {
+                    Layout.fillWidth: true
+                    role: "titleLarge"
+                    text: page.headline
+                    wrapMode: Text.Wrap
+                    color: summary.ink
+                }
+                MText {
+                    visible: page.busy && page.status === "downloading"
+                    role: "titleLarge"
+                    text: i18n("%1%", page.progress)
+                    color: M3.primary
+                }
             }
             MText {
                 Layout.fillWidth: true
@@ -194,17 +339,16 @@ SettingsPage {
             RowLayout {
                 spacing: 8
                 visible: (page.busy && (page.status === "downloading" || page.status === "unpacking")) || page.failed
-                QQC2.Button {
+                MButton {
                     visible: page.busy
+                    variant: "text"
                     text: i18n("Cancel")
-                    flat: true
                     onClicked: page.request("cancel")
                 }
-                QQC2.Button {
+                MButton {
                     visible: page.failed
                     text: i18n("Try again")
-                    icon.name: "view-refresh"
-                    highlighted: true
+                    icon: "view-refresh"
                     onClicked: page.request(page.choice === "gapps" ? "setup-gapps" : "setup-vanilla")
                 }
             }
@@ -212,23 +356,34 @@ SettingsPage {
     }
 
     Group {
-        title: i18n("Choose Android")
-        note: i18n("Google Play asks you to register this computer once before you sign in. Android takes about 3 GB of disk space. Banking apps and games with anti-cheat only run on phones.")
+        title: i18n("Where your apps come from")
+        note: i18n("Android apps take about 3 GB of disk space. Banking apps and games with anti-cheat only run on phones.")
         visible: page.loaded && !page.live && !page.ready && !page.busy
 
-        RadioRow {
+        GridLayout {
             width: parent.width
-            title: i18n("Android")
-            subtitle: i18n("APK files and open stores like F-Droid · about 1 GB")
-            checked: page.choice === "vanilla"
-            onClicked: page.choice = "vanilla"
-        }
-        RadioRow {
-            width: parent.width
-            title: i18n("Android with Google Play")
-            subtitle: i18n("Play Store and Google services · about 1.4 GB")
-            checked: page.choice === "gapps"
-            onClicked: page.choice = "gapps"
+            columns: width > 520 ? 2 : 1
+            columnSpacing: 12
+            rowSpacing: 12
+
+            Choice {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                value: "vanilla"
+                icon: "kernora-apk-install"
+                title: i18n("APK files")
+                text: i18n("Install apps from APK files and from open app stores like F-Droid.")
+                amount: i18n("About 1 GB to download")
+            }
+            Choice {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                value: "gapps"
+                icon: "kernora-google-play"
+                title: i18n("Google Play")
+                text: i18n("APK files plus the Play Store and Google services. Google asks you to register this computer once.")
+                amount: i18n("About 1.4 GB to download")
+            }
         }
     }
 
@@ -239,90 +394,24 @@ SettingsPage {
         Item {
             Layout.fillWidth: true
         }
-        QQC2.Button {
-            text: i18n("Turn on")
-            icon.name: "download"
-            highlighted: true
+        MButton {
+            text: i18n("Set up")
+            icon: "download"
             onClicked: page.request(page.choice === "gapps" ? "setup-gapps" : "setup-vanilla")
         }
     }
 
     Group {
+        title: i18n("Your apps")
         visible: page.ready && !page.busy
 
-        ListItem {
-            title: i18n("Android")
-            subtitle: page.starting ? i18n("Starting…")
-                    : Android.running ? i18n("Running")
-                    : i18n("Starts by itself when you open an Android app")
-            icon: "kernora-android"
-            accent: 2
-            checkable: true
-            checked: Android.running || page.starting
-            enabled: !page.starting
-            onToggled: on => {
-                if (on) {
-                    page.starting = true;
-                    Android.start(() => page.starting = false);
-                } else {
-                    Android.stop();
-                }
-            }
-        }
-        ListItem {
-            title: i18n("Install an app from an APK file")
-            icon: "kernora-apk-install"
-            iconStyle: "plain"
-            chevron: true
-            onClicked: Process.startDetached("kernora-apkinstaller", [])
-        }
-        ListItem {
-            title: i18n("Android settings")
-            subtitle: i18n("Language, accounts and app permissions inside Android")
-            icon: "configure"
-            iconStyle: "plain"
-            chevron: true
-            onClicked: Android.openSettings()
-        }
-    }
-
-    Group {
-        title: i18n("Google Play")
-        note: i18n("Before you can sign in to the Play Store, register this computer with Google. Start Android, copy the device ID and paste it on Google's page.")
-        visible: page.ready && !page.busy && page.google
-
-        ListItem {
-            title: i18n("Register with Google")
-            subtitle: page.androidId.length > 0 ? i18n("Device ID: %1", page.androidId) : i18n("Shows the device ID and opens Google's page")
-            icon: "kernora-android"
-            iconStyle: "plain"
-            chevron: true
-            enabled: Android.running && !page.starting
-            onClicked: Process.run("pkexec", [page.tool, "android-id"], (code, output) => {
-                page.androidId = output.trim();
-                if (page.androidId.length > 0) {
-                    Android.copyText(page.androidId);
-                    page.notify(i18n("Device ID copied"));
-                    Process.openUrl("https://www.google.com/android/uncertified");
-                } else {
-                    page.notify(i18n("Open the Play Store once, then try again"));
-                }
-            })
-        }
-    }
-
-    Group {
-        title: i18n("Apps")
-        visible: page.ready && !page.busy && Android.apps.length > 0
-
         Repeater {
-            model: Android.apps
+            model: page.userApps
 
             delegate: ListItem {
                 id: row
                 required property var modelData
                 title: modelData.name
-                subtitle: modelData.package
                 leading: Component {
                     AppIcon {
                         name: row.modelData.icon
@@ -338,22 +427,82 @@ SettingsPage {
                 onClicked: Android.launch(modelData.package)
             }
         }
+        ListItem {
+            visible: page.userApps.length === 0
+            title: i18n("No apps yet")
+            subtitle: page.google ? i18n("Open an APK file, or get apps from Google Play") : i18n("Open an APK file to install an app")
+            icon: "kernora-android"
+            iconStyle: "plain"
+            interactive: false
+        }
+        ListItem {
+            title: i18n("Install an app from an APK file")
+            icon: "kernora-apk-install"
+            iconStyle: "plain"
+            chevron: true
+            onClicked: Process.startDetached("kernora-apkinstaller", [])
+        }
+        ListItem {
+            visible: page.google
+            title: i18n("Google Play")
+            subtitle: i18n("Find and install apps")
+            icon: "kernora-google-play"
+            iconStyle: "plain"
+            chevron: true
+            onClicked: Android.launch(page.store)
+        }
+    }
+
+    Group {
+        title: i18n("Google Play")
+        note: i18n("Before you sign in to the Play Store, register this computer with Google: copy the device ID and paste it on Google's page.")
+        visible: page.ready && !page.busy && page.google
+
+        ListItem {
+            title: i18n("Register with Google")
+            subtitle: page.androidId.length > 0 ? i18n("Device ID: %1", page.androidId) : i18n("Shows the device ID and opens Google's page")
+            icon: "kernora-google-play"
+            iconStyle: "plain"
+            chevron: true
+            onClicked: Process.run("pkexec", [page.tool, "android-id"], (code, output) => {
+                page.androidId = output.trim();
+                if (page.androidId.length > 0) {
+                    Android.copyText(page.androidId);
+                    page.notify(i18n("Device ID copied"));
+                    Process.openUrl("https://www.google.com/android/uncertified");
+                } else {
+                    page.notify(i18n("Open Google Play once, then try again"));
+                }
+            })
+        }
     }
 
     Group {
         visible: page.ready && !page.busy
 
         ListItem {
+            title: i18n("Open apps faster")
+            subtitle: i18n("Keeps Android apps ready from the moment you sign in. Uses about 1 GB of memory.")
+            icon: "kernora-speed"
+            iconStyle: "plain"
+            checkable: true
+            checked: page.faster
+            onToggled: on => {
+                page.faster = on;
+                Process.run("systemctl", ["--user", on ? "enable" : "disable", "kernora-android.service"], () => page.refresh());
+            }
+        }
+        ListItem {
             title: i18n("Storage")
-            subtitle: page.google ? i18n("Android with Google Play") : i18n("Android")
+            subtitle: i18n("Android apps and their data")
             value: page.size(Number(page.info.size || 0))
             icon: "drive-harddisk"
             iconStyle: "plain"
             interactive: false
         }
         ListItem {
-            title: i18n("Remove Android")
-            subtitle: i18n("Deletes Android, every Android app and its data")
+            title: i18n("Remove Android apps")
+            subtitle: i18n("Deletes every Android app and its data")
             icon: "edit-delete"
             iconStyle: "plain"
             destructive: true
@@ -363,8 +512,8 @@ SettingsPage {
 
     Dialog {
         id: removeDialog
-        title: i18n("Remove Android?")
-        text: i18n("Every Android app and all of its data are deleted from this computer. You can turn Android on again later.")
+        title: i18n("Remove Android apps?")
+        text: i18n("Every Android app and all of its data are deleted from this computer. You can set them up again later.")
         acceptText: i18n("Remove")
         destructive: true
         onAccepted: page.request("remove")

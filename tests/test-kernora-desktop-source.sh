@@ -195,8 +195,43 @@ grep -Fq 'real=/usr/bin/waydroid.waydroid' "$android/waydroid" \
   && grep -Fq '/usr/libexec/kernora-android-session' "$android/waydroid" \
   && grep -Fq "stdbuf -oL tr" "$android/kernora-android" \
   || fail "Android apps do not wait for Android to boot"
+bash -n "$android/kernora-android-sync" && [[ -x "$android/kernora-android-sync" ]] \
+  && grep -Fq 'settings put secure theme_customization_overlay_packages' "$android/kernora-android-sync" \
+  && grep -Fq 'cmd uimode night' "$android/kernora-android-sync" \
+  && grep -Fq 'pm list packages -s' "$android/kernora-android-sync" \
+  && grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-sync</annotate>' "$android/org.kernora.android.policy" \
+  && grep -Fq 'PathChanged=%h/.config/kdeglobals' "$android/kernora-android-sync.path" \
+  && grep -Fq -- '--sync-after-boot' "$android/kernora-android.service" \
+  || fail "Android apps do not follow the Kernora colour and theme"
+grep -Fq 'ExecStart=/usr/libexec/kernora-android update' "$android/kernora-android-update.service" \
+  && grep -Fq 'OnUnitActiveSec=1d' "$android/kernora-android-update.timer" \
+  && grep -Fq 'kernora-android-update.timer' "$package_root/debian/rules" \
+  || fail "the image behind Android apps does not update itself"
+grep -Fq 'kernora-appsplash' "$android/waydroid" \
+  && ! grep -Fq 'Starting Android' "$android/kernora-android-session" \
+  || fail "opening an Android app still talks about starting Android"
+for component in android com.android.permissioncontroller com.android.packageinstaller com.google.android.gms; do
+  grep -Fxq 'Icon=org.kernora.android' "$android/applications/waydroid.$component.desktop" \
+    || fail "Android's $component windows have no Kernora icon"
+done
+! grep -rh --include='*.desktop' '^Name' "$android" | grep -qi waydroid \
+  || fail "a desktop entry shows the Waydroid name"
+overlay=$(mktemp -d)
+python3 "$package_root/tools/gen-android-overlay" "$overlay/KernoraCaption.apk" >/dev/null || fail "gen-android-overlay fails"
+python3 - "$overlay/KernoraCaption.apk" <<'PY' || fail "the caption overlay is incomplete"
+import sys, zipfile
+names = set(zipfile.ZipFile(sys.argv[1]).namelist())
+wanted = {"AndroidManifest.xml", "resources.arsc", "META-INF/CERT.RSA", "META-INF/CERT.SF", "META-INF/MANIFEST.MF",
+          "res/drawable/decor_caption_title_focused.xml", "res/drawable/kernora_button_close.xml"}
+sys.exit(0 if wanted <= names else 1)
+PY
+(cd "$overlay" && unzip -q KernoraCaption.apk 'META-INF/*' && openssl smime -verify -inform DER -in META-INF/CERT.RSA -content META-INF/CERT.SF -binary -noverify -out /dev/null 2>/dev/null) \
+  || fail "the caption overlay signature does not verify"
+cmp -s <(python3 "$package_root/tools/gen-android-overlay" "$overlay/again.apk" >/dev/null && cat "$overlay/again.apk") "$overlay/KernoraCaption.apk" \
+  || fail "the caption overlay is not reproducible"
+rm -rf "$overlay"
 for script in preinst postrm; do
-  grep -Fq '/usr/share/applications/waydroid.app.install.desktop; do' "$package_root/debian/kernora-desktop.$script" \
+  grep -Fq '/usr/share/applications/waydroid.market.desktop; do' "$package_root/debian/kernora-desktop.$script" \
     && grep -Fq -- '--divert "$file.waydroid" "$file"' "$package_root/debian/kernora-desktop.$script" \
     || fail "$script does not divert Waydroid's command and entries"
 done

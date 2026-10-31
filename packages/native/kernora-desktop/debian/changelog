@@ -13,7 +13,22 @@ kernora-desktop (1.4.56) UNRELEASED; urgency=medium
     notification, so an app opens on the first try from anywhere.
   * Waydroid's own launcher entry and APK handler are diverted; .apk files
     open in Kernora's installer.
-  * Icon theme: Android, APK and APK installer symbols.
+  * Icon theme: Android, APK, APK installer and Google Play symbols.
+  * Android app windows wear the Kernora title bar: a static overlay,
+    KernoraCaption, built by tools/gen-android-overlay (own binary XML and
+    resource table, signed with AOSP's public platform test key that the
+    image uses) gives Android's caption the Material surface colours and
+    Material Symbols with Kernora's pressed circles.
+  * kernora-android-sync (no password for the active user) hands Android
+    the Kernora colour as its Material You seed and the light or dark
+    theme, lists Android's own packages so their entries stay out of the
+    launcher, and turns off the image's own updater. It runs when Android
+    has booted and whenever kdeglobals or kernorarc change.
+  * kernora-android-update.timer installs a new image once a day when one
+    is out and no app is open.
+  * Hidden entries give Android's permission, installer and Google
+    windows the Kernora icon; the market:// handler no longer says
+    Waydroid.
 
  -- Kernora Developers <developers@kernora.invalid>  Fri, 30 Oct 2026 20:00:00 -0700
 
