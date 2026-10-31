@@ -1,0 +1,257 @@
+# Dutch translation of Kernora Welcome.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-welcome\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-31 13:44+0100\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#
+#: apps/welcome/qml/Main.qml:26
+msgid "Kernora restarted"
+msgstr "Kernora is opnieuw opgestart"
+
+#: apps/welcome/qml/Main.qml:26
+msgid "Welcome"
+msgstr "Welkom"
+
+#: apps/welcome/qml/Main.qml:26
+msgid "What's new"
+msgstr "Wat is er nieuw"
+
+#: apps/welcome/qml/Main.qml:174
+msgid "Back"
+msgstr "Terug"
+
+#: apps/welcome/qml/Main.qml:174
+msgid "Skip"
+msgstr "Overslaan"
+
+#: apps/welcome/qml/Main.qml:195
+msgid "Next"
+msgstr "Volgende"
+
+#
+#: apps/welcome/qml/Main.qml:195
+msgid "Start using Kernora"
+msgstr "Kernora gaan gebruiken"
+
+#: apps/welcome/qml/Main.qml:293
+msgid "Welcome to %1"
+msgstr "Welkom bij %1"
+
+#
+#: apps/welcome/qml/Main.qml:302
+msgid "You are trying Kernora from the installation medium. Look around, then install it when you are ready."
+msgstr "Je probeert Kernora vanaf het installatiemedium. Kijk rustig rond en installeer het als je er klaar voor bent."
+
+#: apps/welcome/qml/Main.qml:303
+msgid "Let's make it yours. It takes a minute."
+msgstr "Laten we het van jou maken. Het duurt maar een minuutje."
+
+#
+#: apps/welcome/qml/Main.qml:309
+msgid "Install Kernora"
+msgstr "Kernora installeren"
+
+#: apps/welcome/qml/Main.qml:322
+msgid "Light or dark"
+msgstr "Licht of donker"
+
+#
+#: apps/welcome/qml/Main.qml:323
+msgid "Choose how Kernora looks. You can change it any time in Settings."
+msgstr "Kies hoe Kernora eruitziet. Je kunt het altijd wijzigen in Instellingen."
+
+#: apps/welcome/qml/Main.qml:331
+msgid "Light"
+msgstr "Licht"
+
+#: apps/welcome/qml/Main.qml:332
+msgid "Dark"
+msgstr "Donker"
+
+#: apps/welcome/qml/Main.qml:354
+msgid "Pick a style"
+msgstr "Kies een stijl"
+
+#
+#: apps/welcome/qml/Main.qml:355
+msgid "Three generations of Material, in the Kernora colours. You can change it any time in Settings."
+msgstr "Drie generaties Material, in de kleuren van Kernora. Je kunt het altijd wijzigen in Instellingen."
+
+#: apps/welcome/qml/Main.qml:363
+msgid "2021 · Material You"
+msgstr "2021 · Material You"
+
+#: apps/welcome/qml/Main.qml:364
+msgid "2018 · Material Theming"
+msgstr "2018 · Material Theming"
+
+#: apps/welcome/qml/Main.qml:365
+msgid "2014 · paper and ink"
+msgstr "2014 · papier en inkt"
+
+#: apps/welcome/qml/Main.qml:389
+msgid "Pick a wallpaper"
+msgstr "Kies een achtergrond"
+
+#
+#: apps/welcome/qml/Main.qml:390
+msgid "Kernora's wallpapers are alive: they move slowly and rest behind your windows."
+msgstr "De achtergronden van Kernora leven: ze bewegen langzaam en komen tot rust achter je vensters."
+
+#: apps/welcome/qml/Main.qml:438
+msgid "Your apps"
+msgstr "Je apps"
+
+#: apps/welcome/qml/Main.qml:439
+msgid "Everything you need is here. Open the launcher with the Meta key to find more."
+msgstr "Alles wat je nodig hebt staat klaar. Open het startmenu met de Meta-toets om meer te vinden."
+
+#: apps/welcome/qml/Main.qml:450
+msgid "Web browser"
+msgstr "Webbrowser"
+
+#: apps/welcome/qml/Main.qml:451
+msgid "Files"
+msgstr "Bestanden"
+
+#: apps/welcome/qml/Main.qml:452
+msgid "Photos"
+msgstr "Foto's"
+
+#: apps/welcome/qml/Main.qml:453
+msgid "Media Player"
+msgstr "Mediaspeler"
+
+#: apps/welcome/qml/Main.qml:454
+msgid "Text Editor"
+msgstr "Teksteditor"
+
+#: apps/welcome/qml/Main.qml:455
+msgid "Calculator"
+msgstr "Rekenmachine"
+
+#: apps/welcome/qml/Main.qml:456
+msgid "Screenshot"
+msgstr "Schermafbeelding"
+
+#: apps/welcome/qml/Main.qml:457
+msgid "Terminal"
+msgstr "Terminal"
+
+#: apps/welcome/qml/Main.qml:458
+msgid "Settings"
+msgstr "Instellingen"
+
+#: apps/welcome/qml/Main.qml:500
+msgid "You're all set"
+msgstr "Je bent er klaar voor"
+
+#: apps/welcome/qml/Main.qml:501
+msgid "A few things worth knowing:"
+msgstr "Een paar dingen die handig zijn om te weten:"
+
+#: apps/welcome/qml/Main.qml:510
+msgid "Meta opens the launcher"
+msgstr "Meta opent het startmenu"
+
+#: apps/welcome/qml/Main.qml:511
+msgid "Start typing to find apps, files and settings"
+msgstr "Begin te typen om apps, bestanden en instellingen te vinden"
+
+#: apps/welcome/qml/Main.qml:518
+msgid "Quick settings are on the right of the panel"
+msgstr "Snelle instellingen staan rechts in het paneel"
+
+#: apps/welcome/qml/Main.qml:519
+msgid "Wi-Fi, sound, brightness, Do Not Disturb and more"
+msgstr "Wifi, geluid, helderheid, Niet storen en meer"
+
+#
+#: apps/welcome/qml/Main.qml:526
+msgid "Print takes a screenshot"
+msgstr "Print maakt een schermafbeelding"
+
+#: apps/welcome/qml/Main.qml:527
+msgid "Choose an area, the screen or a window"
+msgstr "Kies een gebied, het scherm of een venster"
+
+#: apps/welcome/qml/Main.qml:534
+msgid "Settings has everything else"
+msgstr "In Instellingen vind je al het andere"
+
+#
+#: apps/welcome/qml/Main.qml:623
+msgid "Kernora got even better"
+msgstr "Kernora is nog beter geworden"
+
+#: apps/welcome/qml/Main.qml:632
+msgid "Here is what is new in the update of %1."
+msgstr "Dit is er nieuw in de update van %1."
+
+#: apps/welcome/qml/Main.qml:633
+msgid "Here is what is new in the latest updates."
+msgstr "Dit is er nieuw in de laatste updates."
+
+#: apps/welcome/qml/Main.qml:653
+msgid "Update of %1"
+msgstr "Update van %1"
+
+#: apps/welcome/qml/Main.qml:682
+msgid "Great"
+msgstr "Top"
+
+#: apps/welcome/qml/Main.qml:788
+msgid "Well, this is awkward."
+msgstr "Nou, dit is vervelend."
+
+#
+#: apps/welcome/qml/Main.qml:798
+msgid "Kernora encountered a critical kernel error and could no longer continue running. Your computer restarted automatically to recover from this problem."
+msgstr "Kernora kwam een kritieke fout in de kernel tegen en kon niet verder. Je computer is automatisch opnieuw opgestart om dit probleem op te lossen."
+
+#: apps/welcome/qml/Main.qml:809
+msgid "It happened on %1."
+msgstr "Het gebeurde op %1."
+
+#: apps/welcome/qml/Main.qml:851
+msgid "Only an administrator can read the full report."
+msgstr "Alleen een beheerder kan het volledige rapport lezen."
+
+#: apps/welcome/qml/Main.qml:865
+msgid "Details"
+msgstr "Details"
+
+#: apps/welcome/qml/Main.qml:865
+msgid "Hide details"
+msgstr "Details verbergen"
+
+#: apps/welcome/qml/Main.qml:871
+msgid "Copy"
+msgstr "Kopiëren"
+
+#: apps/welcome/qml/Main.qml:882
+msgid "Okay"
+msgstr "Oké"
+
+#: src/apps/host.cpp:59
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:67
+msgid "Files or pages to open."
+msgstr "Bestanden of pagina's om te openen."
+
+#: src/apps/welcome.cpp:8
+msgctxt "@title application name"
+msgid "Welcome"
+msgstr "Welkom"

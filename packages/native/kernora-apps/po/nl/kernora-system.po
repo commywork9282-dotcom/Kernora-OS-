@@ -1,0 +1,244 @@
+# Dutch translation of Kernora System.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-system\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-31 13:44+0100\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/system/accounts.cpp:139
+msgid "Enter a user name."
+msgstr "Voer een gebruikersnaam in."
+
+#: src/system/accounts.cpp:142
+msgid "Use small Latin letters, digits, “-” and “_”, starting with a letter."
+msgstr "Gebruik kleine Latijnse letters, cijfers, “-” en “_”, en begin met een letter."
+
+#: src/system/accounts.cpp:145
+msgid "This user name is taken."
+msgstr "Deze gebruikersnaam is al bezet."
+
+#: src/system/accounts.cpp:154 src/system/accounts.cpp:192
+#: src/system/accounts.cpp:324 src/system/accounts.cpp:330
+msgid "The password could not be prepared."
+msgstr "Het wachtwoord kon niet worden voorbereid."
+
+#: src/system/accounts.cpp:239
+msgid "The account service is not available."
+msgstr "De accountdienst is niet beschikbaar."
+
+#: src/system/accounts.cpp:280 src/system/accounts.cpp:298
+msgid "The picture could not be saved."
+msgstr "De afbeelding kon niet worden opgeslagen."
+
+#: src/system/accounts.cpp:290
+msgid "This picture could not be read."
+msgstr "Deze afbeelding kon niet worden gelezen."
+
+#: src/system/defaultapps.cpp:28
+msgid "Web browser"
+msgstr "Webbrowser"
+
+#: src/system/defaultapps.cpp:29
+msgid "Files"
+msgstr "Bestanden"
+
+#: src/system/defaultapps.cpp:30
+msgid "Terminal"
+msgstr "Terminal"
+
+#: src/system/defaultapps.cpp:31
+msgid "Text"
+msgstr "Tekst"
+
+#: src/system/defaultapps.cpp:32
+msgid "Pictures"
+msgstr "Afbeeldingen"
+
+#: src/system/defaultapps.cpp:33
+msgid "Video"
+msgstr "Video"
+
+#: src/system/defaultapps.cpp:34
+msgid "Music"
+msgstr "Muziek"
+
+#: src/system/defaultapps.cpp:35
+msgid "Documents"
+msgstr "Documenten"
+
+#: src/system/defaultapps.cpp:36
+msgid "Email"
+msgstr "E-mail"
+
+#: src/system/displays.cpp:128
+msgid "Built-in display"
+msgstr "Ingebouwd scherm"
+
+#: src/system/files.cpp:94
+msgid "This file is not a text file."
+msgstr "Dit bestand is geen tekstbestand."
+
+#: src/system/files.cpp:127 src/system/files.cpp:212
+msgid "A name cannot be empty or contain “/”."
+msgstr "Een naam mag niet leeg zijn of “/” bevatten."
+
+#: src/system/files.cpp:186
+msgid "Where these files came from is not known."
+msgstr "Het is niet bekend waar deze bestanden vandaan kwamen."
+
+#: src/system/files.cpp:217
+msgid "“%1” already exists."
+msgstr "“%1” bestaat al."
+
+#: src/system/files.cpp:221
+msgid "The folder could not be created."
+msgstr "De map kon niet worden gemaakt."
+
+#: src/system/files.cpp:303
+msgctxt "name of an archive of several files"
+msgid "Archive"
+msgstr "Archief"
+
+#: src/system/licenses.cpp:61
+msgid "The operating system kernel"
+msgstr "De kernel van het besturingssysteem"
+
+#
+#: src/system/licenses.cpp:62
+msgid "The distribution Kernora OS is based on"
+msgstr "De distributie waarop Kernora OS is gebaseerd"
+
+#
+#: src/system/licenses.cpp:63
+msgid "The desktop technology under the Kernora shell"
+msgstr "De bureaubladtechniek onder de Kernora-shell"
+
+#: src/system/licenses.cpp:64
+msgid "The window manager and compositor"
+msgstr "De vensterbeheerder en compositor"
+
+#: src/system/licenses.cpp:65
+msgid "Libraries used by the desktop and the applications"
+msgstr "Bibliotheken die het bureaublad en de apps gebruiken"
+
+#: src/system/licenses.cpp:66
+msgid "The application framework"
+msgstr "Het applicatieframework"
+
+#: src/system/licenses.cpp:67
+msgid "Icons by Google, Apache License 2.0"
+msgstr "Iconen van Google, Apache License 2.0"
+
+#
+#: src/system/licenses.cpp:68
+msgid "The system typeface by Google"
+msgstr "Het systeemlettertype, van Google"
+
+#: src/system/licenses.cpp:69
+msgid "The engine that draws application widgets"
+msgstr "De engine die de onderdelen van apps tekent"
+
+#: src/system/licenses.cpp:70
+msgid "The web browser, built from Firefox"
+msgstr "De webbrowser, gebouwd uit Firefox"
+
+#: src/system/licenses.cpp:71
+msgid "The system installer"
+msgstr "Het installatieprogramma"
+
+#: src/system/licenses.cpp:72
+msgid "The system and service manager"
+msgstr "De systeem- en dienstbeheerder"
+
+#: src/system/licenses.cpp:73
+msgid "Network connections"
+msgstr "Netwerkverbindingen"
+
+#: src/system/licenses.cpp:74
+msgid "Sound and screen sharing"
+msgstr "Geluid en scherm delen"
+
+#: src/system/licenses.cpp:75
+msgid "Graphics drivers"
+msgstr "Grafische stuurprogramma's"
+
+#: src/system/licenses.cpp:76
+msgid "The terminal"
+msgstr "De terminal"
+
+#: src/system/locales.cpp:182
+msgid "Imperial: feet, pounds, °F"
+msgstr "Imperiaal: voet, ponden, °F"
+
+#: src/system/locales.cpp:182
+msgid "Metric: metres, kilograms, °C"
+msgstr "Metrisch: meters, kilogrammen, °C"
+
+#: src/system/locales.cpp:189
+msgid "A4"
+msgstr "A4"
+
+#: src/system/locales.cpp:189
+msgid "Letter"
+msgstr "Letter"
+
+#: src/system/screenshot.cpp:101
+msgid "The screenshot could not be started."
+msgstr "De schermafbeelding kon niet worden gestart."
+
+#: src/system/screenshot.cpp:126
+msgid "The screenshot came back empty."
+msgstr "De schermafbeelding is leeg teruggekomen."
+
+#: src/system/screenshot.cpp:222
+msgctxt "folder name for screenshots"
+msgid "Screenshots"
+msgstr "Schermafbeeldingen"
+
+#: src/system/screenshot.cpp:225 src/system/screenshot.cpp:227
+msgctxt "file name prefix"
+msgid "Screenshot"
+msgstr "Schermafbeelding"
+
+#: src/system/updates.cpp:48
+msgid "Downloading…"
+msgstr "Downloaden…"
+
+#: src/system/updates.cpp:51
+msgid "Installing…"
+msgstr "Installeren…"
+
+#: src/system/updates.cpp:55 src/system/updates.cpp:97
+msgid "Checking for updates…"
+msgstr "Zoeken naar updates…"
+
+#: src/system/updates.cpp:57
+msgid "Waiting for authorisation…"
+msgstr "Wachten op toestemming…"
+
+#: src/system/updates.cpp:60
+msgid "Waiting for another installation to finish…"
+msgstr "Wachten tot een andere installatie klaar is…"
+
+#: src/system/updates.cpp:62
+msgid "Finishing…"
+msgstr "Afronden…"
+
+#: src/system/updates.cpp:64
+msgid "Working…"
+msgstr "Bezig…"
+
+#: src/system/updates.cpp:105
+msgid "The update sources could not be reached."
+msgstr "De updatebronnen konden niet worden bereikt."
+
+#: src/system/updates.cpp:158
+msgid "The updates could not be installed."
+msgstr "De updates konden niet worden geïnstalleerd."

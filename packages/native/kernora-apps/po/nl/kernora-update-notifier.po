@@ -1,0 +1,73 @@
+# Dutch translation of Kernora Update-notifier.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-update-notifier\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-31 13:46+0100\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/updatenotifier/main.cpp:244
+msgid "Updates are available"
+msgstr "Er zijn updates beschikbaar"
+
+#: src/updatenotifier/main.cpp:246
+msgid "%1 update is ready to install, with security fixes."
+msgid_plural "%1 updates are ready to install, among them security fixes."
+msgstr[0] "%1 update staat klaar om te installeren, met beveiligingsoplossingen."
+msgstr[1] "%1 updates staan klaar om te installeren, waaronder beveiligingsoplossingen."
+
+#: src/updatenotifier/main.cpp:248
+msgid "%1 update is ready to install."
+msgid_plural "%1 updates are ready to install."
+msgstr[0] "%1 update staat klaar om te installeren."
+msgstr[1] "%1 updates staan klaar om te installeren."
+
+#: src/updatenotifier/main.cpp:250
+msgid "Open Updates"
+msgstr "Updates openen"
+
+#: src/updatenotifier/main.cpp:253
+msgid "View"
+msgstr "Bekijken"
+
+#: src/updatenotifier/main.cpp:274
+msgid "Restart to finish updating"
+msgstr "Opnieuw opstarten om bijwerken af te ronden"
+
+#: src/updatenotifier/main.cpp:275
+msgid "Updates were installed. They take effect after a restart."
+msgstr "Er zijn updates geïnstalleerd. Ze werken na een herstart."
+
+#: src/updatenotifier/main.cpp:276 src/updatenotifier/main.cpp:332
+msgid "Restart"
+msgstr "Opnieuw opstarten"
+
+#: src/updatenotifier/main.cpp:317
+msgid "your NVIDIA graphics card"
+msgstr "je NVIDIA-videokaart"
+
+#: src/updatenotifier/main.cpp:322
+msgid "Installing the graphics driver"
+msgstr "Het grafische stuurprogramma installeren"
+
+#: src/updatenotifier/main.cpp:323
+msgid "Kernora is installing the driver for %1. It takes a few minutes, and you can keep working."
+msgstr "Kernora installeert het stuurprogramma voor %1. Dat duurt een paar minuten, en je kunt gewoon doorwerken."
+
+#: src/updatenotifier/main.cpp:330
+msgid "Restart to use your graphics card"
+msgstr "Opnieuw opstarten om je videokaart te gebruiken"
+
+#: src/updatenotifier/main.cpp:331
+msgid "The driver for %1 is installed. It starts working after a restart."
+msgstr "Het stuurprogramma voor %1 is geïnstalleerd. Het werkt na een herstart."
+
+#: src/updatenotifier/main.cpp:355
+msgid "Update notifications"
+msgstr "Updatemeldingen"
