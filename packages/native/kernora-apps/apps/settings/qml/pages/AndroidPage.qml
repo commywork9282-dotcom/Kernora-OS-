@@ -39,6 +39,7 @@ SettingsPage {
     readonly property bool failed: !busy && (status === "failed" || status === "offline" || stalled || actionFailed)
     readonly property bool google: info.kind === "gapps"
     readonly property int progress: Number(info.progress || 0)
+    readonly property int remaining: (info.remaining || "") === "" ? -1 : Number(info.remaining)
     readonly property var userApps: Android.apps.filter(app => app.package !== page.store)
 
     function refresh(): void {
@@ -108,6 +109,15 @@ SettingsPage {
                 return i18n("Every Android app and its data are being deleted from this computer.");
             case "updating":
                 return i18n("Android apps are getting an update. They open again once it's done.");
+            case "downloading":
+                if (remaining >= 60) {
+                    return i18np("About %1 minute left. You can keep using the computer.",
+                                 "About %1 minutes left. You can keep using the computer.", Math.ceil(remaining / 60));
+                }
+                if (remaining >= 0) {
+                    return i18n("Less than a minute left. You can keep using the computer.");
+                }
+                return i18n("This takes a few minutes. You can keep using the computer.");
             default:
                 return i18n("This takes a few minutes. You can keep using the computer.");
             }

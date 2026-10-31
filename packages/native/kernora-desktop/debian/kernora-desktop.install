@@ -128,6 +128,7 @@ data/drivers/kernora-drivers@.service usr/lib/systemd/system
 data/drivers/org.kernora.drivers.policy usr/share/polkit-1/actions
 data/android/kernora-android usr/libexec
 data/android/kernora-android-session usr/libexec
+data/android/kernora-android-fetch usr/libexec
 data/android/kernora-android-sync usr/libexec
 data/android/kernora-android-sync.path usr/lib/systemd/user
 data/android/kernora-android-sync.service usr/lib/systemd/user

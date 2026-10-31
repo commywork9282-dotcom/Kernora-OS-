@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-10-31-1",
+    "date": "2026-10-31",
+    "items": [
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Android apps set up much faster",
+          "ru": "Android-приложения настраиваются намного быстрее"
+        },
+        "text": {
+          "en": "Setting up Android apps used to depend on one download server, and a slow one could make it take hours. Now Kernora downloads from several servers at once and leaves the slow ones behind, and Settings shows how much time is left. Updates for Android apps download the same way.",
+          "ru": "Раньше настройка Android-приложений зависела от одного сервера, и медленный сервер мог растянуть её на часы. Теперь Kernora качает сразу с нескольких серверов и не ждёт медленные, а в Настройках видно, сколько осталось. Обновления для Android-приложений качаются так же."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-30-1",
     "date": "2026-10-30",
     "items": [

@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.56" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.57" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -209,6 +209,82 @@ grep -Fq 'ExecStart=/usr/libexec/kernora-android update' "$android/kernora-andro
   && grep -Fq 'OnUnitActiveSec=1d' "$android/kernora-android-update.timer" \
   && grep -Fq 'kernora-android-update.timer' "$package_root/debian/rules" \
   || fail "the image behind Android apps does not update itself"
+[[ -x "$android/kernora-android-fetch" ]] \
+  && grep -Fq '"$fetch" setup' "$android/kernora-android" \
+  && grep -Fq '"$fetch" install && "$real" upgrade -o' "$android/kernora-android" \
+  && grep -Fq 'remaining=%s' "$android/kernora-android" \
+  && grep -Fxq 'data/android/kernora-android-fetch usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  && timeout 120 python3 -I - "$android/kernora-android-fetch" <<'EOF' \
+  || fail "Android apps do not download their image from several mirrors at once"
+import hashlib
+import http.server
+import importlib.machinery
+import importlib.util
+import os
+import re
+import socketserver
+import sys
+import tempfile
+import threading
+import time
+
+loader = importlib.machinery.SourceFileLoader("fetch", sys.argv[1])
+fetch = importlib.util.module_from_spec(importlib.util.spec_from_loader("fetch", loader))
+loader.exec_module(fetch)
+fetch.TIMEOUT = 3
+size = 9 * 1024 * 1024 + 4321
+data = os.urandom(size)
+
+
+def mirror(mode):
+    class Handler(http.server.BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def log_message(self, *args):
+            pass
+
+        def do_GET(self):
+            first, last = map(int, re.match(r"bytes=(\d+)-(\d+)", self.headers["Range"]).groups())
+            last = min(last, size - 1)
+            self.send_response(206)
+            self.send_header("Content-Length", str(last - first + 1))
+            self.send_header("Content-Range", f"bytes {first}-{last}/{size}")
+            self.end_headers()
+            try:
+                for start in range(first, last + 1, 65536):
+                    self.wfile.write(data[start:min(start + 65536, last + 1)])
+                    if mode == "slow":
+                        time.sleep(0.5)
+                    elif mode == "stuck":
+                        time.sleep(60)
+                    elif mode == "flaky" and start - first >= 524288:
+                        self.connection.shutdown(2)
+                        return
+            except OSError:
+                pass
+
+    class Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
+        daemon_threads = True
+
+    server = Server(("127.0.0.1", 0), Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    return f"http://127.0.0.1:{server.server_address[1]}/image.zip"
+
+
+fetch.mirrors = lambda url, total: [mirror(mode) for mode in ("slow", "stuck", "flaky", "fast")]
+fetch.say = lambda message: None
+sys.stdout = open(os.devnull, "w")
+with tempfile.TemporaryDirectory() as folder:
+    path = os.path.join(folder, "image.zip")
+    progress = fetch.Progress(size)
+    started = time.monotonic()
+    fetch.download("http://unused/image.zip", path, size, progress)
+    progress.stopped.set()
+    took = time.monotonic() - started
+    with open(path, "rb") as handle:
+        same = hashlib.sha256(handle.read()).digest() == hashlib.sha256(data).digest()
+sys.exit(0 if same and took < 10 else 1)
+EOF
 grep -Fq 'kernora-appsplash' "$android/waydroid" \
   && ! grep -Fq 'Starting Android' "$android/kernora-android-session" \
   || fail "opening an Android app still talks about starting Android"

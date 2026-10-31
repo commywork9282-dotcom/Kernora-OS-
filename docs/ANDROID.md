@@ -28,14 +28,31 @@ Nothing Android is installed until the user asks for it in
 2. refreshes that source on its own, so a broken unrelated source does not
    stop the setup, and installs `waydroid` without recommends (with them
    `lxc` drags in distrobuilder, qemu-utils and some 40 more packages);
-3. runs `waydroid init -f -s VANILLA|GAPPS`, which downloads the system and
-   vendor images from Waydroid's OTA server and checks their SHA-256;
+3. downloads the system and vendor images with
+   `/usr/libexec/kernora-android-fetch setup VANILLA|GAPPS` (below), then runs
+   `waydroid init -f -s VANILLA|GAPPS`, which finds them already in place;
 4. sets `persist.waydroid.multi_windows=true` in `waydroid.cfg` and runs
    `waydroid upgrade -o`, so apps open in separate windows;
 5. enables `waydroid-container.service`.
 
+Waydroid's own download takes one SourceForge mirror and stays on it; a slow
+mirror made the setup take hours. `kernora-android-fetch` reads the same OTA
+channel (`ota.waydro.id`, or `/usr/share/waydroid-extra/channels.cfg`), asks
+SourceForge for a mirror a dozen times to collect up to six of them, and
+downloads the zip in 4 MiB parts over two connections per mirror. A
+connection that is idle takes over the rest of a part from a slower or silent
+one (silent for 3 s counts as stuck), a mirror eight times slower than the
+best one stops taking parts, and dead mirrors are dropped and looked up
+again. The zip has to match the SHA-256 from the channel; then `system.img`
+and `vendor.img` are unpacked into `/var/lib/waydroid/images` and the channel
+URLs and image dates go into `waydroid.cfg`. Since `waydroid init` keeps the
+dates when the channel URL is the same and only downloads newer images, it
+downloads nothing. If the quick download fails, `waydroid init` downloads the
+images itself as before. It prints `progress DONE TOTAL SECONDS_LEFT`, which
+Settings shows as the time left.
+
 Progress goes to `/var/lib/kernora/android/state`
-(`status`, `kind`, `progress`, `time`), and `kernora-android status` prints it
+(`status`, `kind`, `progress`, `remaining`, `time`), and `kernora-android status` prints it
 together with what is installed, the image size and whether a job runs. The
 download can be cancelled (`request cancel`); a cancelled or failed download
 leaves no image behind. The live session refuses the setup.
@@ -132,9 +149,13 @@ in software (SwiftShader).
 The `waydroid` package and its libraries update with the system from
 trixie-backports. The image updates itself: `kernora-android-update.timer`
 runs `kernora-android update` daily; when Waydroid's OTA channel has a newer
-system or vendor image and no app is open, it runs `waydroid upgrade`
-(the properties in `waydroid.cfg` and the overlay stay) and Settings shows
-"Updating…" meanwhile.
+system or vendor image, `kernora-android-fetch download` gets it the same
+quick way into `/var/lib/waydroid/cache_http` even while apps are open. Once
+no app is open, `kernora-android-fetch install` puts it in place and
+`waydroid upgrade -o` finishes the job (the properties in `waydroid.cfg` and
+the overlay stay); Settings shows "Updating…" meanwhile. A downloaded image
+waits for the next run if an app is open, and is not downloaded again.
+Setting up or removing Android apps stops a running update first.
 
 ## Installing an app
 

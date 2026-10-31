@@ -11,9 +11,11 @@ overlay_target=$work/overlay/system/product/overlay/KernoraCaption
 sources=/etc/apt/sources.list.d/kernora-android.sources
 template=/usr/share/kernora/apt/kernora-android.sources
 real=/usr/bin/waydroid.waydroid
+fetch=/usr/libexec/kernora-android-fetch
 
 kind=
 progress=0
+remaining=
 
 read_state() {
   sed -n "s/^$1=//p" "$state_file" 2>/dev/null | head -n 1
@@ -21,7 +23,7 @@ read_state() {
 
 record() {
   mkdir -p "$state_dir"
-  printf 'status=%s\nkind=%s\nprogress=%s\ntime=%s\n' "$1" "$kind" "$progress" "$(date +%s)" > "$state_file.new"
+  printf 'status=%s\nkind=%s\nprogress=%s\nremaining=%s\ntime=%s\n' "$1" "$kind" "$progress" "$remaining" "$(date +%s)" > "$state_file.new"
   mv "$state_file.new" "$state_file"
 }
 
@@ -62,9 +64,41 @@ install_packages() {
     && apt_get install --no-install-recommends waydroid
 }
 
+fetch_images() {
+  PYTHONUNBUFFERED=1 "$fetch" setup "$1" 2>&1 | {
+    local line word done total left
+    while IFS= read -r line; do
+      read -r word done total left <<< "$line"
+      case $word in
+        progress)
+          [[ $done =~ ^[0-9]+$ && $total =~ ^[0-9]+$ && $left =~ ^-?[0-9]+$ ]] && (( total > 0 )) || continue
+          progress=$(( done * 90 / total ))
+          remaining=
+          (( left >= 0 )) && remaining=$left
+          record downloading
+          ;;
+        verifying | unpacking)
+          progress=92
+          remaining=
+          record unpacking
+          ;;
+        *)
+          printf '%s\n' "$line"
+          ;;
+      esac
+    done
+  }
+  return "${PIPESTATUS[0]}"
+}
+
 download_images() {
   local type=VANILLA
   [[ $kind == gapps ]] && type=GAPPS
+  if ! fetch_images "$type"; then
+    echo "kernora-android: the quick download did not work, Waydroid downloads the image itself" >&2
+    progress=0
+    record downloading
+  fi
   PYTHONUNBUFFERED=1 "$real" init -f -s "$type" 2>&1 | stdbuf -oL tr '\r' '\n' | {
     local line part=system shown=-1 done total share
     while IFS= read -r line; do
@@ -169,32 +203,6 @@ setup_android() {
   echo "kernora-android: Android is ready"
 }
 
-newer_image() {
-  python3 - "$config" <<'EOF'
-import configparser
-import json
-import sys
-import urllib.request
-
-cfg = configparser.ConfigParser()
-cfg.read(sys.argv[1])
-section = cfg["waydroid"]
-
-
-def newest(url):
-    with urllib.request.urlopen(url, timeout=30) as response:
-        return max(int(item["datetime"]) for item in json.load(response)["response"])
-
-
-try:
-    newer = (newest(section["system_ota"]) > int(section["system_datetime"])
-             or newest(section["vendor_ota"]) > int(section["vendor_datetime"]))
-except Exception:
-    sys.exit(2)
-sys.exit(0 if newer else 1)
-EOF
-}
-
 session_active() {
   "$real" status 2>/dev/null | grep -q 'Session:.*RUNNING'
 }
@@ -203,22 +211,22 @@ update_android() {
   initialized || return 0
   live_session && return 0
   online || return 0
-  newer_image || return 0
+  PYTHONUNBUFFERED=1 "$fetch" download 2>&1 | grep -v '^progress '
+  (( PIPESTATUS[0] == 0 )) || return 0
   if session_active; then
-    echo "kernora-android: a newer image is out; it is installed once no app is open"
+    echo "kernora-android: a newer image is downloaded; it is installed once no app is open"
     return 0
   fi
   kind=$(current_kind)
   progress=0
   record updating
   echo "kernora-android: updating the image"
-  if PYTHONUNBUFFERED=1 "$real" upgrade; then
+  if "$fetch" install && "$real" upgrade -o; then
     install_overlay
     echo "kernora-android: the image is up to date"
   else
     echo "kernora-android: the image could not be updated" >&2
   fi
-  rm -rf "$work/cache_http"
   progress=100
   record ready
 }
@@ -270,8 +278,8 @@ print_status() {
     container=$(systemctl is-active waydroid-container.service 2>/dev/null)
   fi
   status=$(read_state status)
-  printf 'installed=%s\nready=%s\nkind=%s\nstatus=%s\nprogress=%s\ntime=%s\nsize=%s\ncontainer=%s\njob=%s\nlive=%s\n' \
-    "$installed_flag" "$ready" "$(current_kind)" "${status:-}" "$(read_state progress)" "$(read_state time)" \
+  printf 'installed=%s\nready=%s\nkind=%s\nstatus=%s\nprogress=%s\nremaining=%s\ntime=%s\nsize=%s\ncontainer=%s\njob=%s\nlive=%s\n' \
+    "$installed_flag" "$ready" "$(current_kind)" "${status:-}" "$(read_state progress)" "$(read_state remaining)" "$(read_state time)" \
     "${size:-0}" "${container:-inactive}" "$job" "$(live_session && echo yes || echo no)"
 }
 
@@ -326,10 +334,12 @@ case ${1:-} in
           record live
           exit 0
         fi
+        systemctl stop kernora-android-update.service 2>/dev/null || true
         record installing
         systemctl start --no-block "kernora-android@${2}.service"
         ;;
       remove)
+        systemctl stop kernora-android-update.service 2>/dev/null || true
         systemctl start --no-block kernora-android@remove.service
         ;;
       cancel)

@@ -1,0 +1,459 @@
+#!/usr/bin/python3
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+import collections
+import concurrent.futures
+import configparser
+import hashlib
+import http.client
+import json
+import os
+import platform
+import shutil
+import sys
+import threading
+import time
+import urllib.parse
+import urllib.request
+import zipfile
+
+WORK = "/var/lib/waydroid"
+CONFIG = WORK + "/waydroid.cfg"
+IMAGES = WORK + "/images"
+CACHE = WORK + "/cache_http"
+PENDING = CACHE + "/kernora-pending.json"
+CHANNELS = "/usr/share/waydroid-extra/channels.cfg"
+AGENT = "Python-urllib/%d.%d" % sys.version_info[:2]
+TIMEOUT = 30
+PIECE = 4 << 20
+BLOCK = 256 << 10
+STALL = 3
+MIRRORS = 6
+ROUNDS = 5
+NETWORK_ERRORS = (OSError, ValueError, http.client.HTTPException)
+
+
+class Failed(Exception):
+    pass
+
+
+def say(message: str) -> None:
+    print(f"kernora-android-fetch: {message}", file=sys.stderr, flush=True)
+
+
+def open_url(url: str, first: int | None = None, last: int | None = None):
+    headers = {"User-Agent": AGENT}
+    if first is not None:
+        headers["Range"] = f"bytes={first}-{last}"
+    return urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=TIMEOUT)
+
+
+def read_json(url: str) -> dict:
+    try:
+        with open_url(url) as response:
+            return json.load(response)
+    except NETWORK_ERRORS as error:
+        raise Failed(f"cannot read {url}: {error}") from error
+
+
+def total_of(response) -> int:
+    return int(response.headers.get("Content-Range", "").rpartition("/")[2])
+
+
+class Progress:
+    def __init__(self, total: int) -> None:
+        self.total = total
+        self.done = 0
+        self.lock = threading.Lock()
+        self.stopped = threading.Event()
+        self.thread = threading.Thread(target=self.report, daemon=True)
+        self.thread.start()
+
+    def add(self, amount: int) -> None:
+        with self.lock:
+            self.done += amount
+
+    def grow(self, amount: int) -> None:
+        with self.lock:
+            self.total += amount
+
+    def report(self) -> None:
+        rate = 0.0
+        last = self.done
+        while not self.stopped.wait(1):
+            with self.lock:
+                done, total = self.done, self.total
+            step = max(0, done - last)
+            last = done
+            rate = step if rate == 0 else 0.8 * rate + 0.2 * step
+            left = round((total - done) / rate) if rate > 0 else -1
+            print(f"progress {min(done, total)} {total} {left}", flush=True)
+
+    def stop(self) -> None:
+        self.stopped.set()
+        self.thread.join()
+
+
+class Piece:
+    def __init__(self, first: int, last: int) -> None:
+        self.first = first
+        self.last = last
+
+
+class Transfer:
+    def __init__(self, path: str, size: int, progress: Progress) -> None:
+        self.size = size
+        self.progress = progress
+        self.lock = threading.Condition()
+        self.pending = collections.deque(Piece(start, min(start + PIECE, size) - 1) for start in range(0, size, PIECE))
+        self.active: dict[object, Piece] = {}
+        self.speed: dict[object, float] = {}
+        self.seen: dict[object, float] = {}
+        self.alive = 0
+        self.writing = 0
+        self.closed = False
+        self.error: Exception | None = None
+        self.fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_TRUNC, 0o644)
+        os.ftruncate(self.fd, size)
+
+    def finished(self) -> bool:
+        return not self.pending and self.writing == 0 and all(piece.first > piece.last for piece in self.active.values())
+
+    def steal(self, worker: object) -> Piece | None:
+        mine = self.speed.get(worker, 0.0)
+        now = time.monotonic()
+        best = None
+        for other, piece in self.active.items():
+            left = piece.last - piece.first + 1
+            if left <= 0:
+                continue
+            theirs = self.speed.get(other, 0.0) if now - self.seen.get(other, now) < STALL else 0.0
+            if theirs > 0:
+                if left / theirs < 2:
+                    continue
+                share = int(left * mine / (mine + theirs)) if mine > 0 else left // 2
+            else:
+                share = left if mine > 0 else left // 2
+            if share >= 16384 and (best is None or share > best[1]):
+                best = (piece, share)
+        if best is None:
+            return None
+        piece, share = best
+        cut = piece.last - share + 1
+        stolen = Piece(cut, piece.last)
+        piece.last = cut - 1
+        return stolen
+
+    def take(self, worker: object) -> Piece | None:
+        with self.lock:
+            while not self.closed and self.error is None:
+                piece = self.pending.popleft() if self.pending else self.steal(worker)
+                if piece is not None:
+                    self.active[worker] = piece
+                    self.seen[worker] = time.monotonic()
+                    return piece
+                if self.finished():
+                    break
+                self.lock.wait(1)
+            return None
+
+    def release(self, worker: object, failed: bool) -> None:
+        with self.lock:
+            piece = self.active.pop(worker, None)
+            if failed and piece is not None and piece.first <= piece.last:
+                self.pending.append(Piece(piece.first, piece.last))
+            self.lock.notify_all()
+
+    def too_slow(self, worker: object) -> bool:
+        with self.lock:
+            mine = self.speed.get(worker, 0.0)
+            best = max(self.speed.values(), default=0.0)
+            return self.alive > 2 and 0 < mine < best / 8
+
+    def write(self, piece: Piece, data: bytes) -> int:
+        with self.lock:
+            position = piece.first
+            take = min(len(data), piece.last - position + 1)
+            if take <= 0 or self.closed:
+                return 0
+            piece.first = position + take
+            self.writing += 1
+        try:
+            os.pwrite(self.fd, data[:take], position)
+        except OSError as error:
+            with self.lock:
+                self.error = error
+            raise
+        finally:
+            with self.lock:
+                self.writing -= 1
+                self.lock.notify_all()
+        self.progress.add(take)
+        return take
+
+    def fetch(self, worker: object, url: str, piece: Piece, clock: list[float]) -> None:
+        with self.lock:
+            first, last = piece.first, piece.last
+        if first > last:
+            return
+        started = time.monotonic()
+        with open_url(url, first, last) as response:
+            if response.status != 206 or total_of(response) != self.size:
+                raise Failed("the mirror does not send parts of the file")
+            while data := response.read1(BLOCK):
+                take = self.write(piece, data)
+                if take == 0:
+                    return
+                now = time.monotonic()
+                clock[0] += take
+                clock[1] += now - started
+                started = now
+                with self.lock:
+                    self.seen[worker] = now
+                    if clock[1] > 0.5:
+                        self.speed[worker] = clock[0] / clock[1]
+                if take < len(data):
+                    return
+        with self.lock:
+            if piece.first <= piece.last:
+                raise Failed("the mirror closed the connection early")
+
+    def work(self, url: str) -> None:
+        worker = object()
+        clock = [0.0, 0.0]
+        failures = 0
+        try:
+            while (piece := self.take(worker)) is not None:
+                start = piece.first
+                try:
+                    self.fetch(worker, url, piece, clock)
+                except (Failed, *NETWORK_ERRORS):
+                    moved = piece.first != start
+                    self.release(worker, True)
+                    failures = 0 if moved else failures + 1
+                    if failures >= 3:
+                        return
+                    if not moved:
+                        time.sleep(1)
+                    continue
+                failures = 0
+                self.release(worker, False)
+                if self.too_slow(worker):
+                    return
+        finally:
+            with self.lock:
+                self.alive -= 1
+                self.lock.notify_all()
+
+    def run(self, links: list[str]) -> None:
+        each = 2 if len(links) > 1 else 4
+        with self.lock:
+            self.alive = len(links) * each
+        for link in links:
+            for _ in range(each):
+                threading.Thread(target=self.work, args=(link,), daemon=True).start()
+        with self.lock:
+            while self.alive > 0 and self.error is None and not self.finished():
+                self.lock.wait(1)
+
+    def close(self) -> bool:
+        with self.lock:
+            self.closed = True
+            self.lock.notify_all()
+            while self.writing > 0:
+                self.lock.wait(1)
+            done = self.error is None and self.finished()
+        os.close(self.fd)
+        return done
+
+
+def mirrors(url: str, size: int) -> list[str]:
+    def probe(_: int) -> str | None:
+        try:
+            with open_url(url, 0, 0) as response:
+                if response.status == 206 and total_of(response) == size:
+                    return response.geturl()
+        except NETWORK_ERRORS:
+            pass
+        return None
+
+    attempts = MIRRORS * 2 if (urllib.parse.urlsplit(url).hostname or "").endswith("sourceforge.net") else 2
+    found: dict[str, str] = {}
+    with concurrent.futures.ThreadPoolExecutor(8) as pool:
+        for final in pool.map(probe, range(attempts)):
+            if final:
+                found.setdefault(urllib.parse.urlsplit(final).hostname, final)
+    return list(found.values())[:MIRRORS]
+
+
+def size_of(url: str) -> int:
+    with open_url(url, 0, 0) as response:
+        if response.status != 206:
+            raise Failed(f"{url} does not send parts of the file")
+        return total_of(response)
+
+
+def download(url: str, path: str, size: int, progress: Progress) -> None:
+    transfer = Transfer(path, size, progress)
+    done = False
+    try:
+        for _ in range(ROUNDS):
+            with transfer.lock:
+                if transfer.finished() or transfer.error is not None:
+                    break
+            links = mirrors(url, size)
+            if not links:
+                time.sleep(5)
+                continue
+            say(f"downloading from {', '.join(urllib.parse.urlsplit(link).hostname for link in links)}")
+            transfer.run(links)
+    finally:
+        done = transfer.close()
+    if transfer.error is not None:
+        raise Failed(f"cannot write {path}: {transfer.error}")
+    if not done:
+        raise Failed(f"{url} could not be downloaded")
+
+
+def sha256(path: str) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        while chunk := handle.read(1 << 20):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def machine() -> str:
+    target = {"i686": "x86", "x86_64": "x86_64"}.get(platform.machine())
+    if target is None or shutil.which("getprop"):
+        raise Failed("this computer is left to Waydroid's own download")
+    with open("/proc/cpuinfo", encoding="utf-8") as handle:
+        if target == "x86_64" and "sse4_2" not in handle.read():
+            target = "x86"
+    return target
+
+
+def channel_targets(system_type: str) -> list[tuple[str, str, int]]:
+    channels = configparser.ConfigParser()
+    channels.read(CHANNELS)
+    system = channels.get("channels", "system_channel", fallback="https://ota.waydro.id/system")
+    vendor = channels.get("channels", "vendor_channel", fallback="https://ota.waydro.id/vendor")
+    rom = channels.get("channels", "rom_type", fallback="lineage")
+    arch = machine()
+    return [("system", f"{system}/{rom}/waydroid_{arch}/{system_type}.json", 0),
+            ("vendor", f"{vendor}/waydroid_{arch}/MAINLINE.json", 0)]
+
+
+def config() -> configparser.ConfigParser:
+    cfg = configparser.ConfigParser()
+    cfg.read(CONFIG)
+    if not cfg.has_section("waydroid"):
+        cfg.add_section("waydroid")
+    return cfg
+
+
+def configured_targets() -> list[tuple[str, str, int]]:
+    section = config()["waydroid"]
+    targets = []
+    for part in ("system", "vendor"):
+        ota = section.get(f"{part}_ota", "None")
+        if ota != "None":
+            targets.append((part, ota, int(section.get(f"{part}_datetime", "0"))))
+    return targets
+
+
+def newer(targets: list[tuple[str, str, int]]) -> list[dict]:
+    found = []
+    for part, ota, since in targets:
+        entries = [entry for entry in read_json(ota).get("response", []) if int(entry["datetime"]) > since]
+        if entries:
+            entry = max(entries, key=lambda item: int(item["datetime"]))
+            found.append({"part": part, "ota": ota, "datetime": int(entry["datetime"]), "id": entry["id"],
+                          "url": entry["url"], "size": int(entry.get("size", 0)),
+                          "path": os.path.join(CACHE, "kernora-" + os.path.basename(entry["filename"]))})
+    return found
+
+
+def fetch_all(items: list[dict]) -> None:
+    os.makedirs(CACHE, exist_ok=True)
+    progress = Progress(sum(item["size"] for item in items))
+    try:
+        for item in items:
+            path = item["path"]
+            if os.path.exists(path) and sha256(path) == item["id"]:
+                progress.add(item["size"] or os.path.getsize(path))
+                continue
+            size = item["size"] or size_of(item["url"])
+            if not item["size"]:
+                progress.grow(size)
+            download(item["url"], path + ".part", size, progress)
+            print("verifying", flush=True)
+            if sha256(path + ".part") != item["id"]:
+                os.remove(path + ".part")
+                raise Failed(f"the {item['part']} image does not match its checksum")
+            os.replace(path + ".part", path)
+    finally:
+        progress.stop()
+
+
+def remember(item: dict) -> None:
+    cfg = config()
+    cfg["waydroid"][f"{item['part']}_ota"] = item["ota"]
+    cfg["waydroid"][f"{item['part']}_datetime"] = str(item["datetime"])
+    with open(CONFIG + ".new", "w", encoding="utf-8") as handle:
+        cfg.write(handle)
+    os.replace(CONFIG + ".new", CONFIG)
+
+
+def install(items: list[dict]) -> None:
+    print("unpacking", flush=True)
+    os.makedirs(IMAGES, exist_ok=True)
+    staging = os.path.join(IMAGES, ".kernora-new")
+    for item in items:
+        shutil.rmtree(staging, ignore_errors=True)
+        os.makedirs(staging)
+        with zipfile.ZipFile(item["path"]) as archive:
+            archive.extractall(staging)
+        for name in os.listdir(staging):
+            os.replace(os.path.join(staging, name), os.path.join(IMAGES, name))
+        os.rmdir(staging)
+        remember(item)
+        os.remove(item["path"])
+
+
+def main() -> int:
+    command = sys.argv[1] if len(sys.argv) > 1 else ""
+    try:
+        if command == "setup" and len(sys.argv) == 3 and sys.argv[2] in ("VANILLA", "GAPPS"):
+            os.makedirs(WORK, 0o700, exist_ok=True)
+            items = newer(channel_targets(sys.argv[2]))
+            fetch_all(items)
+            install(items)
+            return 0
+        if command == "check":
+            return 0 if newer(configured_targets()) else 1
+        if command == "download":
+            items = newer(configured_targets())
+            if not items:
+                return 1
+            fetch_all(items)
+            with open(PENDING + ".new", "w", encoding="utf-8") as handle:
+                json.dump(items, handle)
+            os.replace(PENDING + ".new", PENDING)
+            return 0
+        if command == "install":
+            with open(PENDING, encoding="utf-8") as handle:
+                items = json.load(handle)
+            install([item for item in items if os.path.exists(item["path"])])
+            os.remove(PENDING)
+            return 0
+    except (Failed, OSError, KeyError, ValueError, zipfile.BadZipFile) as error:
+        say(str(error))
+        return 2
+    print("usage: kernora-android-fetch setup VANILLA|GAPPS|check|download|install", file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

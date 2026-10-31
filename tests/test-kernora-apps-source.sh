@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.65" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.66" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -231,5 +231,9 @@ grep -Fq 'android: ["apk"]' "$package_root/apps/files/qml/kinds.js" \
   || fail "Settings still opens Android's own settings or has no faster start"
 grep -Fq 'msgid "Android apps"' "$package_root/po/ru/kernora-settings.po" \
   || fail "the Android page is not translated"
+grep -Fq 'info.remaining' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq 'msgstr "Осталось меньше минуты. Компьютером можно пользоваться."' "$package_root/po/ru/kernora-settings.po" \
+  && grep -Fq '"id": "2026-10-31-1"' "$package_root/data/whatsnew.json" \
+  || fail "Settings does not show how long the Android apps download takes"
 
 printf 'kernora-apps source test: OK\n'

@@ -1,3 +1,11 @@
+kernora-apps (1.1.66) UNRELEASED; urgency=medium
+
+  * Settings > Android apps shows how much time is left while the image
+    downloads.
+  * What's new: Android apps set up much faster.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 12:00:00 -0700
+
 kernora-apps (1.1.65) UNRELEASED; urgency=medium
 
   * Settings > Android apps: choose plain Android or Android with Google

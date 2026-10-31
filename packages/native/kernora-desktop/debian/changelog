@@ -1,3 +1,19 @@
+kernora-desktop (1.4.57) UNRELEASED; urgency=medium
+
+  * Android apps download their image much faster: the new
+    /usr/libexec/kernora-android-fetch finds several SourceForge mirrors,
+    fetches the image in parts from all of them at once, lets fast mirrors
+    take over the rest of a slow or stuck one, checks the SHA-256 from the
+    Waydroid OTA channel and puts system.img and vendor.img in place with
+    their dates in waydroid.cfg, so "waydroid init" does not download them
+    again. Waydroid's own single-mirror download stays as the fallback.
+  * The state file and "kernora-android status" report the time left.
+  * Daily image updates use the same download, keep a downloaded image
+    until no app is open and install it with "waydroid upgrade -o".
+    Setting up or removing Android apps stops a running update first.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 12:00:00 -0700
+
 kernora-desktop (1.4.56) UNRELEASED; urgency=medium
 
   * Android apps, first demo: /usr/libexec/kernora-android sets Android up
