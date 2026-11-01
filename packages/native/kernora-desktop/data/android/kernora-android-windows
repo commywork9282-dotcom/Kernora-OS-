@@ -26,6 +26,7 @@ PORTRAIT = {
     "SCREEN_ORIENTATION_USER_PORTRAIT",
 }
 TASK = re.compile(r"^(\s*)\* Task\{\w+ #(\d+) type=(\w+) (?:A=\d+:|I=)([\w.]+)\S*.* mode=(\S+) translucent=(\w+)")
+ATTEMPTS = 8
 BOUNDS = re.compile(r"mBounds=Rect\((-?\d+), (-?\d+) - (-?\d+), (-?\d+)\)")
 
 
@@ -49,6 +50,11 @@ def remember(package: str) -> None:
     os.makedirs(os.path.dirname(DONE), exist_ok=True)
     with open(DONE, "a", encoding="utf-8") as handle:
         handle.write(package + "\n")
+
+
+def installed_at(package: str) -> str:
+    found = re.search(r"firstInstallTime=(\S+ \S+)", android("sh", "-c", f"dumpsys package {package} | grep -m 1 firstInstallTime"))
+    return f"{package}@{found.group(1).replace(' ', 'T')}" if found else package
 
 
 def tasks() -> dict[int, dict]:
@@ -93,15 +99,18 @@ def target(size: tuple[int, int], count: int) -> tuple[int, int, int, int]:
     return left, top, left + width, top + height
 
 
-def widen(task_id: int, count: int) -> bool:
+def widen(task_id: int, count: int) -> bool | None:
     task = tasks().get(task_id)
     if task is None or not task["freeform"] or task["translucent"] or task["bounds"] is None:
-        return False
+        return None
     package = task["package"]
-    if package in SKIP or package in handled():
+    if package in SKIP:
+        return False
+    key = installed_at(package)
+    if key in handled():
         return False
     if task["orientations"] & PORTRAIT:
-        remember(package)
+        remember(key)
         return False
     size = display()
     if size is None:
@@ -109,14 +118,14 @@ def widen(task_id: int, count: int) -> bool:
     left, top, right, bottom = target(size, count)
     old = task["bounds"]
     if (old[2] - old[0]) * (old[3] - old[1]) >= (right - left) * (bottom - top):
-        remember(package)
+        remember(key)
         return False
     android("am", "task", "resize", str(task_id), str(left), str(top), str(right), str(bottom))
     time.sleep(1)
     after = tasks().get(task_id)
     if after is not None and after["letterboxed"]:
         android("am", "task", "resize", str(task_id), *(str(value) for value in old))
-    remember(package)
+    remember(key)
     return True
 
 
@@ -128,13 +137,17 @@ def main() -> int:
     time.sleep(1)
     count = 0
     for task_id in sorted(tasks()):
-        count += widen(task_id, count)
+        count += bool(widen(task_id, count))
     for line in stream.stdout:
         match = re.match(r"\[\d+,(\d+)\]", line.strip())
         if not match:
             continue
-        time.sleep(0.6)
-        count += widen(int(match.group(1)), count)
+        for _ in range(ATTEMPTS):
+            time.sleep(0.6)
+            result = widen(int(match.group(1)), count)
+            if result is not None:
+                count += result
+                break
     return stream.wait()
 
 

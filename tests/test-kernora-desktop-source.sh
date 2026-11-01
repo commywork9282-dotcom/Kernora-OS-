@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.60" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.61" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -184,7 +184,7 @@ bash -n "$android/kernora-android" && bash -n "$android/waydroid" \
   || fail "the Android tools are not executable"
 grep -Fq 'Suites: trixie-backports' "$android/kernora-android.sources" \
   && grep -Fq 'install --no-install-recommends waydroid' "$android/kernora-android" \
-  && grep -Fq 'persist.waydroid.multi_windows' "$android/kernora-android" \
+  && grep -Fq 'persist.waydroid.multi_windows' "$android/kernora-android-device" \
   || fail "kernora-android does not set Waydroid up from backports with separate windows"
 grep -Fq 'ExecStart=/usr/libexec/kernora-android %i' "$android/kernora-android@.service" \
   && grep -Fq 'BusName=id.waydro.Session' "$android/kernora-android.service" \
@@ -312,7 +312,14 @@ dump = """  * Task{8589fef #230 type=standard A=10127:org.fossify.math U=0 visib
 windows.android = lambda *args, **kwargs: dump
 found = windows.tasks()
 left, top, right, bottom = windows.target((1439, 841), 0)
+windows.android = lambda *args, **kwargs: dump.replace("translucent=false", "translucent=true")
+trampoline = windows.widen(230, 0)
+windows.android = lambda *args, **kwargs: "    firstInstallTime=2026-11-01 00:13:05\n"
+installed = windows.installed_at("org.videolan.vlc")
+windows.android = lambda *args, **kwargs: ""
 sys.exit(0 if sorted(found) == [230, 231]
+         and installed == "org.videolan.vlc@2026-11-01T00:13:05" and trampoline is None
+         and windows.installed_at("org.videolan.vlc") == "org.videolan.vlc"
          and found[230]["bounds"] == (495, 32, 944, 809)
          and found[231]["orientations"] & windows.PORTRAIT
          and right - left > bottom - top and right <= 1439 and bottom <= 841 else 1)
@@ -333,7 +340,7 @@ grep -Fq 'setting secure show_ime_with_hard_keyboard 0' "$android/kernora-androi
   || fail "Android still shows its keyboard, error dialogs or setup"
 [[ -x "$android/kernora-android-keyboard" ]] \
   && grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-keyboard</annotate>' "$android/org.kernora.android.policy" \
-  && ! grep -Fq 'ExecStartPre' "$android/kernora-android.service" \
+  && ! grep -Fq -- '--keyboard-prepare' "$android/kernora-android.service" \
   && grep -Fq '"--keyboard-follow"' "$android/kernora-android-session" \
   && grep -Fxq 'data/android/kernora-android-keyboard usr/libexec' "$package_root/debian/kernora-desktop.install" \
   && timeout 60 python3 -I - "$android/kernora-android-session" "$android/kernora-android-keyboard" <<'EOF' \
@@ -365,8 +372,144 @@ keyboard.apply(0, ["english_us"])
 ok = ok and sent and sent[0][:4] == ["/usr/bin/waydroid.waydroid", "shell", "--", "sh"] and "input 21" not in sent[0][-1]
 sys.exit(0 if ok else 1)
 EOF
-grep -Fq '"ro.product.waydroid.model": model' "$android/kernora-android" \
-  && grep -Fq '"persist.waydroid.fake_wifi": "*"' "$android/kernora-android" \
+[[ -x "$android/kernora-android-device" && -x "$android/kernora-android-refresh" ]] \
+  && grep -Fq 'ExecStartPre=-/usr/bin/pkexec /usr/libexec/kernora-android-refresh' "$android/kernora-android.service" \
+  && grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-refresh</annotate>' "$android/org.kernora.android.policy" \
+  && grep -Fxq 'exec /usr/libexec/kernora-android refresh' "$android/kernora-android-refresh" \
+  && grep -Fxq 'data/android/kernora-android-device usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'data/android/kernora-android-refresh usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq '  arm_translation' "$android/kernora-android" \
+  && grep -Fq 'try_lock refresh_android' "$android/kernora-android" \
+  && grep -Fq '"$device" arm-remove' "$android/kernora-android" \
+  && grep -Fq "printf 'arm=%s\n'" "$android/kernora-android" \
+  && timeout 60 python3 -I - "$android/kernora-android-device" <<'EOF' \
+  || fail "Android apps do not run ARM apps or pick the right graphics"
+import hashlib
+import importlib.machinery
+import importlib.util
+import json
+import os
+import shutil
+import sys
+import tempfile
+import zipfile
+
+
+def load(name, path):
+    loader = importlib.machinery.SourceFileLoader(name, path)
+    module = importlib.util.module_from_spec(importlib.util.spec_from_loader(name, loader))
+    loader.exec_module(module)
+    return module
+
+
+def write(path, text):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as handle:
+        handle.write(text)
+
+
+device = load("device", sys.argv[1])
+os.chown = lambda *args: None
+ok = True
+with tempfile.TemporaryDirectory() as root:
+    def graphics(cards):
+        for name in ("drm", "devices", "drivers"):
+            shutil.rmtree(os.path.join(root, name), ignore_errors=True)
+        drm = os.path.join(root, "drm")
+        os.makedirs(drm)
+        for card, driver, boot, connected, render in cards:
+            pci = os.path.join(root, "devices", card)
+            os.makedirs(os.path.join(root, "drivers", driver), exist_ok=True)
+            os.makedirs(pci)
+            os.symlink(os.path.join(root, "drivers", driver), os.path.join(pci, "driver"))
+            if boot is not None:
+                write(os.path.join(pci, "boot_vga"), boot + "\n")
+            os.makedirs(os.path.join(drm, card))
+            os.symlink(pci, os.path.join(drm, card, "device"))
+            write(os.path.join(drm, card + "-HDMI-A-1", "status"), "connected\n" if connected else "disconnected\n")
+            if render:
+                os.makedirs(os.path.join(drm, render))
+                os.symlink(pci, os.path.join(drm, render, "device"))
+        device.DRM = drm
+        return device.software_graphics()
+
+    ok = ok and graphics([("card0", "i915", "0", False, "renderD128"), ("card1", "nvidia", "1", True, "renderD129")])
+    ok = ok and not graphics([("card0", "i915", "1", True, "renderD128"), ("card1", "nvidia", "0", False, "renderD129")])
+    ok = ok and graphics([("card0", "bochs-drm", "1", True, None)])
+    ok = ok and not graphics([("card0", "amdgpu", "1", True, "renderD128")])
+    ok = ok and graphics([("card0", "simple-framebuffer", None, False, None), ("card1", "nouveau", None, True, "renderD128")])
+
+    cpuinfo = os.path.join(root, "cpuinfo")
+    device.CPUINFO = cpuinfo
+    device.platform.machine = lambda: "x86_64"
+    for vendor, name in (("AuthenticAMD", "ndk"), ("GenuineIntel", "houdini"), ("HygonGenuine", "ndk"), ("CentaurHauls", "")):
+        write(cpuinfo, f"processor\t: 0\nvendor_id\t: {vendor}\nflags\t\t: sse4_2\n")
+        ok = ok and device.translator() == name
+
+    work = os.path.join(root, "waydroid")
+    state = os.path.join(root, "state")
+    device.CONFIG = os.path.join(work, "waydroid.cfg")
+    device.BASE = os.path.join(work, "waydroid_base.prop")
+    device.OVERLAY = os.path.join(work, "overlay", "system")
+    device.STATE = state
+    device.MANAGED = os.path.join(state, "properties")
+    device.CACHE = os.path.join(state, "arm")
+    device.INSTALLED = os.path.join(state, "arm-installed")
+    write(device.CONFIG, "[waydroid]\nimages_path = /var/lib/waydroid/images\n\n[properties]\nro.custom.user = 1\n")
+    write(device.BASE, "ro.hardware.gralloc=gbm\n")
+
+    folder = os.path.join(root, "archive")
+    prefix = "vendor_intel_proprietary_houdini-0123/"
+    package = os.path.join(root, "houdini.zip")
+    with zipfile.ZipFile(package, "w") as handle:
+        for name in ("prebuilts/lib64/libhoudini.so", "prebuilts/lib/libhoudini.so", "prebuilts/lib/arm/libc.so",
+                     "prebuilts/bin/houdini", "prebuilts/etc/init/houdini.rc", "prebuilts/etc/binfmt_misc/arm_exe",
+                     "README.md"):
+            handle.writestr(prefix + name, name)
+    digest = hashlib.sha256(open(package, "rb").read()).hexdigest()
+    device.TRANSLATORS["houdini"].update(url="file://" + package, sha256=digest, size=os.path.getsize(package))
+    device.download("houdini")
+    ok = ok and os.path.isfile(device.archive("houdini"))
+    device.install("houdini")
+    overlay = device.OVERLAY
+    ok = ok and device.installed() == "houdini" and not os.path.exists(device.archive("houdini"))
+    ok = ok and os.path.isfile(os.path.join(overlay, "lib/arm/libc.so"))
+    ok = ok and os.stat(os.path.join(overlay, "bin/houdini")).st_mode & 0o777 == 0o755
+    ok = ok and not os.path.exists(os.path.join(overlay, "etc/init/houdini.rc"))
+    ok = ok and not os.path.exists(os.path.join(overlay, "etc/binfmt_misc"))
+    write(cpuinfo, "vendor_id\t: GenuineIntel\n")
+    ok = ok and device.arm_status() == "yes"
+
+    device.software_graphics = lambda: True
+    ok = ok and device.properties("Kernora PC")
+    text = open(device.CONFIG).read()
+    ok = ok and "ro.dalvik.vm.native.bridge = libhoudini.so" in text and "ro.hardware.egl = swiftshader" in text
+    ok = ok and "ro.product.cpu.abilist64 = x86_64,arm64-v8a" in text and "ro.custom.user = 1" in text
+    device.applied()
+    write(device.BASE, "".join(f"{key}={value}\n" for key, value in device.wanted("Kernora PC").items()))
+    ok = ok and not device.properties("Kernora PC")
+
+    device.software_graphics = lambda: False
+    device.remove()
+    ok = ok and device.installed() == "" and device.arm_status() == "no"
+    ok = ok and not os.path.exists(os.path.join(overlay, "lib/arm")) and os.path.isdir(os.path.join(overlay, "lib"))
+    ok = ok and device.properties("Kernora PC")
+    text = open(device.CONFIG).read()
+    ok = ok and "native.bridge" not in text and "ro.hardware.egl" not in text and "ro.custom.user = 1" in text
+    ok = ok and device.properties("Kernora PC")
+    device.applied()
+    ok = ok and not device.properties("Kernora PC")
+
+    device.TRANSLATORS["houdini"]["sha256"] = "0" * 64
+    try:
+        device.download("houdini")
+        ok = False
+    except ValueError:
+        ok = ok and not os.path.exists(device.archive("houdini") + ".part")
+sys.exit(0 if ok else 1)
+EOF
+grep -Fq '"ro.product.waydroid.model": model' "$android/kernora-android-device" \
+  && grep -Fq '"persist.waydroid.fake_wifi": "*"' "$android/kernora-android-device" \
   && grep -Fq 'Kernora Laptop' "$android/kernora-android" \
   || fail "Android does not call this computer a Kernora laptop or PC"
 grep -Fq 'APT::Status-Fd=3' "$android/kernora-android" \

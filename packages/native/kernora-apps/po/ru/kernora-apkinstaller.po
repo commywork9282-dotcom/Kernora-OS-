@@ -198,3 +198,11 @@ msgstr "Файлы или страницы для открытия."
 
 #~ msgid "Turn on Android"
 #~ msgstr "Включить Android"
+
+#: apps/apkinstaller/qml/Main.qml
+msgid "Android apps are still getting ready for apps made for phones. Try again in a few minutes."
+msgstr "Android-приложения ещё готовятся запускать приложения для телефонов. Попробуйте через несколько минут."
+
+#: apps/apkinstaller/qml/Main.qml
+msgid "Almost ready"
+msgstr "Почти готово"

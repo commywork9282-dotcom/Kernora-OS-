@@ -134,6 +134,8 @@ data/android/kernora-android-sync.path usr/lib/systemd/user
 data/android/kernora-android-sync.service usr/lib/systemd/user
 data/android/kernora-android-windows usr/libexec
 data/android/kernora-android-keyboard usr/libexec
+data/android/kernora-android-device usr/libexec
+data/android/kernora-android-refresh usr/libexec
 data/android/kernora-android-done.path usr/lib/systemd/user
 data/android/kernora-android-done.service usr/lib/systemd/user
 generated/android/KernoraCaption.apk usr/share/kernora/android

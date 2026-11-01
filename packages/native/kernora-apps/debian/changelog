@@ -1,3 +1,13 @@
+kernora-apps (1.1.71) UNRELEASED; urgency=medium
+
+  * The APK installer takes apps built only for ARM once Android apps can
+    run them (kernora-android status arm=yes), says to try again in a few
+    minutes while the translator is still being set up, and refuses them
+    only on processors without one.
+  * What's new: apps made for phones, Android apps on NVIDIA graphics.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 03:00:00 -0700
+
 kernora-apps (1.1.70) UNRELEASED; urgency=medium
 
   * What's new: Android apps type in your keyboard layout.

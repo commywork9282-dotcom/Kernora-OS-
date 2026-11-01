@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.70" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.71" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -254,5 +254,9 @@ grep -Fq '"id": "2026-10-31-4"' "$package_root/data/whatsnew.json" \
   || fail "What's new does not mention the Android keyboard and setup changes"
 grep -Fq '"id": "2026-11-01-1"' "$package_root/data/whatsnew.json" \
   || fail "What's new does not mention keyboard layouts in Android apps"
+grep -Fq 'readonly property bool runs: apk.compatible || android.arm !== "unsupported"' "$package_root/apps/apkinstaller/qml/Main.qml" \
+  && grep -Fq 'msgstr "Почти готово"' "$package_root/po/ru/kernora-apkinstaller.po" \
+  && grep -Fq '"id": "2026-11-01-2"' "$package_root/data/whatsnew.json" \
+  || fail "The installer still refuses apps made for ARM processors"
 
 printf 'kernora-apps source test: OK\n'

@@ -163,9 +163,10 @@ of Kernora. Android 13 gives a new freeform window a phone-sized default
 landscape window of about 72 % of the screen width
 (`am task resize`). It leaves alone apps that ask for portrait only,
 see-through windows and Android's permission and installer dialogs, and puts
-a window back if it ends up letterboxed. Every app is handled once
-(`/var/lib/kernora/android/windows`); Android remembers the size per app, also
-when the user changes it.
+a window back if it ends up letterboxed. Every install of an app is handled
+once (`/var/lib/kernora/android/windows` keeps `package@firstInstallTime`);
+Android remembers the size per app, also when the user changes it, and
+forgets it when the app is removed, so a reinstalled app is widened again.
 
 Only apps: the sync also turns off Android's built-in on-screen keyboard
 apps (`pm disable-user` for every system package in `ime list -s -a`, plus
@@ -198,6 +199,46 @@ on every `layoutChanged`/`layoutListChanged`. Ctrl+Space through
 toast window, and a toast while Android's graphics are down (Waydroid's
 composer aborts when KWin stalls for a few seconds) brings down
 system_server.
+
+ARM apps: most apps on Google Play ship native code only for ARM, and
+Android refused them (`INSTALL_FAILED_NO_MATCHING_ABIS`; Play hides them).
+`kernora-android-device arm-download` fetches a translator for the
+processor from pinned archives of the supremegamers mirrors (the same ones
+waydroid_script uses), checked by SHA-256: Google's `libndk_translation`
+from ChromeOS (zork) on AMD and Hygon, whose licence limits it to AMD
+processors, and Intel's `libhoudini` 14 from Google Play Games on Intel.
+Both are proprietary. `arm-install` copies `prebuilts/` into
+`/var/lib/waydroid/overlay/system` without `etc/init` and
+`etc/binfmt_misc`: the container shares the host's binfmt_misc, so those
+rules would take over ARM executables on the host (qemu-user, docker
+buildx). Apps load ARM libraries through the native bridge; an app that
+executes a bare ARM program still fails. With the translator installed the
+helper adds `ro.product.cpu.abilist*`, `ro.dalvik.vm.isa.arm*` and
+`ro.dalvik.vm.native.bridge` to `waydroid.cfg`; Waydroid's prop file
+overrides the system `build.prop` here, no resetprop needed. The setup
+downloads it after the image (progress 93–96 %); Android apps that are
+already set up get it from `kernora-android-update.service`, and it is
+installed while Android is stopped. `kernora-android status` reports
+`arm=yes|no|unsupported`, and the APK installer takes ARM-only APKs when it
+is `yes`.
+
+Graphics: Waydroid skips NVIDIA render nodes and uses the first other one,
+and only when `init`/`upgrade` runs. With the screen on an NVIDIA card and
+an integrated GPU in the machine, Android drew on the integrated GPU and
+KWin on the NVIDIA card showed black windows; a computer set up before
+Kernora installed the NVIDIA driver kept pointing at the nouveau node.
+`kernora-android-device` treats the card with `boot_vga=1` (or else the one
+with a connected output) as the screen's card. If its driver is nvidia or
+nouveau, or there is no other render node, Android draws in software:
+`ro.hardware.gralloc=default`, `ro.hardware.egl=swiftshader`,
+`ro.hardware.vulkan=pastel`. Before every start of Android,
+`kernora-android.service` runs `kernora-android-refresh` (polkit
+`org.kernora.android.refresh`, allowed for the active user), which installs
+a downloaded translator, writes the properties and runs `waydroid upgrade
+-o` when they differ from `waydroid_base.prop`. The keys Kernora set are
+kept in `/var/lib/kernora/android/properties` (updated only after a
+successful upgrade), so keys that no longer apply are taken out again and
+keys the user added stay.
 
 Identity: `waydroid.cfg` gets `ro.product.waydroid.brand`/`manufacturer`
 Kernora and `model` "Kernora Laptop" or "Kernora PC" (from `hostnamectl

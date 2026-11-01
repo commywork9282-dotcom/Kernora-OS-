@@ -13,6 +13,7 @@ sources=/etc/apt/sources.list.d/kernora-android.sources
 template=/usr/share/kernora/apt/kernora-android.sources
 real=/usr/bin/waydroid.waydroid
 fetch=/usr/libexec/kernora-android-fetch
+device=/usr/libexec/kernora-android-device
 
 kind=
 progress=0
@@ -182,43 +183,12 @@ device_model() {
 }
 
 write_properties() {
-  python3 - "$config" "$(device_model)" <<'EOF'
-import configparser
-import sys
-
-path, model = sys.argv[1:3]
-cfg = configparser.ConfigParser()
-cfg.read(path)
-if not cfg.has_section("properties"):
-    cfg.add_section("properties")
-wanted = {
-    "persist.waydroid.multi_windows": "true",
-    "persist.waydroid.fake_wifi": "*",
-    "ro.product.waydroid.brand": "Kernora",
-    "ro.product.waydroid.manufacturer": "Kernora",
-    "ro.product.waydroid.model": model,
-}
-for key, value in wanted.items():
-    cfg["properties"][key] = value
-with open(path, "w") as handle:
-    cfg.write(handle)
-EOF
-}
-
-properties_pending() {
-  local key value
-  while IFS='=' read -r key value; do
-    key=${key% }
-    value=${value# }
-    [[ $key == ro.product.waydroid.* || $key == persist.waydroid.* ]] || continue
-    grep -Fxq "$key=$value" "$work/waydroid_base.prop" 2>/dev/null || return 0
-  done < <(sed -n '/^\[properties\]/,/^\[/p' "$config")
-  return 1
+  "$device" properties "$(device_model)"
 }
 
 configure() {
-  write_properties
-  "$real" upgrade -o
+  write_properties > /dev/null
+  "$real" upgrade -o && "$device" applied
   install_overlay
 }
 
@@ -261,6 +231,7 @@ setup_android() {
     return 1
   fi
   rm -rf "$work/cache_http"
+  arm_translation
   progress=97
   bytes=
   bytes_total=
@@ -272,21 +243,57 @@ setup_android() {
   echo "kernora-android: Android is ready"
 }
 
+arm_translation() {
+  PYTHONUNBUFFERED=1 "$device" arm-download 2>&1 | {
+    local word done total left
+    while read -r word done total left; do
+      if [[ $word == progress && $done =~ ^[0-9]+$ && $total =~ ^[0-9]+$ && $left =~ ^-?[0-9]+$ ]] && (( total > 0 )); then
+        progress=$(( 93 + done * 3 / total ))
+        remaining=
+        (( left >= 0 )) && remaining=$left
+        bytes=$done
+        bytes_total=$total
+        record downloading
+      else
+        printf '%s\n' "$word $done $total $left"
+      fi
+    done
+  }
+  (( PIPESTATUS[0] == 0 )) || echo "kernora-android: apps made for ARM processors are set up later" >&2
+  "$device" arm-install || true
+  remaining=
+  bytes=
+  bytes_total=
+}
+
 session_active() {
   "$real" status 2>/dev/null | grep -q 'Session:.*RUNNING'
 }
 
 apply_properties() {
-  write_properties
-  if properties_pending && ! session_active; then
+  if [[ $(write_properties) == pending ]] && ! session_active; then
     echo "kernora-android: applying the device properties"
-    "$real" upgrade -o > /dev/null && install_overlay
+    "$real" upgrade -o > /dev/null && "$device" applied && install_overlay
+  fi
+}
+
+refresh_android() {
+  initialized || return 0
+  live_session && return 0
+  install_overlay
+  session_active || "$device" arm-install > /dev/null 2>&1 || true
+  apply_properties
+  if [[ $("$device" arm-status) == no ]]; then
+    systemctl start --no-block kernora-android-update.service 2>/dev/null || true
   fi
 }
 
 update_android() {
   initialized || return 0
   live_session && return 0
+  if online && "$device" arm-download > /dev/null; then
+    session_active || "$device" arm-install || true
+  fi
   apply_properties
   online || return 0
   PYTHONUNBUFFERED=1 "$fetch" download 2>&1 | grep -v '^progress '
@@ -328,6 +335,8 @@ remove_android() {
     apt_get purge --autoremove waydroid
   fi
   rm -rf --one-file-system "$work"
+  "$device" arm-remove
+  rm -f "$state_dir/properties" "$state_dir/properties.next"
   rm -f "$sources"
   apt_get update > /dev/null 2>&1 || true
   kind=
@@ -360,6 +369,7 @@ print_status() {
     "$installed_flag" "$ready" "$(current_kind)" "${status:-}" "$(read_state progress)" "$(read_state remaining)" \
     "$(read_state bytes)" "$(read_state bytes_total)" "$(read_state time)" \
     "${size:-0}" "${container:-inactive}" "$job" "$(live_session && echo yes || echo no)"
+  printf 'arm=%s\n' "$("$device" arm-status)"
   printf 'google_id=%s\ngoogle_accounts=%s\n' \
     "$(sed -n 's/^android_id=//p' "$state_dir/google" 2>/dev/null)" "$(sed -n 's/^accounts=//p' "$state_dir/google" 2>/dev/null)"
 }
@@ -375,6 +385,13 @@ with_lock() {
   mkdir -p "$state_dir"
   exec 9> "$state_dir/lock" || { echo "kernora-android: cannot open $state_dir/lock" >&2; exit 1; }
   flock -w 3600 9 || { echo "kernora-android: another Android job did not finish" >&2; exit 1; }
+  "$@"
+}
+
+try_lock() {
+  mkdir -p "$state_dir"
+  exec 9> "$state_dir/lock" || return 0
+  flock -n 9 || return 0
   "$@"
 }
 
@@ -400,10 +417,7 @@ case ${1:-} in
     ;;
   refresh)
     require_root
-    if initialized; then
-      install_overlay
-      apply_properties
-    fi
+    try_lock refresh_android
     ;;
   update)
     require_root

@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-11-01-2",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Apps made for phones",
+          "ru": "Приложения для телефонов"
+        },
+        "text": {
+          "en": "Most apps on Google Play are built only for phone processors. Android apps now run them on your computer too: Kernora adds what they need by itself, so they install from Google Play and from APK files like any other app.",
+          "ru": "Большинство приложений в Google Play собраны только под процессоры телефонов. Теперь они работают и на компьютере: Kernora сама добавляет всё нужное, и такие приложения ставятся из Google Play и из APK-файлов, как любые другие."
+        }
+      },
+      {
+        "icon": "video-display",
+        "title": {
+          "en": "Android apps on NVIDIA graphics",
+          "ru": "Android-приложения на видеокартах NVIDIA"
+        },
+        "text": {
+          "en": "On computers where the screen runs on an NVIDIA graphics card, Android apps opened as black windows. They now draw on the processor there and show up as they should.",
+          "ru": "На компьютерах, где экран подключён к видеокарте NVIDIA, Android-приложения открывались чёрными окнами. Теперь там они рисуются силами процессора и отображаются как надо."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-01-1",
     "date": "2026-11-01",
     "items": [

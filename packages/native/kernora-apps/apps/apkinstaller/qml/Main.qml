@@ -32,9 +32,11 @@ Window {
     readonly property bool androidReady: android.ready === "yes" && android.installed === "yes"
     readonly property bool tooNew: readable && apk.minSdk > androidSdk
     readonly property bool update: readable && Android.hasApp(apk.package)
-    readonly property bool canInstall: readable && apk.compatible && !tooNew && androidReady
+    readonly property bool runs: apk.compatible || android.arm !== "unsupported"
+    readonly property bool armPending: readable && !apk.compatible && androidReady && android.arm === "no"
+    readonly property bool canInstall: readable && runs && !armPending && !tooNew && androidReady
     readonly property bool working: phase === "starting" || phase === "installing"
-    readonly property bool blocked: readable && phase === "idle" && (!apk.compatible || tooNew)
+    readonly property bool blocked: readable && phase === "idle" && (!runs || armPending || tooNew)
     readonly property bool needsSetup: readable && phase === "idle" && !blocked && androidLoaded && !androidReady
 
     flags: Qt.Dialog | Qt.FramelessWindowHint
@@ -117,7 +119,7 @@ Window {
     Timer {
         interval: 3000
         repeat: true
-        running: app.readable && !app.androidReady && app.active
+        running: app.readable && (!app.androidReady || app.armPending) && app.active
         onTriggered: app.refreshAndroid()
     }
 
@@ -143,6 +145,9 @@ Window {
         case "failed":
             return i18n("App not installed");
         }
+        if (armPending && phase === "idle") {
+            return i18n("Almost ready");
+        }
         if (blocked || (androidLoaded && android.live === "yes")) {
             return i18n("Can't install this app");
         }
@@ -166,8 +171,11 @@ Window {
         if (phase !== "idle") {
             return "";
         }
-        if (!apk.compatible) {
+        if (!runs) {
             return i18n("It only runs on phones with ARM processors.");
+        }
+        if (armPending) {
+            return i18n("Android apps are still getting ready for apps made for phones. Try again in a few minutes.");
         }
         if (tooNew) {
             return i18n("It's made for newer phones and doesn't run here yet.");

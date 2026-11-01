@@ -1,3 +1,33 @@
+kernora-desktop (1.4.61) UNRELEASED; urgency=medium
+
+  * Android apps run apps built only for ARM, which is most of Google Play.
+    kernora-android-device downloads an ARM translator for the processor
+    (Google's libndk_translation on AMD, Intel's libhoudini on Intel, from
+    pinned archives checked by SHA-256), copies it into Waydroid's system
+    overlay and adds the ARM ABIs and the native bridge to waydroid.cfg.
+    It comes with the setup; Android apps that are already set up get it
+    from the update service. The binfmt_misc rules are left out, since
+    registering them in the container would take over ARM executables on
+    the host.
+  * Android apps no longer open as black windows when the screen runs on
+    an NVIDIA card: if the boot VGA card is driven by nvidia or nouveau,
+    or no other render node exists, Android draws in software (gralloc
+    default, SwiftShader, Vulkan pastel). Waydroid picked the integrated
+    GPU there, whose buffers KWin on the NVIDIA card cannot show.
+  * The choice is checked before every start of Android
+    (kernora-android-refresh through polkit org.kernora.android.refresh),
+    so a new driver or card is picked up; Kernora keeps track of the
+    properties it set and takes them back out when they no longer apply.
+  * The window helper remembers apps by install (package and first
+    install time), so an app that is removed and installed again opens in
+    a computer-sized window again instead of the phone size.
+  * Apps that start with a see-through trampoline activity (VLC's
+    StartActivity, many splash screens) were skipped for good when opened
+    while Android ran; the helper now looks at a new task again for a few
+    seconds until its real window is up.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 03:00:00 -0700
+
 kernora-desktop (1.4.60) UNRELEASED; urgency=medium
 
   * Android apps type in the keyboard layout chosen in Kernora. Waydroid

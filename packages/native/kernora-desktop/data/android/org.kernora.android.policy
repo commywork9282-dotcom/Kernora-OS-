@@ -58,4 +58,17 @@
     </defaults>
     <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-keyboard</annotate>
   </action>
+  <action id="org.kernora.android.refresh">
+    <description>Prepare Android apps for this computer</description>
+    <description xml:lang="ru">Подготовка Android-приложений для этого компьютера</description>
+    <message>Android apps are prepared for this computer's graphics and processor</message>
+    <message xml:lang="ru">Android-приложения подготавливаются под видеокарту и процессор этого компьютера</message>
+    <icon_name>org.kernora.android</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-refresh</annotate>
+  </action>
 </policyconfig>
