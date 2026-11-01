@@ -4015,3 +4015,23 @@ msgstr "Настройки"
 
 #~ msgid "Every generation of Material, drawn in the Kernora colours: shapes, depth, buttons and the quick settings change with it."
 #~ msgstr "Любое поколение Material в цветах Kernora: вместе с ним меняются формы, тени, кнопки и быстрые настройки."
+
+#: apps/settings/qml/pages/AndroidPage.qml
+msgid "The report couldn't be saved. Try again."
+msgstr "Не удалось сохранить отчёт. Попробуйте ещё раз."
+
+#: apps/settings/qml/pages/AndroidPage.qml
+msgid "Saved as %1. Send this file to Kernora's developers."
+msgstr "Сохранено как %1. Отправьте этот файл разработчикам Kernora."
+
+#: apps/settings/qml/pages/AndroidPage.qml
+msgid "Report a problem"
+msgstr "Сообщить о проблеме"
+
+#: apps/settings/qml/pages/AndroidPage.qml
+msgid "Collecting what Android apps have logged…"
+msgstr "Собираем записи Android-приложений…"
+
+#: apps/settings/qml/pages/AndroidPage.qml
+msgid "Saves Android's logs in a file you can send to Kernora's developers"
+msgstr "Сохраняет журналы Android в файл, который можно отправить разработчикам Kernora"

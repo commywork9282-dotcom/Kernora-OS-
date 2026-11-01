@@ -10,6 +10,7 @@ import time
 
 REAL = "/usr/bin/waydroid.waydroid"
 DONE = "/var/lib/kernora/android/windows"
+SCREENS = "/var/lib/kernora/android/screens"
 SKIP = {
     "android",
     "com.android.launcher3",
@@ -89,13 +90,29 @@ def display() -> tuple[int, int] | None:
     return (int(match.group(1)), int(match.group(2))) if match else None
 
 
+def area(size: tuple[int, int]) -> tuple[int, int, int, int]:
+    try:
+        with open(SCREENS, encoding="utf-8") as handle:
+            found = [tuple(int(value) for value in line.split(",")) for line in handle.read().split()[:8]]
+    except (OSError, ValueError):
+        found = []
+    if len(found) < 2 or any(len(screen) != 4 for screen in found):
+        return 0, 0, size[0], size[1]
+    left = min(screen[0] for screen in found)
+    top = min(screen[1] for screen in found)
+    ratio = size[0] / max(1, max(screen[0] + screen[2] for screen in found) - left)
+    x, y, width, height = found[0]
+    x, y = round((x - left) * ratio), round((y - top) * ratio)
+    return x, y, min(round(width * ratio), size[0] - x), min(round(height * ratio), size[1] - y)
+
+
 def target(size: tuple[int, int], count: int) -> tuple[int, int, int, int]:
-    width_screen, height_screen = size
+    origin_x, origin_y, width_screen, height_screen = area(size)
     width = round(width_screen * 0.72)
     height = round(min(height_screen * 0.86, width * 0.66))
     shift = 32 * (count % 5)
-    left = min(max(0, (width_screen - width) // 2 - 64 + shift), width_screen - width)
-    top = min(max(0, (height_screen - height) // 2 - 32 + shift), height_screen - height)
+    left = origin_x + min(max(0, (width_screen - width) // 2 - 64 + shift), width_screen - width)
+    top = origin_y + min(max(0, (height_screen - height) // 2 - 32 + shift), height_screen - height)
     return left, top, left + width, top + height
 
 

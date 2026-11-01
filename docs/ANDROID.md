@@ -229,7 +229,8 @@ KWin on the NVIDIA card showed black windows; a computer set up before
 Kernora installed the NVIDIA driver kept pointing at the nouveau node.
 `kernora-android-device` treats the card with `boot_vga=1` (or else the one
 with a connected output) as the screen's card. If its driver is nvidia or
-nouveau, or there is no other render node, Android draws in software:
+nouveau, or there is no other render node (a `virtio_gpu` without the virgl
+bit in its virtio `features` counts as none), Android draws in software:
 `ro.hardware.gralloc=default`, `ro.hardware.egl=swiftshader`,
 `ro.hardware.vulkan=pastel`. Before every start of Android,
 `kernora-android.service` runs `kernora-android-refresh` (polkit
@@ -239,6 +240,44 @@ a downloaded translator, writes the properties and runs `waydroid upgrade
 kept in `/var/lib/kernora/android/properties` (updated only after a
 successful upgrade), so keys that no longer apply are taken out again and
 keys the user added stay.
+
+Monitors: Waydroid has one Android screen. The hwcomposer sizes it from the
+first window (maximized on whichever monitor it lands on) unless
+`persist.waydroid.width`/`height` are set, and every Android window is a
+see-through Wayland window of that size with the app drawn at its Android
+position, so dragging the caption moved the app only inside one monitor.
+With more than one enabled output, `kernora-android-session --screens`
+(`ExecStartPre` of `kernora-android.service`) writes the outputs' logical
+rectangles (main monitor first, from `kscreen-doctor -j`) to
+`~/.cache/kernora/android-screens` and adds the KWin rule `kernora-android`
+to the user's `kwinrulesrc` (window class contains `waydroid`, position
+forced to the desktop's corner). `kernora-android-refresh` copies the
+checked rectangles to `/var/lib/kernora/android/screens`, and
+`kernora-android-device` puts the desktop's width and height into
+`waydroid.cfg`, so Android starts with a screen that covers every monitor.
+The window helper opens new windows on the main monitor. With one monitor
+the file, the keys and the rule are removed again. Limits: Android's
+maximize covers every monitor, monitors of different heights leave parts
+of Android's screen that no monitor shows, and a change of monitors takes
+effect at the next start of Android. These values must never be set with
+`setprop`: a stored persist value, even an empty one, wins over
+`waydroid.cfg` at boot.
+
+Reports: `kernora-android report` (Settings → Android apps → Report a
+problem, through polkit `org.kernora.android`) writes
+`Android-apps-report-DATE.txt` into the user's Downloads as that user:
+versions, status without the Android ID, processor, DRM cards and the
+graphics choice, Waydroid properties, `getprop`, network state with pings,
+the crash log buffer, errors from logcat, the newest `data_app_crash`,
+`data_app_native_crash` and `data_app_anr` entries from
+`/data/system/dropbox` (readable from the host even when Android is
+stopped) and the end of `waydroid.log`.
+
+Sleep: Waydroid freezes the container when Android turns its screen off,
+which happens `screen_off_timeout` after the last Android window closed
+(with a window open it stays awake). The default minute stopped Google
+Play downloads after the user closed Play; the sync sets 30 minutes and
+turns Private DNS off.
 
 Identity: `waydroid.cfg` gets `ro.product.waydroid.brand`/`manufacturer`
 Kernora and `model` "Kernora Laptop" or "Kernora PC" (from `hostnamectl

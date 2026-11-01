@@ -20,6 +20,8 @@ STATE = pathlib.Path("/var/lib/kernora/android")
 SYSTEM_PACKAGES = STATE / "system-packages"
 STORE = "com.android.vending"
 WAIT = 300
+SCREENS = pathlib.Path.home() / ".cache/kernora/android-screens"
+RULE = "kernora-android"
 LAYOUTS = {
     "ara": "arabic", "az": "azerbaijani", "be": "belgian", "bg": "bulgarian", "br": "brazilian", "by": "belarusian",
     "ca": "french_ca", "ch": "swiss_german", "cz": "czech", "de": "german", "dk": "danish", "ee": "estonian",
@@ -163,6 +165,70 @@ def kernora_density() -> str:
     primary = min(enabled, key=lambda output: output.get("priority") or 99)
     scale = float(primary.get("scale") or 1)
     return str(min(480, max(100, round(160 * scale))))
+
+
+def kernora_screens() -> list[tuple[int, int, int, int]]:
+    try:
+        outputs = json.loads(quiet("kscreen-doctor", "-j", timeout=10).stdout).get("outputs", [])
+    except (subprocess.TimeoutExpired, ValueError, AttributeError):
+        return []
+    screens = []
+    for output in sorted((output for output in outputs if output.get("enabled")),
+                         key=lambda output: output.get("priority") or 99):
+        scale = float(output.get("scale") or 1)
+        mode = next((mode for mode in output.get("modes", []) if str(mode.get("id")) == str(output.get("currentModeId"))), {})
+        size = mode.get("size") or output.get("size") or {}
+        width, height = int(size.get("width") or 0), int(size.get("height") or 0)
+        if output.get("rotation") in (2, 8):
+            width, height = height, width
+        position = output.get("pos") or {}
+        if width and height:
+            screens.append((int(position.get("x") or 0), int(position.get("y") or 0), round(width / scale), round(height / scale)))
+    return screens
+
+
+def window_rule(origin: tuple[int, int] | None) -> None:
+    def read(group: str, key: str) -> str:
+        return quiet("kreadconfig6", "--file", "kwinrulesrc", "--group", group, "--key", key, timeout=10).stdout.strip()
+
+    def write(group: str, key: str, value: str) -> None:
+        quiet("kwriteconfig6", "--file", "kwinrulesrc", "--group", group, "--key", key, value, timeout=10)
+
+    rules = [rule for rule in read("General", "rules").split(",") if rule]
+    values = {"Description": "Android apps", "wmclass": "waydroid", "wmclassmatch": "2",
+              "position": f"{origin[0]},{origin[1]}" if origin else "", "positionrule": "2"}
+    if origin:
+        if RULE in rules and all(read(RULE, key) == value for key, value in values.items()):
+            return
+        for key, value in values.items():
+            write(RULE, key, value)
+        if RULE not in rules:
+            rules.append(RULE)
+    else:
+        if RULE not in rules:
+            return
+        rules.remove(RULE)
+        for key in values:
+            quiet("kwriteconfig6", "--file", "kwinrulesrc", "--group", RULE, "--key", key, "--delete", timeout=10)
+    write("General", "rules", ",".join(rules))
+    write("General", "count", str(len(rules)))
+    quiet("gdbus", "call", "--session", "--dest", "org.kde.KWin", "--object-path", "/KWin", "--method",
+          "org.kde.KWin.reconfigure", timeout=10)
+
+
+def record_screens(found: list[tuple[int, int, int, int]]) -> None:
+    if len(found) > 1:
+        SCREENS.parent.mkdir(parents=True, exist_ok=True)
+        SCREENS.write_text("".join(f"{x},{y},{width},{height}\n" for x, y, width, height in found[:8]), encoding="utf-8")
+        window_rule((min(screen[0] for screen in found), min(screen[1] for screen in found)))
+    else:
+        SCREENS.unlink(missing_ok=True)
+        window_rule(None)
+
+
+def screens() -> int:
+    record_screens(kernora_screens())
+    return 0
 
 
 def kernora_theme() -> tuple[str, str, str]:
@@ -340,6 +406,8 @@ def main() -> int:
         return setup_done()
     if len(sys.argv) > 1 and sys.argv[1] == "--google":
         return google()
+    if len(sys.argv) > 1 and sys.argv[1] == "--screens":
+        return screens()
     if len(sys.argv) > 1 and sys.argv[1] == "--keyboard-follow":
         return keyboard_follow()
     if session_running() and booted() and unlocked(session_started()):

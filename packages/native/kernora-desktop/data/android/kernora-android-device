@@ -26,6 +26,7 @@ STATE = "/var/lib/kernora/android"
 MANAGED = STATE + "/properties"
 CACHE = STATE + "/arm"
 INSTALLED = STATE + "/arm-installed"
+SCREENS = STATE + "/screens"
 AGENT = "Python-urllib/%d.%d" % sys.version_info[:2]
 TIMEOUT = 30
 NVIDIA = {"nvidia", "nouveau"}
@@ -73,16 +74,22 @@ def driver(node: str) -> str:
         return ""
 
 
+def usable(node: str) -> bool:
+    name = driver(node)
+    if name == "virtio_gpu":
+        return read(node + "/device/features")[:1] == "1"
+    return bool(name) and name not in NVIDIA
+
+
 def software_graphics() -> bool:
     cards = sorted(path for path in glob.glob(DRM + "/card*") if re.fullmatch(r"card\d+", os.path.basename(path)))
     primary = next((card for card in cards if read(card + "/device/boot_vga") == "1"), None)
     if primary is None:
         primary = next((card for card in cards
                         if any(read(status) == "connected" for status in glob.glob(card + "-*/status"))), None)
-    if primary is not None and driver(primary) in NVIDIA:
+    if primary is not None and not usable(primary):
         return True
-    renders = [driver(path) for path in glob.glob(DRM + "/renderD*")]
-    return not any(name and name not in NVIDIA for name in renders)
+    return not any(usable(path) for path in glob.glob(DRM + "/renderD*"))
 
 
 def translator() -> str:
@@ -110,6 +117,19 @@ def installed() -> str:
     return ""
 
 
+def screens() -> list[tuple[int, int, int, int]]:
+    found = []
+    for line in read(SCREENS).splitlines()[:8]:
+        if re.fullmatch(r"-?\d{1,5},-?\d{1,5},\d{1,5},\d{1,5}", line):
+            found.append(tuple(int(value) for value in line.split(",")))
+    return found if len(found) > 1 else []
+
+
+def span(found: list[tuple[int, int, int, int]]) -> tuple[int, int]:
+    return (max(x + width for x, _, width, _ in found) - min(x for x, _, _, _ in found),
+            max(y + height for _, y, _, height in found) - min(y for _, y, _, _ in found))
+
+
 def wanted(model: str) -> dict[str, str]:
     properties = {
         "persist.waydroid.multi_windows": "true",
@@ -120,6 +140,10 @@ def wanted(model: str) -> dict[str, str]:
     }
     if software_graphics():
         properties.update(SOFTWARE)
+    found = screens()
+    if found:
+        width, height = span(found)
+        properties.update({"persist.waydroid.width": str(width), "persist.waydroid.height": str(height)})
     name = installed()
     if name:
         properties.update(ARM)
@@ -273,6 +297,9 @@ def main() -> int:
     if command == "arm-status":
         print(arm_status())
         return 0
+    if command == "graphics":
+        print("software" if software_graphics() else "hardware")
+        return 0
     if command in ("arm-download", "arm-install"):
         name = translator()
         if not name:
@@ -294,7 +321,7 @@ def main() -> int:
         remove()
         shutil.rmtree(CACHE, ignore_errors=True)
         return 0
-    print("usage: kernora-android-device properties MODEL|applied|arm-status|arm-download|arm-install|arm-remove",
+    print("usage: kernora-android-device properties MODEL|applied|arm-status|graphics|arm-download|arm-install|arm-remove",
           file=sys.stderr)
     return 2
 

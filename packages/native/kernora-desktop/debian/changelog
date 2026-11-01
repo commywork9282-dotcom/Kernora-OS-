@@ -1,3 +1,25 @@
+kernora-desktop (1.4.62) UNRELEASED; urgency=medium
+
+  * Android apps move between monitors. Waydroid has a single Android
+    screen and every Android window is a see-through window of that size,
+    so a window could not leave the first monitor. With more than one
+    monitor, kernora-android-session --screens records the layout before
+    Android starts, the refresh puts persist.waydroid.width/height for
+    the whole desktop into waydroid.cfg, and a KWin rule (kernora-android
+    in the user's kwinrulesrc) keeps Android's windows at the desktop's
+    corner. New windows open on the main monitor. Android's own maximize
+    then covers every monitor.
+  * kernora-android report saves what Android apps logged, recent crash
+    reports, the graphics and network state and the Waydroid log in the
+    user's Downloads, for Kernora's developers.
+  * Android sleeps 30 minutes after its last window closes instead of one
+    (screen_off_timeout): Waydroid freezes it then, which stopped Google
+    Play downloads. Private DNS is off; the computer resolves names.
+  * A virtio GPU without 3D counts as no GPU, so Android in a virtual
+    machine draws in software instead of showing black windows.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 12:00:00 -0700
+
 kernora-desktop (1.4.61) UNRELEASED; urgency=medium
 
   * Android apps run apps built only for ARM, which is most of Google Play.

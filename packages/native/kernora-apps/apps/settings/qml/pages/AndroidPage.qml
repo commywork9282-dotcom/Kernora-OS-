@@ -28,6 +28,7 @@ SettingsPage {
     property real requestedAt: 0
     property bool faster: false
     property bool googleWorking: false
+    property bool reporting: false
 
     readonly property bool live: info.live === "yes"
     readonly property bool ready: info.ready === "yes" && info.installed === "yes"
@@ -76,6 +77,23 @@ SettingsPage {
                 page.requestedAt = Math.floor(Date.now() / 1000);
             }
             page.refresh();
+        });
+    }
+
+    function saveReport(): void {
+        page.reporting = true;
+        Process.run("pkexec", [page.tool, "report"], (code, output) => {
+            page.reporting = false;
+            const path = output.trim().split("\n").pop();
+            if (code !== 0 || !path.startsWith("/")) {
+                if (code !== 126 && code !== 127) {
+                    page.notify(i18n("The report couldn't be saved. Try again."));
+                }
+                return;
+            }
+            const at = path.lastIndexOf("/");
+            page.notify(i18n("Saved as %1. Send this file to Kernora's developers.", path.slice(at + 1)));
+            Process.openUrl("file://" + path.slice(0, at));
         });
     }
 
@@ -505,6 +523,15 @@ SettingsPage {
             icon: "drive-harddisk"
             iconStyle: "plain"
             interactive: false
+        }
+        ListItem {
+            title: i18n("Report a problem")
+            subtitle: page.reporting ? i18n("Collecting what Android apps have logged…")
+                                     : i18n("Saves Android's logs in a file you can send to Kernora's developers")
+            icon: "preferences-desktop-feedback"
+            iconStyle: "plain"
+            enabled: !page.reporting
+            onClicked: page.saveReport()
         }
         ListItem {
             title: i18n("Remove Android apps")

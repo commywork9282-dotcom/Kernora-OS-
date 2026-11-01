@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.71" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.72" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -258,5 +258,9 @@ grep -Fq 'readonly property bool runs: apk.compatible || android.arm !== "unsupp
   && grep -Fq 'msgstr "Почти готово"' "$package_root/po/ru/kernora-apkinstaller.po" \
   && grep -Fq '"id": "2026-11-01-2"' "$package_root/data/whatsnew.json" \
   || fail "The installer still refuses apps made for ARM processors"
+grep -Fq 'Process.run("pkexec", [page.tool, "report"]' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq 'msgstr "Сообщить о проблеме"' "$package_root/po/ru/kernora-settings.po" \
+  && grep -Fq '"id": "2026-11-01-3"' "$package_root/data/whatsnew.json" \
+  || fail "Settings cannot save a report about Android apps"
 
 printf 'kernora-apps source test: OK\n'

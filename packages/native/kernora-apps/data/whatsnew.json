@@ -1,5 +1,44 @@
 [
   {
+    "id": "2026-11-01-3",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "icon": "video-display",
+        "title": {
+          "en": "Android apps on every monitor",
+          "ru": "Android-приложения на всех мониторах"
+        },
+        "text": {
+          "en": "With more than one monitor, drag an Android app by its title bar to any of them. New apps open on your main monitor.",
+          "ru": "Если мониторов несколько, Android-приложение можно перетащить за заголовок на любой из них. Новые приложения открываются на основном мониторе."
+        }
+      },
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Downloads go on in the background",
+          "ru": "Загрузки идут в фоне"
+        },
+        "text": {
+          "en": "Android used to fall asleep a minute after its last window closed, and Google Play stopped downloading. Now it keeps going for half an hour.",
+          "ru": "Раньше Android засыпал через минуту после закрытия последнего окна, и Google Play переставал скачивать. Теперь загрузки продолжаются ещё полчаса."
+        }
+      },
+      {
+        "icon": "preferences-desktop-feedback",
+        "title": {
+          "en": "Report a problem with Android apps",
+          "ru": "Сообщить о проблеме с Android-приложениями"
+        },
+        "text": {
+          "en": "If an Android app misbehaves, open Settings, Android apps, Report a problem. It saves a file with what Android logged that you can send to us.",
+          "ru": "Если Android-приложение ведёт себя странно, откройте Настройки, Android-приложения, «Сообщить о проблеме». Появится файл с журналами Android, который можно отправить нам."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-01-2",
     "date": "2026-11-01",
     "items": [

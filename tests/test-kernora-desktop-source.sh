@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.61" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.62" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -506,6 +506,84 @@ with tempfile.TemporaryDirectory() as root:
         ok = False
     except ValueError:
         ok = ok and not os.path.exists(device.archive("houdini") + ".part")
+sys.exit(0 if ok else 1)
+EOF
+grep -Fq 'setting system screen_off_timeout 1800000' "$android/kernora-android-sync" \
+  && grep -Fq 'setting global private_dns_mode off' "$android/kernora-android-sync" \
+  && grep -Fq 'save_report' "$android/kernora-android" \
+  && grep -Fq 'runuser -u "$user" -- tee "$target"' "$android/kernora-android" \
+  && grep -Fq 'data_app_crash' "$android/kernora-android" \
+  && grep -Fq 'copy_screens' "$android/kernora-android" \
+  && ! grep -Fq 'setprop persist.waydroid' "$android/kernora-android-sync" \
+  && [[ "$(grep -n 'ExecStartPre=' "$android/kernora-android.service" | head -n 1)" == *'kernora-android-session --screens'* ]] \
+  && timeout 60 python3 -I - "$android/kernora-android-device" "$android/kernora-android-windows" "$android/kernora-android-session" <<'EOF' \
+  || fail "Android apps do not span every screen, report problems or keep downloads going"
+import importlib.machinery
+import importlib.util
+import json
+import os
+import subprocess
+import sys
+import tempfile
+
+
+def load(name, path):
+    loader = importlib.machinery.SourceFileLoader(name, path)
+    module = importlib.util.module_from_spec(importlib.util.spec_from_loader(name, loader))
+    loader.exec_module(module)
+    return module
+
+
+device = load("device", sys.argv[1])
+windows = load("windows", sys.argv[2])
+session = load("session", sys.argv[3])
+ok = True
+with tempfile.TemporaryDirectory() as root:
+    drm = os.path.join(root, "drm")
+    os.makedirs(os.path.join(root, "virtio0"))
+    os.makedirs(os.path.join(root, "drivers", "virtio_gpu"))
+    os.symlink(os.path.join(root, "drivers", "virtio_gpu"), os.path.join(root, "virtio0", "driver"))
+    for node in ("card0", "renderD128"):
+        os.makedirs(os.path.join(drm, node))
+        os.symlink(os.path.join(root, "virtio0"), os.path.join(drm, node, "device"))
+    os.makedirs(os.path.join(drm, "card0-Virtual-1"))
+    with open(os.path.join(drm, "card0-Virtual-1", "status"), "w") as handle:
+        handle.write("connected\n")
+    device.DRM = drm
+    features = os.path.join(root, "virtio0", "features")
+    with open(features, "w") as handle:
+        handle.write("0000000000000000000000000000000001\n")
+    ok = ok and device.software_graphics()
+    with open(features, "w") as handle:
+        handle.write("1100000000000000000000000000000001\n")
+    ok = ok and not device.software_graphics()
+
+    screens = os.path.join(root, "screens")
+    device.SCREENS = windows.SCREENS = screens
+    device.software_graphics = lambda: False
+    device.installed = lambda: ""
+    with open(screens, "w") as handle:
+        handle.write("0,0,1280,800\n1280,0,1920,1080\n")
+    props = device.wanted("Kernora PC")
+    ok = ok and props.get("persist.waydroid.width") == "3200" and props.get("persist.waydroid.height") == "1080"
+    left, top, right, bottom = windows.target((6400, 2160), 0)
+    ok = ok and 0 <= left and right <= 2560 and bottom <= 1600 and right - left > 1500
+    with open(screens, "w") as handle:
+        handle.write("0,0,1280,800\n")
+    ok = ok and "persist.waydroid.width" not in device.wanted("Kernora PC")
+    left, top, right, bottom = windows.target((1280, 744), 0)
+    ok = ok and right <= 1280 and bottom <= 744
+
+layout = {"outputs": [
+    {"enabled": True, "priority": 2, "pos": {"x": 1536, "y": 0}, "scale": 1, "rotation": 1, "currentModeId": "b",
+     "modes": [{"id": "a", "size": {"width": 800, "height": 600}}, {"id": "b", "size": {"width": 2560, "height": 1440}}]},
+    {"enabled": True, "priority": 1, "pos": {"x": 0, "y": 0}, "scale": 1.25, "rotation": 1, "currentModeId": "1",
+     "modes": [{"id": "1", "size": {"width": 1920, "height": 1080}}]},
+    {"enabled": False, "priority": 3, "pos": {"x": 0, "y": 0}, "scale": 1, "currentModeId": "1",
+     "modes": [{"id": "1", "size": {"width": 1024, "height": 768}}]},
+]}
+session.quiet = lambda *args, **kwargs: subprocess.CompletedProcess(args, 0, json.dumps(layout), "")
+ok = ok and session.kernora_screens() == [(0, 0, 1536, 864), (1536, 0, 2560, 1440)]
 sys.exit(0 if ok else 1)
 EOF
 grep -Fq '"ro.product.waydroid.model": model' "$android/kernora-android-device" \
