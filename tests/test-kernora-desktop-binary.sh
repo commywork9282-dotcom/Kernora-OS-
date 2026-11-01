@@ -486,6 +486,7 @@ dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -
   && [[ -x "$temporary_root/desktop/usr/libexec/kernora-android-sync" ]] \
   && [[ -x "$temporary_root/desktop/usr/libexec/kernora-android-fetch" ]] \
   && [[ -x "$temporary_root/desktop/usr/libexec/kernora-android-windows" ]] \
+  && [[ -x "$temporary_root/desktop/usr/libexec/kernora-android-keyboard" ]] \
   && [[ -s "$temporary_root/desktop/usr/lib/systemd/user/kernora-android-done.path" ]] \
   && [[ -L "$temporary_root/desktop/usr/lib/systemd/user/default.target.wants/kernora-android-done.path" ]] \
   && [[ -s "$temporary_root/desktop/usr/share/kernora/android/KernoraCaption.apk" ]] \

@@ -15,10 +15,25 @@ REAL = "/usr/bin/waydroid.waydroid"
 UNIT = "kernora-android.service"
 SYNC = "/usr/libexec/kernora-android-sync"
 WINDOWS = "/usr/libexec/kernora-android-windows"
+KEYBOARD = "/usr/libexec/kernora-android-keyboard"
 STATE = pathlib.Path("/var/lib/kernora/android")
 SYSTEM_PACKAGES = STATE / "system-packages"
 STORE = "com.android.vending"
 WAIT = 300
+LAYOUTS = {
+    "ara": "arabic", "az": "azerbaijani", "be": "belgian", "bg": "bulgarian", "br": "brazilian", "by": "belarusian",
+    "ca": "french_ca", "ch": "swiss_german", "cz": "czech", "de": "german", "dk": "danish", "ee": "estonian",
+    "es": "spanish", "fi": "finnish", "fr": "french", "gb": "english_uk", "ge": "georgian", "gr": "greek",
+    "hr": "croatian", "hu": "hungarian", "il": "hebrew", "ir": "persian", "is": "icelandic", "it": "italian",
+    "latam": "spanish_latin", "lt": "lithuanian", "lv": "latvian", "mn": "mongolian", "no": "norwegian",
+    "pl": "polish", "pt": "portuguese", "ru": "russian", "se": "swedish", "si": "slovenian", "sk": "slovak",
+    "tr": "turkish", "ua": "ukrainian", "us": "english_us",
+}
+VARIANTS = {
+    ("us", "dvorak"): "english_us_dvorak", ("us", "colemak"): "english_us_colemak", ("us", "intl"): "english_us_intl",
+    ("us", "workman"): "english_us_workman", ("ru", "mac"): "russian_mac", ("ch", "fr"): "swiss_french",
+    ("bg", "phonetic"): "bulgarian_phonetic", ("tr", "f"): "turkish_f", ("cz", "qwerty"): "czech_qwerty",
+}
 
 TEXT = {
     "ru": {
@@ -201,9 +216,57 @@ def sync_after_boot() -> int:
         if booted() and unlocked(since):
             subprocess.Popen(["pkexec", WINDOWS], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                              stderr=subprocess.DEVNULL, start_new_session=True)
+            subprocess.Popen([sys.argv[0], "--keyboard-follow"], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL, start_new_session=True)
             return sync()
         time.sleep(2)
     return 1
+
+
+def host_layouts() -> tuple[list[tuple[str, str]], int]:
+    try:
+        listed = quiet("gdbus", "call", "--session", "--dest", "org.kde.keyboard", "--object-path", "/Layouts",
+                       "--method", "org.kde.KeyboardLayouts.getLayoutsList", timeout=10).stdout
+        current = quiet("gdbus", "call", "--session", "--dest", "org.kde.keyboard", "--object-path", "/Layouts",
+                        "--method", "org.kde.KeyboardLayouts.getLayout", timeout=10).stdout
+    except subprocess.TimeoutExpired:
+        return [], 0
+    pairs = re.findall(r"\('([^']*)', '([^']*)', '[^']*'\)", listed)
+    found = re.search(r"uint32 (\d+)", current)
+    index = int(found.group(1)) if found else 0
+    return pairs, index if index < len(pairs) else 0
+
+
+def android_layouts(pairs: list[tuple[str, str]]) -> tuple[list[str], list[int]]:
+    names: list[str] = []
+    positions: list[int] = []
+    for layout, variant in pairs:
+        name = VARIANTS.get((layout, variant)) or LAYOUTS.get(layout, "english_us")
+        if name not in names:
+            names.append(name)
+        positions.append(names.index(name))
+    return names[:8], [min(position, 7) for position in positions]
+
+
+def keyboard_apply() -> None:
+    pairs, current = host_layouts()
+    if not pairs or not session_running():
+        return
+    names, positions = android_layouts(pairs)
+    try:
+        quiet("pkexec", KEYBOARD, "layouts", str(positions[current]), *names, timeout=60)
+    except subprocess.TimeoutExpired:
+        pass
+
+
+def keyboard_follow() -> int:
+    keyboard_apply()
+    monitor = subprocess.Popen(["gdbus", "monitor", "--session", "--dest", "org.kde.keyboard", "--object-path", "/Layouts"],
+                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    for line in monitor.stdout:
+        if re.search(r"\.layout(List)?Changed \(", line):
+            keyboard_apply()
+    return 0
 
 
 def read_state(name: str) -> dict[str, str]:
@@ -277,6 +340,8 @@ def main() -> int:
         return setup_done()
     if len(sys.argv) > 1 and sys.argv[1] == "--google":
         return google()
+    if len(sys.argv) > 1 and sys.argv[1] == "--keyboard-follow":
+        return keyboard_follow()
     if session_running() and booted() and unlocked(session_started()):
         return 0
     notification = notify("starting", 0)

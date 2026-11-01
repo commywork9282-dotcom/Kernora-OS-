@@ -167,15 +167,37 @@ a window back if it ends up letterboxed. Every app is handled once
 (`/var/lib/kernora/android/windows`); Android remembers the size per app, also
 when the user changes it.
 
-Only apps: the sync also turns off Android's on-screen keyboards (`ime
-disable` for every enabled one and `show_ime_with_hard_keyboard 0`), so the
-physical keyboard types into the app and no keyboard window opens; hides
+Only apps: the sync also turns off Android's built-in on-screen keyboard
+apps (`pm disable-user` for every system package in `ime list -s -a`, plus
+`show_ime_with_hard_keyboard 0`), so the physical keyboard types into the
+app and no "InputMethod" window opens. `ime disable` alone was not enough:
+Android turns a system keyboard back on whenever none is enabled, after
+every restart of its system. Keyboards the user installs are left alone.
+It also hides
 the "isn't responding" and "has stopped" dialogs (`hide_error_dialogs 1`);
 and keeps the device set up (`device_provisioned`, `user_setup_complete`)
 with Google's and LineageOS's setup wizards and the LineageOS updater
 disabled, so nothing asks to finish setting up the device. Windows of
 Android's keyboard, Settings search, setup and speech services get hidden
 desktop entries with the Kernora icon.
+
+Keyboard layouts: Waydroid hands Android raw key codes, so Android typed
+with its own US English layout whatever Kernora used. Once Android is up,
+`kernora-android-session --keyboard-follow` reads Plasma's layouts
+(`org.kde.keyboard`), maps the current one to Android's (`us` →
+`english_us`, `ru` → `russian`, … with a few variants) and has
+`kernora-android-keyboard` (root through polkit
+`org.kernora.android.keyboard`) set it for Waydroid's keyboard
+(`vendor:1,product:1`) through the input service: `service call input 18`
+is `setCurrentKeyboardLayoutForInputDevice` and `21` is
+`removeKeyboardLayoutForInputDevice` in Android 13's `IInputManager`, so
+the helper does nothing on another SDK. Android keeps only the current
+layout, so Ctrl+Space inside an app has nothing to switch to. It runs again
+on every `layoutChanged`/`layoutListChanged`. Ctrl+Space through
+`/dev/input/wl_keyboard_events` is not used: Android answers it with a
+toast window, and a toast while Android's graphics are down (Waydroid's
+composer aborts when KWin stalls for a few seconds) brings down
+system_server.
 
 Identity: `waydroid.cfg` gets `ro.product.waydroid.brand`/`manufacturer`
 Kernora and `model` "Kernora Laptop" or "Kernora PC" (from `hostnamectl

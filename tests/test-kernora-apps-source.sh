@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.69" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.70" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -252,5 +252,7 @@ grep -Fq 'function registerWithGoogle()' "$package_root/apps/settings/qml/pages/
   || fail "Settings does not walk through Google Play or show the whole setup progress"
 grep -Fq '"id": "2026-10-31-4"' "$package_root/data/whatsnew.json" \
   || fail "What's new does not mention the Android keyboard and setup changes"
+grep -Fq '"id": "2026-11-01-1"' "$package_root/data/whatsnew.json" \
+  || fail "What's new does not mention keyboard layouts in Android apps"
 
 printf 'kernora-apps source test: OK\n'

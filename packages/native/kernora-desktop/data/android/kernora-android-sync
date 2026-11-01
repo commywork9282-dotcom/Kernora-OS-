@@ -47,9 +47,11 @@ setting global device_provisioned 1
 setting secure user_setup_complete 1
 setting global hide_error_dialogs 1
 setting secure show_ime_with_hard_keyboard 0
-for keyboard in $(android ime list -s | tr -d '\r'); do
-  android ime disable "$keyboard" > /dev/null
-  android am force-stop "${keyboard%%/*}" > /dev/null
+for keyboard in $(android ime list -s -a | tr -d '\r'); do
+  package=${keyboard%%/*}
+  if android pm list packages -s "$package" | tr -d '\r' | grep -qx "package:$package"; then
+    android pm disable-user --user 0 "$package" > /dev/null
+  fi
 done
 for package in org.lineageos.waydroidupdater com.google.android.setupwizard org.lineageos.setupwizard; do
   if android pm list packages -e "$package" | tr -d '\r' | grep -qx "package:$package"; then

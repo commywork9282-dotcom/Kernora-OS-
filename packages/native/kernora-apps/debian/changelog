@@ -1,3 +1,9 @@
+kernora-apps (1.1.70) UNRELEASED; urgency=medium
+
+  * What's new: Android apps type in your keyboard layout.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 01:00:00 -0700
+
 kernora-apps (1.1.69) UNRELEASED; urgency=medium
 
   * What's new: Android apps without the on-screen keyboard and setup

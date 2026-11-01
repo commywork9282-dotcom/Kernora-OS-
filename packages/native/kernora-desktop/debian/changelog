@@ -1,3 +1,17 @@
+kernora-desktop (1.4.60) UNRELEASED; urgency=medium
+
+  * Android apps type in the keyboard layout chosen in Kernora. Waydroid
+    hands Android raw key codes, so Android always used US English and
+    Russian typed as Latin letters. Once Android is up, and on every
+    layout switch in Plasma, kernora-android-keyboard sets the same layout
+    for Waydroid's keyboard through Android's input service (no toast, no
+    key presses), and Android keeps only that one.
+  * The sync turns off the system on-screen keyboard app itself instead
+    of only its input method: Android enabled it again after every
+    restart of its system, and it then opened as an "InputMethod" window.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 01:00:00 -0700
+
 kernora-desktop (1.4.59) UNRELEASED; urgency=medium
 
   * Android apps keep to apps: the sync turns off Android's on-screen

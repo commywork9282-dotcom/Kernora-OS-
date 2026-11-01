@@ -45,4 +45,17 @@
     </defaults>
     <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-windows</annotate>
   </action>
+  <action id="org.kernora.android.keyboard">
+    <description>Let Android apps follow the keyboard layout</description>
+    <description xml:lang="ru">Раскладка клавиатуры в Android-приложениях</description>
+    <message>Android apps type in the keyboard layout chosen in Kernora</message>
+    <message xml:lang="ru">Android-приложения печатают в раскладке, выбранной в Kernora</message>
+    <icon_name>org.kernora.android</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-keyboard</annotate>
+  </action>
 </policyconfig>

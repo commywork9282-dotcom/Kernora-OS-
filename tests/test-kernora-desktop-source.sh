@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.59" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.60" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -324,12 +324,47 @@ grep -Fq 'android wm density "$density"' "$android/kernora-android-sync" \
   && grep -Fq 'PathChanged=%h/.config/kwinoutputconfig.json' "$android/kernora-android-sync.path" \
   || fail "Android apps do not use Kernora's scale and device name"
 grep -Fq 'setting secure show_ime_with_hard_keyboard 0' "$android/kernora-android-sync" \
-  && grep -Fq 'android ime disable "$keyboard"' "$android/kernora-android-sync" \
+  && grep -Fq 'android ime list -s -a' "$android/kernora-android-sync" \
+  && grep -Fq 'android pm disable-user --user 0 "$package"' "$android/kernora-android-sync" \
   && grep -Fq 'setting global hide_error_dialogs 1' "$android/kernora-android-sync" \
   && grep -Fq 'setting secure user_setup_complete 1' "$android/kernora-android-sync" \
   && grep -Fq 'com.google.android.setupwizard' "$android/kernora-android-sync" \
   && [[ -s "$android/applications/waydroid.com.android.inputmethod.latin.desktop" ]] \
   || fail "Android still shows its keyboard, error dialogs or setup"
+[[ -x "$android/kernora-android-keyboard" ]] \
+  && grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-keyboard</annotate>' "$android/org.kernora.android.policy" \
+  && ! grep -Fq 'ExecStartPre' "$android/kernora-android.service" \
+  && grep -Fq '"--keyboard-follow"' "$android/kernora-android-session" \
+  && grep -Fxq 'data/android/kernora-android-keyboard usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  && timeout 60 python3 -I - "$android/kernora-android-session" "$android/kernora-android-keyboard" <<'EOF' \
+  || fail "Android apps do not type in Kernora's keyboard layout"
+import importlib.machinery
+import importlib.util
+import sys
+
+
+def load(name, path):
+    loader = importlib.machinery.SourceFileLoader(name, path)
+    module = importlib.util.module_from_spec(importlib.util.spec_from_loader(name, loader))
+    loader.exec_module(module)
+    return module
+
+
+session = load("session", sys.argv[1])
+keyboard = load("keyboard", sys.argv[2])
+names, positions = session.android_layouts([("us", ""), ("ru", ""), ("us", "dvorak"), ("xx", "")])
+ok = names == ["english_us", "russian", "english_us_dvorak"] and positions == [0, 1, 2, 0]
+script = keyboard.commands(1, ["english_us", "russian"])
+ok = ok and script.startswith('[ "$(getprop ro.build.version.sdk)" = 33 ] || exit 0\n')
+ok = ok and "service call input 18 i32 1 s16 vendor:1,product:1 i32 1 i32 1 s16 com.android.inputdevices/com.android.inputdevices.InputDeviceReceiver/keyboard_layout_russian\n" in script
+ok = ok and "service call input 21 i32 1 s16 vendor:1,product:1 i32 1 i32 1 s16 com.android.inputdevices/com.android.inputdevices.InputDeviceReceiver/keyboard_layout_english_us\n" in script
+ok = ok and "keyboard_layout_russian" not in script.split("service call input 21", 1)[1]
+sent = []
+keyboard.subprocess.run = lambda command, **kwargs: sent.append(command)
+keyboard.apply(0, ["english_us"])
+ok = ok and sent and sent[0][:4] == ["/usr/bin/waydroid.waydroid", "shell", "--", "sh"] and "input 21" not in sent[0][-1]
+sys.exit(0 if ok else 1)
+EOF
 grep -Fq '"ro.product.waydroid.model": model' "$android/kernora-android" \
   && grep -Fq '"persist.waydroid.fake_wifi": "*"' "$android/kernora-android" \
   && grep -Fq 'Kernora Laptop' "$android/kernora-android" \

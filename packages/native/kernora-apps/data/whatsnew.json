@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-01-1",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "icon": "input-keyboard",
+        "title": {
+          "en": "Android apps type in your layout",
+          "ru": "Android-приложения печатают в вашей раскладке"
+        },
+        "text": {
+          "en": "Android apps used to type only in English. Now they use the same keyboard layouts as Kernora and switch along with it, so you can write in Russian, Ukrainian or any other layout you have.",
+          "ru": "Раньше Android-приложения печатали только по-английски. Теперь у них те же раскладки, что и в Kernora, и они переключаются вместе с ней, так что можно писать по-русски, по-украински и на любой другой вашей раскладке."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-10-31-4",
     "date": "2026-10-31",
     "items": [
