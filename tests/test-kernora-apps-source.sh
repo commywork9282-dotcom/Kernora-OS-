@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.73" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.74" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -262,6 +262,7 @@ grep -Fq 'Process.run("pkexec", [page.tool, "report"]' "$package_root/apps/setti
   && grep -Fq 'msgstr "Сообщить о проблеме"' "$package_root/po/ru/kernora-settings.po" \
   && grep -Fq '"id": "2026-11-01-3"' "$package_root/data/whatsnew.json" \
   && grep -Fq '"id": "2026-11-01-4"' "$package_root/data/whatsnew.json" \
+  && grep -Fq '"id": "2026-11-02-1"' "$package_root/data/whatsnew.json" \
   || fail "Settings cannot save a report about Android apps"
 
 printf 'kernora-apps source test: OK\n'

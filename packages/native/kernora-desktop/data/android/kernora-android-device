@@ -304,6 +304,14 @@ def main() -> int:
     if command == "applied":
         applied()
         return 0
+    if command == "suspend-action" and len(sys.argv) == 3 and sys.argv[2] in ("freeze", "stop"):
+        cfg = configparser.ConfigParser()
+        cfg.read(CONFIG)
+        if cfg.has_section("waydroid") and cfg["waydroid"].get("suspend_action") != sys.argv[2]:
+            cfg["waydroid"]["suspend_action"] = sys.argv[2]
+            with open(CONFIG, "w", encoding="utf-8") as handle:
+                cfg.write(handle)
+        return 0
     if command == "arm-status":
         print(arm_status())
         return 0
@@ -336,7 +344,7 @@ def main() -> int:
         remove()
         shutil.rmtree(CACHE, ignore_errors=True)
         return 0
-    print("usage: kernora-android-device properties MODEL|applied|arm-status|graphics|graphics-fallback|arm-download|arm-install|arm-remove",
+    print("usage: kernora-android-device properties MODEL|applied|suspend-action freeze|stop|arm-status|graphics|graphics-fallback|arm-download|arm-install|arm-remove",
           file=sys.stderr)
     return 2
 

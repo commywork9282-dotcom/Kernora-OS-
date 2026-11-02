@@ -1,3 +1,28 @@
+kernora-desktop (1.4.64) UNRELEASED; urgency=medium
+
+  * Android windows are no longer resized after an app starts. Widening
+    every new window was a configuration change: Unity games such as
+    Toca Boca World lost their surface and died, logins reset and windows
+    jumped through several sizes. Android remembers a size the user picks.
+    kernora-android-windows only runs with several monitors and moves a
+    new window that lands across two of them onto the main one, without
+    changing its size.
+  * Only apps: the sync turns off Android's phone apps that nothing on a
+    computer needs and that kept running in the background (the Google
+    app, Messages, Contacts, Clock, IMS, Seedvault, calendar sync, Android
+    Auto), about 500 MB less memory in a GAPPS image.
+  * Android stops completely 30 minutes after its last window closed and
+    gives all its memory back (suspend_action stop); with "Open apps
+    faster" on it is frozen instead, as before. Android's screensaver is
+    off: Waydroid reports a charging battery, so Android wanted to start a
+    dream at the timeout and never slept. The window helper keeps Android
+    awake (screen_off_timeout at the maximum) while any app window is open
+    and sets 30 minutes when the last one closes.
+  * The waydroid command lets users run app commands only; show-full-ui
+    and first-launch say that Full UI mode is disabled.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 22:00:00 -0700
+
 kernora-desktop (1.4.63) UNRELEASED; urgency=medium
 
   * Android started in no virtual machine with a virtio GPU without 3D:

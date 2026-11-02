@@ -157,16 +157,17 @@ Scale and size: the sync also sets Android's density to 160 × the scale of
 the main screen (`kscreen-doctor -j`), so Android apps are as big as the rest
 of Kernora. Android 13 gives a new freeform window a phone-sized default
 (412×732 dp), which made apps look like phone apps on the desktop.
-`kernora-android-windows` (root through the polkit action
-`org.kernora.android.windows`, started after boot) follows Android's
-`wm_create_task` events and resizes the first window of every app to a
-landscape window of about 72 % of the screen width
-(`am task resize`). It leaves alone apps that ask for portrait only,
-see-through windows and Android's permission and installer dialogs, and puts
-a window back if it ends up letterboxed. Every install of an app is handled
-once (`/var/lib/kernora/android/windows` keeps `package@firstInstallTime`);
-Android remembers the size per app, also when the user changes it, and
-forgets it when the app is removed, so a reinstalled app is widened again.
+Windows keep the size Android gives them. Resizing a window after the app
+started (1.4.58–1.4.62 widened every new window to about 72 % of the
+screen) is a configuration change: Unity games lost their surface
+("Timeout while trying detaching primary window") and died, logins reset
+and windows jumped through several sizes. Android remembers the size per
+app when the user resizes a window. `kernora-android-windows` (root
+through the polkit action `org.kernora.android.windows`, started after
+boot) now only runs with more than one monitor: a new window that Android
+put across two monitors is moved, at its size, onto the main monitor
+(`am task resize` with the same width and height; a pure move does not
+restart the app). A window that fits on any monitor is left alone.
 
 Only apps: the sync also turns off Android's built-in on-screen keyboard
 apps (`pm disable-user` for every system package in `ime list -s -a`, plus
@@ -290,11 +291,39 @@ the crash log buffer, errors from logcat, the newest `data_app_crash`,
 `/data/system/dropbox` (readable from the host even when Android is
 stopped) and the end of `waydroid.log`.
 
-Sleep: Waydroid freezes the container when Android turns its screen off,
-which happens `screen_off_timeout` after the last Android window closed
-(with a window open it stays awake). The default minute stopped Google
-Play downloads after the user closed Play; the sync sets 30 minutes and
-turns Private DNS off.
+Only apps: besides the setup wizards and the updater, the sync turns off
+phone apps that kept running in the background with nothing to do on a
+computer: the Google app (`googlequicksearchbox`, about 300 MB), Messages,
+Contacts, Clock, IMS, Seedvault, calendar sync and Android Auto. Measured in
+a GAPPS VM, Android's used RAM went from 2.1 GB to 1.57 GB. SystemUI and the
+launcher stay: without SystemUI Android boots and notifications still reach
+the desktop (Waydroid forwards them from `WayDroidService` in
+system_server), but SystemUI applies Kernora's colours
+(`theme_customization_overlay_packages`) and shows screen-capture and other
+system prompts; without a launcher Settings' FallbackHome becomes home and
+polls every half second ("no home"), which saves almost nothing.
+
+The `waydroid` command (dpkg-divert of `/usr/bin/waydroid`) lets users run
+`app launch|install|intent|remove|list`, `session stop`, `status` and
+`log`; `show-full-ui` and `first-launch` say that Full UI mode is disabled,
+other commands point to Settings. Root and Kernora's helpers call
+`/usr/bin/waydroid.waydroid` directly.
+
+Sleep: Waydroid suspends the container when Android turns its screen off.
+Android never did: its screensaver is on and Waydroid reports a charging
+battery, so at the timeout Android wanted to start a dream that nothing
+shows and stayed awake for good. The sync turns the screensaver off
+(`screensaver_enabled`, `_activate_on_dock`, `_activate_on_sleep` 0) and
+Private DNS off. `kernora-android-windows` (always started after boot)
+follows `wm_create_task`/`wm_task_removed` and sets `screen_off_timeout` to
+the maximum while any app task exists, so Android never sleeps under an
+open window the user is only reading, and to 30 minutes when the last one
+is gone (Google Play downloads go on meanwhile). A suspended Android is
+stopped, not frozen (`suspend_action = stop` from the refresh), and all its
+memory goes back to Kernora: in a VM 2.5 GB used went to 1.4 GB, 55 seconds
+after the timeout. If "Open apps faster" is on
+(`kernora-android-session --prepare` leaves `~/.cache/kernora/android-ready`)
+it stays `freeze`.
 
 Identity: `waydroid.cfg` gets `ro.product.waydroid.brand`/`manufacturer`
 Kernora and `model` "Kernora Laptop" or "Kernora PC" (from `hostnamectl

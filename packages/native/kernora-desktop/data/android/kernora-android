@@ -293,6 +293,11 @@ copy_screens() {
   else
     rm -f "$state_dir/screens"
   fi
+  if [[ -n $home && -f $home/.cache/kernora/android-ready ]]; then
+    "$device" suspend-action freeze
+  else
+    "$device" suspend-action stop
+  fi
 }
 
 refresh_android() {

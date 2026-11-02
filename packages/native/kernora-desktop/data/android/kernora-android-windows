@@ -9,25 +9,17 @@ import sys
 import time
 
 REAL = "/usr/bin/waydroid.waydroid"
-DONE = "/var/lib/kernora/android/windows"
 SCREENS = "/var/lib/kernora/android/screens"
 SKIP = {
     "android",
     "com.android.launcher3",
-    "com.android.packageinstaller",
-    "com.android.permissioncontroller",
     "com.android.systemui",
-    "com.google.android.packageinstaller",
-    "com.google.android.permissioncontroller",
-}
-PORTRAIT = {
-    "SCREEN_ORIENTATION_PORTRAIT",
-    "SCREEN_ORIENTATION_REVERSE_PORTRAIT",
-    "SCREEN_ORIENTATION_SENSOR_PORTRAIT",
-    "SCREEN_ORIENTATION_USER_PORTRAIT",
 }
 TASK = re.compile(r"^(\s*)\* Task\{\w+ #(\d+) type=(\w+) (?:A=\d+:|I=)([\w.]+)\S*.* mode=(\S+) translucent=(\w+)")
 ATTEMPTS = 8
+AWAKE = "2147483647"
+IDLE = "1800000"
+EVENT = re.compile(r"^\w/(wm_create_task|wm_task_removed)\s*(?:\(\s*\d+\))?:\s*\[(\d+),\s*([^,\]]+)")
 BOUNDS = re.compile(r"mBounds=Rect\((-?\d+), (-?\d+) - (-?\d+), (-?\d+)\)")
 
 
@@ -39,25 +31,6 @@ def android(*command: str, timeout: float = 30) -> str:
         return ""
 
 
-def handled() -> set[str]:
-    try:
-        with open(DONE, encoding="utf-8") as handle:
-            return set(handle.read().split())
-    except OSError:
-        return set()
-
-
-def remember(package: str) -> None:
-    os.makedirs(os.path.dirname(DONE), exist_ok=True)
-    with open(DONE, "a", encoding="utf-8") as handle:
-        handle.write(package + "\n")
-
-
-def installed_at(package: str) -> str:
-    found = re.search(r"firstInstallTime=(\S+ \S+)", android("sh", "-c", f"dumpsys package {package} | grep -m 1 firstInstallTime"))
-    return f"{package}@{found.group(1).replace(' ', 'T')}" if found else package
-
-
 def tasks() -> dict[int, dict]:
     found: dict[int, dict] = {}
     current = None
@@ -67,9 +40,7 @@ def tasks() -> dict[int, dict]:
             task_id = int(match.group(2))
             current = None
             if task_id not in found and match.group(3) == "standard":
-                current = {"package": match.group(4), "freeform": match.group(5) == "freeform",
-                           "translucent": match.group(6) == "true", "bounds": None, "orientations": set(),
-                           "letterboxed": False}
+                current = {"package": match.group(4), "freeform": match.group(5) == "freeform", "bounds": None}
                 found[task_id] = current
             continue
         if current is None:
@@ -77,10 +48,6 @@ def tasks() -> dict[int, dict]:
         bounds = BOUNDS.search(line)
         if bounds and current["bounds"] is None:
             current["bounds"] = tuple(int(value) for value in bounds.groups())
-        if "requestedOrientation=" in line:
-            current["orientations"].add(line.split("requestedOrientation=", 1)[1].strip())
-        if "areBoundsLetterboxed=true" in line:
-            current["letterboxed"] = True
     return found
 
 
@@ -90,81 +57,74 @@ def display() -> tuple[int, int] | None:
     return (int(match.group(1)), int(match.group(2))) if match else None
 
 
-def area(size: tuple[int, int]) -> tuple[int, int, int, int]:
+def monitors(size: tuple[int, int]) -> list[tuple[int, int, int, int]]:
     try:
         with open(SCREENS, encoding="utf-8") as handle:
             found = [tuple(int(value) for value in line.split(",")) for line in handle.read().split()[:8]]
     except (OSError, ValueError):
-        found = []
+        return []
     if len(found) < 2 or any(len(screen) != 4 for screen in found):
-        return 0, 0, size[0], size[1]
+        return []
     left = min(screen[0] for screen in found)
     top = min(screen[1] for screen in found)
     ratio = size[0] / max(1, max(screen[0] + screen[2] for screen in found) - left)
-    x, y, width, height = found[0]
-    x, y = round((x - left) * ratio), round((y - top) * ratio)
-    return x, y, min(round(width * ratio), size[0] - x), min(round(height * ratio), size[1] - y)
+    return [(round((x - left) * ratio), round((y - top) * ratio), round(width * ratio), round(height * ratio))
+            for x, y, width, height in found]
 
 
-def target(size: tuple[int, int], count: int) -> tuple[int, int, int, int]:
-    origin_x, origin_y, width_screen, height_screen = area(size)
-    width = round(width_screen * 0.72)
-    height = round(min(height_screen * 0.86, width * 0.66))
-    shift = 32 * (count % 5)
-    left = origin_x + min(max(0, (width_screen - width) // 2 - 64 + shift), width_screen - width)
-    top = origin_y + min(max(0, (height_screen - height) // 2 - 32 + shift), height_screen - height)
-    return left, top, left + width, top + height
+def inside(bounds: tuple[int, int, int, int], screen: tuple[int, int, int, int]) -> bool:
+    x, y, width, height = screen
+    return bounds[0] >= x and bounds[1] >= y and bounds[2] <= x + width and bounds[3] <= y + height
 
 
-def widen(task_id: int, count: int) -> bool | None:
+def place(task_id: int, screens: list[tuple[int, int, int, int]]) -> bool | None:
     task = tasks().get(task_id)
-    if task is None or not task["freeform"] or task["translucent"] or task["bounds"] is None:
+    if task is None or task["bounds"] is None:
         return None
-    package = task["package"]
-    if package in SKIP:
+    if not task["freeform"] or task["package"] in SKIP or any(inside(task["bounds"], screen) for screen in screens):
         return False
-    key = installed_at(package)
-    if key in handled():
+    left, top, right, bottom = task["bounds"]
+    x, y, width, height = screens[0]
+    if right - left > width or bottom - top > height:
         return False
-    if task["orientations"] & PORTRAIT:
-        remember(key)
-        return False
-    size = display()
-    if size is None:
-        return False
-    left, top, right, bottom = target(size, count)
-    old = task["bounds"]
-    if (old[2] - old[0]) * (old[3] - old[1]) >= (right - left) * (bottom - top):
-        remember(key)
-        return False
-    android("am", "task", "resize", str(task_id), str(left), str(top), str(right), str(bottom))
-    time.sleep(1)
-    after = tasks().get(task_id)
-    if after is not None and after["letterboxed"]:
-        android("am", "task", "resize", str(task_id), *(str(value) for value in old))
-    remember(key)
+    new_left = x + (width - (right - left)) // 2
+    new_top = y + (height - (bottom - top)) // 2
+    android("am", "task", "resize", str(task_id), str(new_left), str(new_top),
+            str(new_left + right - left), str(new_top + bottom - top))
     return True
+
+
+def keep_awake(busy: bool, current: list[str]) -> None:
+    value = AWAKE if busy else IDLE
+    if current == [value]:
+        return
+    android("settings", "put", "system", "screen_off_timeout", value)
+    current[:] = [value]
 
 
 def main() -> int:
     if os.geteuid() != 0 or not os.path.exists(REAL):
         return 1
-    stream = subprocess.Popen([REAL, "shell", "--", "logcat", "-b", "events", "-v", "raw", "-T", "1", "wm_create_task:I", "*:S"],
+    size = display()
+    screens = monitors(size) if size else []
+    stream = subprocess.Popen([REAL, "shell", "--", "logcat", "-b", "events", "-v", "tag", "-T", "1",
+                               "wm_create_task:I", "wm_task_removed:I", "*:S"],
                               stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
-    time.sleep(1)
-    count = 0
-    for task_id in sorted(tasks()):
-        count += bool(widen(task_id, count))
+    current: list[str] = []
+    keep_awake(bool(tasks()), current)
     for line in stream.stdout:
-        match = re.match(r"\[\d+,(\d+)\]", line.strip())
+        match = EVENT.match(line.strip())
         if not match:
             continue
-        for _ in range(ATTEMPTS):
+        if match.group(1) == "wm_create_task":
+            keep_awake(True, current)
+            for _ in range(ATTEMPTS if screens else 0):
+                time.sleep(0.6)
+                if place(int(match.group(3)), screens) is not None:
+                    break
+        else:
             time.sleep(0.6)
-            result = widen(int(match.group(1)), count)
-            if result is not None:
-                count += result
-                break
+            keep_awake(bool(tasks()), current)
     return stream.wait()
 
 

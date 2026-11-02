@@ -26,8 +26,18 @@ if (( EUID != 0 )); then
       fi
       /usr/libexec/kernora-android-session || exit 1
       ;;
-    "app install" | "app intent" | "app remove" | "show-full-ui "*)
+    "app install" | "app intent" | "app remove")
       /usr/libexec/kernora-android-session || exit 1
+      ;;
+    "app list" | "session stop" | "status "* | "log "* | "-h "* | "--help "* | "-V "* | "--version "*)
+      ;;
+    "show-full-ui "* | "first-launch "*)
+      echo "waydroid: Full UI mode is disabled for system stability. Android apps open in their own windows." >&2
+      exit 1
+      ;;
+    *)
+      echo "waydroid: this command is not available. Android apps are managed in Settings > Android apps." >&2
+      exit 1
       ;;
   esac
 fi

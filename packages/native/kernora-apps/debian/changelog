@@ -1,3 +1,9 @@
+kernora-apps (1.1.74) UNRELEASED; urgency=medium
+
+  * What's new: steadier Android apps that use less memory.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 22:00:00 -0700
+
 kernora-apps (1.1.73) UNRELEASED; urgency=medium
 
   * Settings > Android apps: the register step is gone; finishing Google

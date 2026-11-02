@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-02-1",
+    "date": "2026-11-02",
+    "items": [
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Steadier Android apps that use less memory",
+          "ru": "Android-приложения стабильнее и берут меньше памяти"
+        },
+        "text": {
+          "en": "Android apps keep the size they open with, so games and sign-ins are no longer interrupted. Phone apps you don't need on a computer stay off, which saves about half a gigabyte, and Android hands all its memory back half an hour after you close the last app.",
+          "ru": "Android-приложения больше не меняют размер после запуска, поэтому игры и вход в аккаунт не прерываются. Ненужные на компьютере телефонные приложения выключены, это экономит около полугигабайта, а через полчаса после закрытия последнего приложения Android полностью освобождает память."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-01-4",
     "date": "2026-11-01",
     "items": [

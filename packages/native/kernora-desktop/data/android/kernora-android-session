@@ -23,6 +23,7 @@ SYSTEM_PACKAGES = STATE / "system-packages"
 STORE = "com.android.vending"
 WAIT = 300
 SCREENS = pathlib.Path.home() / ".cache/kernora/android-screens"
+READY = pathlib.Path.home() / ".cache/kernora/android-ready"
 RULE = "kernora-android"
 LAYOUTS = {
     "ara": "arabic", "az": "azerbaijani", "be": "belgian", "bg": "bulgarian", "br": "brazilian", "by": "belarusian",
@@ -228,8 +229,13 @@ def record_screens(found: list[tuple[int, int, int, int]]) -> None:
         window_rule(None)
 
 
-def screens() -> int:
+def prepare() -> int:
     record_screens(kernora_screens())
+    if quiet("systemctl", "--user", "-q", "is-enabled", UNIT).returncode == 0:
+        READY.parent.mkdir(parents=True, exist_ok=True)
+        READY.touch()
+    else:
+        READY.unlink(missing_ok=True)
     return 0
 
 
@@ -424,8 +430,8 @@ def main() -> int:
         return setup_done()
     if len(sys.argv) > 1 and sys.argv[1] == "--google":
         return google()
-    if len(sys.argv) > 1 and sys.argv[1] == "--screens":
-        return screens()
+    if len(sys.argv) > 1 and sys.argv[1] in ("--prepare", "--screens"):
+        return prepare()
     if len(sys.argv) > 1 and sys.argv[1] == "--keyboard-follow":
         return keyboard_follow()
     if session_running() and booted() and unlocked(session_started()):

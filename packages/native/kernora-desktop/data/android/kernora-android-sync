@@ -47,7 +47,9 @@ setting global device_provisioned 1
 setting secure user_setup_complete 1
 setting global hide_error_dialogs 0
 setting secure show_ime_with_hard_keyboard 0
-setting system screen_off_timeout 1800000
+setting secure screensaver_enabled 0
+setting secure screensaver_activate_on_dock 0
+setting secure screensaver_activate_on_sleep 0
 setting global private_dns_mode off
 for keyboard in $(android ime list -s -a | tr -d '\r'); do
   package=${keyboard%%/*}
@@ -55,7 +57,10 @@ for keyboard in $(android ime list -s -a | tr -d '\r'); do
     android pm disable-user --user 0 "$package" > /dev/null
   fi
 done
-for package in org.lineageos.waydroidupdater com.google.android.setupwizard org.lineageos.setupwizard; do
+for package in org.lineageos.waydroidupdater com.google.android.setupwizard org.lineageos.setupwizard \
+    com.google.android.googlequicksearchbox com.google.android.apps.messaging com.google.android.contacts \
+    com.android.deskclock com.google.android.ims com.stevesoltys.seedvault \
+    com.google.android.syncadapters.calendar com.google.android.projection.gearhead; do
   if android pm list packages -e "$package" | tr -d '\r' | grep -qx "package:$package"; then
     android pm disable-user --user 0 "$package" > /dev/null
   fi

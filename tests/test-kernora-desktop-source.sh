@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.63" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.64" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -288,9 +288,10 @@ EOF
 [[ -x "$android/kernora-android-windows" ]] \
   && grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-windows</annotate>' "$android/org.kernora.android.policy" \
   && grep -Fq 'WINDOWS = "/usr/libexec/kernora-android-windows"' "$android/kernora-android-session" \
+  && ! grep -Fq 'def widen' "$android/kernora-android-windows" \
   && grep -Fxq 'data/android/kernora-android-windows usr/libexec' "$package_root/debian/kernora-desktop.install" \
   && timeout 60 python3 -I - "$android/kernora-android-windows" <<'EOF' \
-  || fail "Android apps do not open in computer-sized windows"
+  || fail "Android windows are resized after they open, or land between monitors"
 import importlib.machinery
 import importlib.util
 import sys
@@ -311,18 +312,46 @@ dump = """  * Task{8589fef #230 type=standard A=10127:org.fossify.math U=0 visib
 """
 windows.android = lambda *args, **kwargs: dump
 found = windows.tasks()
-left, top, right, bottom = windows.target((1439, 841), 0)
-windows.android = lambda *args, **kwargs: dump.replace("translucent=false", "translucent=true")
-trampoline = windows.widen(230, 0)
-windows.android = lambda *args, **kwargs: "    firstInstallTime=2026-11-01 00:13:05\n"
-installed = windows.installed_at("org.videolan.vlc")
-windows.android = lambda *args, **kwargs: ""
-sys.exit(0 if sorted(found) == [230, 231]
-         and installed == "org.videolan.vlc@2026-11-01T00:13:05" and trampoline is None
-         and windows.installed_at("org.videolan.vlc") == "org.videolan.vlc"
-         and found[230]["bounds"] == (495, 32, 944, 809)
-         and found[231]["orientations"] & windows.PORTRAIT
-         and right - left > bottom - top and right <= 1439 and bottom <= 841 else 1)
+ok = sorted(found) == [230, 231] and found[230]["bounds"] == (495, 32, 944, 809) and found[230]["freeform"]
+import os
+import tempfile
+with tempfile.TemporaryDirectory() as root:
+    windows.SCREENS = os.path.join(root, "screens")
+    ok = ok and windows.monitors((2560, 800)) == []
+    with open(windows.SCREENS, "w") as handle:
+        handle.write("0,0,1280,800\n1280,0,1280,800\n")
+    screens = windows.monitors((2560, 800))
+    ok = ok and screens == [(0, 0, 1280, 800), (1280, 0, 1280, 800)]
+    sent = []
+
+    def fake(*args, **kwargs):
+        if args[:2] == ("dumpsys", "activity"):
+            return dump.replace("mBounds=Rect(495, 32 - 944, 809)", "mBounds=Rect(1000, 32 - 1449, 809)")
+        sent.append(args)
+        return ""
+
+    windows.android = fake
+    ok = ok and windows.place(230, screens) is True
+    resize = sent[-1]
+    ok = ok and resize[:4] == ("am", "task", "resize", "230") and int(resize[6]) - int(resize[4]) == 449
+    ok = ok and int(resize[7]) - int(resize[5]) == 777 and int(resize[6]) <= 1280
+    sent.clear()
+    windows.android = lambda *args, **kwargs: dump.replace("mBounds=Rect(495, 32 - 944, 809)", "mBounds=Rect(495, 32 - 944, 700)")
+    ok = ok and windows.place(230, screens) is False and not sent
+    ok = ok and windows.place(999, screens) is None
+calls = []
+windows.android = lambda *args, **kwargs: calls.append(args) or ""
+state = []
+windows.keep_awake(True, state)
+windows.keep_awake(True, state)
+windows.keep_awake(False, state)
+ok = ok and calls == [("settings", "put", "system", "screen_off_timeout", "2147483647"),
+                      ("settings", "put", "system", "screen_off_timeout", "1800000")]
+created = windows.EVENT.match("I/wm_create_task: [0,31]")
+removed = windows.EVENT.match("I/wm_task_removed( 280): [27,removeTask]")
+ok = ok and created.group(1) == "wm_create_task" and created.group(3) == "31"
+ok = ok and removed.group(1) == "wm_task_removed" and removed.group(2) == "27"
+sys.exit(0 if ok else 1)
 EOF
 grep -Fq 'android wm density "$density"' "$android/kernora-android-sync" \
   && grep -Fq 'settings put global device_name' "$android/kernora-android-sync" \
@@ -509,18 +538,25 @@ with tempfile.TemporaryDirectory() as root:
         ok = ok and not os.path.exists(device.archive("houdini") + ".part")
 sys.exit(0 if ok else 1)
 EOF
-grep -Fq 'setting system screen_off_timeout 1800000' "$android/kernora-android-sync" \
+grep -Fq 'setting secure screensaver_enabled 0' "$android/kernora-android-sync" \
+  && ! grep -Fq 'screen_off_timeout' "$android/kernora-android-sync" \
+  && grep -Fq 'AWAKE = "2147483647"' "$android/kernora-android-windows" \
   && grep -Fq 'setting global private_dns_mode off' "$android/kernora-android-sync" \
   && grep -Fq 'save_report' "$android/kernora-android" \
   && grep -Fq 'runuser -u "$user" -- tee "$target"' "$android/kernora-android" \
   && grep -Fq 'data_app_crash' "$android/kernora-android" \
   && grep -Fq 'copy_screens' "$android/kernora-android" \
+  && grep -Fq 'Full UI mode is disabled for system stability.' "$android/waydroid" \
+  && grep -Fq '"app list" | "session stop"' "$android/waydroid" \
+  && grep -Fq 'com.google.android.googlequicksearchbox com.google.android.apps.messaging' "$android/kernora-android-sync" \
+  && grep -Fq '"$device" suspend-action stop' "$android/kernora-android" \
+  && grep -Fq 'READY = pathlib.Path.home() / ".cache/kernora/android-ready"' "$android/kernora-android-session" \
   && grep -Fq 'exec /usr/libexec/kernora-android graphics-check' "$android/kernora-android-refresh" \
   && grep -Fq 'graphics_check' "$android/kernora-android" \
   && grep -Fq "pgrep -f '^python3 /usr/bin/waydroid.waydroid session start'" "$android/kernora-android" \
   && grep -Fq 'if not booted() and graphics_check():' "$android/kernora-android-session" \
   && ! grep -Fq 'setprop persist.waydroid' "$android/kernora-android-sync" \
-  && [[ "$(grep -n 'ExecStartPre=' "$android/kernora-android.service" | head -n 1)" == *'kernora-android-session --screens'* ]] \
+  && [[ "$(grep -n 'ExecStartPre=' "$android/kernora-android.service" | head -n 1)" == *'kernora-android-session --prepare'* ]] \
   && timeout 60 python3 -I - "$android/kernora-android-device" "$android/kernora-android-windows" "$android/kernora-android-session" <<'EOF' \
   || fail "Android apps do not span every screen, report problems or keep downloads going"
 import importlib.machinery
@@ -592,13 +628,11 @@ with tempfile.TemporaryDirectory() as root:
         handle.write("0,0,1280,800\n1280,0,1920,1080\n")
     props = device.wanted("Kernora PC")
     ok = ok and props.get("persist.waydroid.width") == "3200" and props.get("persist.waydroid.height") == "1080"
-    left, top, right, bottom = windows.target((6400, 2160), 0)
-    ok = ok and 0 <= left and right <= 2560 and bottom <= 1600 and right - left > 1500
+    ok = ok and windows.monitors((6400, 2160))[0] == (0, 0, 2560, 1600)
     with open(screens, "w") as handle:
         handle.write("0,0,1280,800\n")
     ok = ok and "persist.waydroid.width" not in device.wanted("Kernora PC")
-    left, top, right, bottom = windows.target((1280, 744), 0)
-    ok = ok and right <= 1280 and bottom <= 744
+    ok = ok and windows.monitors((1280, 744)) == []
 
 layout = {"outputs": [
     {"enabled": True, "priority": 2, "pos": {"x": 1536, "y": 0}, "scale": 1, "rotation": 1, "currentModeId": "b",
