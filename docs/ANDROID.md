@@ -175,7 +175,11 @@ app and no "InputMethod" window opens. `ime disable` alone was not enough:
 Android turns a system keyboard back on whenever none is enabled, after
 every restart of its system. Keyboards the user installs are left alone.
 It also hides
-the "isn't responding" and "has stopped" dialogs (`hide_error_dialogs 1`);
+nothing about Android's "isn't responding" dialog (`hide_error_dialogs 0`:
+with 1, Android killed an app at once on every ANR, and right after boot
+Google Play, the Google app and others hit ANRs and vanished; instead
+`ro.hw_timeout_multiplier=3` gives slow computers and virtual machines
+three times Android's usual ANR timeouts, as Android's emulators do);
 and keeps the device set up (`device_provisioned`, `user_setup_complete`)
 with Google's and LineageOS's setup wizards and the LineageOS updater
 disabled, so nothing asks to finish setting up the device. Windows of
@@ -230,7 +234,9 @@ Kernora installed the NVIDIA driver kept pointing at the nouveau node.
 `kernora-android-device` treats the card with `boot_vga=1` (or else the one
 with a connected output) as the screen's card. If its driver is nvidia or
 nouveau, or there is no other render node (a `virtio_gpu` without the virgl
-bit in its virtio `features` counts as none), Android draws in software:
+bit in its virtio `features` counts as none; with virtio-vga the DRM device
+is the PCI device, driver `virtio-pci`, and the bit is in
+`device/virtio*/features`), Android draws in software:
 `ro.hardware.gralloc=default`, `ro.hardware.egl=swiftshader`,
 `ro.hardware.vulkan=pastel`. Before every start of Android,
 `kernora-android.service` runs `kernora-android-refresh` (polkit
@@ -262,6 +268,17 @@ of Android's screen that no monitor shows, and a change of monitors takes
 effect at the next start of Android. These values must never be set with
 `setprop`: a stored persist value, even an empty one, wins over
 `waydroid.cfg` at boot.
+
+Software fallback: if Android has not finished booting 40 seconds after a
+start, `kernora-android-session --sync-after-boot` runs
+`kernora-android-refresh check` (`kernora-android graphics-check`), which
+reads `init.svc_debug_pid.surfaceflinger` twice, eight seconds apart. A
+changed pid means SurfaceFlinger keeps crashing (on virtio without virgl it
+aborted every five seconds with "output buffer not gpu writeable", windows
+stayed see-through and nothing opened). The helper then writes
+`/var/lib/kernora/android/graphics-software` with the computer's DRM
+devices, Android draws in software from then on, and the session restarts
+Android once. A different set of DRM devices ignores the file.
 
 Reports: `kernora-android report` (Settings → Android apps → Report a
 problem, through polkit `org.kernora.android`) writes

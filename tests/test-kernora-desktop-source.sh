@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.62" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.63" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -333,7 +333,8 @@ grep -Fq 'android wm density "$density"' "$android/kernora-android-sync" \
 grep -Fq 'setting secure show_ime_with_hard_keyboard 0' "$android/kernora-android-sync" \
   && grep -Fq 'android ime list -s -a' "$android/kernora-android-sync" \
   && grep -Fq 'android pm disable-user --user 0 "$package"' "$android/kernora-android-sync" \
-  && grep -Fq 'setting global hide_error_dialogs 1' "$android/kernora-android-sync" \
+  && grep -Fq 'setting global hide_error_dialogs 0' "$android/kernora-android-sync" \
+  && grep -Fq '"ro.hw_timeout_multiplier": "3"' "$android/kernora-android-device" \
   && grep -Fq 'setting secure user_setup_complete 1' "$android/kernora-android-sync" \
   && grep -Fq 'com.google.android.setupwizard' "$android/kernora-android-sync" \
   && [[ -s "$android/applications/waydroid.com.android.inputmethod.latin.desktop" ]] \
@@ -514,6 +515,10 @@ grep -Fq 'setting system screen_off_timeout 1800000' "$android/kernora-android-s
   && grep -Fq 'runuser -u "$user" -- tee "$target"' "$android/kernora-android" \
   && grep -Fq 'data_app_crash' "$android/kernora-android" \
   && grep -Fq 'copy_screens' "$android/kernora-android" \
+  && grep -Fq 'exec /usr/libexec/kernora-android graphics-check' "$android/kernora-android-refresh" \
+  && grep -Fq 'graphics_check' "$android/kernora-android" \
+  && grep -Fq "pgrep -f '^python3 /usr/bin/waydroid.waydroid session start'" "$android/kernora-android" \
+  && grep -Fq 'if not booted() and graphics_check():' "$android/kernora-android-session" \
   && ! grep -Fq 'setprop persist.waydroid' "$android/kernora-android-sync" \
   && [[ "$(grep -n 'ExecStartPre=' "$android/kernora-android.service" | head -n 1)" == *'kernora-android-session --screens'* ]] \
   && timeout 60 python3 -I - "$android/kernora-android-device" "$android/kernora-android-windows" "$android/kernora-android-session" <<'EOF' \
@@ -556,6 +561,27 @@ with tempfile.TemporaryDirectory() as root:
     ok = ok and device.software_graphics()
     with open(features, "w") as handle:
         handle.write("1100000000000000000000000000000001\n")
+    ok = ok and not device.software_graphics()
+
+    pci = os.path.join(root, "pci0")
+    os.makedirs(os.path.join(pci, "virtio1"))
+    os.makedirs(os.path.join(root, "drivers", "virtio-pci"))
+    os.symlink(os.path.join(root, "drivers", "virtio-pci"), os.path.join(pci, "driver"))
+    for node in ("card0", "renderD128"):
+        os.remove(os.path.join(drm, node, "device"))
+        os.symlink(pci, os.path.join(drm, node, "device"))
+    with open(os.path.join(pci, "virtio1", "features"), "w") as handle:
+        handle.write("0100000000000000000000000000110010000000100000000000000000000000\n")
+    ok = ok and device.software_graphics()
+    with open(os.path.join(pci, "virtio1", "features"), "w") as handle:
+        handle.write("1100000000000000000000000000110010000000100000000000000000000000\n")
+    ok = ok and not device.software_graphics()
+    device.FORCED = os.path.join(root, "graphics-software")
+    with open(device.FORCED, "w") as handle:
+        handle.write(device.signature() + "\n")
+    ok = ok and device.software_graphics() and device.signature() == "card0=virtio-pci renderD128=virtio-pci"
+    with open(device.FORCED, "w") as handle:
+        handle.write("card0=i915\n")
     ok = ok and not device.software_graphics()
 
     screens = os.path.join(root, "screens")

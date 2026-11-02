@@ -1,3 +1,28 @@
+kernora-desktop (1.4.63) UNRELEASED; urgency=medium
+
+  * Android started in no virtual machine with a virtio GPU without 3D:
+    the GPU's DRM device is the PCI device (driver virtio-pci), not
+    virtio_gpu, so the check for virgl never ran, Waydroid chose Mesa and
+    SurfaceFlinger aborted every five seconds ("output buffer not gpu
+    writeable"). Windows stayed see-through and nothing opened. The check
+    now reads device/virtio*/features as well.
+  * Any computer where SurfaceFlinger keeps crashing gets the same way
+    out: 40 seconds after Android starts without booting, the session asks
+    kernora-android graphics-check (through kernora-android-refresh), which
+    samples SurfaceFlinger's pid twice. If it changed, Android draws in
+    software on this computer from then on (kept with the list of DRM
+    devices) and restarts once.
+  * Android's "isn't responding" dialog is back (hide_error_dialogs 0):
+    with it hidden Android killed the app on every ANR, and right after
+    boot Google Play and others vanished that way. Android's ANR timeouts
+    are three times longer instead (ro.hw_timeout_multiplier=3).
+  * The update service no longer installs or restarts the container while
+    Android is starting (a running "waydroid session start" counts as
+    active), and the refresh before a start waits for a running update
+    instead of skipping it.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 20:00:00 -0700
+
 kernora-desktop (1.4.62) UNRELEASED; urgency=medium
 
   * Android apps move between monitors. Waydroid has a single Android

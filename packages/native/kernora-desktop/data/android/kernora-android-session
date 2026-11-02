@@ -16,6 +16,8 @@ UNIT = "kernora-android.service"
 SYNC = "/usr/libexec/kernora-android-sync"
 WINDOWS = "/usr/libexec/kernora-android-windows"
 KEYBOARD = "/usr/libexec/kernora-android-keyboard"
+REFRESH = "/usr/libexec/kernora-android-refresh"
+CHECK = 40
 STATE = pathlib.Path("/var/lib/kernora/android")
 SYSTEM_PACKAGES = STATE / "system-packages"
 STORE = "com.android.vending"
@@ -273,12 +275,28 @@ def sync() -> int:
     return 0
 
 
+def graphics_check() -> bool:
+    try:
+        code = quiet("pkexec", REFRESH, "check", timeout=120).returncode
+    except subprocess.TimeoutExpired:
+        return False
+    if code != 75:
+        return False
+    quiet("systemd-run", "--user", "--collect", "--quiet", "--", "systemctl", "--user", "restart", UNIT)
+    return True
+
+
 def sync_after_boot() -> int:
     since = session_started()
     deadline = time.monotonic() + WAIT
+    checked = False
     while time.monotonic() < deadline:
         if not session_running():
             return 0
+        if not checked and time.monotonic() > deadline - WAIT + CHECK:
+            checked = True
+            if not booted() and graphics_check():
+                return 0
         if booted() and unlocked(since):
             subprocess.Popen(["pkexec", WINDOWS], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                              stderr=subprocess.DEVNULL, start_new_session=True)

@@ -267,6 +267,7 @@ arm_translation() {
 }
 
 session_active() {
+  pgrep -f '^python3 /usr/bin/waydroid.waydroid session start' > /dev/null && return 0
   "$real" status 2>/dev/null | grep -q 'Session:.*RUNNING'
 }
 
@@ -354,7 +355,7 @@ remove_android() {
   fi
   rm -rf --one-file-system "$work"
   "$device" arm-remove
-  rm -f "$state_dir/properties" "$state_dir/properties.next" "$state_dir/screens"
+  rm -f "$state_dir/properties" "$state_dir/properties.next" "$state_dir/screens" "$state_dir/graphics-software"
   rm -f "$sources"
   apt_get update > /dev/null 2>&1 || true
   kind=
@@ -485,8 +486,23 @@ with_lock() {
 try_lock() {
   mkdir -p "$state_dir"
   exec 9> "$state_dir/lock" || return 0
-  flock -n 9 || return 0
+  flock -w 60 9 || return 0
   "$@"
+}
+
+graphics_check() {
+  local first second
+  session_active || return 0
+  [[ $(android_shell getprop sys.boot_completed | tr -d '\r') == 1 ]] && return 0
+  [[ $("$device" graphics) == software ]] && return 0
+  first=$(android_shell getprop init.svc_debug_pid.surfaceflinger | tr -d '\r')
+  sleep 8
+  second=$(android_shell getprop init.svc_debug_pid.surfaceflinger | tr -d '\r')
+  [[ $first =~ ^[0-9]+$ && $second =~ ^[0-9]+$ && $first != "$second" ]] || return 0
+  [[ $(android_shell getprop sys.boot_completed | tr -d '\r') == 1 ]] && return 0
+  echo "kernora-android: Android's display server keeps crashing here, Android draws in software from now on"
+  "$device" graphics-fallback
+  return 75
 }
 
 require_root() {
@@ -512,6 +528,10 @@ case ${1:-} in
   refresh)
     require_root
     try_lock refresh_android
+    ;;
+  graphics-check)
+    require_root
+    graphics_check
     ;;
   update)
     require_root
@@ -545,7 +565,7 @@ case ${1:-} in
     esac
     ;;
   *)
-    echo "usage: kernora-android status|setup-vanilla|setup-gapps|remove|android-id|refresh|update|report|request setup-vanilla|setup-gapps|remove|cancel" >&2
+    echo "usage: kernora-android status|setup-vanilla|setup-gapps|remove|android-id|refresh|graphics-check|update|report|request setup-vanilla|setup-gapps|remove|cancel" >&2
     exit 2
     ;;
 esac

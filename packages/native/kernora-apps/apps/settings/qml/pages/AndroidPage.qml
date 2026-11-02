@@ -5,7 +5,6 @@
 
 pragma ComponentBehavior: Bound
 
-import QtCore as Core
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
@@ -27,7 +26,6 @@ SettingsPage {
     property bool actionFailed: false
     property real requestedAt: 0
     property bool faster: false
-    property bool googleWorking: false
     property bool reporting: false
 
     readonly property bool live: info.live === "yes"
@@ -45,7 +43,6 @@ SettingsPage {
     readonly property real bytes: Number(info.bytes || 0)
     readonly property real bytesTotal: Number(info.bytes_total || 0)
     readonly property bool setupStage: busy && (status === "installing" || status === "downloading" || status === "unpacking")
-    readonly property string googleId: info.google_id || ""
     readonly property bool googleSignedIn: Number(info.google_accounts || 0) > 0
     readonly property var userApps: Android.apps.filter(app => app.package !== page.store)
 
@@ -102,42 +99,8 @@ SettingsPage {
                                    : i18n("%1 MB", Math.round(bytes / 1048576));
     }
 
-    function registerWithGoogle(): void {
-        if (page.googleId.length > 0) {
-            Android.copyText(page.googleId);
-            Process.openUrl("https://www.google.com/android/uncertified");
-            remembered.googleRegistered = true;
-            remembered.restartPending = true;
-            page.notify(i18n("Code copied. Paste it on Google's page."));
-            return;
-        }
-        page.googleWorking = true;
-        Process.run("/usr/libexec/kernora-android-session", ["--google"], () => {
-            page.refresh(() => {
-                page.googleWorking = false;
-                if (page.googleId.length > 0) {
-                    page.registerWithGoogle();
-                } else {
-                    page.notify(i18n("The code isn't ready yet. Try again in a minute."));
-                }
-            });
-        });
-    }
-
     function openStore(): void {
-        if (!remembered.restartPending) {
-            Android.launch(page.store);
-            return;
-        }
-        remembered.restartPending = false;
-        Process.run("systemctl", ["--user", "stop", "kernora-android.service"], () => Android.launch(page.store));
-    }
-
-    Core.Settings {
-        id: remembered
-        category: "AndroidApps"
-        property bool googleRegistered: false
-        property bool restartPending: false
+        Android.launch(page.store);
     }
 
     Component.onCompleted: refresh()
@@ -380,44 +343,16 @@ SettingsPage {
 
     Group {
         title: i18n("Finish setting up Google Play")
-        note: i18n("Google asks to register computers that run Android apps. You only do this once.")
         visible: page.ready && !page.busy && page.google && !page.googleSignedIn
 
         ListItem {
-            title: i18n("Register this computer")
-            subtitle: page.googleWorking ? i18n("Getting the code, this takes a minute the first time…")
-                                         : i18n("Opens Google's page with the code copied. Paste it there and press Register.")
-            maximumSubtitleLines: 3
-            interactive: false
-            leading: Component {
-                Step {
-                    number: 1
-                    done: remembered.googleRegistered
-                }
-            }
-            trailing: Component {
-                MButton {
-                    enabled: !page.googleWorking
-                    variant: remembered.googleRegistered ? "tonal" : "filled"
-                    text: remembered.googleRegistered ? i18n("Again") : i18n("Register")
-                    onClicked: page.registerWithGoogle()
-                }
-            }
-        }
-        ListItem {
             title: i18n("Sign in to Google Play")
-            subtitle: i18n("Google can take a few minutes to accept the code. If Google Play says this device isn't certified, wait a little and try again.")
+            subtitle: i18n("Open Google Play and sign in with your Google account.")
             maximumSubtitleLines: 3
             interactive: false
-            leading: Component {
-                Step {
-                    number: 2
-                    done: false
-                }
-            }
             trailing: Component {
                 MButton {
-                    variant: remembered.googleRegistered ? "filled" : "tonal"
+                    variant: "filled"
                     text: i18n("Open")
                     onClicked: page.openStore()
                 }
@@ -474,30 +409,6 @@ SettingsPage {
             iconStyle: "plain"
             chevron: true
             onClicked: page.openStore()
-        }
-    }
-
-    component Step: Rectangle {
-        id: step
-        property int number
-        property bool done
-        implicitWidth: 32
-        implicitHeight: 32
-        radius: 16
-        color: done ? M3.primary : M3.secondaryContainer
-        MText {
-            anchors.centerIn: parent
-            visible: !step.done
-            role: "labelLarge"
-            text: step.number
-            color: M3.secondaryContainerContent
-        }
-        MIcon {
-            anchors.centerIn: parent
-            visible: step.done
-            size: 20
-            source: "checkmark"
-            color: M3.primaryContent
         }
     }
 

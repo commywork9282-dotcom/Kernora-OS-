@@ -27,6 +27,7 @@ MANAGED = STATE + "/properties"
 CACHE = STATE + "/arm"
 INSTALLED = STATE + "/arm-installed"
 SCREENS = STATE + "/screens"
+FORCED = STATE + "/graphics-software"
 AGENT = "Python-urllib/%d.%d" % sys.version_info[:2]
 TIMEOUT = 30
 NVIDIA = {"nvidia", "nouveau"}
@@ -76,12 +77,20 @@ def driver(node: str) -> str:
 
 def usable(node: str) -> bool:
     name = driver(node)
-    if name == "virtio_gpu":
-        return read(node + "/device/features")[:1] == "1"
+    if name in ("virtio_gpu", "virtio-pci"):
+        features = [read(node + "/device/features")] + [read(path) for path in glob.glob(node + "/device/virtio*/features")]
+        return any(value[:1] == "1" for value in features)
     return bool(name) and name not in NVIDIA
 
 
+def signature() -> str:
+    nodes = sorted(path for path in glob.glob(DRM + "/*") if re.fullmatch(r"(card|renderD)\d+", os.path.basename(path)))
+    return " ".join(f"{os.path.basename(node)}={driver(node)}" for node in nodes)
+
+
 def software_graphics() -> bool:
+    if read(FORCED) == signature():
+        return True
     cards = sorted(path for path in glob.glob(DRM + "/card*") if re.fullmatch(r"card\d+", os.path.basename(path)))
     primary = next((card for card in cards if read(card + "/device/boot_vga") == "1"), None)
     if primary is None:
@@ -137,6 +146,7 @@ def wanted(model: str) -> dict[str, str]:
         "ro.product.waydroid.brand": "Kernora",
         "ro.product.waydroid.manufacturer": "Kernora",
         "ro.product.waydroid.model": model,
+        "ro.hw_timeout_multiplier": "3",
     }
     if software_graphics():
         properties.update(SOFTWARE)
@@ -300,6 +310,11 @@ def main() -> int:
     if command == "graphics":
         print("software" if software_graphics() else "hardware")
         return 0
+    if command == "graphics-fallback":
+        os.makedirs(STATE, 0o755, exist_ok=True)
+        with open(FORCED, "w", encoding="utf-8") as handle:
+            handle.write(signature() + "\n")
+        return 0
     if command in ("arm-download", "arm-install"):
         name = translator()
         if not name:
@@ -321,7 +336,7 @@ def main() -> int:
         remove()
         shutil.rmtree(CACHE, ignore_errors=True)
         return 0
-    print("usage: kernora-android-device properties MODEL|applied|arm-status|graphics|arm-download|arm-install|arm-remove",
+    print("usage: kernora-android-device properties MODEL|applied|arm-status|graphics|graphics-fallback|arm-download|arm-install|arm-remove",
           file=sys.stderr)
     return 2
 

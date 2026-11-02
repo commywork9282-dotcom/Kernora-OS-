@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.72" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.73" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -244,8 +244,8 @@ grep -Fq 'property string choice: "gapps"' "$package_root/apps/settings/qml/page
   && grep -Fxq 'msgstr "Установить приложение?"' "$package_root/po/ru/kernora-apkinstaller.po" \
   && grep -Fq '"id": "2026-10-31-2"' "$package_root/data/whatsnew.json" \
   || fail "Google Play is not the recommended choice or the installer does not follow Android's"
-grep -Fq 'function registerWithGoogle()' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
-  && grep -Fq '"/usr/libexec/kernora-android-session", ["--google"]' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+! grep -Fq 'registerWithGoogle' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq 'Open Google Play and sign in with your Google account.' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
   && grep -Fq 'info.bytes_total' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
   && grep -Fxq 'msgstr "Завершите настройку Google Play"' "$package_root/po/ru/kernora-settings.po" \
   && grep -Fq '"id": "2026-10-31-3"' "$package_root/data/whatsnew.json" \
@@ -261,6 +261,7 @@ grep -Fq 'readonly property bool runs: apk.compatible || android.arm !== "unsupp
 grep -Fq 'Process.run("pkexec", [page.tool, "report"]' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
   && grep -Fq 'msgstr "Сообщить о проблеме"' "$package_root/po/ru/kernora-settings.po" \
   && grep -Fq '"id": "2026-11-01-3"' "$package_root/data/whatsnew.json" \
+  && grep -Fq '"id": "2026-11-01-4"' "$package_root/data/whatsnew.json" \
   || fail "Settings cannot save a report about Android apps"
 
 printf 'kernora-apps source test: OK\n'

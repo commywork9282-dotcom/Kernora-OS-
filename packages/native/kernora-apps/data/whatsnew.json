@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-01-4",
+    "date": "2026-11-01",
+    "items": [
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Android apps start on more computers",
+          "ru": "Android-приложения запускаются на большем числе компьютеров"
+        },
+        "text": {
+          "en": "On some computers and in virtual machines, Android apps stayed see-through and never opened. Kernora now notices this and switches Android to drawing on the processor by itself. Setting up Google Play is simpler too: open it and sign in.",
+          "ru": "На некоторых компьютерах и в виртуальных машинах Android-приложения оставались прозрачными и не открывались. Теперь Kernora замечает это и сама переключает Android на отрисовку процессором. И настроить Google Play стало проще: откройте его и войдите."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-01-3",
     "date": "2026-11-01",
     "items": [

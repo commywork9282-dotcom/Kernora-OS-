@@ -4035,3 +4035,7 @@ msgstr "Собираем записи Android-приложений…"
 #: apps/settings/qml/pages/AndroidPage.qml
 msgid "Saves Android's logs in a file you can send to Kernora's developers"
 msgstr "Сохраняет журналы Android в файл, который можно отправить разработчикам Kernora"
+
+#: apps/settings/qml/pages/AndroidPage.qml
+msgid "Open Google Play and sign in with your Google account."
+msgstr "Откройте Google Play и войдите в свой аккаунт Google."

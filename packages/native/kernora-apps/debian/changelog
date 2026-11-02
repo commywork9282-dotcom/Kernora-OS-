@@ -1,3 +1,11 @@
+kernora-apps (1.1.73) UNRELEASED; urgency=medium
+
+  * Settings > Android apps: the register step is gone; finishing Google
+    Play is one button that opens it to sign in.
+  * What's new: Android apps start on more computers.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 20:00:00 -0700
+
 kernora-apps (1.1.72) UNRELEASED; urgency=medium
 
   * Settings > Android apps: Report a problem saves a file with what

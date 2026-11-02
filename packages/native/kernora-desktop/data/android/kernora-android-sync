@@ -45,7 +45,7 @@ setting() {
 }
 setting global device_provisioned 1
 setting secure user_setup_complete 1
-setting global hide_error_dialogs 1
+setting global hide_error_dialogs 0
 setting secure show_ime_with_hard_keyboard 0
 setting system screen_off_timeout 1800000
 setting global private_dns_mode off
