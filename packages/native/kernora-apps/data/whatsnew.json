@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-03-2",
+    "date": "2026-11-03",
+    "items": [
+      {
+        "icon": "user-identity",
+        "title": {
+          "en": "Smoother rounded edges",
+          "ru": "Плавные края круглых элементов"
+        },
+        "text": {
+          "en": "Account pictures and press effects now keep smooth rounded edges, including at fractional display scales. The fix covers Settings, the launcher, sign-in, the lock screen and the power menu.",
+          "ru": "У аватаров и эффектов нажатия теперь плавные края, в том числе при дробном масштабе экрана. Исправлены Настройки, меню приложений, экран входа, блокировка и меню выключения."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-03",
     "date": "2026-11-03",
     "items": [

@@ -1,3 +1,12 @@
+kernora-desktop (1.4.55.2) UNRELEASED; urgency=medium
+
+  * Preserve antialiased alpha edges in avatar masks in Settings, the
+    launcher, sign-in, lock and logout screens.
+  * Preserve soft mask edges for press effects on rounded controls.
+  * Bind ripple texture sources when their rendering layers become active.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 03 Nov 2026 20:45:00 -0800
+
 kernora-desktop (1.4.55.1) UNRELEASED; urgency=medium
 
   * Add the CPU temperature widget, its menu preview and English/Russian labels.

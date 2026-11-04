@@ -341,6 +341,22 @@ cmp -s "$temporary_root/desktop/usr/share/kernora/faces/kernora.png" "$temporary
 
 shell=usr/share/plasma/shells/org.kde.plasma.desktop/contents
 notifications=usr/share/plasma/plasmoids/org.kde.plasma.notifications/contents/ui
+cmp "$package_root/data/ui/Avatar.qml" "$temporary_root/desktop/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/ui/Avatar.qml" \
+  || fail "the installed avatar lacks the current edge rendering fix"
+state_layers=0
+while IFS= read -r path; do
+  cmp "$package_root/data/shell/m3/MStateLayer.qml" "$path" \
+    || fail "a bundled press effect differs from the current source: $path"
+  state_layers=$((state_layers + 1))
+done < <(find "$temporary_root/desktop" -name MStateLayer.qml -type f)
+(( state_layers >= 3 )) || fail "the shared press effects are not packaged"
+for pair in \
+  "lockscreen/LockScreen.qml:$shell/lockscreen/LockScreen.qml" \
+  "sddm-theme/kernora/Main.qml:usr/share/sddm/themes/kernora/Main.qml" \
+  "look-and-feel/org.kernora.desktop/contents/logout/Logout.qml:usr/share/plasma/look-and-feel/org.kernora.desktop/contents/logout/Logout.qml"; do
+  cmp "$package_root/data/${pair%%:*}" "$temporary_root/desktop/${pair#*:}" \
+    || fail "a packaged account picture differs from its source: $pair"
+done
 for path in \
   "$shell/lockscreen/LockScreen.qml" \
   "$shell/lockscreen/KernoraMediaControls.qml" \

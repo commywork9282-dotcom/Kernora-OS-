@@ -221,6 +221,8 @@ Item {
                         visible: face.status === Image.Ready
                         maskEnabled: true
                         maskSource: faceMask
+                        maskThresholdMin: 0.5
+                        maskSpreadAtMin: 1.0
                     }
                 }
                 ColumnLayout {

@@ -53,5 +53,7 @@ Item {
         visible: picture.status === Image.Ready
         maskEnabled: true
         maskSource: mask
+        maskThresholdMin: 0.5
+        maskSpreadAtMin: 1.0
     }
 }
