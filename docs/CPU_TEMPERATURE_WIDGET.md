@@ -70,3 +70,27 @@ What’s New window displayed the new entry. Screenshots are in
 The publication archive retains all other stable artifacts byte for byte from
 the previously published archive, avoiding replacement of unchanged versions
 with locally rebuilt artifacts. The existing demo packages remain newer.
+
+## Delivery with demo enabled
+
+The first stable publication (desktop 1.4.55.1, apps 1.1.64.1) was below
+the existing demo versions (desktop 1.4.64, apps 1.1.74). APT correctly kept
+the installed newer demo packages, which did not yet contain the widget.
+The widget and matching What's New entry are now also backported to the
+current demo source as desktop/calamares 1.4.65 and apps 1.1.75. The existing
+Android code and demo release history are retained.
+
+Validation covers both installed-version paths: stable 1.4.55 / 1.1.64 to
+1.4.55.1 / 1.1.64.1, and demo 1.4.64 / 1.1.74 to 1.4.65 / 1.1.75. Isolated
+APT tests checked the selected versions and inspected their actual .deb
+contents for the widget and matching release notes. A fresh QEMU session
+with both public suites enabled reproduced the missing update on the old
+demo packages; upgrading those installed packages to the new demo build
+succeeded with no dpkg audit errors. Logs are under
+`out/test-logs/cpu-temperature/`, including `channel-candidates.log`,
+`demo-before-upgrade.txt` and `demo-native-upgrade.txt`.
+
+The publishing regression test now starts with an installed higher demo
+version, verifies that a lower stable update is skipped, and verifies the
+subsequent shared-feature backport upgrades the demo without changing stable.
+The workflow is documented in `docs/UPDATES.md`.

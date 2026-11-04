@@ -112,6 +112,10 @@ candidate() {
   mkdir -p "$apt_root/etc/sources.list.d" "$apt_root/etc/preferences.d" "$apt_root/etc/apt.conf.d" \
     "$apt_root/lists/partial" "$apt_root/cache/archives/partial" "$apt_root/state"
   : > "$apt_root/state/status"
+  if [[ -n ${KERNORA_TEST_INSTALLED_VERSION:-} ]]; then
+    printf 'Package: %s\nStatus: install ok installed\nArchitecture: all\nVersion: %s\nMaintainer: Kernora Test <test@kernora.invalid>\nDescription: installed test package\n\n' \
+      "$package" "$KERNORA_TEST_INSTALLED_VERSION" > "$apt_root/state/status"
+  fi
   for suite in "$@"; do
     printf 'Types: deb\nURIs: file:%s\nSuites: %s\nComponents: main\nSigned-By: %s\n' \
       "$site" "$suite" "$site/kernora-archive-keyring.asc" > "$apt_root/etc/sources.list.d/$suite.sources"
@@ -206,6 +210,28 @@ build_archive "alpha 1.1 a4" "beta 2.1 b2" "gamma 1.0 c"
 publish || fail "publishing an unchanged version failed: $(<"$temporary_root/err")"
 grep -Fq 'warning: alpha 1.1 changed but kept its version' "$temporary_root/err" \
   || fail "a change without a new version is not reported"
+
+build_archive "alpha 1.3 demo-old" "beta 2.1 b2" "gamma 1.0 c"
+publish --demo || fail "publishing the newer demo fixture failed: $(<"$temporary_root/err")"
+build_archive "alpha 1.2 shared-feature" "beta 2.1 b2" "gamma 1.0 c"
+publish || fail "publishing the shared stable feature failed: $(<"$temporary_root/err")"
+fetch_site
+[[ "$(KERNORA_TEST_INSTALLED_VERSION=1.1 candidate alpha "$stable")" == "1.2" ]] \
+  || fail "the shared feature does not upgrade the previous stable package"
+[[ "$(KERNORA_TEST_INSTALLED_VERSION=1.3 candidate alpha "$stable" "$demo")" == "1.3" ]] \
+  || fail "APT did not retain the installed higher demo version"
+cp "$site/dists/$stable/InRelease" "$temporary_root/shared-stable-inrelease"
+build_archive "alpha 1.4 shared-feature-demo" "beta 2.1 b2" "gamma 1.0 c"
+publish --demo || fail "backporting the shared feature to demo failed: $(<"$temporary_root/err")"
+fetch_site
+cmp -s "$temporary_root/shared-stable-inrelease" "$site/dists/$stable/InRelease" \
+  || fail "backporting the shared feature changed stable"
+[[ "$(KERNORA_TEST_INSTALLED_VERSION=1.3 candidate alpha "$stable" "$demo")" == "1.4" ]] \
+  || fail "the shared feature does not upgrade the previous demo package"
+mkdir "$temporary_root/shared-demo"
+dpkg-deb --extract "$site/pool-demo/main/a/alpha/alpha_1.4_all.deb" "$temporary_root/shared-demo"
+[[ "$(<"$temporary_root/shared-demo/usr/share/alpha/tag")" == "shared-feature-demo" ]] \
+  || fail "the selected demo upgrade lacks the shared feature"
 
 [[ "$(git -C "$remote" rev-list --count main)" == "1" ]] || fail "the published history grows"
 

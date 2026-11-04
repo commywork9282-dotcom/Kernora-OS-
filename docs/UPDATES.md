@@ -128,6 +128,21 @@ Settings > Updates.
 publication replaces all of its contents in a single commit, so the
 repository does not grow.
 
+### Shared changes when demo is ahead
+
+APT selects the higher package version across enabled suites. A new stable
+package with a lower version than an installed demo package does not reach
+that system, even when the stable package contains a new feature. Backport
+shared features and fixes to the current demo source too, raise its versions,
+and publish that build with `make publish-demo`. Keep experimental demo code
+out of the stable build. Include the shared What's New entry in both builds,
+retaining each channel's history.
+
+Before announcing delivery to both channels, test the upgrade candidates from
+both the previous stable and previous demo versions and check that each
+selected package contains the feature. An empty-status APT test alone does
+not cover machines that already have newer demo packages installed.
+
 ### Demo first
 
 `make publish-demo` builds the same way but leaves the normal updates exactly
