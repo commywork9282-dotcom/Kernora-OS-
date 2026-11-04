@@ -112,9 +112,11 @@ Item {
     MultiEffect {
         anchors.fill: parent
         visible: wave.opacity > 0
-        source: waves
+        source: visible ? waves : null
         maskEnabled: true
-        maskSource: clipShape
+        maskSource: visible ? clipShape : null
+        maskThresholdMin: 0.5
+        maskSpreadAtMin: 1.0
     }
 
     ParallelAnimation {

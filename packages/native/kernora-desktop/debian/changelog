@@ -1,3 +1,11 @@
+kernora-desktop (1.4.66) UNRELEASED; urgency=medium
+
+  * Backport the stable smoothing fix for account pictures and rounded
+    press effects, including active ripple texture initialization.
+  * Retain all existing demo features.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 03 Nov 2026 20:45:00 -0800
+
 kernora-desktop (1.4.65) UNRELEASED; urgency=medium
 
   * Bring the stable CPU temperature widget and its menu preview to demo

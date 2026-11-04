@@ -1,3 +1,10 @@
+kernora-apps (1.1.76) UNRELEASED; urgency=medium
+
+  * What's new: smoother account pictures and rounded press effects.
+  * Require kernora-desktop 1.4.66 so demo systems receive the fix.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 03 Nov 2026 20:45:00 -0800
+
 kernora-apps (1.1.75) UNRELEASED; urgency=medium
 
   * What's new: CPU temperature widget, in English and Russian, while
