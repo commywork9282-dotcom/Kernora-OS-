@@ -16,6 +16,7 @@ var widgets = {
     "org.kernora.widget.weather": { icon: "weather-few-clouds" },
     "org.kernora.widget.calendar": { icon: "view-calendar" },
     "org.kernora.widget.battery": { icon: "battery-full" },
+    "org.kernora.widget.cputemperature": { icon: "cpu" },
     "org.kernora.widget.media": { icon: "media-playback-start" },
     "org.kernora.widget.photo": { icon: "image-x-generic" },
     "org.kernora.widget.note": { icon: "note" },

@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "System Information",
+        "Description": "Live CPU temperature, a two-minute history and the peak for the current session",
+        "Description[ru]": "Температура процессора, график за две минуты и максимум за время сеанса",
+        "Icon": "cpu",
+        "Id": "org.kernora.widget.cputemperature",
+        "License": "GPL-2.0+",
+        "Name": "CPU temperature",
+        "Name[ru]": "Температура CPU"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-FormFactors": [
+        "desktop"
+    ]
+}

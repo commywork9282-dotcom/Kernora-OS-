@@ -22,7 +22,7 @@ Item {
     readonly property bool forPanel: !!containment && containment.containmentType == 1
     readonly property int cardSpacing: 12
     readonly property int cardHeight: 236
-    readonly property var kernoraOrder: ["clock", "glance", "weather", "calendar", "battery", "media", "photo", "note"]
+    readonly property var kernoraOrder: ["clock", "glance", "weather", "calendar", "battery", "cputemperature", "media", "photo", "note"]
     readonly property var pendingUninstalls: pendingUninstallTimer.applets
     property var kernoraShown: []
     property var otherShown: []
