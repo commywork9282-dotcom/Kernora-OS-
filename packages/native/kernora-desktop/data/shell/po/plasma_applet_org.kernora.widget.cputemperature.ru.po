@@ -1,0 +1,43 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-desktop\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "CPU temperature"
+msgstr "Температура CPU"
+
+msgid "CPU sensor unavailable"
+msgstr "Датчик CPU недоступен"
+
+msgid "Hottest CPU sensor"
+msgstr "Самый горячий датчик CPU"
+
+msgid "Average CPU temperature"
+msgstr "Средняя температура CPU"
+
+msgid "Peak"
+msgstr "Максимум"
+
+msgid "Last 2 minutes"
+msgstr "За последние 2 минуты"
+
+msgid "Preview"
+msgstr "Предпросмотр"
+
+msgid "Temperature"
+msgstr "Температура"
+
+msgid "Units"
+msgstr "Единицы измерения"
+
+msgid "Reading"
+msgstr "Показание"
+
+msgid "Celsius (°C)"
+msgstr "Цельсий (°C)"
+
+msgid "Fahrenheit (°F)"
+msgstr "Фаренгейт (°F)"

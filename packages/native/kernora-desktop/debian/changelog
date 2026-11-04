@@ -1,3 +1,11 @@
+kernora-desktop (1.4.65) UNRELEASED; urgency=medium
+
+  * Bring the stable CPU temperature widget and its menu preview to demo
+    systems, retaining the existing Android features.
+  * Include CPU sensor dependencies and English/Russian translations.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 03 Nov 2026 19:00:00 -0800
+
 kernora-desktop (1.4.64) UNRELEASED; urgency=medium
 
   * Android windows are no longer resized after an app starts. Widening

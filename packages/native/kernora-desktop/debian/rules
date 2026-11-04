@@ -14,7 +14,7 @@ THEME_APPS = generated/icon-theme/scalable/apps
 TOOLS = tools
 SYMBOLS = data/symbols
 APPLETS = launcher:org.kernora.launcher shade:org.kernora.quicksettings clipboard:org.kernora.clipboard
-WIDGETS = clock glance weather battery calendar media photo note
+WIDGETS = clock glance weather battery cputemperature calendar media photo note
 COLOURS := $(shell cd $(TOOLS) && python3 -c 'import kernora_design as d; print(" ".join(d.COLOURS))')
 EXTRA_COLOURS := $(filter-out kernora,$(COLOURS))
 
@@ -116,7 +116,7 @@ override_dh_auto_build:
 	cp data/shell/shade/contents/ui/sources/MediaSource.qml data/shell/shade/contents/ui/WavyProgress.qml \
 	  generated/plasmoids/org.kernora.widget.media/contents/ui/
 	install -d generated/explorer
-	cp data/explorer/*.qml data/explorer/*.js data/widgets/common/MaterialShape.qml generated/explorer/
+	cp data/explorer/*.qml data/explorer/*.js data/widgets/common/MaterialShape.qml data/widgets/common/TemperatureCard.qml generated/explorer/
 	cp generated/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js generated/explorer/
 	set -e; for colour in $(EXTRA_COLOURS); do \
 	  KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.shapes/contents/ui; \

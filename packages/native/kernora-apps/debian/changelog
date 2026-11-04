@@ -1,3 +1,11 @@
+kernora-apps (1.1.75) UNRELEASED; urgency=medium
+
+  * What's new: CPU temperature widget, in English and Russian, while
+    retaining the demo release history and Android features.
+  * Require kernora-desktop 1.4.65 so demo users receive the new widget.
+
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 03 Nov 2026 19:00:00 -0800
+
 kernora-apps (1.1.74) UNRELEASED; urgency=medium
 
   * What's new: steadier Android apps that use less memory.

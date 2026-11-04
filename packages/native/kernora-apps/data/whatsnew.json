@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-03",
+    "date": "2026-11-03",
+    "items": [
+      {
+        "icon": "cpu",
+        "title": {
+          "en": "CPU temperature widget",
+          "ru": "Виджет температуры CPU"
+        },
+        "text": {
+          "en": "Add CPU temperature from the widget menu to see the hottest or average CPU reading, a two-minute history and the peak since the widget started. Choose Celsius or Fahrenheit in the widget settings. If no CPU sensor is available, the widget tells you.",
+          "ru": "Добавьте «Температура CPU» из меню виджетов, чтобы видеть самую высокую или среднюю температуру процессора, график за две минуты и максимум с запуска виджета. В настройках доступны °C и °F. Если датчик процессора недоступен, виджет сообщит об этом."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-02-1",
     "date": "2026-11-02",
     "items": [

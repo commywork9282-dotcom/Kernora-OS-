@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.64" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.65" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -775,7 +775,7 @@ XDG_CONFIG_HOME="$menu_home" sh "$package_root/data/kconf_update/kernora-add-wid
   || fail "the desktop menu does not offer Add Widgets exactly once"
 rm -rf "$menu_home"
 sh -n "$package_root/data/crash/kernora-panic-report" || fail "the panic report does not parse"
-for widget in clock glance weather battery calendar media photo note; do
+for widget in clock glance weather battery cputemperature calendar media photo note; do
   python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$package_root/data/widgets/$widget/metadata.json" \
     || fail "the $widget widget metadata is not JSON"
   xmllint --noout "$package_root/data/widgets/$widget/contents/config/main.xml" \

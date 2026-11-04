@@ -32,6 +32,8 @@ Item {
                 return glance;
             case "weather":
                 return weather;
+            case "cputemperature":
+                return cpuTemperature;
             case "battery":
                 return battery;
             case "calendar":
@@ -44,6 +46,26 @@ Item {
                 return note;
             default:
                 return generic;
+            }
+        }
+    }
+
+    Component {
+        id: cpuTemperature
+        Item {
+            width: 168
+            height: 124
+            TemperatureCard {
+                anchors.centerIn: parent
+                width: 280
+                height: 208
+                scale: 0.58
+                degrees: 48
+                peak: 56
+                heading: i18nd("plasma_applet_org.kernora.widget.cputemperature", "CPU temperature")
+                caption: i18nd("plasma_applet_org.kernora.widget.cputemperature", "Preview")
+                peakText: i18nd("plasma_applet_org.kernora.widget.cputemperature", "Peak")
+                history: Array.from({length: 60}, (_, i) => 46 + 6 * Math.sin(i * 0.22) + 3 * Math.sin(i * 0.7))
             }
         }
     }
