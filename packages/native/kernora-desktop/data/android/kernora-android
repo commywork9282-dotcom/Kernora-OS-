@@ -9,6 +9,8 @@ config=$work/waydroid.cfg
 images=$work/images
 overlay_source=/usr/share/kernora/android/KernoraCaption.apk
 overlay_target=$work/overlay/system/product/overlay/KernoraCaption
+shell_overlay_source=/usr/share/kernora/android/KernoraShell.apk
+shell_overlay_target=$work/overlay/system/product/overlay/KernoraShell
 sources=/etc/apt/sources.list.d/kernora-android.sources
 template=/usr/share/kernora/apt/kernora-android.sources
 real=/usr/bin/waydroid.waydroid
@@ -196,6 +198,9 @@ install_overlay() {
   [[ -s $overlay_source ]] || return 0
   install -d -m 0755 "$overlay_target"
   install -m 0644 "$overlay_source" "$overlay_target/KernoraCaption.apk"
+  [[ -s $shell_overlay_source ]] || return 0
+  install -d -m 0755 "$shell_overlay_target"
+  install -m 0644 "$shell_overlay_source" "$shell_overlay_target/KernoraShell.apk"
 }
 
 setup_android() {
@@ -288,10 +293,14 @@ copy_screens() {
       [[ $line =~ ^-?[0-9]{1,5},-?[0-9]{1,5},[0-9]{1,5},[0-9]{1,5}$ ]] && lines+=("$line")
     done < <(head -n 8 "$source")
   fi
-  if (( ${#lines[@]} > 1 )); then
+  if (( ${#lines[@]} > 0 )); then
     printf '%s\n' "${lines[@]}" > "$state_dir/screens.new" && mv "$state_dir/screens.new" "$state_dir/screens"
   else
     rm -f "$state_dir/screens"
+  fi
+  if [[ -n $home && ! -e $state_dir/windows-reset ]] && ! session_active; then
+    rm -f "$home/.local/share/waydroid/data/system_ce/0/launch_params/"*.xml
+    : > "$state_dir/windows-reset"
   fi
   if [[ -n $home && -f $home/.cache/kernora/android-ready ]]; then
     "$device" suspend-action freeze
@@ -338,6 +347,12 @@ update_android() {
   fi
   progress=100
   record ready
+}
+
+use_wayland() {
+  local state=/var/lib/sddm/state.conf
+  [[ -f $state ]] || return 0
+  sed -i 's|^Session=.*|Session=/usr/share/wayland-sessions/plasma.desktop|' "$state"
 }
 
 user_homes() {
@@ -393,7 +408,7 @@ print_status() {
     "$installed_flag" "$ready" "$(current_kind)" "${status:-}" "$(read_state progress)" "$(read_state remaining)" \
     "$(read_state bytes)" "$(read_state bytes_total)" "$(read_state time)" \
     "${size:-0}" "${container:-inactive}" "$job" "$(live_session && echo yes || echo no)"
-  printf 'arm=%s\n' "$("$device" arm-status)"
+  printf 'arm=%s\ndisplay=%s\n' "$("$device" arm-status)" "${XDG_SESSION_TYPE:-}"
   printf 'google_id=%s\ngoogle_accounts=%s\n' \
     "$(sed -n 's/^android_id=//p' "$state_dir/google" 2>/dev/null)" "$(sed -n 's/^accounts=//p' "$state_dir/google" 2>/dev/null)"
 }
@@ -414,7 +429,8 @@ section() {
 }
 
 collect_report() {
-  local home=$1 card node folder file
+  local home=$1 uid card node folder file flag
+  uid=$(stat -c %u "$home")
   section Kernora
   date -R
   uname -srm
@@ -423,6 +439,17 @@ collect_report() {
   print_status | grep -v '^google_id='
   section Processor
   grep -m 2 -E '^(vendor_id|model name)' /proc/cpuinfo
+  printf 'cores=%s memory=%s\n' "$(nproc)" "$(awk '/^MemTotal/ {print int($2 / 1024) " MB"}' /proc/meminfo)"
+  printf 'flags:'
+  for flag in ssse3 sse4_2 avx avx2 fma bmi2; do
+    grep -qm 1 -E "^flags.* $flag( |$)" /proc/cpuinfo && printf ' %s' "$flag"
+  done
+  echo
+  section Desktop
+  loginctl list-sessions --no-legend 2>/dev/null | while read -r id _; do
+    loginctl show-session "$id" -p Name -p Type -p Class -p Desktop -p State --value 2>/dev/null | xargs
+  done
+  ls "/run/user/$uid"/wayland-* 2>/dev/null | grep -v lock
   section Graphics
   for card in /sys/class/drm/card*; do
     [[ ${card##*/} =~ ^card[0-9]+$ ]] || continue
@@ -460,8 +487,23 @@ collect_report() {
       zcat -f "$folder/$file" 2>/dev/null | head -n 80
     done
   fi
+  folder=$home/.local/share/waydroid/data/tombstones
+  if [[ -d $folder ]]; then
+    section 'Native crashes'
+    for file in $(ls -t "$folder" 2>/dev/null | grep -v '\.pb$' | head -n 3); do
+      printf -- '-- %s\n' "$file"
+      head -n 40 "$folder/$file" 2>/dev/null
+    done
+  fi
+  section 'Android service'
+  journalctl -b --no-pager -n 80 -o short-iso _SYSTEMD_USER_UNIT=kernora-android.service + USER_UNIT=kernora-android.service 2>&1 | cut -c1-300
+  section 'Container service'
+  journalctl -b --no-pager -n 30 -o short-iso -u waydroid-container.service 2>&1 | cut -c1-300
+  section 'Kernel'
+  journalctl -k -b --no-pager -o short-iso 2>/dev/null | grep -v ' audit: ' \
+    | grep -iE 'invalid opcode|segfault|general protection|GPU HANG|oom-kill|Out of memory|binder.*(fail|error)' | tail -n 40 | cut -c1-300
   section 'Waydroid log'
-  tail -n 120 "$work/waydroid.log" 2>/dev/null
+  cat "$work/waydroid.log.1" "$work/waydroid.log" 2>/dev/null | tail -n 120
 }
 
 save_report() {
@@ -537,6 +579,10 @@ case ${1:-} in
   graphics-check)
     require_root
     graphics_check
+    ;;
+  use-wayland)
+    require_root
+    use_wayland
     ;;
   update)
     require_root

@@ -1,5 +1,44 @@
 [
   {
+    "id": "2026-11-04-3",
+    "date": "2026-11-04",
+    "items": [
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Android apps in real Kernora windows",
+          "ru": "Android-приложения в настоящих окнах Kernora"
+        },
+        "text": {
+          "en": "Android apps now open in the same windows as the rest of Kernora, like on a Chromebook. Windows move and resize smoothly, every button in an app can be clicked, nothing is see-through any more, and closing or covering one app leaves the others alone. Apps that support it open large, so YouTube shows a proper grid of sharp previews.",
+          "ru": "Android-приложения теперь открываются в таких же окнах, как всё остальное в Kernora, как на Chromebook. Окна плавно двигаются и меняют размер, все кнопки в приложениях нажимаются, ничего не просвечивает, а если закрыть или перекрыть одно приложение, другие не пропадают. Приложения, которые это умеют, открываются большими, поэтому в YouTube теперь нормальная сетка с чёткими превью."
+        }
+      },
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Android apps explain why they can't open",
+          "ru": "Android-приложения объясняют, почему не открываются"
+        },
+        "text": {
+          "en": "Android apps only run in a Wayland session. If you signed in with X11, they used to fail without a reason. Now Kernora tells you and offers to sign out, and Wayland is used next time.",
+          "ru": "Android-приложения работают только в сеансе Wayland. Если вы вошли через X11, раньше они просто не открывались. Теперь Kernora об этом сообщает и предлагает выйти из системы, а в следующий раз включается Wayland."
+        }
+      },
+      {
+        "icon": "preferences-system-time",
+        "title": {
+          "en": "The right time in Android apps",
+          "ru": "Правильное время в Android-приложениях"
+        },
+        "text": {
+          "en": "Android apps now use the same time zone as your computer, so clocks, reminders and chats show the right time.",
+          "ru": "Android-приложения теперь используют тот же часовой пояс, что и компьютер, поэтому в часах, напоминаниях и чатах время верное."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-04-2",
     "date": "2026-11-04",
     "items": [

@@ -51,6 +51,11 @@ setting secure screensaver_enabled 0
 setting secure screensaver_activate_on_dock 0
 setting secure screensaver_activate_on_sleep 0
 setting global private_dns_mode off
+setting global auto_time_zone 0
+zone=$(timedatectl show -p Timezone --value 2>/dev/null)
+if [[ $zone =~ ^[A-Za-z0-9_+/-]+$ && $(android getprop persist.sys.timezone | tr -d '\r') != "$zone" ]]; then
+  android service call alarm 3 s16 "$zone" > /dev/null
+fi
 for keyboard in $(android ime list -s -a | tr -d '\r'); do
   package=${keyboard%%/*}
   if android pm list packages -s "$package" | tr -d '\r' | grep -qx "package:$package"; then

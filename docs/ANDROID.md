@@ -248,96 +248,74 @@ kept in `/var/lib/kernora/android/properties` (updated only after a
 successful upgrade), so keys that no longer apply are taken out again and
 keys the user added stay.
 
-Monitors: Waydroid has one Android screen. The hwcomposer sizes it from the
-first window (maximized on whichever monitor it lands on) unless
-`persist.waydroid.width`/`height` are set, and every Android window is a
-see-through Wayland window of that size with the app drawn at its Android
-position, so dragging the caption moved the app only inside one monitor.
-With more than one enabled output, `kernora-android-session --screens`
-(`ExecStartPre` of `kernora-android.service`) writes the outputs' logical
-rectangles (main monitor first, from `kscreen-doctor -j`) to
-`~/.cache/kernora/android-screens` and adds the KWin rule `kernora-android`
-to the user's `kwinrulesrc` (window class contains `waydroid`, position
-forced to the desktop's corner). `kernora-android-refresh` copies the
-checked rectangles to `/var/lib/kernora/android/screens`, and
-`kernora-android-device` puts the desktop's width and height into
-`waydroid.cfg`, so Android starts with a screen that covers every monitor.
-The window helper opens new windows on the main monitor. With one monitor
-the file, the keys and the rule are removed again. Limits: Android's
-maximize covers every monitor, monitors of different heights leave parts
-of Android's screen that no monitor shows, and a change of monitors takes
-effect at the next start of Android. These values must never be set with
-`setprop`: a stored persist value, even an empty one, wins over
-`waydroid.cfg` at boot.
+## Windows
 
-Software fallback: if Android has not finished booting 40 seconds after a
-start, `kernora-android-session --sync-after-boot` runs
-`kernora-android-refresh check` (`kernora-android graphics-check`), which
-reads `init.svc_debug_pid.surfaceflinger` twice, eight seconds apart. A
-changed pid means SurfaceFlinger keeps crashing (on virtio without virgl it
-aborted every five seconds with "output buffer not gpu writeable", windows
-stayed see-through and nothing opened). The helper then writes
-`/var/lib/kernora/android/graphics-software` with the computer's DRM
-devices, Android draws in software from then on, and the session restarts
-Android once. A different set of DRM devices ignores the file.
+Android apps work the way they do on a Chromebook: Android runs the app, the
+desktop owns the window.
 
-Reports: `kernora-android report` (Settings → Android apps → Report a
-problem, through polkit `org.kernora.android`) writes
-`Android-apps-report-DATE.txt` into the user's Downloads as that user:
-versions, status without the Android ID, processor, DRM cards and the
-graphics choice, Waydroid properties, `getprop`, network state with pings,
-the crash log buffer, errors from logcat, the newest `data_app_crash`,
-`data_app_native_crash` and `data_app_anr` entries from
-`/data/system/dropbox` (readable from the host even when Android is
-stopped) and the end of `waydroid.log`.
+Waydroid's hwcomposer is a Wayland client. Each Android task is one
+see-through toplevel the size of the whole Android screen, every Android
+layer is a subsurface at its Android position, and solid colour layers are
+dropped. Left alone that gives an Android title bar drawn over the app,
+windows that can only move inside Android, and see-through holes.
 
-Only apps: besides the setup wizards and the updater, the sync turns off
-phone apps that kept running in the background with nothing to do on a
-computer: the Google app (`googlequicksearchbox`, about 300 MB), Messages,
-Contacts, Clock, IMS, Seedvault, calendar sync and Android Auto. Measured in
-a GAPPS VM, Android's used RAM went from 2.1 GB to 1.57 GB. SystemUI and the
-launcher stay: without SystemUI Android boots and notifications still reach
-the desktop (Waydroid forwards them from `WayDroidService` in
-system_server), but SystemUI applies Kernora's colours
-(`theme_customization_overlay_packages`) and shows screen-capture and other
-system prompts; without a launcher Settings' FallbackHome becomes home and
-polls every half second ("no home"), which saves almost nothing.
+`kernora-android-display` (user service, Python, about 1% of one core while a
+video plays) sits between the hwcomposer and KWin. `waydroid session start`
+runs with `WAYLAND_DISPLAY=kernora-android-0`, so the hwcomposer connects to
+it, and it translates every object id on the way to the real socket; that is
+why it needs `wayland-protocols.json`, the message signatures of the
+protocols the hwcomposer uses. On top of plain forwarding it:
 
-The `waydroid` command (dpkg-divert of `/usr/bin/waydroid`) lets users run
-`app launch|install|intent|remove|list`, `session stop`, `status` and
-`log`; `show-full-ui` and `first-launch` say that Full UI mode is disabled,
-other commands point to Settings. Root and Kernora's helpers call
-`/usr/bin/waydroid.waydroid` directly.
+- asks KWin for server-side decorations, so the title bar, buttons, shadow,
+  snapping and the move itself are KWin's. Android does not hear about moves.
+- sets the window geometry to the rectangle the app's layers cover, so KWin
+  sees a window of the app's size, not of the Android screen.
+- puts an opaque black surface under the app, in place of the layers the
+  hwcomposer drops.
+- holds back the first buffer until the app has a layer and
+  `kernora-android-windows` has given the app its size, so KWin places a
+  window of the right size and an empty frame never appears. The helper says
+  so on the `kernora-android-ready` pipe; without it the window shows after
+  2.5 s.
+- answers KWin's size changes itself and passes 0x0 to the hwcomposer, which
+  would otherwise treat them as a new Android screen size. While the mouse
+  is down the frame follows at once; on release one line goes to the
+  `kernora-android-resize` pipe.
 
-Sleep: Waydroid suspends the container when Android turns its screen off.
-Android never did: its screensaver is on and Waydroid reports a charging
-battery, so at the timeout Android wanted to start a dream that nothing
-shows and stayed awake for good. The sync turns the screensaver off
-(`screensaver_enabled`, `_activate_on_dock`, `_activate_on_sleep` 0) and
-Private DNS off. `kernora-android-windows` (always started after boot)
-follows `wm_create_task`/`wm_task_removed` and sets `screen_off_timeout` to
-the maximum while any app task exists, so Android never sleeps under an
-open window the user is only reading, and to 30 minutes when the last one
-is gone (Google Play downloads go on meanwhile). A suspended Android is
-stopped, not frozen (`suspend_action = stop` from the refresh), and all its
-memory goes back to Kernora: in a VM 2.5 GB used went to 1.4 GB, 55 seconds
-after the timeout. If "Open apps faster" is on
-(`kernora-android-session --prepare` leaves `~/.cache/kernora/android-ready`)
-it stays `freeze`.
+Android's own window chrome is switched off in three places.
+`persist.wm.debug.caption_on_shell=true` removes the caption apps draw inside
+their window, which also pushed Unity's surface out of place. `KernoraShell.apk`,
+a static overlay on SystemUI, makes the shell's caption 1 px tall and its
+resize handles zero wide. Zero height is not an option: the caption window
+then gets a touchable region as large as the task and swallows every click.
+The handles matter because their corner squares reached 22 dp into the app
+and ate clicks there. Esc is Android's Back, which replaces the caption's
+back arrow.
 
-Identity: `waydroid.cfg` gets `ro.product.waydroid.brand`/`manufacturer`
-Kernora and `model` "Kernora Laptop" or "Kernora PC" (from `hostnamectl
-chassis`), which the image uses for `ro.product.*`, so Android settings and
-Google Play name the computer that way; the sync copies the model into
-`device_name`. Android already reports `android.hardware.type.pc`.
-`persist.waydroid.fake_wifi=*` lets apps see a Wi-Fi connection, so apps that
-only download or update on Wi-Fi do. The properties take effect with
-`waydroid upgrade -o`, which `kernora-android refresh` (package upgrade) and
-the daily update run once no app is open.
+`kernora-android-windows` (root, started after boot) applies the rest:
 
-Graphics: Waydroid uses the first render node that is not NVIDIA's. On a
-computer with only an NVIDIA card, or in a VM without one, Android renders
-in software (SwiftShader).
+- `arrange()` keeps every task's top-left corner off every other task.
+  SurfaceFlinger leaves a fully covered layer out, and the hwcomposer closes a
+  window with no layers, so a maximized app used to close whatever was behind
+  it. Tasks sit on a small diagonal, smallest first, which is why the Android
+  screen is 64 px larger than the largest monitor. Android positions have no
+  meaning on the desktop.
+- `resize()` turns requests from the pipe into `am task resize`.
+- `open_large()` gives a resizable app with no fixed orientation a tablet-sized
+  window the first time it opens, before it has laid itself out. Apps pick
+  their layout when they start, and YouTube kept its phone layout, stretched,
+  when it was maximized later. Android remembers the size from then on, in
+  `/data/system_ce/0/launch_params`.
+- `reshape()` turns a window round when an app asks for the other orientation.
+  In a window of the wrong shape Android letterboxes it into a flat strip.
+
+Android's screen is sized by `kernora-android-device` from the outputs in
+`/var/lib/kernora/android/screens` (from `kscreen-doctor -j`, written by
+`kernora-android-session --prepare`). A window can go to any monitor because
+KWin moves it.
+
+KWin's first configure is often 1 px off the app's size, so differences of
+2 px or less are not treated as a resize.
 
 ## Updates
 
@@ -397,8 +375,13 @@ Store.
 
 ## What does not work
 
-- Apps with native code only for ARM. Waydroid's image has no ARM
-  translation.
+- Fixed-size games show black bars when their window is made larger than
+  the game.
+- Plasma on X11. Waydroid needs a Wayland compositor, so `waydroid session
+  start` exits at once and no Android app opens. `kernora-android-session`
+  notices this before starting the session, shows a notification, and on a
+  click sets SDDM's last session to Plasma on Wayland and asks to sign out.
+  Settings and the APK installer say the same thing.
 - Apps that check for a certified device: banking apps, some streaming apps,
   games with anti-cheat.
 - App bundles (`.xapk`, `.apks`, `.aab`); only single APK files install.

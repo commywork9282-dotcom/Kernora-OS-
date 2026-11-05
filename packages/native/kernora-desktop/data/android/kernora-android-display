@@ -1,0 +1,665 @@
+#!/usr/bin/python3
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+import array
+import json
+import os
+import selectors
+import socket
+import stat
+import struct
+import sys
+import time
+import traceback
+
+NAME = "kernora-android-0"
+RESIZE = "kernora-android-resize"
+READY = "kernora-android-ready"
+TABLE = "/usr/share/kernora/android/wayland-protocols.json"
+ALLOWED = {
+    "wl_compositor", "wl_subcompositor", "xdg_wm_base", "wl_seat", "wl_shm", "wl_output", "wp_presentation",
+    "wp_viewporter", "zwp_linux_dmabuf_v1", "zwp_pointer_constraints_v1", "zwp_relative_pointer_manager_v1",
+    "zwp_idle_inhibit_manager_v1", "wp_fractional_scale_manager_v1", "wl_data_device_manager",
+}
+DECORATION = "zxdg_decoration_manager_v1"
+SERVER_IDS = 0xFF000000
+MAX_FDS = 28
+CHUNK = 4096
+SERVER_SIDE = 2
+STATE_RESIZING = 3
+STATE_FULLSCREEN = 2
+LAYOUT_STATES = {1, 2, 5, 6, 7, 8}
+KEY_F11 = 87
+SET_FULLSCREEN = 11
+UNSET_FULLSCREEN = 12
+SLACK = 2
+HOLD = 2.5
+SETTLE = 0.25
+READY_FOR = 15
+
+
+def pad(size: int) -> int:
+    return (size + 3) & ~3
+
+
+def close_to(first: tuple[int, int], second: tuple[int, int]) -> bool:
+    return abs(first[0] - second[0]) <= SLACK and abs(first[1] - second[1]) <= SLACK
+
+
+class Surface:
+    def __init__(self) -> None:
+        self.has_buffer = False
+        self.size = (0, 0)
+        self.position = (0, 0)
+        self.parent: Surface | None = None
+        self.children: set[Surface] = set()
+        self.xdg: int | None = None
+        self.held_attach: bytes | None = None
+        self.geometry: tuple[int, int, int, int] | None = None
+        self.mapped = False
+        self.show_at = 0.0
+        self.app = ""
+        self.want: tuple[int, int] | None = None
+        self.settled = False
+        self.resizing = False
+        self.layout: set[int] = set()
+        self.backing: int | None = None
+        self.backing_sub: int | None = None
+        self.backing_view: int | None = None
+        self.backing_rect: tuple[int, int, int, int] | None = None
+
+
+class Session:
+    def __init__(self, table: dict, runtime: str, ready: dict[str, float], client: socket.socket, server: socket.socket) -> None:
+        self.table = table
+        self.ready = ready
+        self.runtime = runtime
+        self.client = client
+        self.server = server
+        self.client_in = bytearray()
+        self.server_in = bytearray()
+        self.client_out = bytearray()
+        self.server_out = bytearray()
+        self.client_fds: list[int] = []
+        self.server_fds: list[int] = []
+        self.client_in_fds: list[int] = []
+        self.server_in_fds: list[int] = []
+        self.interfaces: dict[int, str] = {1: "wl_display"}
+        self.to_server: dict[int, int] = {1: 1}
+        self.to_client: dict[int, int] = {1: 1}
+        self.free: list[int] = []
+        self.next_id = 2
+        self.injected: set[int] = set()
+        self.registry: int | None = None
+        self.decoration_global: int | None = None
+        self.decoration_manager: int | None = None
+        self.waiting_toplevels: list[int] = []
+        self.hidden_globals: set[int] = set()
+        self.compositor: int | None = None
+        self.subcompositor: int | None = None
+        self.viewporter: int | None = None
+        self.shm: int | None = None
+        self.black: int | None = None
+        self.empty_region: int | None = None
+        self.surfaces: dict[int, Surface] = {}
+        self.subsurfaces: dict[int, Surface] = {}
+        self.viewports: dict[int, Surface] = {}
+        self.xdg_surfaces: dict[int, Surface] = {}
+        self.toplevels: dict[int, Surface] = {}
+        self.waiting: dict[Surface, int] = {}
+        self.focused: int | None = None
+
+    def allocate(self) -> int:
+        if self.free:
+            return self.free.pop()
+        value = self.next_id
+        self.next_id += 1
+        return value
+
+    def inject(self, interface: str) -> int:
+        object_id = self.allocate()
+        self.injected.add(object_id)
+        self.interfaces[object_id] = interface
+        return object_id
+
+    def send(self, object_id: int, opcode: int, payload: bytes = b"") -> None:
+        self.server_out += struct.pack("<II", object_id, ((8 + len(payload)) << 16) | opcode) + payload
+
+    def bind_decoration(self) -> None:
+        if self.decoration_manager or self.registry is None or self.decoration_global is None:
+            return
+        object_id = self.inject(DECORATION)
+        text = DECORATION.encode() + b"\0"
+        self.send(self.to_server[self.registry], 0, struct.pack("<II", self.decoration_global, len(text))
+                  + text.ljust(pad(len(text)), b"\0") + struct.pack("<II", 1, object_id))
+        self.decoration_manager = object_id
+        for toplevel in self.waiting_toplevels:
+            self.decorate(toplevel)
+        self.waiting_toplevels.clear()
+
+    def decorate(self, toplevel: int) -> None:
+        if not self.decoration_manager:
+            self.waiting_toplevels.append(toplevel)
+            return
+        object_id = self.inject("zxdg_toplevel_decoration_v1")
+        self.send(self.decoration_manager, 1, struct.pack("<II", object_id, self.to_server[toplevel]))
+        self.send(object_id, 1, struct.pack("<I", SERVER_SIDE))
+
+    def assets(self) -> None:
+        if self.black is not None or self.compositor is None or self.shm is None:
+            return
+        fd = os.memfd_create("kernora-android-backing")
+        os.write(fd, b"\x00\x00\x00\xff")
+        pool = self.inject("wl_shm_pool")
+        self.send(self.to_server[self.shm], 0, struct.pack("<II", pool, 4))
+        self.server_fds.append(fd)
+        self.black = self.inject("wl_buffer")
+        self.send(pool, 0, struct.pack("<IiiiiI", self.black, 0, 1, 1, 4, 0))
+        self.send(pool, 1)
+        self.empty_region = self.inject("wl_region")
+        self.send(self.to_server[self.compositor], 1, struct.pack("<I", self.empty_region))
+
+    def place_backing(self, surface_id: int, surface: Surface, rect: tuple[int, int, int, int]) -> None:
+        self.assets()
+        if self.black is None or self.subcompositor is None or self.viewporter is None:
+            return
+        if surface.backing is None:
+            surface.backing = self.inject("wl_surface")
+            self.send(self.to_server[self.compositor], 0, struct.pack("<I", surface.backing))
+            surface.backing_sub = self.inject("wl_subsurface")
+            self.send(self.to_server[self.subcompositor], 1, struct.pack("<III", surface.backing_sub, surface.backing, surface_id))
+            surface.backing_view = self.inject("wp_viewport")
+            self.send(self.to_server[self.viewporter], 1, struct.pack("<II", surface.backing_view, surface.backing))
+            self.send(surface.backing_sub, 3, struct.pack("<I", surface_id))
+            self.send(surface.backing, 5, struct.pack("<I", self.empty_region))
+            self.send(surface.backing, 1, struct.pack("<Iii", self.black, 0, 0))
+            self.send(surface.backing, 2, struct.pack("<iiii", 0, 0, 1, 1))
+        if rect == surface.backing_rect:
+            return
+        surface.backing_rect = rect
+        self.send(surface.backing_sub, 1, struct.pack("<ii", rect[0], rect[1]))
+        self.send(surface.backing_view, 2, struct.pack("<ii", rect[2], rect[3]))
+        self.send(surface.backing, 6)
+
+    def tell_android(self, surface: Surface, width: int, height: int) -> None:
+        current = self.content(surface)
+        if current is None or not surface.app:
+            return
+        line = f"resize {surface.app} {current[2]} {current[3]} {width} {height}\n"
+        try:
+            fd = os.open(os.path.join(self.runtime, RESIZE), os.O_WRONLY | os.O_NONBLOCK)
+        except OSError:
+            return
+        try:
+            os.write(fd, line.encode())
+        except OSError:
+            pass
+        os.close(fd)
+
+    @staticmethod
+    def content(surface: Surface) -> tuple[int, int, int, int] | None:
+        boxes = [(child.position[0], child.position[1], child.position[0] + child.size[0], child.position[1] + child.size[1])
+                 for child in surface.children if child.has_buffer and child.size[0] > 1 and child.size[1] > 1]
+        if not boxes:
+            return None
+        left = min(box[0] for box in boxes)
+        top = min(box[1] for box in boxes)
+        return left, top, max(box[2] for box in boxes) - left, max(box[3] for box in boxes) - top
+
+    def before_commit(self, surface_id: int, surface: Surface) -> None:
+        rect = self.content(surface)
+        if rect is None:
+            return
+        if surface.want:
+            if close_to(rect[2:], surface.want):
+                surface.settled = True
+                rect = (rect[0], rect[1], *surface.want)
+            elif surface.settled and not surface.resizing:
+                surface.want = None
+                surface.settled = False
+            else:
+                rect = (rect[0], rect[1], *surface.want)
+        if not surface.mapped:
+            now = time.monotonic()
+            if not surface.show_at:
+                surface.show_at = now + HOLD
+                self.waiting[surface] = surface_id
+                if now - self.ready.pop(surface.app, 0) < READY_FOR:
+                    surface.show_at = now + SETTLE
+            if now < surface.show_at or surface.held_attach is None:
+                return
+            self.waiting.pop(surface, None)
+            self.send(surface_id, 1, surface.held_attach)
+            self.send(surface_id, 2, struct.pack("<iiii", 0, 0, 0x7FFFFFFF, 0x7FFFFFFF))
+            surface.mapped = True
+        if rect != surface.geometry and surface.xdg is not None:
+            surface.geometry = rect
+            self.send(self.to_server[surface.xdg], 3, struct.pack("<iiii", *rect))
+        self.place_backing(surface_id, surface, rect)
+
+    @staticmethod
+    def walk(signature: list, body: bytes, translate, created) -> tuple[bytearray, list, int]:
+        position = 0
+        fds = 0
+        out = bytearray(body)
+        values: list = []
+        for kind, interface in signature:
+            if kind in ("int", "uint", "fixed"):
+                values.append(struct.unpack_from("<I", body, position)[0])
+                position += 4
+            elif kind in ("string", "array"):
+                size = struct.unpack_from("<I", body, position)[0]
+                values.append(bytes(body[position + 4:position + 4 + size]))
+                position += 4 + pad(size)
+            elif kind == "object":
+                value = struct.unpack_from("<I", body, position)[0]
+                values.append(value)
+                if value:
+                    struct.pack_into("<I", out, position, translate(value))
+                position += 4
+            elif kind == "new_id":
+                if not interface:
+                    size = struct.unpack_from("<I", body, position)[0]
+                    interface = bytes(body[position + 4:position + 3 + size]).decode()
+                    position += 4 + pad(size) + 4
+                value = struct.unpack_from("<I", body, position)[0]
+                values.append(value)
+                struct.pack_into("<I", out, position, created(value, interface))
+                position += 4
+            elif kind == "fd":
+                values.append(None)
+                fds += 1
+        return out, values, fds
+
+    def client_object(self, client_id: int, interface: str) -> int:
+        object_id = self.allocate()
+        self.to_server[client_id] = object_id
+        self.to_client[object_id] = client_id
+        self.interfaces[object_id] = interface
+        return object_id
+
+    def server_object(self, object_id: int, interface: str) -> int:
+        self.to_server[object_id] = object_id
+        self.to_client[object_id] = object_id
+        self.interfaces[object_id] = interface
+        return object_id
+
+    def forward(self, object_id: int, opcode: int, out: bytes) -> None:
+        self.server_out += struct.pack("<II", object_id, ((8 + len(out)) << 16) | opcode) + out
+
+    def track_surface(self, client_id: int, object_id: int, name: str, values: list, out: bytes) -> bool:
+        surface = self.surfaces.get(client_id)
+        if surface is None:
+            return False
+        if name == "attach":
+            surface.has_buffer = values[0] != 0
+            if surface.xdg is not None and not surface.mapped:
+                surface.held_attach = bytes(out)
+                return True
+        elif name in ("damage", "damage_buffer"):
+            return surface.xdg is not None and not surface.mapped
+        elif name == "commit" and surface.xdg is not None:
+            self.before_commit(object_id, surface)
+        elif name == "destroy":
+            if surface.parent:
+                surface.parent.children.discard(surface)
+            for child in surface.children:
+                child.parent = None
+            self.waiting.pop(surface, None)
+            self.surfaces.pop(client_id, None)
+        return False
+
+    def request(self, client_id: int, opcode: int, body: bytes) -> None:
+        object_id = self.to_server.get(client_id)
+        if object_id is None:
+            return
+        interface = self.interfaces[object_id]
+        message = self.table[interface]["requests"][opcode]
+        out, values, fds = self.walk(message["args"], body, lambda value: self.to_server.get(value, 0), self.client_object)
+        self.server_fds.extend(self.server_in_fds[:fds])
+        del self.server_in_fds[:fds]
+        name = message["name"]
+        if interface == "wl_display" and name == "get_registry":
+            self.registry = values[0]
+            self.bind_decoration()
+        elif interface == "wl_registry" and name == "bind":
+            target = self.interfaces[self.to_server[values[1]]]
+            if target == "wl_compositor":
+                self.compositor = values[1]
+            elif target == "wl_subcompositor":
+                self.subcompositor = values[1]
+            elif target == "wp_viewporter":
+                self.viewporter = values[1]
+            elif target == "wl_shm":
+                self.shm = values[1]
+        elif interface == "wl_compositor" and name == "create_surface":
+            self.surfaces[values[0]] = Surface()
+        elif interface == "wl_subcompositor" and name == "get_subsurface":
+            child = self.surfaces[values[1]]
+            parent = self.surfaces[values[2]]
+            child.parent = parent
+            parent.children.add(child)
+            self.subsurfaces[values[0]] = child
+        elif interface == "wl_subsurface":
+            child = self.subsurfaces.get(client_id)
+            if child and name == "set_position":
+                child.position = struct.unpack_from("<ii", body)
+            elif child and name == "destroy":
+                if child.parent:
+                    child.parent.children.discard(child)
+                child.parent = None
+                self.subsurfaces.pop(client_id, None)
+        elif interface == "wp_viewporter" and name == "get_viewport":
+            self.viewports[values[0]] = self.surfaces[values[1]]
+        elif interface == "wp_viewport" and name == "set_destination":
+            surface = self.viewports.get(client_id)
+            if surface:
+                surface.size = struct.unpack_from("<ii", body)
+        elif interface == "wl_surface":
+            if self.track_surface(client_id, object_id, name, values, out):
+                return
+        elif interface == "xdg_wm_base" and name == "get_xdg_surface":
+            surface = self.surfaces[values[1]]
+            surface.xdg = values[0]
+            self.xdg_surfaces[values[0]] = surface
+        elif interface == "xdg_surface":
+            if name == "set_window_geometry":
+                return
+            if name == "ack_configure":
+                self.forward(object_id, opcode, out)
+                self.after_ack(client_id)
+                return
+            if name == "get_toplevel":
+                self.toplevels[values[0]] = self.xdg_surfaces[client_id]
+                self.forward(object_id, opcode, out)
+                self.decorate(values[0])
+                return
+        elif interface == "xdg_toplevel":
+            if name == "set_app_id":
+                surface = self.toplevels.get(client_id)
+                if surface:
+                    surface.app = values[0][:-1].decode().removeprefix("waydroid.")
+            elif name in ("set_maximized", "unset_maximized", "move", "resize"):
+                return
+        self.forward(object_id, opcode, out)
+
+    def app_ready(self, app: str) -> bool:
+        found = False
+        for surface in self.waiting:
+            if surface.app == app:
+                surface.show_at = min(surface.show_at, time.monotonic() + SETTLE)
+                found = True
+        return found
+
+    def next_show(self) -> float | None:
+        return min((surface.show_at for surface in self.waiting), default=None)
+
+    def show_due(self) -> None:
+        now = time.monotonic()
+        for surface, surface_id in list(self.waiting.items()):
+            if now >= surface.show_at:
+                self.before_commit(surface_id, surface)
+                if surface.mapped:
+                    self.send(surface_id, 6)
+                else:
+                    surface.show_at = now + 0.1
+
+    def after_ack(self, client_id: int) -> None:
+        surface = self.xdg_surfaces.get(client_id)
+        if surface is None or not surface.want or not surface.geometry or surface.geometry[2:] == surface.want:
+            return
+        for key, value in self.surfaces.items():
+            if value is surface:
+                self.before_commit(self.to_server[key], surface)
+                self.send(self.to_server[key], 6)
+                return
+
+    def configure(self, client_id: int, body: bytes, states: bytes, out: bytearray) -> None:
+        width, height = struct.unpack_from("<ii", body)
+        struct.pack_into("<ii", out, 0, 0, 0)
+        surface = self.toplevels.get(client_id)
+        if surface is None or not surface.mapped or not surface.geometry or width <= 0 or height <= 0:
+            return
+        active = set(struct.unpack_from(f"<{len(states) // 4}I", states))
+        resizing = STATE_RESIZING in active
+        layout = active & LAYOUT_STATES
+        asked = resizing or surface.resizing or layout != surface.layout
+        surface.resizing = resizing
+        surface.layout = layout
+        if asked and (surface.want or not close_to((width, height), surface.geometry[2:])):
+            surface.want = (width, height)
+            surface.settled = False
+            if not resizing:
+                self.tell_android(surface, width, height)
+
+    def toggle_fullscreen(self) -> None:
+        for toplevel, surface in self.toplevels.items():
+            if surface.xdg is not None and self.surfaces.get(self.focused) is surface and toplevel in self.to_server:
+                self.send(self.to_server[toplevel], UNSET_FULLSCREEN if STATE_FULLSCREEN in surface.layout else SET_FULLSCREEN,
+                          b"" if STATE_FULLSCREEN in surface.layout else struct.pack("<I", 0))
+                return
+
+    def event(self, object_id: int, opcode: int, body: bytes) -> None:
+        interface = self.interfaces.get(object_id)
+        client_id = self.to_client.get(object_id)
+        if interface is None or (object_id in self.injected and object_id != 1) or client_id is None:
+            return
+        message = self.table[interface]["events"][opcode]
+        out, values, fds = self.walk(message["args"], body, lambda value: self.to_client.get(value, 0), self.server_object)
+        self.client_fds.extend(self.client_in_fds[:fds])
+        del self.client_in_fds[:fds]
+        name = message["name"]
+        if interface == "wl_display" and name == "delete_id":
+            target = values[0]
+            mapped = self.to_client.pop(target, None)
+            self.interfaces.pop(target, None)
+            if target in self.injected:
+                self.injected.discard(target)
+                self.free.append(target)
+                return
+            if mapped is None:
+                return
+            self.to_server.pop(mapped, None)
+            if target < SERVER_IDS:
+                self.free.append(target)
+            out = bytearray(struct.pack("<I", mapped))
+        elif interface == "wl_registry" and name == "global":
+            text = values[1][:-1].decode()
+            if text == DECORATION:
+                self.decoration_global = values[0]
+                self.bind_decoration()
+            if text not in ALLOWED:
+                self.hidden_globals.add(values[0])
+                return
+        elif interface == "wl_registry" and name == "global_remove":
+            if values[0] in self.hidden_globals:
+                return
+        elif interface == "xdg_toplevel" and name == "configure":
+            self.configure(client_id, body, values[2], out)
+        elif interface == "wl_keyboard" and name == "enter":
+            self.focused = self.to_client.get(values[1])
+        elif interface == "wl_keyboard" and name == "key" and values[2] == KEY_F11:
+            if values[3] == 1:
+                self.toggle_fullscreen()
+            return
+        self.client_out += struct.pack("<II", client_id, ((8 + len(out)) << 16) | opcode) + out
+
+    @staticmethod
+    def pump(buffer: bytearray, handler) -> None:
+        while len(buffer) >= 8:
+            target, word = struct.unpack_from("<II", buffer)
+            size = word >> 16
+            if len(buffer) < size:
+                return
+            handler(target, word & 0xFFFF, bytes(buffer[8:size]))
+            del buffer[:size]
+
+    @staticmethod
+    def flush(sock: socket.socket, data: bytearray, fds: list[int]) -> bool:
+        while data:
+            batch = fds[:MAX_FDS]
+            ancillary = [(socket.SOL_SOCKET, socket.SCM_RIGHTS, array.array("i", batch))] if batch else []
+            try:
+                sent = sock.sendmsg([bytes(data[:CHUNK])], ancillary)
+            except BlockingIOError:
+                return False
+            for fd in batch:
+                os.close(fd)
+            del fds[:len(batch)]
+            del data[:sent]
+        return True
+
+    @staticmethod
+    def receive(sock: socket.socket) -> tuple[bytes, list[int]]:
+        data, ancillary, _flags, _address = sock.recvmsg(65536, socket.CMSG_SPACE(4 * MAX_FDS))
+        fds: list[int] = []
+        for level, kind, payload in ancillary:
+            if level == socket.SOL_SOCKET and kind == socket.SCM_RIGHTS:
+                items = array.array("i")
+                items.frombytes(payload[:len(payload) - len(payload) % 4])
+                fds.extend(items)
+        return data, fds
+
+    def read(self, from_client: bool) -> bool:
+        sock = self.client if from_client else self.server
+        try:
+            data, fds = self.receive(sock)
+        except BlockingIOError:
+            return True
+        if not data:
+            return False
+        if from_client:
+            self.server_in_fds.extend(fds)
+            self.client_in += data
+            self.pump(self.client_in, self.request)
+        else:
+            self.client_in_fds.extend(fds)
+            self.server_in += data
+            self.pump(self.server_in, self.event)
+        return True
+
+    def write(self) -> tuple[bool, bool]:
+        return self.flush(self.client, self.client_out, self.client_fds), self.flush(self.server, self.server_out, self.server_fds)
+
+    def close(self) -> None:
+        for fd in self.client_fds + self.server_fds + self.client_in_fds + self.server_in_fds:
+            os.close(fd)
+        self.client.close()
+        self.server.close()
+
+
+def notify_ready() -> None:
+    address = os.environ.get("NOTIFY_SOCKET", "")
+    if not address:
+        return
+    with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as sock:
+        sock.sendto(b"READY=1", "\0" + address[1:] if address.startswith("@") else address)
+
+
+def prepare_pipe(path: str) -> None:
+    try:
+        if stat.S_ISFIFO(os.lstat(path).st_mode):
+            return
+        os.unlink(path)
+    except FileNotFoundError:
+        pass
+    os.mkfifo(path, 0o600)
+
+
+def read_ready(fd: int, sessions: set[Session], ready: dict[str, float]) -> None:
+    try:
+        data = os.read(fd, 4096)
+    except BlockingIOError:
+        return
+    for line in data.decode("ascii", "ignore").splitlines():
+        if line and not any(session.app_ready(line) for session in sessions):
+            ready[line] = time.monotonic()
+
+
+def sync(selector: selectors.BaseSelector, session: Session) -> None:
+    client_done, server_done = session.write()
+    selector.modify(session.client, selectors.EVENT_READ | (0 if client_done else selectors.EVENT_WRITE), (session, True))
+    selector.modify(session.server, selectors.EVENT_READ | (0 if server_done else selectors.EVENT_WRITE), (session, False))
+
+
+def serve(table: dict, runtime: str, upstream: str) -> None:
+    path = os.path.join(runtime, NAME)
+    if os.path.exists(path):
+        os.unlink(path)
+    prepare_pipe(os.path.join(runtime, RESIZE))
+    prepare_pipe(os.path.join(runtime, READY))
+    ready_fd = os.open(os.path.join(runtime, READY), os.O_RDONLY | os.O_NONBLOCK)
+    keep_open = os.open(os.path.join(runtime, READY), os.O_WRONLY)
+    ready: dict[str, float] = {}
+    listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    listener.bind(path)
+    os.chmod(path, 0o777)
+    listener.listen(8)
+    selector = selectors.DefaultSelector()
+    selector.register(listener, selectors.EVENT_READ, None)
+    selector.register(ready_fd, selectors.EVENT_READ, keep_open)
+    sessions: set[Session] = set()
+    notify_ready()
+    while True:
+        due = [moment for moment in (session.next_show() for session in sessions) if moment is not None]
+        events = selector.select(max(0, min(due) - time.monotonic()) if due else None)
+        for session in list(sessions):
+            if session.next_show() is not None:
+                session.show_due()
+                sync(selector, session)
+        for key, mask in events:
+            if key.fd == ready_fd:
+                read_ready(ready_fd, sessions, ready)
+                continue
+            if key.data is None:
+                client, _address = listener.accept()
+                server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                try:
+                    server.connect(upstream)
+                except OSError:
+                    client.close()
+                    server.close()
+                    continue
+                client.setblocking(False)
+                server.setblocking(False)
+                session = Session(table, runtime, ready, client, server)
+                sessions.add(session)
+                selector.register(client, selectors.EVENT_READ, (session, True))
+                selector.register(server, selectors.EVENT_READ, (session, False))
+                continue
+            session, from_client = key.data
+            if session not in sessions:
+                continue
+            try:
+                alive = session.read(from_client) if mask & selectors.EVENT_READ else True
+                if alive:
+                    sync(selector, session)
+            except (OSError, KeyError, IndexError, ValueError, struct.error):
+                traceback.print_exc()
+                alive = False
+            if not alive:
+                sessions.discard(session)
+                for sock in (session.client, session.server):
+                    try:
+                        selector.unregister(sock)
+                    except (KeyError, ValueError):
+                        pass
+                session.close()
+
+
+def main() -> int:
+    runtime = os.environ.get("XDG_RUNTIME_DIR", "")
+    if not runtime:
+        print("kernora-android-display: XDG_RUNTIME_DIR is not set", file=sys.stderr)
+        return 1
+    display = os.environ.get("WAYLAND_DISPLAY") or "wayland-0"
+    upstream = display if os.path.isabs(display) else os.path.join(runtime, display)
+    with open(TABLE, encoding="utf-8") as handle:
+        table = json.load(handle)
+    serve(table, runtime, upstream)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.66.1" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.67" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -188,7 +188,7 @@ grep -Fq 'Suites: trixie-backports' "$android/kernora-android.sources" \
   || fail "kernora-android does not set Waydroid up from backports with separate windows"
 grep -Fq 'ExecStart=/usr/libexec/kernora-android %i' "$android/kernora-android@.service" \
   && grep -Fq 'BusName=id.waydro.Session' "$android/kernora-android.service" \
-  && grep -Fq 'ExecStart=/usr/bin/waydroid.waydroid session start' "$android/kernora-android.service" \
+  && grep -Fq 'ExecStart=/usr/bin/env WAYLAND_DISPLAY=kernora-android-0 /usr/bin/waydroid.waydroid session start' "$android/kernora-android.service" \
   && grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android</annotate>' "$android/org.kernora.android.policy" \
   || fail "Settings cannot run kernora-android"
 grep -Fq 'real=/usr/bin/waydroid.waydroid' "$android/waydroid" \
@@ -291,7 +291,7 @@ EOF
   && ! grep -Fq 'def widen' "$android/kernora-android-windows" \
   && grep -Fxq 'data/android/kernora-android-windows usr/libexec' "$package_root/debian/kernora-desktop.install" \
   && timeout 60 python3 -I - "$android/kernora-android-windows" <<'EOF' \
-  || fail "Android windows are resized after they open, or land between monitors"
+  || fail "Android windows don't follow the desktop, or cover each other inside Android"
 import importlib.machinery
 import importlib.util
 import sys
@@ -313,32 +313,47 @@ dump = """  * Task{8589fef #230 type=standard A=10127:org.fossify.math U=0 visib
 windows.android = lambda *args, **kwargs: dump
 found = windows.tasks()
 ok = sorted(found) == [230, 231] and found[230]["bounds"] == (495, 32, 944, 809) and found[230]["freeform"]
-import os
-import tempfile
-with tempfile.TemporaryDirectory() as root:
-    windows.SCREENS = os.path.join(root, "screens")
-    ok = ok and windows.monitors((2560, 800)) == []
-    with open(windows.SCREENS, "w") as handle:
-        handle.write("0,0,1280,800\n1280,0,1280,800\n")
-    screens = windows.monitors((2560, 800))
-    ok = ok and screens == [(0, 0, 1280, 800), (1280, 0, 1280, 800)]
-    sent = []
+sent = []
 
-    def fake(*args, **kwargs):
-        if args[:2] == ("dumpsys", "activity"):
-            return dump.replace("mBounds=Rect(495, 32 - 944, 809)", "mBounds=Rect(1000, 32 - 1449, 809)")
-        sent.append(args)
-        return ""
 
-    windows.android = fake
-    ok = ok and windows.place(230, screens) is True
-    resize = sent[-1]
-    ok = ok and resize[:4] == ("am", "task", "resize", "230") and int(resize[6]) - int(resize[4]) == 449
-    ok = ok and int(resize[7]) - int(resize[5]) == 777 and int(resize[6]) <= 1280
-    sent.clear()
-    windows.android = lambda *args, **kwargs: dump.replace("mBounds=Rect(495, 32 - 944, 809)", "mBounds=Rect(495, 32 - 944, 700)")
-    ok = ok and windows.place(230, screens) is False and not sent
-    ok = ok and windows.place(999, screens) is None
+def fake(*args, **kwargs):
+    if args[:2] == ("dumpsys", "activity"):
+        return dump
+    if args[:2] == ("wm", "size"):
+        return "Physical size: 1984x1144\n"
+    if args[:2] == ("wm", "density"):
+        return "Physical density: 160\n"
+    sent.append(args)
+    return ""
+
+
+windows.android = fake
+windows.arrange()
+ok = ok and ("am", "task", "resize", "231", "1", "1", "441", "761") in sent
+ok = ok and ("am", "task", "resize", "230", "3", "3", "452", "780") in sent
+sent.clear()
+windows.resize("org.fossify.math", 449, 800, 600)
+ok = ok and sent[0] == ("am", "task", "resize", "230", "495", "32", "1295", "632")
+sent.clear()
+known = set()
+told = []
+windows.tell_display = lambda pipe, package: told.append(package)
+windows.open_large(231, known, "pipe")
+ok = ok and not sent and known == {"com.example.game"} and told == ["com.example.game"]
+windows.open_large(230, known, "pipe")
+ok = ok and not sent
+known.clear()
+dump = dump.replace("requestedOrientation=SCREEN_ORIENTATION_UNSPECIFIED", "resizeMode=RESIZE_MODE_RESIZEABLE\n      requestedOrientation=SCREEN_ORIENTATION_UNSPECIFIED")
+windows.open_large(230, known, "pipe")
+ok = ok and sent == [("am", "task", "resize", "230", "495", "32", "1559", "632")]
+sent.clear()
+windows.open_large(230, known, "pipe")
+ok = ok and not sent and told[-1] == "org.fossify.math"
+windows.reshape(0, "org.fossify.math/.activities.MainActivity")
+ok = ok and sent == [("am", "task", "resize", "230", "495", "32", "1272", "481")]
+sent.clear()
+windows.reshape(1, "org.fossify.math/.activities.MainActivity")
+ok = ok and not sent
 calls = []
 windows.android = lambda *args, **kwargs: calls.append(args) or ""
 state = []
@@ -411,7 +426,19 @@ EOF
   && grep -Fxq '  arm_translation' "$android/kernora-android" \
   && grep -Fq 'try_lock refresh_android' "$android/kernora-android" \
   && grep -Fq '"$device" arm-remove' "$android/kernora-android" \
-  && grep -Fq "printf 'arm=%s\n'" "$android/kernora-android" \
+  && grep -Fq "printf 'arm=%s\ndisplay=%s\n'" "$android/kernora-android" \
+  && grep -Fq 'use-wayland)' "$android/kernora-android" \
+  && grep -Fq 'Session=/usr/share/wayland-sessions/plasma.desktop' "$android/kernora-android" \
+  && grep -Fq 'exec /usr/libexec/kernora-android use-wayland' "$android/kernora-android-refresh" \
+  && grep -Fq 'def needs_wayland() -> bool:' "$android/kernora-android-session" \
+  && grep -Fq 'service call alarm 3 s16' "$android/kernora-android-sync" \
+  && grep -Fq "section 'Android service'" "$android/kernora-android" \
+  && grep -Fxq 'data/android/kernora-android-display usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'data/android/kernora-android-display.service usr/lib/systemd/user' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'data/android/wayland-protocols.json usr/share/kernora/android' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'generated/android/KernoraShell.apk usr/share/kernora/android' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq 'BindsTo=kernora-android-display.service' "$android/kernora-android.service" \
+  && python3 -c 'import json,sys; t=json.load(open(sys.argv[1])); assert t["xdg_toplevel"]["events"][0]["name"] == "configure" and "zxdg_decoration_manager_v1" in t' "$android/wayland-protocols.json" \
   && timeout 60 python3 -I - "$android/kernora-android-device" <<'EOF' \
   || fail "Android apps do not run ARM apps or pick the right graphics"
 import hashlib
@@ -621,18 +648,16 @@ with tempfile.TemporaryDirectory() as root:
     ok = ok and not device.software_graphics()
 
     screens = os.path.join(root, "screens")
-    device.SCREENS = windows.SCREENS = screens
+    device.SCREENS = screens
     device.software_graphics = lambda: False
     device.installed = lambda: ""
     with open(screens, "w") as handle:
         handle.write("0,0,1280,800\n1280,0,1920,1080\n")
     props = device.wanted("Kernora PC")
-    ok = ok and props.get("persist.waydroid.width") == "3200" and props.get("persist.waydroid.height") == "1080"
-    ok = ok and windows.monitors((6400, 2160))[0] == (0, 0, 2560, 1600)
-    with open(screens, "w") as handle:
-        handle.write("0,0,1280,800\n")
+    ok = ok and props.get("persist.waydroid.width") == "1984" and props.get("persist.waydroid.height") == "1144"
+    ok = ok and props.get("persist.wm.debug.caption_on_shell") == "true"
+    os.remove(screens)
     ok = ok and "persist.waydroid.width" not in device.wanted("Kernora PC")
-    ok = ok and windows.monitors((1280, 744)) == []
 
 layout = {"outputs": [
     {"enabled": True, "priority": 2, "pos": {"x": 1536, "y": 0}, "scale": 1, "rotation": 1, "currentModeId": "b",

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""usage: gen-android-overlay OUTPUT.apk
+"""usage: gen-android-overlay OUTPUT.apk [shell]
 """
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ KEY = PACKAGE / "data" / "android" / "aosp-platform.pk8"
 CERT = PACKAGE / "data" / "android" / "aosp-platform.x509.pem"
 
 OVERLAY = "org.kernora.overlay.caption"
+SHELL_OVERLAY = "org.kernora.overlay.shell"
 ANDROID_NS = "http://schemas.android.com/apk/res/android"
 STAMP = (2009, 1, 1, 0, 0, 0)
 
@@ -84,6 +85,10 @@ def real(value: float) -> Value:
 
 def flag(value: bool) -> Value:
     return Value(0x12, 0xFFFFFFFF if value else 0)
+
+
+def px(value: int) -> Value:
+    return Value(0x05, value << 8)
 
 
 def number(value: int) -> Value:
@@ -290,7 +295,16 @@ for button, (symbol, close) in BUTTONS.items():
 DRAWABLE_ALIASES = {f"decor_{button}_button_{shade}": f"kernora_button_{button}" for button in BUTTONS for shade in ("dark", "light")}
 
 
+SHELL_DIMENSIONS = {
+    "freeform_decor_caption_height": px(1),
+    "freeform_resize_handle": dp(0),
+    "freeform_resize_corner": dp(0),
+}
+
+
 class Table:
+    package = OVERLAY
+
     def __init__(self) -> None:
         self.types = ["color", "drawable"]
         self.entries: dict[str, list[tuple[str, Value | None, Value | None]]] = {"color": [], "drawable": []}
@@ -357,7 +371,7 @@ class Table:
         header = 288
         types_blob = type_pool.encode()
         keys_blob = key_pool.encode()
-        name = OVERLAY.encode("utf-16-le").ljust(256, b"\x00")
+        name = self.package.encode("utf-16-le").ljust(256, b"\x00")
         package = (struct.pack("<HHII", 0x0200, header, header + len(types_blob) + len(keys_blob) + len(package_body), 0x7F)
                    + name + struct.pack("<IIIII", header, len(self.types), header + len(types_blob), len(keys), 0)
                    + types_blob + keys_blob + package_body)
@@ -365,14 +379,22 @@ class Table:
         return struct.pack("<HHII", 0x0002, 12, 12 + len(values_blob) + len(package), 1) + values_blob + package
 
 
-def manifest() -> Element:
+class ShellTable(Table):
+    package = SHELL_OVERLAY
+
+    def __init__(self) -> None:
+        self.types = ["dimen"]
+        self.entries = {"dimen": [(name, value, None) for name, value in SHELL_DIMENSIONS.items()]}
+
+
+def manifest(package: str = OVERLAY, target: str = "android") -> Element:
     return Element("manifest", {
-        "package": text(OVERLAY),
+        "package": text(package),
         "versionCode": number(1),
         "versionName": text("1"),
     }, [
         Element("uses-sdk", {"minSdkVersion": number(29), "targetSdkVersion": number(29)}),
-        Element("overlay", {"targetPackage": text("android"), "isStatic": flag(True), "priority": number(900)}),
+        Element("overlay", {"targetPackage": text(target), "isStatic": flag(True), "priority": number(900)}),
         Element("application", {"hasCode": flag(False)}),
     ])
 
@@ -417,16 +439,21 @@ def write_apk(path: pathlib.Path, files: dict[str, bytes]) -> None:
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) != 2:
+    if len(argv) not in (2, 3) or argv[2:] not in ([], ["shell"]):
         print(__doc__.strip(), file=sys.stderr)
         return 2
-    table = Table()
-    files: dict[str, bytes] = {"AndroidManifest.xml": compile_xml(manifest(), table.resolve)}
-    files["resources.arsc"] = table.encode()
-    for name, element in COLOUR_FILES.items():
-        files[f"res/color/{name}.xml"] = compile_xml(element, table.resolve)
-    for name, element in DRAWABLE_FILES.items():
-        files[f"res/drawable/{name}.xml"] = compile_xml(element, table.resolve)
+    if argv[2:]:
+        table = ShellTable()
+        files: dict[str, bytes] = {"AndroidManifest.xml": compile_xml(manifest(SHELL_OVERLAY, "com.android.systemui"), table.resolve)}
+        files["resources.arsc"] = table.encode()
+    else:
+        table = Table()
+        files = {"AndroidManifest.xml": compile_xml(manifest(), table.resolve)}
+        files["resources.arsc"] = table.encode()
+        for name, element in COLOUR_FILES.items():
+            files[f"res/color/{name}.xml"] = compile_xml(element, table.resolve)
+        for name, element in DRAWABLE_FILES.items():
+            files[f"res/drawable/{name}.xml"] = compile_xml(element, table.resolve)
     files.update(sign(files))
     output = pathlib.Path(argv[1])
     output.parent.mkdir(parents=True, exist_ok=True)

@@ -1,3 +1,22 @@
+kernora-desktop (1.4.67) UNRELEASED; urgency=medium
+
+  * Android apps: explain that they need a Wayland session instead of
+    failing silently under X11, and offer to sign out into Wayland.
+  * Android apps use the computer's time zone.
+  * Android apps open in real Kernora windows: kernora-android-display sits
+    between Android and the desktop, the desktop draws the frame, and moving
+    a window no longer goes through Android. Apps get their whole window,
+    with no Android title bar over their buttons and no see-through areas.
+  * Resizing happens in one step when the mouse is released.
+  * Windows stay open when another Android window covers them.
+  * Apps that can resize open large, and windows follow an app that asks for
+    the other orientation.
+  * Opening an app while Android is stopping no longer waits five minutes.
+  * Report a problem: add the session type, processor features, service
+    journals, kernel messages, native crashes and the rotated Waydroid log.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 04 Nov 2026 17:00:00 -0800
+
 kernora-desktop (1.4.66.1) UNRELEASED; urgency=medium
 
   * Backport stable locale catalog restoration, installer preparation and

@@ -2,25 +2,39 @@
 # SPDX-FileCopyrightText: 2026 Kernora Developers
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import glob
 import os
+import pwd
 import re
+import stat
 import subprocess
 import sys
+import threading
 import time
 
 REAL = "/usr/bin/waydroid.waydroid"
-SCREENS = "/var/lib/kernora/android/screens"
+RESIZE = "kernora-android-resize"
+READY = "kernora-android-ready"
 SKIP = {
     "android",
     "com.android.launcher3",
     "com.android.systemui",
 }
 TASK = re.compile(r"^(\s*)\* Task\{\w+ #(\d+) type=(\w+) (?:A=\d+:|I=)([\w.]+)\S*.* mode=(\S+) translucent=(\w+)")
-ATTEMPTS = 8
 AWAKE = "2147483647"
 IDLE = "1800000"
-EVENT = re.compile(r"^\w/(wm_create_task|wm_task_removed)\s*(?:\(\s*\d+\))?:\s*\[(\d+),\s*([^,\]]+)")
+EVENT = re.compile(r"^\w/(wm_create_task|wm_task_removed|wm_set_requested_orientation)\s*(?:\(\s*\d+\))?:\s*\[(-?\d+),\s*([^,\]]+)")
 BOUNDS = re.compile(r"mBounds=Rect\((-?\d+), (-?\d+) - (-?\d+), (-?\d+)\)")
+RESIZE_MODE = re.compile(r"\bresizeMode=(RESIZE_MODE_\w+)")
+ORIENTATION = re.compile(r"\brequestedOrientation=(SCREEN_ORIENTATION_\w+)")
+REQUEST = re.compile(r"^resize ([\w.]+) (\d{1,5}) (\d{1,5}) (\d{1,5}) (\d{1,5})$")
+RESIZABLE = {"RESIZE_MODE_RESIZEABLE", "RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION", "RESIZE_MODE_RESIZEABLE_AND_PIPABLE_DEPRECATED"}
+LANDSCAPE = {0, 6, 8, 11}
+PORTRAIT = {1, 7, 9, 12}
+STEP = 2
+TABLET = (1064, 600)
+LIMIT = 0.85
+LOCK = threading.Lock()
 
 
 def android(*command: str, timeout: float = 30) -> str:
@@ -40,7 +54,8 @@ def tasks() -> dict[int, dict]:
             task_id = int(match.group(2))
             current = None
             if task_id not in found and match.group(3) == "standard":
-                current = {"package": match.group(4), "freeform": match.group(5) == "freeform", "bounds": None}
+                current = {"package": match.group(4), "freeform": match.group(5) == "freeform", "bounds": None,
+                           "resize": "", "orientation": ""}
                 found[task_id] = current
             continue
         if current is None:
@@ -48,6 +63,12 @@ def tasks() -> dict[int, dict]:
         bounds = BOUNDS.search(line)
         if bounds and current["bounds"] is None:
             current["bounds"] = tuple(int(value) for value in bounds.groups())
+        mode = RESIZE_MODE.search(line)
+        if mode and not current["resize"]:
+            current["resize"] = mode.group(1)
+        orientation = ORIENTATION.search(line)
+        if orientation and not current["orientation"]:
+            current["orientation"] = orientation.group(1)
     return found
 
 
@@ -57,41 +78,109 @@ def display() -> tuple[int, int] | None:
     return (int(match.group(1)), int(match.group(2))) if match else None
 
 
-def monitors(size: tuple[int, int]) -> list[tuple[int, int, int, int]]:
+def density() -> int:
+    output = android("wm", "density")
+    match = re.search(r"Override density: (\d+)", output) or re.search(r"Physical density: (\d+)", output)
+    return int(match.group(1)) if match else 160
+
+
+def movable(task: dict) -> bool:
+    return task["freeform"] and task["bounds"] is not None and task["package"] not in SKIP
+
+
+def set_bounds(task_id: int, left: int, top: int, right: int, bottom: int) -> None:
+    android("am", "task", "resize", str(task_id), str(left), str(top), str(right), str(bottom))
+
+
+def arrange() -> None:
+    with LOCK:
+        found = sorted(((task["bounds"][2] - task["bounds"][0]) * (task["bounds"][3] - task["bounds"][1]), task_id, task["bounds"])
+                       for task_id, task in tasks().items() if movable(task))
+        for index, (_area, task_id, bounds) in enumerate(found):
+            origin = 1 + index * STEP
+            if bounds[:2] != (origin, origin):
+                set_bounds(task_id, origin, origin, origin + bounds[2] - bounds[0], origin + bounds[3] - bounds[1])
+
+
+def resize(package: str, old_width: int, width: int, height: int) -> None:
+    with LOCK:
+        for task_id, task in tasks().items():
+            if task["package"] == package and movable(task):
+                left, top, right, _bottom = task["bounds"]
+                ratio = (right - left) / max(1, old_width)
+                set_bounds(task_id, left, top, left + round(width * ratio), top + round(height * ratio))
+                break
+    arrange()
+
+
+def remembered(home: str) -> set[str]:
+    folder = os.path.join(glob.escape(home), ".local/share/waydroid/data/system_ce/0/launch_params")
+    return {os.path.basename(path).split("-", 1)[0] for path in glob.glob(os.path.join(folder, "*.xml"))}
+
+
+def tell_display(pipe: str, package: str) -> None:
     try:
-        with open(SCREENS, encoding="utf-8") as handle:
-            found = [tuple(int(value) for value in line.split(",")) for line in handle.read().split()[:8]]
-    except (OSError, ValueError):
-        return []
-    if len(found) < 2 or any(len(screen) != 4 for screen in found):
-        return []
-    left = min(screen[0] for screen in found)
-    top = min(screen[1] for screen in found)
-    ratio = size[0] / max(1, max(screen[0] + screen[2] for screen in found) - left)
-    return [(round((x - left) * ratio), round((y - top) * ratio), round(width * ratio), round(height * ratio))
-            for x, y, width, height in found]
+        fd = os.open(pipe, os.O_WRONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
+    except OSError:
+        return
+    try:
+        if stat.S_ISFIFO(os.fstat(fd).st_mode):
+            os.write(fd, f"{package}\n".encode())
+    except OSError:
+        pass
+    os.close(fd)
 
 
-def inside(bounds: tuple[int, int, int, int], screen: tuple[int, int, int, int]) -> bool:
-    x, y, width, height = screen
-    return bounds[0] >= x and bounds[1] >= y and bounds[2] <= x + width and bounds[3] <= y + height
+def open_large(task_id: int, known: set[str], pipe: str) -> None:
+    with LOCK:
+        task = tasks().get(task_id)
+        if task is None:
+            return
+        first = task["package"] not in known
+        known.add(task["package"])
+        if (first and movable(task) and task["resize"] in RESIZABLE
+                and task["orientation"] == "SCREEN_ORIENTATION_UNSPECIFIED"):
+            size = display()
+            if size is not None:
+                scale = density() / 160
+                width = min(round(TABLET[0] * scale), round(size[0] * LIMIT))
+                height = min(round(TABLET[1] * scale), round(size[1] * LIMIT))
+                left, top = task["bounds"][:2]
+                set_bounds(task_id, left, top, left + width, top + height)
+        tell_display(pipe, task["package"])
 
 
-def place(task_id: int, screens: list[tuple[int, int, int, int]]) -> bool | None:
-    task = tasks().get(task_id)
-    if task is None or task["bounds"] is None:
-        return None
-    if not task["freeform"] or task["package"] in SKIP or any(inside(task["bounds"], screen) for screen in screens):
-        return False
-    left, top, right, bottom = task["bounds"]
-    x, y, width, height = screens[0]
-    if right - left > width or bottom - top > height:
-        return False
-    new_left = x + (width - (right - left)) // 2
-    new_top = y + (height - (bottom - top)) // 2
-    android("am", "task", "resize", str(task_id), str(new_left), str(new_top),
-            str(new_left + right - left), str(new_top + bottom - top))
-    return True
+def reshape(orientation: int, component: str) -> None:
+    package = component.split("/")[0]
+    with LOCK:
+        for task_id, task in tasks().items():
+            if task["package"] != package or not movable(task):
+                continue
+            left, top, right, bottom = task["bounds"]
+            wide = right - left > bottom - top
+            if (orientation in LANDSCAPE and not wide) or (orientation in PORTRAIT and wide):
+                size = display()
+                if size is None or right - left > size[0] * LIMIT or bottom - top > size[1] * LIMIT:
+                    return
+                ratio = min(1, size[0] * LIMIT / (bottom - top), size[1] * LIMIT / (right - left))
+                set_bounds(task_id, left, top, left + round((bottom - top) * ratio), top + round((right - left) * ratio))
+            return
+
+
+def requests(path: str, uid: int) -> None:
+    while True:
+        try:
+            info = os.lstat(path)
+            if not stat.S_ISFIFO(info.st_mode) or info.st_uid != uid:
+                time.sleep(2)
+                continue
+            with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW), encoding="ascii", errors="ignore") as handle:
+                for line in handle:
+                    match = REQUEST.match(line.strip())
+                    if match:
+                        resize(match.group(1), int(match.group(2)), int(match.group(4)), int(match.group(5)))
+        except OSError:
+            time.sleep(2)
 
 
 def keep_awake(busy: bool, current: list[str]) -> None:
@@ -105,26 +194,30 @@ def keep_awake(busy: bool, current: list[str]) -> None:
 def main() -> int:
     if os.geteuid() != 0 or not os.path.exists(REAL):
         return 1
-    size = display()
-    screens = monitors(size) if size else []
-    stream = subprocess.Popen([REAL, "shell", "--", "logcat", "-b", "events", "-v", "tag", "-T", "1",
-                               "wm_create_task:I", "wm_task_removed:I", "*:S"],
+    uid = int(os.environ.get("PKEXEC_UID", "0") or 0)
+    known = remembered(pwd.getpwuid(uid).pw_dir) if uid else set()
+    if uid:
+        threading.Thread(target=requests, args=(f"/run/user/{uid}/{RESIZE}", uid), daemon=True).start()
+    stream = subprocess.Popen([REAL, "shell", "--", "logcat", "-b", "events", "-v", "tag", "-T", "1", "wm_create_task:I",
+                               "wm_task_removed:I", "wm_set_requested_orientation:I", "*:S"],
                               stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
     current: list[str] = []
     keep_awake(bool(tasks()), current)
+    arrange()
     for line in stream.stdout:
         match = EVENT.match(line.strip())
         if not match:
             continue
         if match.group(1) == "wm_create_task":
             keep_awake(True, current)
-            for _ in range(ATTEMPTS if screens else 0):
-                time.sleep(0.6)
-                if place(int(match.group(3)), screens) is not None:
-                    break
-        else:
+            open_large(int(match.group(3)), known, f"/run/user/{uid}/{READY}")
+            arrange()
+        elif match.group(1) == "wm_task_removed":
             time.sleep(0.6)
             keep_awake(bool(tasks()), current)
+            arrange()
+        else:
+            reshape(int(match.group(2)), match.group(3))
     return stream.wait()
 
 

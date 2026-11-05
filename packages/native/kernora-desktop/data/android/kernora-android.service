@@ -1,7 +1,8 @@
 [Unit]
 Description=Android apps
 PartOf=graphical-session.target
-After=graphical-session.target
+After=graphical-session.target kernora-android-display.service
+BindsTo=kernora-android-display.service
 ConditionPathExists=/var/lib/waydroid/waydroid.cfg
 
 [Service]
@@ -9,7 +10,7 @@ Type=dbus
 BusName=id.waydro.Session
 ExecStartPre=-/usr/libexec/kernora-android-session --prepare
 ExecStartPre=-/usr/bin/pkexec /usr/libexec/kernora-android-refresh
-ExecStart=/usr/bin/waydroid.waydroid session start
+ExecStart=/usr/bin/env WAYLAND_DISPLAY=kernora-android-0 /usr/bin/waydroid.waydroid session start
 ExecStartPost=/bin/sh -c '/usr/libexec/kernora-android-session --sync-after-boot > /dev/null 2>&1 &'
 ExecStop=/usr/bin/waydroid.waydroid session stop
 TimeoutStopSec=30

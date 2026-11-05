@@ -206,3 +206,7 @@ msgstr "Android-приложения ещё готовятся запускат�
 #: apps/apkinstaller/qml/Main.qml
 msgid "Almost ready"
 msgstr "Почти готово"
+
+#: apps/apkinstaller/qml/Main.qml
+msgid "Android apps only run in a Wayland session. You can switch to it in Settings."
+msgstr "Android-приложения работают только в сеансе Wayland. Перейти на него можно в Настройках."

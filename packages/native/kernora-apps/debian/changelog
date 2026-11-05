@@ -1,3 +1,12 @@
+kernora-apps (1.1.77) UNRELEASED; urgency=medium
+
+  * Settings and the APK installer explain when Android apps need a Wayland
+    session.
+  * What's new: Android apps under X11 and the Android time zone.
+  * Require kernora-desktop 1.4.67.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 04 Nov 2026 17:00:00 -0800
+
 kernora-apps (1.1.76.1) UNRELEASED; urgency=medium
 
   * What's new: missing regional locales and Philippine locale repair.

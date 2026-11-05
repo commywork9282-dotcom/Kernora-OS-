@@ -28,6 +28,7 @@ CACHE = STATE + "/arm"
 INSTALLED = STATE + "/arm-installed"
 SCREENS = STATE + "/screens"
 FORCED = STATE + "/graphics-software"
+MARGIN = 64
 AGENT = "Python-urllib/%d.%d" % sys.version_info[:2]
 TIMEOUT = 30
 NVIDIA = {"nvidia", "nouveau"}
@@ -131,17 +132,17 @@ def screens() -> list[tuple[int, int, int, int]]:
     for line in read(SCREENS).splitlines()[:8]:
         if re.fullmatch(r"-?\d{1,5},-?\d{1,5},\d{1,5},\d{1,5}", line):
             found.append(tuple(int(value) for value in line.split(",")))
-    return found if len(found) > 1 else []
+    return found
 
 
-def span(found: list[tuple[int, int, int, int]]) -> tuple[int, int]:
-    return (max(x + width for x, _, width, _ in found) - min(x for x, _, _, _ in found),
-            max(y + height for _, y, _, height in found) - min(y for _, y, _, _ in found))
+def screen_size(found: list[tuple[int, int, int, int]]) -> tuple[int, int]:
+    return max(width for _, _, width, _ in found) + MARGIN, max(height for _, _, _, height in found) + MARGIN
 
 
 def wanted(model: str) -> dict[str, str]:
     properties = {
         "persist.waydroid.multi_windows": "true",
+        "persist.wm.debug.caption_on_shell": "true",
         "persist.waydroid.fake_wifi": "*",
         "ro.product.waydroid.brand": "Kernora",
         "ro.product.waydroid.manufacturer": "Kernora",
@@ -152,7 +153,7 @@ def wanted(model: str) -> dict[str, str]:
         properties.update(SOFTWARE)
     found = screens()
     if found:
-        width, height = span(found)
+        width, height = screen_size(found)
         properties.update({"persist.waydroid.width": str(width), "persist.waydroid.height": str(height)})
     name = installed()
     if name:

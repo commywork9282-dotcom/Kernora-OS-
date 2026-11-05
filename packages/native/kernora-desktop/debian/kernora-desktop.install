@@ -133,12 +133,16 @@ data/android/kernora-android-sync usr/libexec
 data/android/kernora-android-sync.path usr/lib/systemd/user
 data/android/kernora-android-sync.service usr/lib/systemd/user
 data/android/kernora-android-windows usr/libexec
+data/android/kernora-android-display usr/libexec
+data/android/kernora-android-display.service usr/lib/systemd/user
+data/android/wayland-protocols.json usr/share/kernora/android
 data/android/kernora-android-keyboard usr/libexec
 data/android/kernora-android-device usr/libexec
 data/android/kernora-android-refresh usr/libexec
 data/android/kernora-android-done.path usr/lib/systemd/user
 data/android/kernora-android-done.service usr/lib/systemd/user
 generated/android/KernoraCaption.apk usr/share/kernora/android
+generated/android/KernoraShell.apk usr/share/kernora/android
 data/android/waydroid usr/bin
 data/android/kernora-android@.service usr/lib/systemd/system
 data/android/kernora-android-update.service usr/lib/systemd/system

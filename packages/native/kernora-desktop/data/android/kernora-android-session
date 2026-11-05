@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import configparser
+import fcntl
 import json
 import os
 import pathlib
@@ -48,6 +49,7 @@ TEXT = {
         "ready-gapps": ("Android-приложения готовы", "Осталось войти в Google Play. Нажмите, чтобы продолжить."),
         "ready-vanilla": ("Android-приложения готовы", "Откройте любой APK-файл, чтобы установить приложение."),
         "setup-failed": ("Не удалось настроить Android-приложения", "Нажмите, чтобы попробовать ещё раз."),
+        "wayland": ("Android-приложениям нужен сеанс Wayland", "Сейчас вы вошли через X11. Нажмите, чтобы выйти: в следующий раз включится Wayland."),
     },
     "en": {
         "source": "Android apps",
@@ -56,6 +58,7 @@ TEXT = {
         "ready-gapps": ("Android apps are ready", "Sign in to Google Play to finish. Click to continue."),
         "ready-vanilla": ("Android apps are ready", "Open any APK file to install an app."),
         "setup-failed": ("Android apps couldn't be set up", "Click to try again."),
+        "wayland": ("Android apps need a Wayland session", "You're signed in with X11. Click to sign out, and Wayland is used next time."),
     },
 }
 
@@ -86,6 +89,12 @@ def android_prop(name: str) -> str:
 
 def booted() -> bool:
     return android_prop("sys.boot_completed") == "1"
+
+
+def start_unit() -> bool:
+    if quiet("systemctl", "--user", "show", "-p", "NeedDaemonReload", "--value", UNIT).stdout.strip() == "yes":
+        quiet("systemctl", "--user", "daemon-reload")
+    return quiet("systemctl", "--user", "start", UNIT).returncode == 0
 
 
 def unit_failed() -> bool:
@@ -190,7 +199,7 @@ def kernora_screens() -> list[tuple[int, int, int, int]]:
     return screens
 
 
-def window_rule(origin: tuple[int, int] | None) -> None:
+def remove_window_rule() -> None:
     def read(group: str, key: str) -> str:
         return quiet("kreadconfig6", "--file", "kwinrulesrc", "--group", group, "--key", key, timeout=10).stdout.strip()
 
@@ -198,21 +207,11 @@ def window_rule(origin: tuple[int, int] | None) -> None:
         quiet("kwriteconfig6", "--file", "kwinrulesrc", "--group", group, "--key", key, value, timeout=10)
 
     rules = [rule for rule in read("General", "rules").split(",") if rule]
-    values = {"Description": "Android apps", "wmclass": "waydroid", "wmclassmatch": "2",
-              "position": f"{origin[0]},{origin[1]}" if origin else "", "positionrule": "2"}
-    if origin:
-        if RULE in rules and all(read(RULE, key) == value for key, value in values.items()):
-            return
-        for key, value in values.items():
-            write(RULE, key, value)
-        if RULE not in rules:
-            rules.append(RULE)
-    else:
-        if RULE not in rules:
-            return
-        rules.remove(RULE)
-        for key in values:
-            quiet("kwriteconfig6", "--file", "kwinrulesrc", "--group", RULE, "--key", key, "--delete", timeout=10)
+    if RULE not in rules:
+        return
+    rules.remove(RULE)
+    for key in ("Description", "wmclass", "wmclassmatch", "position", "positionrule"):
+        quiet("kwriteconfig6", "--file", "kwinrulesrc", "--group", RULE, "--key", key, "--delete", timeout=10)
     write("General", "rules", ",".join(rules))
     write("General", "count", str(len(rules)))
     quiet("gdbus", "call", "--session", "--dest", "org.kde.KWin", "--object-path", "/KWin", "--method",
@@ -220,13 +219,12 @@ def window_rule(origin: tuple[int, int] | None) -> None:
 
 
 def record_screens(found: list[tuple[int, int, int, int]]) -> None:
-    if len(found) > 1:
+    remove_window_rule()
+    if found:
         SCREENS.parent.mkdir(parents=True, exist_ok=True)
         SCREENS.write_text("".join(f"{x},{y},{width},{height}\n" for x, y, width, height in found[:8]), encoding="utf-8")
-        window_rule((min(screen[0] for screen in found), min(screen[1] for screen in found)))
     else:
         SCREENS.unlink(missing_ok=True)
-        window_rule(None)
 
 
 def prepare() -> int:
@@ -384,6 +382,35 @@ def wait_for_click(notification: int, command: list[str]) -> None:
         monitor.terminate()
 
 
+def wayland_running() -> bool:
+    values = dict(line.split("=", 1) for line in quiet("systemctl", "--user", "show-environment").stdout.splitlines() if "=" in line)
+    folder = values.get("XDG_RUNTIME_DIR") or os.environ.get("XDG_RUNTIME_DIR", "")
+    return pathlib.Path(folder, values.get("WAYLAND_DISPLAY") or "wayland-0").exists()
+
+
+def offer_wayland() -> int:
+    with open(pathlib.Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "kernora-android-wayland"), "w", encoding="utf-8") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            return 0
+        wait_for_click(notify("wayland", 0, clickable=True), [sys.argv[0], "--use-wayland"])
+    return 0
+
+
+def use_wayland() -> int:
+    quiet("pkexec", REFRESH, "wayland")
+    return quiet("gdbus", "call", "--session", "--dest", "org.kde.LogoutPrompt", "--object-path", "/LogoutPrompt",
+                 "--method", "org.kde.LogoutPrompt.promptLogout").returncode
+
+
+def needs_wayland() -> bool:
+    if session_running() or wayland_running():
+        return False
+    quiet("systemd-run", "--user", "--collect", "--quiet", "--", sys.argv[0], "--offer-wayland")
+    return True
+
+
 def setup_done() -> int:
     done = read_state("done")
     stamp = done.get("time", "")
@@ -406,7 +433,9 @@ def setup_done() -> int:
 
 
 def google() -> int:
-    if not session_running() and quiet("systemctl", "--user", "start", UNIT).returncode != 0:
+    if needs_wayland():
+        return 1
+    if not session_running() and not start_unit():
         return 1
     since = session_started()
     deadline = time.monotonic() + WAIT
@@ -434,10 +463,16 @@ def main() -> int:
         return prepare()
     if len(sys.argv) > 1 and sys.argv[1] == "--keyboard-follow":
         return keyboard_follow()
+    if len(sys.argv) > 1 and sys.argv[1] == "--offer-wayland":
+        return offer_wayland()
+    if len(sys.argv) > 1 and sys.argv[1] == "--use-wayland":
+        return use_wayland()
     if session_running() and booted() and unlocked(session_started()):
         return 0
+    if needs_wayland():
+        return 1
     notification = notify("starting", 0)
-    if not session_running() and quiet("systemctl", "--user", "start", UNIT).returncode != 0:
+    if not session_running() and not start_unit():
         close(notification)
         notify("failed", 8000)
         return 1
@@ -449,6 +484,11 @@ def main() -> int:
             return 0
         if unit_failed():
             break
+        if not session_running():
+            UNLOCKED_AT.clear()
+            if not start_unit():
+                break
+            since = session_started()
         time.sleep(1)
     close(notification)
     notify("failed", 8000)

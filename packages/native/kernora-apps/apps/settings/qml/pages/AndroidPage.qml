@@ -44,6 +44,7 @@ SettingsPage {
     readonly property real bytesTotal: Number(info.bytes_total || 0)
     readonly property bool setupStage: busy && (status === "installing" || status === "downloading" || status === "unpacking")
     readonly property bool googleSignedIn: Number(info.google_accounts || 0) > 0
+    readonly property bool needsWayland: info.display === "x11"
     readonly property var userApps: Android.apps.filter(app => app.package !== page.store)
 
     function refresh(done) {
@@ -342,8 +343,27 @@ SettingsPage {
     }
 
     Group {
+        title: i18n("Android apps can't open right now")
+        visible: page.ready && !page.busy && page.needsWayland
+
+        ListItem {
+            title: i18n("Switch to Wayland")
+            subtitle: i18n("Android apps only run in a Wayland session, and you're signed in with X11. Sign out, and Wayland is used next time.")
+            maximumSubtitleLines: 3
+            interactive: false
+            trailing: Component {
+                MButton {
+                    variant: "filled"
+                    text: i18n("Sign out")
+                    onClicked: Process.startDetached("/usr/libexec/kernora-android-session", ["--use-wayland"])
+                }
+            }
+        }
+    }
+
+    Group {
         title: i18n("Finish setting up Google Play")
-        visible: page.ready && !page.busy && page.google && !page.googleSignedIn
+        visible: page.ready && !page.busy && page.google && !page.googleSignedIn && !page.needsWayland
 
         ListItem {
             title: i18n("Sign in to Google Play")

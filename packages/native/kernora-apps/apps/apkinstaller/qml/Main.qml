@@ -34,9 +34,10 @@ Window {
     readonly property bool update: readable && Android.hasApp(apk.package)
     readonly property bool runs: apk.compatible || android.arm !== "unsupported"
     readonly property bool armPending: readable && !apk.compatible && androidReady && android.arm === "no"
-    readonly property bool canInstall: readable && runs && !armPending && !tooNew && androidReady
+    readonly property bool needsWayland: android.display === "x11"
+    readonly property bool canInstall: readable && runs && !armPending && !tooNew && !needsWayland && androidReady
     readonly property bool working: phase === "starting" || phase === "installing"
-    readonly property bool blocked: readable && phase === "idle" && (!runs || armPending || tooNew)
+    readonly property bool blocked: readable && phase === "idle" && (!runs || armPending || tooNew || needsWayland)
     readonly property bool needsSetup: readable && phase === "idle" && !blocked && androidLoaded && !androidReady
 
     flags: Qt.Dialog | Qt.FramelessWindowHint
@@ -179,6 +180,9 @@ Window {
         }
         if (tooNew) {
             return i18n("It's made for newer phones and doesn't run here yet.");
+        }
+        if (needsWayland) {
+            return i18n("Android apps only run in a Wayland session. You can switch to it in Settings.");
         }
         if (androidLoaded && android.live === "yes") {
             return i18n("Android apps work once Kernora is installed on this computer.");
@@ -355,7 +359,7 @@ Window {
                     onClicked: fileDialog.open()
                 }
                 MButton {
-                    visible: app.needsSetup && app.android.live !== "yes"
+                    visible: (app.needsSetup && app.android.live !== "yes") || (app.blocked && app.needsWayland)
                     text: i18n("Open Settings")
                     onClicked: {
                         Process.startDetached("kernora-settings", ["android"]);

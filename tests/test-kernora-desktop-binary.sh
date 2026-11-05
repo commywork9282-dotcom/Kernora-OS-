@@ -508,6 +508,9 @@ dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -
   && [[ -s "$temporary_root/desktop/usr/lib/systemd/user/kernora-android-done.path" ]] \
   && [[ -L "$temporary_root/desktop/usr/lib/systemd/user/default.target.wants/kernora-android-done.path" ]] \
   && [[ -s "$temporary_root/desktop/usr/share/kernora/android/KernoraCaption.apk" ]] \
+  && [[ -s "$temporary_root/desktop/usr/share/kernora/android/KernoraShell.apk" ]] \
+  && [[ -s "$temporary_root/desktop/usr/share/kernora/android/wayland-protocols.json" ]] \
+  && [[ -x "$temporary_root/desktop/usr/libexec/kernora-android-display" ]] \
   && [[ -s "$temporary_root/desktop/usr/lib/systemd/system/kernora-android-update.timer" ]] \
   && [[ -L "$temporary_root/desktop/usr/lib/systemd/user/default.target.wants/kernora-android-sync.path" ]] \
   && [[ -s "$temporary_root/desktop/usr/share/applications/waydroid.com.android.permissioncontroller.desktop" ]] \

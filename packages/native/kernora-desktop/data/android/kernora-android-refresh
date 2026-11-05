@@ -5,4 +5,7 @@
 if [ "${1:-}" = check ]; then
     exec /usr/libexec/kernora-android graphics-check
 fi
+if [ "${1:-}" = wayland ]; then
+    exec /usr/libexec/kernora-android use-wayland
+fi
 exec /usr/libexec/kernora-android refresh

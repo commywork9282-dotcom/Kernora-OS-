@@ -4039,3 +4039,19 @@ msgstr "Сохраняет журналы Android в файл, который м
 #: apps/settings/qml/pages/AndroidPage.qml
 msgid "Open Google Play and sign in with your Google account."
 msgstr "Откройте Google Play и войдите в свой аккаунт Google."
+
+#: apps/settings/qml/pages/AndroidPage.qml
+msgid "Android apps can't open right now"
+msgstr "Android-приложения сейчас не откроются"
+
+#: apps/settings/qml/pages/AndroidPage.qml
+msgid "Switch to Wayland"
+msgstr "Перейдите на Wayland"
+
+#: apps/settings/qml/pages/AndroidPage.qml
+msgid "Android apps only run in a Wayland session, and you're signed in with X11. Sign out, and Wayland is used next time."
+msgstr "Android-приложения работают только в сеансе Wayland, а вы вошли через X11. Выйдите из системы: в следующий раз включится Wayland."
+
+#: apps/settings/qml/pages/AndroidPage.qml
+msgid "Sign out"
+msgstr "Выйти"
