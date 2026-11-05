@@ -1,3 +1,12 @@
+kernora-desktop (1.4.68) UNRELEASED; urgency=medium
+
+  * Windows look like Chrome OS: a thin title bar with the icon and title on
+    the left and quiet buttons.
+  * Android permission questions open as Kernora dialogs. The Android dialog
+    is hidden and the answer is passed back to Android.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 04 Nov 2026 22:00:00 -0800
+
 kernora-desktop (1.4.67) UNRELEASED; urgency=medium
 
   * Android apps: explain that they need a Wayland session instead of

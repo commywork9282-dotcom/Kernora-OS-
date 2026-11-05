@@ -309,6 +309,17 @@ back arrow.
 - `reshape()` turns a window round when an app asks for the other orientation.
   In a window of the wrong shape Android letterboxes it into a flat strip.
 
+Permission questions are Kernora windows. When `GrantPermissionsActivity`
+resumes, `kernora-android-windows` tells the display service to hold the app:
+every layer much smaller than the app's largest one moves off screen. It then
+reads the question with `uiautomator dump`, which needs `EXTERNAL_STORAGE` set
+in `waydroid shell`, and passes the text and button labels to
+`kernora-androiddialog`. The dialog's exit code is 10 plus the chosen button,
+or 10 for Esc, so a crash is never an answer: the hold is released and
+Android's own dialog shows. An answer becomes `input tap` on the real button.
+If `GrantPermissionsActivity` still has focus afterwards, the next question is
+read the same way.
+
 Android's screen is sized by `kernora-android-device` from the outputs in
 `/var/lib/kernora/android/screens` (from `kscreen-doctor -j`, written by
 `kernora-android-session --prepare`). A window can go to any monitor because
@@ -376,7 +387,9 @@ Store.
 ## What does not work
 
 - Fixed-size games show black bars when their window is made larger than
-  the game.
+  the game, and Unity games restart when their window changes size.
+- Dialogs inside apps are still drawn by Android. Only permission questions
+  are Kernora windows.
 - Plasma on X11. Waydroid needs a Wayland compositor, so `waydroid session
   start` exits at once and no Android app opens. `kernora-android-session`
   notices this before starting the session, shows a notification, and on a

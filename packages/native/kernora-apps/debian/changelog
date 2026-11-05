@@ -1,3 +1,11 @@
+kernora-apps (1.1.78) UNRELEASED; urgency=medium
+
+  * New kernora-androiddialog shows questions from Android apps as Kernora
+    dialogs.
+  * Require kernora-desktop 1.4.68.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 04 Nov 2026 22:00:00 -0800
+
 kernora-apps (1.1.77) UNRELEASED; urgency=medium
 
   * Settings and the APK installer explain when Android apps need a Wayland

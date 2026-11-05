@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.77" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.78" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -135,7 +135,7 @@ grep -Fq 'Procs.ApplicationDataModel {' "$package_root/apps/taskmanager/qml/Main
   || fail "Task Manager can't list, end or chart"
 grep -Fxq 'X-KDE-Shortcuts=Ctrl+Shift+Esc,Ctrl+Esc' "$package_root/apps/taskmanager/org.kernora.taskmanager.desktop" \
   && grep -Fq 'DESTINATION ${KDE_INSTALL_DATADIR}/kglobalaccel' "$package_root/CMakeLists.txt" \
-  && grep -q 'share taskmanager apkinstaller appsplash)' "$package_root/src/apps/CMakeLists.txt" \
+  && grep -q 'share taskmanager apkinstaller appsplash androiddialog)' "$package_root/src/apps/CMakeLists.txt" \
   || fail "Task Manager has no shortcut or is not built"
 for dependency in ksystemstats libksysguard-bin qml6-module-org-kde-ksysguard qml6-module-org-kde-kitemmodels qml6-module-org-kde-quickcharts; do
   grep -Eq "^ $dependency,?$" "$package_root/debian/control" || fail "Task Manager needs $dependency"
@@ -205,7 +205,7 @@ grep -Fq '{ id: "android", title: i18n("Android apps")' "$package_root/apps/sett
 grep -Fxq 'MimeType=application/vnd.android.package-archive;' "$package_root/apps/apkinstaller/org.kernora.apkinstaller.desktop" \
   && grep -Fq 'Android.inspect(url)' "$package_root/apps/apkinstaller/qml/Main.qml" \
   && grep -Fq 'Android.install(app.file, app.apk.package' "$package_root/apps/apkinstaller/qml/Main.qml" \
-  && grep -q 'taskmanager apkinstaller appsplash)' "$package_root/src/apps/CMakeLists.txt" \
+  && grep -q 'taskmanager apkinstaller appsplash androiddialog)' "$package_root/src/apps/CMakeLists.txt" \
   || fail "the APK installer is missing"
 grep -Fq 'adaptive-icon' "$package_root/src/system/apk.cpp" \
   && grep -Fq 'QSvgRenderer renderer(vectorToSvg(elements));' "$package_root/src/system/apk.cpp" \

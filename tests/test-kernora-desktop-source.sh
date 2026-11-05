@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.67" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.68" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -354,6 +354,33 @@ ok = ok and sent == [("am", "task", "resize", "230", "495", "32", "1272", "481")
 sent.clear()
 windows.reshape(1, "org.fossify.math/.activities.MainActivity")
 ok = ok and not sent
+ui = """<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><hierarchy rotation="0">
+<node text="Allow Maps to use this?" resource-id="com.android.permissioncontroller:id/permission_message" class="android.widget.TextView" enabled="true" bounds="[10,10][90,20]" />
+<node text="Allow" resource-id="com.android.permissioncontroller:id/permission_allow_button" class="android.widget.Button" enabled="true" bounds="[10,30][90,50]" />
+<node text="Don't allow" resource-id="com.android.permissioncontroller:id/permission_deny_button" class="android.widget.Button" enabled="true" bounds="[10,60][90,80]" />
+</hierarchy>"""
+windows.android = lambda *args, **kwargs: "UI hierchary dumped\n" + ui
+question = windows.read_dialog()
+ok = ok and question == {"title": "Allow Maps to use this?", "message": "", "buttons": [("Allow", 50, 40), ("Don't allow", 50, 70)]}
+windows.android = lambda *args, **kwargs: "broken"
+ok = ok and windows.read_dialog() is None
+told.clear()
+taps = []
+windows.android = lambda *args, **kwargs: taps.append(args) or ""
+windows.time.sleep = lambda seconds: None
+asked = windows.Questions("pipe")
+asked.package = "com.example.maps"
+asked.buttons = question["buttons"]
+asked.answer("none")
+ok = ok and not taps and told == ["release com.example.maps"]
+told.clear()
+asked.answer("2")
+ok = ok and ("input", "tap", "50", "70") in taps and told == ["release com.example.maps"]
+taps.clear()
+asked.answer("0")
+ok = ok and ("input", "keyevent", "4") in taps
+ok = ok and windows.ANSWER.match("answer none") and windows.ANSWER.match("answer 3") and not windows.ANSWER.match("answer x")
+windows.android = fake
 calls = []
 windows.android = lambda *args, **kwargs: calls.append(args) or ""
 state = []

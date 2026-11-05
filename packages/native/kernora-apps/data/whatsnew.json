@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-11-04-4",
+    "date": "2026-11-04",
+    "items": [
+      {
+        "icon": "preferences-desktop-theme",
+        "title": {
+          "en": "A lighter look for windows",
+          "ru": "Новый лёгкий вид окон"
+        },
+        "text": {
+          "en": "Every window now has a thin title bar with its icon and title on the left, and quiet buttons, like on a Chromebook.",
+          "ru": "У всех окон теперь тонкая полоса заголовка с иконкой и названием слева и спокойные кнопки, как на Chromebook."
+        }
+      },
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Android apps ask in a Kernora window",
+          "ru": "Android-приложения спрашивают в окне Kernora"
+        },
+        "text": {
+          "en": "When an Android app asks for a permission, the question now opens as a Kernora window with the app's icon.",
+          "ru": "Когда Android-приложение просит разрешение, вопрос теперь открывается окном Kernora с иконкой приложения."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-04-3",
     "date": "2026-11-04",
     "items": [

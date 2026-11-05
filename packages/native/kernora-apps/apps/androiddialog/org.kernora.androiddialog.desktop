@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Android App Question
+Name[ru]=Вопрос Android-приложения
+Icon=kernora-android
+Exec=kernora-androiddialog
+Categories=Qt;System;
+NoDisplay=true

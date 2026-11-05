@@ -9,7 +9,9 @@ import selectors
 import socket
 import stat
 import struct
+import subprocess
 import sys
+import threading
 import time
 import traceback
 
@@ -37,6 +39,8 @@ SLACK = 2
 HOLD = 2.5
 SETTLE = 0.25
 READY_FOR = 15
+OFFSCREEN = -32000
+DIALOG = "/usr/bin/kernora-androiddialog"
 
 
 def pad(size: int) -> int:
@@ -52,6 +56,8 @@ class Surface:
         self.has_buffer = False
         self.size = (0, 0)
         self.position = (0, 0)
+        self.subsurface: int | None = None
+        self.hidden = False
         self.parent: Surface | None = None
         self.children: set[Surface] = set()
         self.xdg: int | None = None
@@ -71,9 +77,11 @@ class Surface:
 
 
 class Session:
-    def __init__(self, table: dict, runtime: str, ready: dict[str, float], client: socket.socket, server: socket.socket) -> None:
+    def __init__(self, table: dict, runtime: str, ready: dict[str, float], held: set[str],
+                 client: socket.socket, server: socket.socket) -> None:
         self.table = table
         self.ready = ready
+        self.held = held
         self.runtime = runtime
         self.client = client
         self.server = server
@@ -200,14 +208,31 @@ class Session:
     @staticmethod
     def content(surface: Surface) -> tuple[int, int, int, int] | None:
         boxes = [(child.position[0], child.position[1], child.position[0] + child.size[0], child.position[1] + child.size[1])
-                 for child in surface.children if child.has_buffer and child.size[0] > 1 and child.size[1] > 1]
+                 for child in surface.children
+                 if child.has_buffer and not child.hidden and child.size[0] > 1 and child.size[1] > 1]
         if not boxes:
             return None
         left = min(box[0] for box in boxes)
         top = min(box[1] for box in boxes)
         return left, top, max(box[2] for box in boxes) - left, max(box[3] for box in boxes) - top
 
+    def hide_questions(self, surface: Surface) -> None:
+        shown = [child for child in surface.children if child.has_buffer and child.size[0] > 1 and child.size[1] > 1]
+        largest = max((child.size[0] * child.size[1] for child in shown), default=0)
+        for child in surface.children:
+            hidden = surface.app in self.held and child in shown and child.size[0] * child.size[1] < largest * 0.8
+            if hidden != child.hidden and child.subsurface is not None:
+                child.hidden = hidden
+                self.send(child.subsurface, 1, struct.pack("<ii", *((OFFSCREEN, OFFSCREEN) if hidden else child.position)))
+
+    def refresh_app(self, app: str) -> None:
+        for key, surface in self.surfaces.items():
+            if surface.app == app and surface.mapped:
+                self.before_commit(self.to_server[key], surface)
+                self.send(self.to_server[key], 6)
+
     def before_commit(self, surface_id: int, surface: Surface) -> None:
+        self.hide_questions(surface)
         rect = self.content(surface)
         if rect is None:
             return
@@ -339,12 +364,15 @@ class Session:
             child = self.surfaces[values[1]]
             parent = self.surfaces[values[2]]
             child.parent = parent
+            child.subsurface = self.to_server[values[0]]
             parent.children.add(child)
             self.subsurfaces[values[0]] = child
         elif interface == "wl_subsurface":
             child = self.subsurfaces.get(client_id)
             if child and name == "set_position":
                 child.position = struct.unpack_from("<ii", body)
+                if child.hidden:
+                    return
             elif child and name == "destroy":
                 if child.parent:
                     child.parent.children.discard(child)
@@ -567,13 +595,34 @@ def prepare_pipe(path: str) -> None:
     os.mkfifo(path, 0o600)
 
 
-def read_ready(fd: int, sessions: set[Session], ready: dict[str, float]) -> None:
+def ask(runtime: str, question: str) -> None:
+    def wait() -> None:
+        answer = subprocess.run([DIALOG, question], check=False, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL).returncode
+        try:
+            fd = os.open(os.path.join(runtime, RESIZE), os.O_WRONLY | os.O_NONBLOCK)
+        except OSError:
+            return
+        os.write(fd, f"answer {answer - 10 if 10 <= answer < 20 else 'none'}\n".encode())
+        os.close(fd)
+
+    threading.Thread(target=wait, daemon=True).start()
+
+
+def read_ready(fd: int, runtime: str, sessions: set[Session], ready: dict[str, float], held: set[str]) -> None:
     try:
-        data = os.read(fd, 4096)
+        data = os.read(fd, 8192)
     except BlockingIOError:
         return
     for line in data.decode("ascii", "ignore").splitlines():
-        if line and not any(session.app_ready(line) for session in sessions):
+        command, _space, value = line.partition(" ")
+        if command == "dialog":
+            ask(runtime, value)
+        elif command in ("hold", "release"):
+            (held.add if command == "hold" else held.discard)(value)
+            for session in sessions:
+                session.refresh_app(value)
+        elif line and not any(session.app_ready(line) for session in sessions):
             ready[line] = time.monotonic()
 
 
@@ -592,6 +641,7 @@ def serve(table: dict, runtime: str, upstream: str) -> None:
     ready_fd = os.open(os.path.join(runtime, READY), os.O_RDONLY | os.O_NONBLOCK)
     keep_open = os.open(os.path.join(runtime, READY), os.O_WRONLY)
     ready: dict[str, float] = {}
+    held: set[str] = set()
     listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     listener.bind(path)
     os.chmod(path, 0o777)
@@ -610,7 +660,9 @@ def serve(table: dict, runtime: str, upstream: str) -> None:
                 sync(selector, session)
         for key, mask in events:
             if key.fd == ready_fd:
-                read_ready(ready_fd, sessions, ready)
+                read_ready(ready_fd, runtime, sessions, ready, held)
+                for session in sessions:
+                    sync(selector, session)
                 continue
             if key.data is None:
                 client, _address = listener.accept()
@@ -623,7 +675,7 @@ def serve(table: dict, runtime: str, upstream: str) -> None:
                     continue
                 client.setblocking(False)
                 server.setblocking(False)
-                session = Session(table, runtime, ready, client, server)
+                session = Session(table, runtime, ready, held, client, server)
                 sessions.add(session)
                 selector.register(client, selectors.EVENT_READ, (session, True))
                 selector.register(server, selectors.EVENT_READ, (session, False))
