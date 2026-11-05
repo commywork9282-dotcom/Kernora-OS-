@@ -628,4 +628,20 @@ if comm -12 "$temporary_root/desktop.list" "$temporary_root/installer.list" \
   fail "the two binary packages ship an overlapping path"
 fi
 
+[[ -x "$temporary_root/desktop/usr/libexec/kernora-locales" ]] \
+  || fail "locale repair helper is missing"
+cmp "$package_root/data/locales/kernora-locales" "$temporary_root/desktop/usr/libexec/kernora-locales" \
+  || fail "the packaged locale helper differs from the tested source"
+[[ -s "$temporary_root/installer/etc/calamares/modules/kernoralocales/main.py" ]] \
+  || fail "installer locale preparation is missing"
+dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -Fq '/usr/libexec/kernora-locales' \
+  || fail "upgrades do not repair missing selected locales"
+cmp "$package_root/data/calamares/modules/kernoralocales/module.desc" "$temporary_root/installer/etc/calamares/modules/kernoralocales/module.desc" \
+  || fail "the packaged locale module descriptor differs from its source"
+
+for locale_file in settings.conf modules/kernoralocales/main.py; do
+  cmp "$package_root/data/calamares/$locale_file" "$temporary_root/installer/etc/calamares/$locale_file" \
+    || fail "installer locale integration differs from its source: $locale_file"
+done
+
 printf 'kernora-desktop binary test: OK\n'

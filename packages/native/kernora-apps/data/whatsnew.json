@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-04-2",
+    "date": "2026-11-04",
+    "items": [
+      {
+        "icon": "preferences-desktop-locale",
+        "title": {
+          "en": "Philippine regional locale fix",
+          "ru": "Исправлены филиппинские локали"
+        },
+        "text": {
+          "en": "Missing locales selected in system and regional settings are now generated during this update, including Philippine English and Filipino. This fixes the “cannot change locale” warnings without changing your language or regional formats. The installer and future Live builds also retain the full locale catalog. Sign out and back in if an open app still shows the old warning.",
+          "ru": "При обновлении создаются недостающие локали, выбранные в системных и региональных настройках, включая английскую для Филиппин и филиппинскую. Это устраняет предупреждения «cannot change locale», сохраняя ваш язык и форматы. Установщик и будущие Live-образы также сохраняют полный список локалей. Если открытое приложение ещё показывает старое предупреждение, выйдите из сеанса и войдите снова."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-03-2",
     "date": "2026-11-03",
     "items": [

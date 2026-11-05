@@ -1,3 +1,10 @@
+kernora-apps (1.1.64.3) UNRELEASED; urgency=medium
+
+  * What's new: Philippine and other missing regional locales are repaired.
+  * Require kernora-desktop 1.4.55.3, which provides locale repair.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 04 Nov 2026 20:15:00 -0800
+
 kernora-apps (1.1.64.2) UNRELEASED; urgency=medium
 
   * What's new: smoother account pictures and rounded press effects.

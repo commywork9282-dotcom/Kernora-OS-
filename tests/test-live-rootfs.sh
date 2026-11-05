@@ -102,8 +102,8 @@ done
   || fail "sddm is not installed"
 
 # The Kernora Material 3 shell and what it is set in.
-[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.55.2" ]] \
-  || fail "kernora-desktop 1.4.55.2 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-desktop)" == "1.4.55.3" ]] \
+  || fail "kernora-desktop 1.4.55.3 is not installed"
 for applet in org.kernora.launcher org.kernora.quicksettings; do
   [[ -s "/usr/share/plasma/plasmoids/$applet/contents/ui/main.qml" ]] \
     || fail "Kernora shell applet is missing: $applet"
@@ -162,8 +162,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.64.2" ]] \
-  || fail "kernora-apps 1.1.64.2 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.64.3" ]] \
+  || fail "kernora-apps 1.1.64.3 is not installed"
 [[ "$(dpkg-query -W -f='${Version}' kernora-quickshare)" == "1.0.2" ]] \
   || fail "kernora-quickshare 1.0.2 is not installed"
 for package in flatpak appstream; do
@@ -301,6 +301,10 @@ command -v bsdtar >/dev/null || fail "bsdtar is missing; Files cannot handle arc
 # English and Russian are ready for the live session and the installer.
 for locale in en_US.utf8 ru_RU.utf8; do
   locale -a | grep -Fxq "$locale" || fail "locale is not generated: $locale"
+done
+for entry in 'en_PH.UTF-8 UTF-8' 'fil_PH UTF-8' 'de_DE.UTF-8 UTF-8'; do
+  sed 's/^[[:space:]#]*//' /etc/locale.gen | grep -Fxq "$entry" \
+    || fail "the installable locale catalog lacks $entry"
 done
 [[ -x /usr/lib/kernora/live-language ]] || fail "the boot menu language cannot be applied"
 [[ -L /etc/systemd/system/multi-user.target.wants/kernora-live-language.service ]] \

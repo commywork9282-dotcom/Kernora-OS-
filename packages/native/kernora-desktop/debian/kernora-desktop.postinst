@@ -2,6 +2,7 @@
 set -e
 
 if [ "$1" = configure ]; then
+    /usr/libexec/kernora-locales
     update-alternatives --install /usr/share/icons/default/index.theme x-cursor-theme \
         /usr/share/icons/kernora_cursors/cursor.theme 100
     if [ -d /boot/grub ]; then

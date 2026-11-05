@@ -13,6 +13,8 @@ Depends:
  breeze-gtk-theme,
  fonts-roboto-unhinted,
  kwin-common,
+ locales,
+ python3,
  plasma-desktop,
  plasma-workspace,
  qml6-module-org-kde-desktop,
