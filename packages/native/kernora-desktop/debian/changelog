@@ -1,3 +1,10 @@
+kernora-desktop (1.4.66.1) UNRELEASED; urgency=medium
+
+  * Backport stable locale catalog restoration, installer preparation and
+    repair of missing configured locales to demo installations.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 04 Nov 2026 20:15:00 -0800
+
 kernora-desktop (1.4.66) UNRELEASED; urgency=medium
 
   * Backport the stable smoothing fix for account pictures and rounded

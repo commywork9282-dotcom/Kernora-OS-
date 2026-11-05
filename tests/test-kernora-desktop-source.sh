@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.66" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.66.1" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -1238,5 +1238,8 @@ plymouth_out=$(mktemp -d)
 rm -rf "$plymouth_out"
 grep -Fq 'generated/faces/*.png usr/share/kernora/faces' "$package_root/debian/kernora-desktop.install" \
   || fail "the Kernora face is not built in every colour"
+
+PYTHONDONTWRITEBYTECODE=1 python3 "$project_root/tests/locales/run.py" \
+  || fail "locale restoration and installer preparation failed"
 
 printf 'kernora-desktop source test: OK\n'

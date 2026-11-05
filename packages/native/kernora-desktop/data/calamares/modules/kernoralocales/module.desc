@@ -1,0 +1,6 @@
+---
+type: job
+name: kernoralocales
+interface: python
+script: main.py
+noconfig: true

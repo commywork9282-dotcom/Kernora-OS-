@@ -155,3 +155,4 @@ data/greeter/50-kernora-greeter-background.rules usr/share/polkit-1/rules.d
 data/xdg-kscreenlockerrc/kscreenlockerrc usr/share/kernora/xdg
 data/plasma-env/kernora-config-dirs.sh etc/xdg/plasma-workspace/env
 data/plasma-env/kernora-video-decoding.sh etc/xdg/plasma-workspace/env
+data/locales/kernora-locales usr/libexec
