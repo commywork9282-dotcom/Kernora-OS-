@@ -1,6 +1,6 @@
 [
   {
-    "id": "2026-11-06-1",
+    "id": "2026-11-06-2",
     "date": "2026-11-06",
     "items": [
       {
@@ -34,6 +34,17 @@
         "text": {
           "en": "Drag one file or a whole selection into a folder, a place, the path bar or another tab. Hover a tab to switch to it, then choose Copy here or Move here. Cancel safely or choose how to handle matching names.",
           "ru": "Перетаскивайте файл или целую группу в папку, место на боковой панели, строку пути или другую вкладку. Задержитесь над вкладкой, чтобы перейти в неё, затем выберите копирование или перемещение. Операцию можно отменить, а для совпадающих имён — выбрать подходящее действие."
+        }
+      },
+      {
+        "icon": "system-software-update",
+        "title": {
+          "en": "Stable and Demo updates",
+          "ru": "Обычные обновления и Demo"
+        },
+        "text": {
+          "en": "Regular updates keep the stable desktop; the optional Demo channel keeps its additional features. This update also corrects a brief mix-up between channels. If you received that interim update, sign out and back in after installing this one.",
+          "ru": "Обычный канал сохраняет стабильный рабочий стол, а дополнительный канал Demo — свои функции. Это обновление также исправляет кратковременное смешение каналов. Если вы успели получить промежуточное обновление, после установки выйдите из сеанса и войдите снова."
         }
       }
     ]
