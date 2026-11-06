@@ -7,6 +7,7 @@ target_sources(kernorasystem PRIVATE
     accounts.cpp accounts.h
     appearance.cpp appearance.h
     autostart.cpp autostart.h
+    bluetoothdiscovery.cpp bluetoothdiscovery.h
     config.cpp config.h
     dbus.cpp dbus.h
     defaultapps.cpp defaultapps.h

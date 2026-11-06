@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.22)
+project(KernoraBluetoothTests LANGUAGES CXX)
+set(CMAKE_AUTOMOC ON)
+find_package(Qt6 REQUIRED COMPONENTS QuickTest Qml Quick)
+find_package(KF6I18n REQUIRED)
+add_executable(bluetooth-tests runner.cpp)
+target_link_libraries(bluetooth-tests PRIVATE Qt6::QuickTest Qt6::Qml Qt6::Quick KF6::I18nQml KF6::I18n)

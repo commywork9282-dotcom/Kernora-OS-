@@ -162,8 +162,8 @@ pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' 
 grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "system defaults do not select the Kvantum widget style"
 # The Kernora applications replace KDE's everyday tools.
-[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.64.3" ]] \
-  || fail "kernora-apps 1.1.64.3 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kernora-apps)" == "1.1.64.4" ]] \
+  || fail "kernora-apps 1.1.64.4 is not installed"
 [[ "$(dpkg-query -W -f='${Version}' kernora-quickshare)" == "1.0.2" ]] \
   || fail "kernora-quickshare 1.0.2 is not installed"
 for package in flatpak appstream; do

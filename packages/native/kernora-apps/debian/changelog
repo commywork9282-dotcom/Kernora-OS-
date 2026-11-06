@@ -1,3 +1,14 @@
+kernora-apps (1.1.64.4) UNRELEASED; urgency=medium
+
+  * Bluetooth discovery owns its scan session, waits for adapter readiness,
+    reports failures and releases pending sessions on page close.
+  * Prefer resolved device names over address aliases and update names live.
+  * Keep unnamed devices available separately and keep the list stable as
+    signal strength changes.
+  * What's new: Bluetooth device names and discovery, in English and Russian.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 05 Nov 2026 10:00:00 -0800
+
 kernora-apps (1.1.64.3) UNRELEASED; urgency=medium
 
   * What's new: Philippine and other missing regional locales are repaired.
