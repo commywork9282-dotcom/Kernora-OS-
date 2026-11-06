@@ -38,8 +38,92 @@ AppWindow {
 
     property var history: []
     property int historyIndex: -1
+    property var tabs: []
+    property int activeTab: 0
+    property int nextTabId: 1
+    property var pendingTabState: null
+    property var folderModel: null
+    readonly property bool folderReady: !!folderModel && folderModel.status === FolderListModel.Ready
+    property bool modelInitialized: false
+    onFolderChanged: if (modelInitialized) loadFolderModel()
 
-    ConfigEntry { id: viewMode; file: "kernora-filesrc"; group: "View"; key: "Mode"; defaultValue: "grid" }
+    function loadFolderModel(): void {
+        const previous = folderModel;
+        folderModel = folderModelFactory.createObject(app, {folder: app.folder});
+        if (previous) previous.destroy();
+    }
+    property bool selectionMode: false
+    property bool deferredSingle: false
+    property bool deferredToggle: false
+    property int operations: 0
+
+    function tabLabel(url: var): string {
+        const path = decodeURIComponent(String(url).replace(/^file:\/\//, "")).replace(/\/$/, "") || "/";
+        return path === homePath ? i18n("Home") : path === trashPath ? i18n("Trash") : path.split("/").pop() || i18n("Computer");
+    }
+    function saveTab(): void {
+        if (!tabs.length || activeTab < 0 || activeTab >= tabs.length || pendingTabState) return;
+        tabs[activeTab] = { id: tabs[activeTab].id, folder: String(folder), history: history.slice(),
+            historyIndex: historyIndex, selected: Object.assign({}, selected), anchor: anchorRow,
+            search: filter.text, searchShown: filterBox.shown, scroll: view.contentY,
+            current: view.currentIndex >= 0 ? String(folderModel.get(view.currentIndex, "fileUrl")) : "" };
+    }
+    function switchTab(index: int): void {
+        if (index < 0 || index >= tabs.length || index === activeTab) return;
+        saveTab();
+        activeTab = index;
+        const state = tabs[index];
+        pendingTabState = state;
+        history = state.history.slice();
+        historyIndex = state.historyIndex;
+        const sameFolder = urlKey(folder) === urlKey(state.folder);
+        clearSelection();
+        filter.text = state.search || "";
+        filterBox.shown = !!state.searchShown;
+        view.currentIndex = -1;
+        folder = state.folder;
+        if (sameFolder) loadFolderModel();
+        restoreTabTimer.restart();
+    }
+    function restoreTab(): void {
+        if (!pendingTabState || !folderReady) return;
+        const state = pendingTabState;
+        pendingTabState = null;
+        const next = {};
+        for (const url of Object.keys(state.selected || {})) {
+            if (folderModel.indexOf(url) >= 0) next[url] = true;
+        }
+        selected = next;
+        anchorRow = state.anchor === undefined ? -1 : state.anchor;
+        view.currentIndex = state.current ? folderModel.indexOf(state.current) : -1;
+        view.contentY = Math.max(view.originY, Math.min(state.scroll || 0, view.originY + Math.max(0, view.contentHeight - view.height)));
+        view.forceActiveFocus();
+    }
+    function newTab(url: var, background: bool): void {
+        saveTab();
+        const target = String(url || folder);
+        tabs = tabs.concat([{id: nextTabId++, folder: target, history: [target], historyIndex: 0}]);
+        if (!background) switchTab(tabs.length - 1);
+    }
+    function closeTab(index: int): void {
+        if (tabs.length === 1) { app.close(); return; }
+        saveTab();
+        const list = tabs.slice();
+        list.splice(index, 1);
+        const previous = activeTab;
+        tabs = list;
+        if (index === previous) {
+            pendingTabState = null;
+            activeTab = -1;
+            switchTab(Math.min(index, tabs.length - 1));
+        } else if (index < previous) {
+            activeTab -= 1;
+        }
+    }
+    Timer { id: restoreTabTimer; interval: 0; onTriggered: app.restoreTab() }
+
+
+    ConfigEntry { id: viewMode; objectName: "fileViewMode"; file: "kernora-filesrc"; group: "View"; key: "Mode"; defaultValue: "grid" }
     ConfigEntry { id: sortField; file: "kernora-filesrc"; group: "View"; key: "Sort"; defaultValue: 1 }
     ConfigEntry { id: sortReversed; file: "kernora-filesrc"; group: "View"; key: "Reversed"; defaultValue: false }
     ConfigEntry { id: showHidden; file: "kernora-filesrc"; group: "View"; key: "ShowHidden"; defaultValue: false }
@@ -62,10 +146,16 @@ AppWindow {
         setFolder(target);
     }
     function setFolder(url: string): void {
-        folder = url;
+        pendingTabState = null;
         clearSelection();
         filter.text = "";
         view.currentIndex = -1;
+        folder = url;
+        if (tabs.length) {
+            const list = tabs.slice();
+            list[activeTab] = Object.assign({}, list[activeTab], {folder: url});
+            tabs = list;
+        }
     }
     function back(): void {
         if (historyIndex > 0) {
@@ -104,31 +194,47 @@ AppWindow {
     property string selectAfterLoad: ""
 
     Component.onCompleted: {
+        loadFolderModel();
+        modelInitialized = true;
         history = [String(folder)];
         historyIndex = 0;
         handleArguments(startArguments);
+        tabs = [{id: nextTabId++, folder: String(folder), history: history.slice(), historyIndex: historyIndex}];
     }
 
-    FolderListModel {
-        id: folderModel
-        folder: app.folder
-        showDirsFirst: true
-        showHidden: app.isOn(showHidden)
-        showDotAndDotDot: false
-        caseSensitive: false
-        sortCaseSensitive: false
-        sortField: Number(sortField.value)
-        sortReversed: app.isOn(sortReversed)
-        nameFilters: filter.text.trim().length > 0 ? ["*" + filter.text.trim() + "*"] : []
-        onStatusChanged: {
-            if (status === FolderListModel.Ready && app.selectAfterLoad.length > 0) {
-                const row = indexOf(app.selectAfterLoad);
-                if (row >= 0) {
-                    app.selectOnly(row);
-                    view.currentIndex = row;
-                    view.positionViewAtIndex(row, ItemView.Contain);
+    Component {
+        id: folderModelFactory
+        FolderListModel {
+            id: model
+            showDirsFirst: true
+            showHidden: app.isOn(showHidden)
+            showDotAndDotDot: false
+            caseSensitive: false
+            sortCaseSensitive: false
+            sortField: Number(sortField.value)
+            sortReversed: app.isOn(sortReversed)
+            nameFilters: filter.text.trim().length > 0 ? ["*" + filter.text.trim() + "*"] : []
+            onCountChanged: Qt.callLater(() => {
+                if (!app || model !== app.folderModel) return;
+                if (!app.folderReady || app.pendingTabState) return;
+                const next = {};
+                for (const url of app.selectedUrls()) {
+                    if (indexOf(url) >= 0) next[url] = true;
                 }
-                app.selectAfterLoad = "";
+                app.selected = next;
+            })
+            onStatusChanged: {
+                if (model !== app.folderModel) return;
+                if (status === FolderListModel.Ready && app.pendingTabState) restoreTabTimer.restart();
+                if (status === FolderListModel.Ready && app.selectAfterLoad.length > 0) {
+                    const row = indexOf(app.selectAfterLoad);
+                    if (row >= 0) {
+                        app.selectOnly(row);
+                        view.currentIndex = row;
+                        view.positionViewAtIndex(row, ItemView.Contain);
+                    }
+                    app.selectAfterLoad = "";
+                }
             }
         }
     }
@@ -142,13 +248,15 @@ AppWindow {
         anchorRow = -1;
     }
     function selectOnly(row: int): void {
+        if (row < 0 || row >= folderModel.count) return;
         const next = {};
-        next[String(folderModel.get(row, "fileUrl"))] = true;
+        next[urlKey(folderModel.get(row, "fileUrl"))] = true;
         selected = next;
         anchorRow = row;
     }
     function toggle(row: int): void {
-        const key = String(folderModel.get(row, "fileUrl"));
+        if (row < 0 || row >= folderModel.count) return;
+        const key = urlKey(folderModel.get(row, "fileUrl"));
         const next = Object.assign({}, selected);
         if (next[key]) {
             delete next[key];
@@ -162,14 +270,15 @@ AppWindow {
         const from = anchorRow < 0 ? to : anchorRow;
         const next = {};
         for (let i = Math.min(from, to); i <= Math.max(from, to); ++i) {
-            next[String(folderModel.get(i, "fileUrl"))] = true;
+            next[urlKey(folderModel.get(i, "fileUrl"))] = true;
         }
         selected = next;
+        if (anchorRow < 0) anchorRow = from;
     }
     function selectAll(): void {
         const next = {};
         for (let i = 0; i < folderModel.count; ++i) {
-            next[String(folderModel.get(i, "fileUrl"))] = true;
+            next[urlKey(folderModel.get(i, "fileUrl"))] = true;
         }
         selected = next;
     }
@@ -184,27 +293,69 @@ AppWindow {
         }
         Process.launchApplication("org.kernora.share", urls);
     }
-    function isSelected(url: url): bool {
-        return !!selected[String(url)];
+    function urlKey(url: var): string {
+        return String(Qt.resolvedUrl(url));
+    }
+    function isSelected(url: var): bool {
+        return !!selected[urlKey(url)];
     }
 
     function press(row: int, mouse: var): void {
         view.forceActiveFocus();
         view.currentIndex = row;
-        const url = String(folderModel.get(row, "fileUrl"));
+        deferredSingle = false;
+        deferredToggle = false;
+        const url = urlKey(folderModel.get(row, "fileUrl"));
         if (mouse.button === Qt.RightButton) {
             if (!selected[url]) {
                 selectOnly(row);
             }
             return;
         }
-        if (mouse.modifiers & Qt.ControlModifier) {
-            toggle(row);
-        } else if (mouse.modifiers & Qt.ShiftModifier) {
+        if (mouse.button === Qt.MiddleButton) return;
+        if (mouse.modifiers & Qt.ShiftModifier) {
             selectRange(row);
+        } else if (selectionMode || (mouse.modifiers & Qt.ControlModifier)) {
+            if (selected[url]) deferredToggle = true;
+            else toggle(row);
+        } else if (selected[url]) {
+            deferredSingle = true;
         } else {
             selectOnly(row);
         }
+    }
+    function release(row: int, mouse: var): void {
+        if (mouse.button === Qt.LeftButton) {
+            if (deferredToggle) toggle(row);
+            else if (deferredSingle) selectOnly(row);
+        }
+        deferredSingle = false;
+        deferredToggle = false;
+    }
+    function dragSelection(row: int): void {
+        if (inTrash) return;
+        if (!isSelected(folderModel.get(row, "fileUrl"))) selectOnly(row);
+        deferredSingle = false;
+        deferredToggle = false;
+        Files.startDrag(view, selectedUrls());
+    }
+    function keyboardNavigate(event: var): void {
+        let row = view.currentIndex;
+        const step = view.columns;
+        if (event.key === Qt.Key_Left) row -= 1;
+        else if (event.key === Qt.Key_Right) row += 1;
+        else if (event.key === Qt.Key_Up) row -= step;
+        else if (event.key === Qt.Key_Down) row += step;
+        else if (event.key === Qt.Key_Home) row = 0;
+        else if (event.key === Qt.Key_End) row = folderModel.count - 1;
+        else { event.accepted = false; return; }
+        event.accepted = true;
+        if (!folderModel.count) return;
+        row = Math.max(0, Math.min(folderModel.count - 1, row));
+        view.currentIndex = row;
+        if (event.modifiers & Qt.ShiftModifier) selectRange(row);
+        else if (!(event.modifiers & Qt.ControlModifier)) selectOnly(row);
+        view.positionViewAtIndex(row, ItemView.Contain);
     }
 
     property var clipboard: ({ urls: [], cut: false })
@@ -216,7 +367,7 @@ AppWindow {
     }
 
     function open(row: int): void {
-        const url = String(folderModel.get(row, "fileUrl"));
+        const url = urlKey(folderModel.get(row, "fileUrl"));
         if (folderModel.get(row, "fileIsDir")) {
             go(url);
         } else if (inTrash) {
@@ -247,37 +398,49 @@ AppWindow {
         }
     }
     function paste(): void {
-        if (clipboard.urls.length === 0 || inTrash) {
-            return;
-        }
-        const urls = clipboard.urls;
-        const cut = clipboard.cut;
-        if (cut) {
-            clipboard = { urls: [], cut: false };
-        }
-        const here = String(folder).replace(/\/$/, "");
-        const sameFolder = urls.filter(u => String(u).replace(/\/[^\/]*\/?$/, "") === here);
-        const clashes = Files.conflicts(urls, folder).filter(u => !sameFolder.some(s => String(s) === String(u)));
-        if (sameFolder.length > 0) {
-            if (cut) {
-                app.report(true, "");
-            } else {
-                Files.transfer(sameFolder, folder, false, "rename", (ok, message) => app.report(ok, message));
+        if (clipboard.urls.length === 0 || inTrash) return;
+        transferFiles(clipboard.urls, folder, clipboard.cut);
+    }
+    function runTransfer(urls: var, target: var, move: bool, choice: string): void {
+        if (!urls.length) return;
+        operations += 1;
+        Files.transfer(urls, target, move, choice, (ok, message) => {
+            operations -= 1;
+            app.report(ok, message);
+            if (ok && move && app.clipboard.cut) {
+                const remaining = app.clipboard.urls.filter(u => !urls.includes(String(u)));
+                app.clipboard = {urls: remaining, cut: remaining.length > 0};
             }
-        }
-        const others = urls.filter(u => !sameFolder.some(s => String(s) === String(u)));
-        if (others.length === 0) {
+            if (ok) app.showMessage(move ? i18np("%1 item moved", "%1 items moved", urls.length)
+                                        : i18np("%1 item copied", "%1 items copied", urls.length), "", null);
+        });
+    }
+    function transferFiles(urls: var, target: var, move: bool): void {
+        const error = Files.transferError(urls, target);
+        if (error) { report(false, error); return; }
+        if (conflictDialog.visible) {
+            showMessage(i18n("Finish the current file conflict first."), "", null);
             return;
         }
-        if (clashes.length === 0) {
-            Files.transfer(others, folder, cut, "", (ok, message) => app.report(ok, message));
-            return;
-        }
+        const destinationPath = Files.info(target).path;
+        const same = urls.filter(u => Files.info(Files.info(u).folder).path === destinationPath);
+        const others = urls.filter(u => !same.includes(u));
+        if (same.length && !move) runTransfer(same, target, false, "rename");
+        if (!others.length) return;
+        const clashes = Files.conflicts(others, target);
+        if (!clashes.length) { runTransfer(others, target, move, ""); return; }
         conflictDialog.urls = others;
         conflictDialog.clashes = clashes;
-        conflictDialog.cut = cut;
-        conflictDialog.target = folder;
+        conflictDialog.cut = move;
+        conflictDialog.target = target;
         conflictDialog.open();
+    }
+    function acceptDrop(urls: var, target: var, actions: int, position: var): void {
+        dropMenu.urls = urls;
+        dropMenu.target = String(target);
+        dropMenu.canMove = (actions & Qt.MoveAction) !== 0;
+        const point = app.contentItem.mapFromGlobal(position.x, position.y);
+        dropMenu.popup(app.contentItem, point.x, point.y);
     }
 
     function resolveConflict(choice: string): void {
@@ -285,8 +448,7 @@ AppWindow {
         const clashes = conflictDialog.clashes.map(u => String(u));
         conflictDialog.close();
         const list = choice === "skip" ? urls.filter(u => !clashes.includes(String(u))) : urls;
-        Files.transfer(list, conflictDialog.target, conflictDialog.cut, choice === "skip" ? "" : choice,
-                       (ok, message) => app.report(ok, message));
+        runTransfer(list, conflictDialog.target, conflictDialog.cut, choice === "skip" ? "" : choice);
     }
     function trash(): void {
         const urls = selectedUrls();
@@ -339,6 +501,12 @@ AppWindow {
         }
     }
 
+    Shortcut { sequence: "Ctrl+T"; onActivated: app.newTab(app.folder, false) }
+    Shortcut { sequence: "Ctrl+W"; onActivated: app.closeTab(app.activeTab) }
+    Shortcut { sequences: ["Ctrl+Tab", "Ctrl+PgDown"]; onActivated: app.switchTab((app.activeTab + 1) % app.tabs.length) }
+    Shortcut { sequences: ["Ctrl+Shift+Tab", "Ctrl+PgUp"]; onActivated: app.switchTab((app.activeTab + app.tabs.length - 1) % app.tabs.length) }
+    Shortcut { sequence: "Ctrl+Space"; onActivated: app.toggle(view.currentIndex) }
+    Shortcut { sequence: "Ctrl+Shift+A"; onActivated: app.selectionMode = !app.selectionMode }
     Shortcut { sequences: [StandardKey.Back, "Alt+Left", "Backspace"]; onActivated: app.back() }
     Shortcut { sequences: [StandardKey.Forward, "Alt+Right"]; onActivated: app.forward() }
     Shortcut { sequence: "Alt+Up"; onActivated: app.up() }
@@ -354,7 +522,7 @@ AppWindow {
     Shortcut { sequences: [StandardKey.Delete]; onActivated: app.trash() }
     Shortcut { sequence: "Shift+Del"; onActivated: app.deleteForever() }
     Shortcut { sequence: "F2"; onActivated: app.rename() }
-    Shortcut { sequence: "F5"; onActivated: { const f = app.folder; folderModel.folder = ""; folderModel.folder = f; } }
+    Shortcut { sequence: "F5"; onActivated: { app.clearSelection(); app.loadFolderModel(); } }
     Shortcut { sequence: "Alt+Return"; onActivated: app.showProperties() }
 
     function showProperties(): void {
@@ -377,12 +545,28 @@ AppWindow {
             visible: !app.narrow
             currentFolder: app.folder
             onChosen: folder => app.go(folder)
+            transfersEnabled: true
+            onFilesDropped: (urls, destination, actions, position) => app.acceptDrop(urls, destination, actions, position)
         }
 
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: 0
+
+            FileTabs {
+                Layout.fillWidth: true
+                Layout.leftMargin: 12
+                Layout.rightMargin: 12
+                Layout.topMargin: 8
+                tabs: app.tabs
+                currentIndex: app.activeTab
+                labelFor: app.tabLabel
+                onChosen: index => app.switchTab(index)
+                onClosed: index => app.closeTab(index)
+                onNewRequested: app.newTab(app.folder, false)
+                onFilesDropped: (urls, destination, actions, position) => app.acceptDrop(urls, destination, actions, position)
+            }
 
             RowLayout {
                 Layout.fillWidth: true
@@ -404,6 +588,8 @@ AppWindow {
                     homePath: app.homePath
                     trashPath: app.trashPath
                     onChosen: folder => app.go(folder)
+                    transfersEnabled: true
+                    onFilesDropped: (urls, destination, actions, position) => app.acceptDrop(urls, destination, actions, position)
                 }
 
                 IconButton {
@@ -423,6 +609,12 @@ AppWindow {
                     iconName: app.listMode ? "view-grid" : "view-list-details"
                     text: app.listMode ? i18n("Show as grid") : i18n("Show as list")
                     onClicked: viewMode.value = app.listMode ? "grid" : "list"
+                }
+                IconButton {
+                    iconName: "edit-select-all"
+                    text: i18n("Selection mode")
+                    checked: app.selectionMode
+                    onClicked: app.selectionMode = !app.selectionMode
                 }
                 IconButton {
                     id: moreButton
@@ -451,12 +643,20 @@ AppWindow {
                         Layout.leftMargin: 16
                         Layout.rightMargin: 16
                         Layout.bottomMargin: 8
-                        visible: app.inTrash && folderModel.count > 0
+                        visible: app.inTrash && app.folderReady && folderModel.count > 0
                         tone: "neutral"
                         icon: "user-trash"
                         text: i18n("Files in the trash can be restored until the trash is emptied.")
                         actionText: i18n("Empty the trash")
                         onActionTriggered: emptyDialog.open()
+                    }
+                    QQC2.ProgressBar {
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 20
+                        Layout.rightMargin: 20
+                        visible: app.operations > 0
+                        indeterminate: true
+                        Accessible.name: i18n("Transferring files")
                     }
                     Item {
                         id: filterBox
@@ -469,6 +669,7 @@ AppWindow {
                         visible: shown
                         SearchField {
                             id: filter
+                            objectName: "fileSearch"
                             width: parent.width
                             placeholderText: i18n("Find in “%1”", app.folderName)
                             Keys.onEscapePressed: {
@@ -482,6 +683,7 @@ AppWindow {
 
                     GridView {
                         id: view
+                        objectName: "fileView"
 
                         readonly property int columns: app.listMode ? 1 : Math.max(1, Math.floor((width - 24) / 150))
 
@@ -493,10 +695,11 @@ AppWindow {
                         clip: true
                         focus: true
                         model: folderModel
+                        enabled: !app.pendingTabState && app.folderReady
                         cellWidth: app.listMode ? width - 24 : Math.floor((width - 24) / columns)
                         cellHeight: app.listMode ? 60 : cellWidth * 0.78 + 72
                         currentIndex: -1
-                        keyNavigationEnabled: true
+                        keyNavigationEnabled: false
                         boundsBehavior: Flickable.StopAtBounds
                         QQC2.ScrollBar.vertical: QQC2.ScrollBar {}
 
@@ -508,10 +711,27 @@ AppWindow {
                             selected: app.isSelected(fileUrl)
                             current: GridView.isCurrentItem
                             showFocus: view.activeFocus
-                            cut: app.clipboard.cut && app.clipboard.urls.indexOf(String(fileUrl)) >= 0
+                            cut: app.clipboard.cut && app.clipboard.urls.some(url => app.urlKey(url) === app.urlKey(fileUrl))
                             details: fileIsDir ? Qt.formatDate(fileModified, Locale.ShortFormat)
                                 : SystemInfo.formatBytes(fileSize) + " · " + Qt.formatDate(fileModified, Locale.ShortFormat)
                             onPressed: mouse => app.press(index, mouse)
+                            selectionEnabled: true
+                            selectionMode: app.selectionMode
+                            dragEnabled: !app.inTrash
+                            dropEnabled: !app.inTrash
+                            onClicked: mouse => app.release(index, mouse)
+                            onSelectionToggled: {
+                                app.selectionMode = true;
+                                view.currentIndex = index;
+                                app.toggle(index);
+                            }
+                            onSelectionHeld: {
+                                app.selectionMode = true;
+                                if (!app.isSelected(fileUrl)) app.toggle(index);
+                            }
+                            onDragRequested: app.dragSelection(index)
+                            onTabRequested: app.newTab(fileUrl, true)
+                            onFilesDropped: (urls, destination, actions, position) => app.acceptDrop(urls, destination, actions, position)
                             onActivated: app.open(index)
                             onMenuRequested: (x, y) => (app.inTrash ? trashMenu : fileMenu).popup(item, x, y)
                         }
@@ -527,23 +747,42 @@ AppWindow {
                             }
                         }
                         Keys.onMenuPressed: (app.inTrash ? trashMenu : fileMenu).popup()
-                        onCurrentIndexChanged: {
-                            if (activeFocus && currentIndex >= 0 && !app.isSelected(folderModel.get(currentIndex, "fileUrl"))) {
-                                app.selectOnly(currentIndex);
-                            }
+                        Keys.onPressed: event => app.keyboardNavigate(event)
+                        Keys.onEscapePressed: {
+                            app.clearSelection();
+                            app.selectionMode = false;
                         }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            z: -1
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton
-                            onPressed: event => {
-                                view.forceActiveFocus();
-                                app.clearSelection();
-                                if (event.button === Qt.RightButton) {
-                                    folderMenu.popup();
-                                }
+                        FileDropArea {
+                            id: backgroundDrop
+                            parent: view.contentItem
+                            x: 0
+                            y: view.contentY
+                            width: view.width
+                            height: view.height
+                            z: -2
+                            enabled: !app.inTrash
+                            destination: app.folder
+                            acceptsPosition: (x, y) => {
+                                const point = backgroundDrop.mapToItem(view.contentItem, x, y);
+                                const row = view.indexAt(point.x, point.y);
+                                return row < 0 || !folderModel.get(row, "fileIsDir");
                             }
+                            onFilesDropped: (urls, destination, actions, position) => app.acceptDrop(urls, destination, actions, position)
+                        }
+                        SelectionRectangle {
+                            parent: view.contentItem
+                            x: 0
+                            y: view.contentY
+                            width: view.width
+                            height: view.height
+                            z: -1
+                            view: view
+                            model: folderModel
+                        enabled: !app.pendingTabState && app.folderReady
+                            selection: app.selected
+                            onChosen: selection => app.selected = selection
+                            onCleared: app.clearSelection()
+                            onMenuRequested: folderMenu.popup()
                         }
                     }
 
@@ -556,15 +795,15 @@ AppWindow {
                         role: "bodySmall"
                         color: M3.surfaceVariantContent
                         text: app.selectedCount > 0
-                            ? i18np("%1 selected", "%1 selected", app.selectedCount) + " · " + i18np("%1 item", "%1 items", folderModel.count)
-                            : i18np("%1 item", "%1 items", folderModel.count)
+                            ? i18np("%1 selected", "%1 selected", app.selectedCount) + " · " + i18np("%1 item", "%1 items", folderModel ? folderModel.count : 0)
+                            : i18np("%1 item", "%1 items", folderModel ? folderModel.count : 0)
                     }
                 }
 
                 EmptyState {
                     anchors.centerIn: parent
                     width: parent.width - 48
-                    visible: folderModel.status === FolderListModel.Ready && folderModel.count === 0
+                    visible: app.folderReady && folderModel.count === 0
                     icon: app.inTrash ? "user-trash" : filter.text.length > 0 ? "search" : "folder"
                     title: app.inTrash ? i18n("The trash is empty") : filter.text.length > 0 ? i18n("Nothing found") : i18n("This folder is empty")
                     text: filter.text.length > 0 ? i18n("No names contain “%1”.", filter.text) : ""
@@ -736,6 +975,19 @@ AppWindow {
     }
 
     QQC2.Menu {
+        id: dropMenu
+        objectName: "dropChoice"
+        property var urls: []
+        property string target
+        property bool canMove: false
+        QQC2.MenuItem { text: i18n("To “%1”", app.tabLabel(dropMenu.target)); enabled: false }
+        QQC2.MenuItem { text: i18n("Copy here"); icon.name: "edit-copy"; onTriggered: app.transferFiles(dropMenu.urls, dropMenu.target, false) }
+        QQC2.MenuItem { text: i18n("Move here"); icon.name: "edit-cut"; enabled: dropMenu.canMove; onTriggered: app.transferFiles(dropMenu.urls, dropMenu.target, true) }
+        QQC2.MenuSeparator {}
+        QQC2.MenuItem { text: i18n("Cancel"); onTriggered: dropMenu.close() }
+    }
+
+    QQC2.Menu {
         id: fileMenu
 
         readonly property var urls: app.selectedUrls()
@@ -743,6 +995,7 @@ AppWindow {
         readonly property bool single: urls.length === 1
 
         QQC2.MenuItem { text: i18n("Open"); icon.name: "document-open"; onTriggered: app.openSelection() }
+        QQC2.MenuItem { text: i18n("Open in new tab"); icon.name: "tab-new"; visible: fileMenu.single && !!fileMenu.first.isDir; onTriggered: app.newTab(fileMenu.urls[0], false) }
         QQC2.Menu {
             id: openWith
             title: i18n("Open with")
@@ -924,6 +1177,7 @@ AppWindow {
 
     Dialog {
         id: conflictDialog
+        objectName: "fileConflict"
 
         property var urls: []
         property var clashes: []

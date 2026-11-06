@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.22)
+project(KernoraFilesTests LANGUAGES CXX)
+set(CMAKE_AUTOMOC ON)
+find_package(Qt6 REQUIRED COMPONENTS QuickTest Qml Quick Widgets)
+find_package(KF6I18n REQUIRED)
+add_executable(files-tests runner.cpp)
+target_link_libraries(files-tests PRIVATE Qt6::QuickTest Qt6::Qml Qt6::Quick Qt6::Widgets KF6::I18nQml KF6::I18n)
