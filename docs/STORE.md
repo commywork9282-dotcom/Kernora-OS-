@@ -23,6 +23,11 @@ ODRS, get cached for three days and just don't show if ODRS is down. Artwork
 is cached on disk. Offline, the cached catalogue and your installed apps
 still work, downloading new stuff obviously needs a connection.
 
+## Installing with APT
+
+APT package availability and the official Steam and Proton VPN installation
+steps are described in [Installing applications](INSTALLING-APPS.md).
+
 ## Look
 
 Kinda like Google Play on purpose: a top bar with **Apps**, **Games** and

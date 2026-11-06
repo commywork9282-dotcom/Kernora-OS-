@@ -1,3 +1,11 @@
+kernora-apps (1.1.78.2) UNRELEASED; urgency=medium
+
+  * Require the archive update with Debian application components and
+    amd64/i386 support for Steam's dependencies.
+  * What's new: expanded Debian package availability, in English and Russian.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 05 Nov 2026 18:40:00 -0800
+
 kernora-apps (1.1.78.1) UNRELEASED; urgency=medium
 
   * Bluetooth discovery owns its scan session, waits for adapter readiness,

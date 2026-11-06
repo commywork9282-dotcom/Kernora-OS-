@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-05-3",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "icon": "system-software-install",
+        "title": {
+          "en": "More Debian apps available",
+          "ru": "Больше доступных приложений Debian"
+        },
+        "text": {
+          "en": "Debian contrib and non-free are now enabled alongside the existing firmware source. On 64-bit PCs, 32-bit package support is enabled for Steam and other apps that need it. Refresh your package lists, then install Steam with “sudo apt install steam-installer”. Apps distributed only by their developer, such as Proton VPN, still require that developer’s official repository.",
+          "ru": "Включены разделы Debian contrib и non-free в дополнение к существующему источнику прошивок. На 64-битных ПК включена поддержка 32-битных пакетов для Steam и других приложений. Обновите списки пакетов, затем установите Steam командой «sudo apt install steam-installer». Приложения, распространяемые только разработчиком, например Proton VPN, по-прежнему требуют его официального репозитория."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-05-1",
     "date": "2026-11-05",
     "items": [

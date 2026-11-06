@@ -16,8 +16,14 @@ The ISO is still built from the pinned Debian snapshot (`configs/upstream/base.e
 Only the installed system points at the live archives: `build-live-rootfs` removes
 the build's `sources.list` and its copy of the Kernora archive.
 
-Both the Debian archive and its security updates come with the `main` and
-`non-free-firmware` components. The image ships the firmware that graphics
+Both the Debian archive and its security updates include `main`, `contrib`,
+`non-free` and `non-free-firmware`. Archive package 1.3 enables `i386` on new
+amd64 installations and upgrades from earlier archive versions, so 32-bit
+application dependencies can be resolved. Later upgrades preserve an
+administrator’s decision to remove `i386`. Kernora’s own repositories are
+scoped to `amd64`; Debian supplies both native and 32-bit packages.
+
+The image ships the firmware that graphics
 cards, Wi-Fi, Bluetooth and laptop sound need, and CPU microcode
 (`configs/live/packages.txt`: AMD, Intel and NVIDIA graphics, Intel, Realtek,
 Qualcomm, MediaTek and Broadcom Wi-Fi, SOF sound); without it AMD's integrated

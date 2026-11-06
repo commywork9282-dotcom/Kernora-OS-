@@ -259,8 +259,11 @@ grep -Fxq 'gtk-theme-name=Kernora' "/home/$LIVE_USER/.config/gtk-3.0/settings.in
 if grep -rq 'snapshot.debian.org\|file:/usr/share/kernora' /etc/apt/sources.list.d; then
   fail "the image still points APT at the build's sources"
 fi
-grep -Fxq 'Components: main non-free-firmware' /etc/apt/sources.list.d/debian.sources \
-  || fail "the image takes no firmware updates"
+grep -Fxq 'Components: main contrib non-free non-free-firmware' /etc/apt/sources.list.d/debian.sources \
+  || fail "the image lacks Debian application components"
+dpkg --print-foreign-architectures | grep -Fxq i386 || fail "32-bit application support is missing"
+grep -Fxq 'Architectures: amd64' /etc/apt/sources.list.d/kernora.sources \
+  || fail "Kernora sources request unsupported architectures"
 for firmware in firmware-amd-graphics firmware-intel-graphics firmware-nvidia-graphics firmware-iwlwifi \
     firmware-realtek firmware-atheros firmware-mediatek firmware-sof-signed amd64-microcode intel-microcode; do
   [[ "$(dpkg-query -W -f='${Status}' "$firmware" 2>/dev/null)" == 'install ok installed' ]] \
