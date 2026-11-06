@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-06-4",
+    "date": "2026-11-06",
+    "items": [
+      {
+        "icon": "preferences-desktop-widgets",
+        "title": {
+          "en": "New panels look like Kernora",
+          "ru": "Новые панели теперь как в Kernora"
+        },
+        "text": {
+          "en": "The default panel in the Add Panel menu is now the Kernora panel. If you delete your panel and add a new one, its keyboard shortcuts come back on their own.",
+          "ru": "Стандартная панель из меню добавления теперь такая же, как панель Kernora. Если удалить панель и добавить новую, сочетания клавиш вернутся сами."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-06-3",
     "date": "2026-11-06",
     "items": [

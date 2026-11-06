@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.70" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.71" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -1164,6 +1164,52 @@ front.reorder(8)
 ok = ok and len(front.shell.commands) == 1
 sys.exit(0 if ok else 1)
 EOF
+grep -Fq 'loadTemplate("org.kde.plasma.desktop.defaultPanel")' \
+  "$data_root/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
+  && ! grep -Fq 'new Panel' "$data_root/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
+  || fail "the first login does not use the default panel template"
+grep -Fxq 'data/panel/layout.js usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'data/panel/kernora-panel-shortcuts usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq 'org.kde.plasma.desktop.defaultPanel/contents/layout.js' "$package_root/debian/kernora-desktop.preinst" \
+  && grep -Fq 'org.kde.plasma.desktop.defaultPanel/contents/layout.js' "$package_root/debian/kernora-desktop.postrm" \
+  && [[ -x "$data_root/panel/kernora-panel-shortcuts" ]] \
+  || fail "Add Panel does not offer the Kernora panel"
+! grep -Eq 'kickoff|pager|digitalclock|showdesktop' "$data_root/panel/layout.js" \
+  || fail "the default panel still has KDE's widgets"
+grep -Fq 'taken.indexOf(shortcut) < 0' "$data_root/panel/layout.js" \
+  && grep -Fq 'launcher.writeConfig("reclaimShortcuts", true)' "$data_root/panel/layout.js" \
+  && grep -Fq 'launcher.reloadConfig()' "$data_root/panel/layout.js" \
+  && grep -Fq 'entry name="reclaimShortcuts"' "$package_root/data/shell/launcher/contents/config/main.xml" \
+  && grep -Fq '/usr/libexec/kernora-panel-shortcuts' "$package_root/data/shell/launcher/contents/ui/main.qml" \
+  || fail "a new panel does not get its shortcuts back"
+timeout 60 python3 -I - "$data_root/panel/kernora-panel-shortcuts" <<'EOF' \
+  || fail "the panel shortcut helper removes the wrong entries"
+import importlib.machinery
+import importlib.util
+import sys
+
+loader = importlib.machinery.SourceFileLoader("shortcuts", sys.argv[1])
+shortcuts = importlib.util.module_from_spec(importlib.util.spec_from_loader("shortcuts", loader))
+loader.exec_module(shortcuts)
+config = """[kwin]
+activate widget 9=Alt+Space,none,Not Plasma
+
+[plasmashell]
+activate widget 3=Alt+Space,none,Activate Applications Widget
+activate widget 19=Meta+A,none,Activate Quick Settings Widget
+activate widget 20=,none,Activate Clipboard Widget
+activate widget 21=Meta+Shift+Y,none,Activate Something Of The User
+activate widget 64=Meta+V,none,Activate Clipboard Widget
+show-on-mouse-pos=none,Meta+V,Show Clipboard Items at Mouse Position
+
+[other]
+activate widget 7=Meta+A,none,Not Plasma
+"""
+ok = shortcuts.stale(config, {"19", "20", "21"}) == ["activate widget 3", "activate widget 64"]
+ok = ok and shortcuts.stale(config, {"3", "19", "64"}) == []
+ok = ok and shortcuts.stale("[kwin]\n", set()) == []
+sys.exit(0 if ok else 1)
+EOF
 grep -Fq '"ro.product.waydroid.model": model' "$android/kernora-android-device" \
   && grep -Fq '"persist.waydroid.fake_wifi": "*"' "$android/kernora-android-device" \
   && grep -Fq 'Kernora Laptop' "$android/kernora-android" \
@@ -1393,8 +1439,7 @@ for applet in launcher:org.kernora.launcher shade:org.kernora.quicksettings clip
     || fail "applet $directory does not declare the id $id"
   [[ -s "$shell_root/$directory/contents/ui/main.qml" ]] \
     || fail "applet $directory has no main.qml"
-  grep -Fq "\"$id\"" \
-    "$data_root/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
+  grep -Fq "\"$id\"" "$data_root/panel/layout.js" \
     || fail "default layout does not place $id"
   [[ -s "$shell_root/po/plasma_applet_$id.ru.po" ]] \
     || fail "applet $id has no Russian catalog"

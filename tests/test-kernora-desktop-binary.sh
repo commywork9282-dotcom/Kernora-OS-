@@ -63,6 +63,8 @@ for path in \
   usr/share/icons/Kernora/scalable/apps/start-here-kde.svg \
   usr/share/plasma/look-and-feel/org.kernora.desktop/contents/splash/Splash.qml \
   usr/share/plasma/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js \
+  usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js \
+  usr/libexec/kernora-panel-shortcuts \
   etc/xdg/plasmarc \
   usr/share/color-schemes/KernoraDark.colors \
   usr/share/color-schemes/KernoraLight.colors \
@@ -451,8 +453,8 @@ find "$temporary_root/desktop/usr/share/plymouth/themes/kernora" -name '*.svg' |
   && fail "the boot splash still carries SVGs Plymouth cannot read"
 grep -Fxq 'X-KDE-Shortcuts=Alt+F2,Search' "$temporary_root/desktop/usr/share/kglobalaccel/org.kde.krunner.desktop" \
   || fail "KRunner still takes Alt+Space from the Kernora launcher"
-grep -Fq 'launcher.globalShortcut = "Alt+Space"' \
-  "$temporary_root/desktop/usr/share/plasma/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
+grep -Fq 'addWidget("org.kernora.launcher", "Alt+Space")' \
+  "$temporary_root/desktop/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js" \
   || fail "the Kernora launcher does not open with Alt+Space"
 grep -Fxq 'X-KDE-Shortcuts=Ctrl+Alt+T' "$temporary_root/desktop/usr/share/applications/org.kernora.terminal.desktop" \
   || fail "Ctrl+Alt+T does not open the terminal"
@@ -525,8 +527,8 @@ done
   || fail "kglobalaccel does not see the terminal's launch shortcut"
 grep -Fxq 'Icon=org.kernora.terminal' "$temporary_root/desktop/etc/skel/.local/share/applications/Alacritty.desktop" \
   || fail "a terminal started without its class shows the Wayland icon"
-grep -Fq 'clipboard.globalShortcut = "Meta+V"' \
-  "$temporary_root/desktop/usr/share/plasma/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
+grep -Fq 'addWidget("org.kernora.clipboard", "Meta+V")' \
+  "$temporary_root/desktop/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js" \
   || fail "the Kernora clipboard does not open with Meta+V"
 grep -Fxq 'show-on-mouse-pos=none,Meta+V,Show Clipboard Items at Mouse Position' \
   "$temporary_root/desktop/etc/skel/.config/kglobalshortcutsrc" \
@@ -546,8 +548,8 @@ grep -Fq 'i18n("Dark Theme")' "$shade_sheet" && grep -Fq 'i18n("Screenshot")' "$
   || fail "quick settings lack the Dark Theme and Screenshot tiles"
 grep -Fxq 'X-KDE-Shortcuts=Meta+Ctrl+Alt+Shift+Space' "$temporary_root/desktop/usr/share/kglobalaccel/org.kde.plasma.emojier.desktop" \
   || fail "the emoji selector still takes Meta+. from the Kernora emoji tab"
-grep -Fq 'emoji.globalShortcut = "Meta+."' \
-  "$temporary_root/desktop/usr/share/plasma/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
+grep -Fq 'addWidget("org.kernora.clipboard", "Meta+.")' \
+  "$temporary_root/desktop/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js" \
   || fail "the Kernora emoji tab does not open with Meta+."
 for widget in clock glance weather battery cputemperature calendar media photo note; do
   widget_root="$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.$widget"
@@ -620,6 +622,7 @@ for file in lockscreen/LockScreen.qml osd/Osd.qml configuration/AppletConfigurat
     org.kde.desktopcontainment/contents/ui ConfigLocation.qml ConfigIcons.qml ConfigFilter.qml ConfigOverlay.qml FolderView.qml \
     explorer/WidgetExplorer.qml views/DesktopEditMode.qml panelconfiguration/PanelRepresentation.qml \
     org.kde.plasma.panelspacer/contents/ui/main.qml \
+    org.kde.plasma.desktop.defaultPanel/contents/layout.js \
     org.kde.plasma.notifications/contents/ui main.qml \
     org.kde.plasma.taskmanager/contents/ui Badge.qml ToolTipInstance.qml kglobalaccel/org.kde.krunner.desktop \
     kglobalaccel/org.kde.plasma.emojier.desktop plymouth/plymouthd.defaults; do

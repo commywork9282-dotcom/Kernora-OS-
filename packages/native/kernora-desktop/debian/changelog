@@ -1,3 +1,11 @@
+kernora-desktop (1.4.71) UNRELEASED; urgency=medium
+
+  * Add Panel, Default Panel adds the Kernora panel instead of KDE's.
+  * A panel added after deleting the old one gets the launcher, quick
+    settings, clipboard and emoji shortcuts back.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 16:30:00 -0800
+
 kernora-desktop (1.4.70) UNRELEASED; urgency=medium
 
   * Android windows survive an app restarting its screen: fullscreen,

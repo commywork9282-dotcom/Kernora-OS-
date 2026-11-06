@@ -1,4 +1,6 @@
 data/look-and-feel/org.kernora.desktop usr/share/plasma/look-and-feel
+data/panel/layout.js usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents
+data/panel/kernora-panel-shortcuts usr/libexec
 data/sddm.conf.d/kernora-theme.conf etc/sddm.conf.d
 data/icons/kernora-logo.svg usr/share/icons/hicolor/scalable/apps
 generated/icon-theme/index.theme usr/share/icons/Kernora
