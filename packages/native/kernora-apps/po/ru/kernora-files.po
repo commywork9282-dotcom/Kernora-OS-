@@ -443,3 +443,39 @@ msgstr "Отправить через Quick Share"
 
 msgid "Only files can be sent. Compress a folder to ZIP first."
 msgstr "Отправить можно только файлы. Папку сначала сожмите в ZIP."
+
+msgid "Select %1"
+msgstr "Выбрать %1"
+
+msgid "Close tab"
+msgstr "Закрыть вкладку"
+
+msgid "New tab"
+msgstr "Новая вкладка"
+
+msgid "Open in new tab"
+msgstr "Открыть в новой вкладке"
+
+msgid "Selection mode"
+msgstr "Режим выбора"
+
+msgid "Copy here"
+msgstr "Копировать сюда"
+
+msgid "Move here"
+msgstr "Переместить сюда"
+
+msgid "Transferring files"
+msgstr "Передача файлов"
+
+msgid "Finish the current file conflict first."
+msgstr "Сначала разрешите текущий конфликт файлов."
+
+msgid "%1 item moved"
+msgid_plural "%1 items moved"
+msgstr[0] "%1 объект перемещён"
+msgstr[1] "%1 объекта перемещены"
+msgstr[2] "%1 объектов перемещены"
+
+msgid "To “%1”"
+msgstr "В папку «%1»"

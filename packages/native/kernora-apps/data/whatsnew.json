@@ -1,5 +1,44 @@
 [
   {
+    "id": "2026-11-06-1",
+    "date": "2026-11-06",
+    "items": [
+      {
+        "icon": "folder",
+        "title": {
+          "en": "Tabs in Files",
+          "ru": "Вкладки в файловом менеджере"
+        },
+        "text": {
+          "en": "Keep several folders open in one window. Each tab remembers its history, search, selection and scroll position. Use Ctrl+T to open a tab, Ctrl+W to close it, or middle-click a folder to open it in the background.",
+          "ru": "Открывайте несколько папок в одном окне. Каждая вкладка запоминает историю, поиск, выделение и положение прокрутки. Ctrl+T открывает вкладку, Ctrl+W закрывает её, а средняя кнопка мыши открывает папку в фоне."
+        }
+      },
+      {
+        "icon": "edit-select-all",
+        "title": {
+          "en": "Select files your way",
+          "ru": "Удобный выбор нескольких файлов"
+        },
+        "text": {
+          "en": "Select a group with Ctrl or Shift, use checkboxes and selection mode, or drag a rectangle over empty space. Keyboard range selection works too, and names containing spaces and special characters stay selected correctly.",
+          "ru": "Выделяйте группу с Ctrl или Shift, используйте чекбоксы и режим выбора либо растяните рамку на свободном месте. Работает и выделение диапазона с клавиатуры; имена с пробелами и специальными символами выделяются корректно."
+        }
+      },
+      {
+        "icon": "edit-copy",
+        "title": {
+          "en": "Drag, copy and move",
+          "ru": "Перетаскивание, копирование и перемещение"
+        },
+        "text": {
+          "en": "Drag one file or a whole selection into a folder, a place, the path bar or another tab. Hover a tab to switch to it, then choose Copy here or Move here. Cancel safely or choose how to handle matching names.",
+          "ru": "Перетаскивайте файл или целую группу в папку, место на боковой панели, строку пути или другую вкладку. Задержитесь над вкладкой, чтобы перейти в неё, затем выберите копирование или перемещение. Операцию можно отменить, а для совпадающих имён — выбрать подходящее действие."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-05-4",
     "date": "2026-11-05",
     "items": [

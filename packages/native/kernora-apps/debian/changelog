@@ -1,3 +1,14 @@
+kernora-apps (1.1.80) UNRELEASED; urgency=medium
+
+  * Add Files tabs with independent history, search, selection and scrolling.
+  * Add checkboxes, rectangle selection and reliable Ctrl/Shift selection.
+  * Add native multi-file drag and drop across folders, places and tabs.
+  * Validate transfers, preserve cut selections on cancellation and defer
+    native drag startup so switching tabs does not destroy a QML handler.
+  * What's new: Files navigation and file operations, in English and Russian.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 10:00:00 -0800
+
 kernora-apps (1.1.79) UNRELEASED; urgency=medium
 
   * What's new: Android windows stay open and get their own panel button.

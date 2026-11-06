@@ -243,3 +243,27 @@ msgstr "Используйте строчные латинские буквы, �
 #: src/system/accounts.cpp:142
 msgid "This user name is taken."
 msgstr "Это имя пользователя уже занято."
+
+msgid "Choose a writable local folder."
+msgstr "Выберите локальную папку, доступную для записи."
+
+msgid "Use Move to trash to keep files recoverable."
+msgstr "Используйте «В корзину», чтобы файлы можно было восстановить."
+
+msgid "There are no files to transfer."
+msgstr "Нет файлов для передачи."
+
+msgid "One of the files is no longer available locally."
+msgstr "Один из файлов больше не доступен локально."
+
+msgid "Restore files from the trash before moving or copying them."
+msgstr "Перед перемещением или копированием восстановите файлы из корзины."
+
+msgid "A folder cannot be transferred into itself."
+msgstr "Нельзя скопировать или переместить папку внутрь неё самой."
+
+msgid "The same file was selected more than once."
+msgstr "Один и тот же файл выбран несколько раз."
+
+msgid "Select either a folder or its contents for this transfer."
+msgstr "Выберите для передачи папку или её содержимое."

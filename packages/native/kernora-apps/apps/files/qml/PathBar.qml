@@ -19,6 +19,8 @@ Rectangle {
     property string homePath
     property string trashPath
     property bool editing: false
+    property bool transfersEnabled: false
+    signal filesDropped(var urls, url destination, int actions, point position)
     signal chosen(url folder)
 
     implicitHeight: 48
@@ -30,7 +32,7 @@ Rectangle {
     }
 
     function edit(): void {
-        field.text = String(folder).replace(/^file:\/\//, "");
+        field.text = decodeURIComponent(String(folder).replace(/^file:\/\//, ""));
         editing = true;
         field.forceActiveFocus();
         field.selectAll();
@@ -119,6 +121,12 @@ Rectangle {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: root.chosen(root.toUrl(crumb.modelData.path))
+                }
+                FileDropArea {
+                    anchors.fill: parent
+                    enabled: root.transfersEnabled
+                    destination: root.toUrl(crumb.modelData.path)
+                    onFilesDropped: (urls, destination, actions, position) => root.filesDropped(urls, destination, actions, position)
                 }
             }
         }

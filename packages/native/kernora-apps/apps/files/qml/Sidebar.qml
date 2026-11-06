@@ -17,6 +17,8 @@ QQC2.ScrollView {
 
     property url currentFolder
     property bool showTrash: true
+    property bool transfersEnabled: false
+    signal filesDropped(var urls, url destination, int actions, point position)
     signal chosen(url folder)
 
     contentWidth: availableWidth
@@ -94,6 +96,13 @@ QQC2.ScrollView {
                         } else {
                             root.chosen(root.folderFor(place.url));
                         }
+                    }
+
+                    FileDropArea {
+                        anchors.fill: parent
+                        enabled: root.transfersEnabled && !place.isSetupNeeded && !String(place.url).startsWith("trash:")
+                        destination: root.folderFor(place.url)
+                        onFilesDropped: (urls, destination, actions, position) => root.filesDropped(urls, destination, actions, position)
                     }
 
                     IconButton {

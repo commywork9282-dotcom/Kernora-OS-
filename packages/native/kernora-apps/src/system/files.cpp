@@ -12,6 +12,16 @@
 #include <QDateTime>
 #include <QDir>
 #include <QDirIterator>
+#include <QDrag>
+#include <QGuiApplication>
+#include <QPointer>
+#include <QTimer>
+#include <QIcon>
+#include <QMimeData>
+#include <QPainter>
+#include <QQuickItem>
+#include <QQuickWindow>
+#include <QSet>
 #include <QImageReader>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -229,6 +239,94 @@ void Files::move(const QList<QUrl> &urls, const QUrl &destination, const QJSValu
     });
 }
 
+QString Files::transferError(const QList<QUrl> &urls, const QUrl &destination) const
+{
+    const QFileInfo target(destination.toLocalFile());
+    if (!destination.isLocalFile() || !target.isAbsolute() || !target.isDir() || !target.isWritable()) {
+        return i18n("Choose a writable local folder.");
+    }
+    const QString targetPath = target.canonicalFilePath();
+    const QString trashPath = QDir::cleanPath(trashFolder().toLocalFile());
+    if (targetPath == trashPath || targetPath.startsWith(trashPath + QLatin1Char('/'))) {
+        return i18n("Use Move to trash to keep files recoverable.");
+    }
+    if (urls.isEmpty()) {
+        return i18n("There are no files to transfer.");
+    }
+    QSet<QString> sources;
+    for (const QUrl &url : urls) {
+        const QFileInfo source(url.toLocalFile());
+        if (!url.isLocalFile() || !source.isAbsolute() || (!source.exists() && !source.isSymLink())) {
+            return i18n("One of the files is no longer available locally.");
+        }
+        const QString path = QDir::cleanPath(source.absoluteFilePath());
+        if (path == trashPath || path.startsWith(trashPath + QLatin1Char('/'))) {
+            return i18n("Restore files from the trash before moving or copying them.");
+        }
+        const QString canonical = source.canonicalFilePath();
+        if (source.isDir() && !source.isSymLink()
+            && (canonical == QLatin1String("/") || canonical == targetPath || targetPath.startsWith(canonical + QLatin1Char('/')))) {
+            return i18n("A folder cannot be transferred into itself.");
+        }
+        if (sources.contains(path)) {
+            return i18n("The same file was selected more than once.");
+        }
+        sources.insert(path);
+    }
+    for (const QString &path : sources) {
+        QString parent = QFileInfo(path).absolutePath();
+        while (parent != QLatin1String("/")) {
+            if (sources.contains(parent)) {
+                return i18n("Select either a folder or its contents for this transfer.");
+            }
+            parent = QFileInfo(parent).absolutePath();
+        }
+    }
+    return {};
+}
+
+void Files::startDrag(QObject *source, const QList<QUrl> &urls)
+{
+    auto *item = qobject_cast<QQuickItem *>(source);
+    if (!item || !item->window() || urls.isEmpty()) {
+        return;
+    }
+    const QPointer<QQuickWindow> window = item->window();
+    QTimer::singleShot(0, this, [this, window, urls] {
+        if (!window || !(QGuiApplication::mouseButtons() & Qt::LeftButton)) {
+            return;
+        }
+        for (const QUrl &url : urls) {
+            if (!url.isLocalFile() || !exists(url)) {
+                return;
+            }
+        }
+        QPointer<QDrag> drag = new QDrag(window.data());
+        auto *mime = new QMimeData;
+        mime->setUrls(urls);
+        drag->setMimeData(mime);
+        const qreal ratio = window->devicePixelRatio();
+        QPixmap preview(QSize(qRound(80 * ratio), qRound(80 * ratio)));
+        preview.setDevicePixelRatio(ratio);
+        preview.fill(Qt::transparent);
+        QPainter painter(&preview);
+        painter.setRenderHint(QPainter::Antialiasing);
+        QIcon::fromTheme(iconName(urls.first())).paint(&painter, QRect(8, 8, 56, 56));
+        if (urls.size() > 1) {
+            painter.setPen(Qt::NoPen);
+            painter.setBrush(QColor(QStringLiteral("#315da8")));
+            painter.drawRoundedRect(QRectF(38, 48, 40, 28), 14, 14);
+            painter.setPen(Qt::white);
+            painter.drawText(QRect(38, 48, 40, 28), Qt::AlignCenter, QString::number(urls.size()));
+        }
+        painter.end();
+        drag->setPixmap(preview);
+        drag->setHotSpot(QPoint(28, 28));
+        drag->exec(Qt::CopyAction | Qt::MoveAction, Qt::CopyAction);
+        if (drag) drag->deleteLater();
+    });
+}
+
 QList<QUrl> Files::conflicts(const QList<QUrl> &urls, const QUrl &destination) const
 {
     QList<QUrl> found;
@@ -248,8 +346,24 @@ void Files::transfer(const QList<QUrl> &urls, const QUrl &destination, bool move
         report(callback, true, QString());
         return;
     }
+    const QString error = transferError(urls, destination);
+    if (!error.isEmpty()) {
+        report(callback, false, error);
+        return;
+    }
+    QList<QUrl> sources;
+    const QString targetPath = QFileInfo(destination.toLocalFile()).canonicalFilePath();
+    for (const QUrl &url : urls) {
+        if (!move || QFileInfo(QFileInfo(url.toLocalFile()).absolutePath()).canonicalFilePath() != targetPath) {
+            sources.append(url);
+        }
+    }
+    if (sources.isEmpty()) {
+        report(callback, true);
+        return;
+    }
     const KIO::JobFlags flags = onConflict == QLatin1String("replace") ? KIO::Overwrite : KIO::DefaultFlags;
-    KIO::CopyJob *job = move ? KIO::move(urls, destination, flags) : KIO::copy(urls, destination, flags);
+    KIO::CopyJob *job = move ? KIO::move(sources, destination, flags) : KIO::copy(sources, destination, flags);
     job->setUiDelegate(nullptr);
     if (onConflict == QLatin1String("rename")) {
         job->setAutoRename(true);
