@@ -50,4 +50,11 @@ grep -Fq kernora-demo "$temporary_root/control/conffiles" && fail "the demo sour
 [[ "$("$temporary_root/root/usr/libexec/kernora-update-channel" status)" =~ ^(demo|stable)$ ]] \
   || fail "kernora-update-channel status does not answer"
 
+cmp "$package_root/apt/debian.sources" "$temporary_root/root/etc/apt/sources.list.d/debian.sources"
+cmp <(sed '/^#/d; /^[[:space:]]*$/d' "$package_root/debian/kernora-archive.postinst") \
+    <(sed '/^#/d; /^[[:space:]]*$/d' "$temporary_root/control/postinst")
+for source in kernora.sources kernora-demo.sources; do
+    if [[ $source == kernora.sources ]]; then installed=etc/apt/sources.list.d; else installed=usr/share/kernora/apt; fi
+    cmp "$package_root/apt/$source" "$temporary_root/root/$installed/$source"
+done
 printf 'kernora-archive binary test: OK\n'

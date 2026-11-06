@@ -1,3 +1,12 @@
+kernora-archive (1.3) UNRELEASED; urgency=medium
+
+  * Enable Debian contrib and non-free alongside main and firmware.
+  * Enable i386 on new amd64 installs and upgrades from before 1.3 so
+    Steam and other 32-bit dependencies can be installed through APT.
+  * Scope Kernora sources to amd64 while Debian supplies both architectures.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 05 Nov 2026 18:40:00 -0800
+
 kernora-archive (1.2) UNRELEASED; urgency=medium
 
   * Demo updates: an opt-in second channel, ember-demo, that gets new

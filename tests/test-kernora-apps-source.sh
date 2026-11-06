@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.64.4" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.64.5" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -145,8 +145,8 @@ grep -Fq 'key: "themedApps"' "$package_root/apps/settings/qml/pages/AppearancePa
   && grep -Fq 'msgid "Themed app icons"' "$package_root/po/ru/kernora-settings.po" \
   && grep -Eq '^ qt6-svg-plugins,$' "$package_root/debian/control" \
   || fail "themed app icons cannot be turned on"
-grep -Eq '^ kernora-archive \(>= 1\.2\),$' "$package_root/debian/control" \
-  || fail "kernora-apps does not require the kernora-archive with demo updates"
+grep -Eq '^ kernora-archive \(>= 1\.3\),$' "$package_root/debian/control" \
+  || fail "kernora-apps does not require the kernora-archive with Debian application components"
 grep -Fq 'msgid "Demo updates"' "$package_root/po/ru/kernora-settings.po" \
   || fail "the demo updates switch is not translated"
 
