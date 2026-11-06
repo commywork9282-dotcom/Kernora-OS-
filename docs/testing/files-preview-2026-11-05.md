@@ -1,6 +1,6 @@
 # Files preview — 2026-11-05
 
-Local preview based on demo commit `bc2c950affa004a34f26225991870d13f35ded4a`. The owner approved publication on 2026-11-06. The preview itself was not published; this release adds Files to stable 1.1.64.6 and demo 1.1.80, with English and Russian What's New notes. No new GitHub Release is required.
+Local preview based on demo commit `bc2c950affa004a34f26225991870d13f35ded4a`. The owner approved publication on 2026-11-06. The preview itself was not published; this release adds Files to stable 1.1.80.1 and demo 1.1.81, with English and Russian What's New notes. No new GitHub Release is required.
 
 ## Behavior
 
@@ -26,3 +26,7 @@ Physical mouse/key input through QEMU additionally checked:
 The tab-hover test initially exposed a Qt abort: a delegate's QML signal handler remained active across synchronous `QDrag::exec` while navigation destroyed the delegate. Native drag startup now runs on a queued C++ timer with guarded window/drag pointers, outside the QML handler. Saving a tab no longer resets the tab strip's model. The copy, tab-hover move and cancellation checks above passed after that fix.
 
 Artifacts are under `out/previews/files` and `out/test-logs/files`. These runs used a virtual GPU and local temporary files; they do not establish behavior on every physical desktop or network filesystem.
+
+## Publication correction
+
+An initial publisher invocation omitted `--demo` and briefly put the demo packages in the stable suite (APT commit `669d79e`). GitHub Pages deployed that index for roughly two minutes before the suites were restored. Corrective packages use versions above every interim package: stable apps 1.1.80.1 / desktop and Calamares 1.4.69.1; demo apps 1.1.81 / desktop and Calamares 1.4.69.2. Desktop content comes from the original corresponding channel; only its package revision changes. Apps require the matching desktop revision. This allows APT to repair affected clients without a forced downgrade. Final channel indexes are staged together and published in one atomic Git push.
