@@ -4055,3 +4055,21 @@ msgstr "Android-приложения работают только в сеанс
 #: apps/settings/qml/pages/AndroidPage.qml
 msgid "Sign out"
 msgstr "Выйти"
+
+msgid "Unnamed Bluetooth device"
+msgstr "Bluetooth-устройство без имени"
+
+msgid "Couldn't search for devices."
+msgstr "Не удалось запустить поиск устройств."
+
+msgid "Waiting for a Bluetooth adapter…"
+msgstr "Ожидание Bluetooth-адаптера…"
+
+msgid "Some devices haven't provided a name yet."
+msgstr "Некоторые устройства ещё не передали название."
+
+msgid "Some devices do not broadcast a name. You can identify them by their Bluetooth address."
+msgstr "Некоторые устройства не передают название. Их можно определить по Bluetooth-адресу."
+
+msgid "Show devices without names (%1)"
+msgstr "Показать устройства без имени (%1)"

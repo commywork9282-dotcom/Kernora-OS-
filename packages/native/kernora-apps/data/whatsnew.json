@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-05-1",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "icon": "preferences-system-bluetooth",
+        "title": {
+          "en": "Clearer Bluetooth device names",
+          "ru": "Понятные имена Bluetooth-устройств"
+        },
+        "text": {
+          "en": "Pairing now picks up device names as they arrive and starts searching when your adapter is ready. Named devices stay in a stable list; devices that have not provided a name remain accessible under “Show devices without names”. Your custom names are kept. Failed searches can be retried, and leaving the page releases only Kernora’s own search session.",
+          "ru": "При сопряжении названия обновляются по мере получения, а поиск запускается, когда адаптер готов. Именованные устройства отображаются в стабильном списке; остальные доступны через «Показать устройства без имени». Ваши собственные названия сохраняются. Неудачный поиск можно повторить, а при уходе со страницы освобождается только поисковая сессия Kernora."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-04-4",
     "date": "2026-11-04",
     "items": [

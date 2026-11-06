@@ -9,13 +9,14 @@ import QtQuick.Controls as QQC2
 import org.kernora.m3
 import org.kernora.ui
 import "../components"
+import "../components/BluetoothNames.js" as BluetoothNames
 
 SettingsPage {
     id: page
 
     property var device
 
-    title: device ? device.name : ""
+    title: device ? BluetoothNames.deviceName(device) || i18n("Unnamed Bluetooth device") : ""
     subtitle: device ? (device.connected ? i18n("Connected") : i18n("Not connected")) : ""
 
     RowLayout {
@@ -39,7 +40,7 @@ SettingsPage {
 
         ListItem {
             title: i18n("Name")
-            subtitle: page.device ? page.device.name : ""
+            subtitle: page.device ? BluetoothNames.deviceName(page.device) || i18n("Unnamed Bluetooth device") : ""
             icon: "document-edit"
             iconStyle: "plain"
             chevron: true
@@ -77,7 +78,7 @@ SettingsPage {
         acceptText: i18n("Rename")
         acceptEnabled: nameField.text.trim().length > 0
         onOpened: {
-            nameField.text = page.device.name;
+            nameField.text = BluetoothNames.deviceName(page.device);
             nameField.forceActiveFocus();
         }
         onAccepted: page.device.name = nameField.text.trim()
