@@ -297,6 +297,24 @@ protocols the hwcomposer uses. On top of plain forwarding it:
   again and `taskmanagerrulesrc` touched: the icons correct themselves, but
   a panel button that already holds two windows stays shared until one closes.
 
+- keeps the desktop window when the hwcomposer closes it. An activity that
+  restarts on a size change can leave a task with no drawable layer for a
+  moment, and the hwcomposer closes a window with no layers. The next window
+  was a new KWin window, so fullscreen, maximize and position were gone. Now
+  the destroy of the toplevel, xdg_surface, root surface and viewport is
+  answered with `delete_id` and not forwarded. The layers stay too, so the last
+  frame stays on screen. When a toplevel with the same app id appears, its
+  new server objects are destroyed and its client ids point at the old ones,
+  with a made-up configure so `window::create()` can go on. The frozen layers
+  go when the first new frame arrives. The window is dropped after 10 s, at
+  once after a user close, or when `kernora-android-windows` sends `gone` for
+  a task that was removed or moved to the back. A restart took 4.4 s in the VM.
+- scales the app's layers to the frame during a resize and for 2 s after it,
+  until Android has drawn the new size. Subsurfaces aren't clipped to the
+  window, so without this a shrinking window showed the old frame sticking
+  out past its edges, over the wallpaper. Scaled layers take wrong clicks, so
+  the scale never stays on for long.
+
 Android's own window chrome is switched off in three places.
 `persist.wm.debug.caption_on_shell=true` removes the caption apps draw inside
 their window, which also pushed Unity's surface out of place. `KernoraShell.apk`,
@@ -307,6 +325,59 @@ The handles matter because their corner squares reached 22 dp into the app
 and ate clicks there. Esc is Android's Back, which replaces the caption's
 back arrow.
 
+Video needs help in two places. Waydroid's framework only names a SurfaceView
+layer `TID:<task>#...` when the view's context is an `Activity`. YouTube, Google
+Photos and NewPipe use a wrapped context, so their video layer has no task, and
+the hwcomposer drops layers without one: the app runs and plays sound over a
+black hole. VLC isn't affected, because it draws through OpenGL in its own
+window. `libkernora-android-layers.so` fixes this without touching the image.
+`zz-kernora-composer.rc` in `overlay/system/etc/init` overrides the composer
+service (the name sorts after `init.waydroid.rc`, and an override in `/vendor`
+is ignored) and preloads the library. It replaces three functions the
+hwcomposer calls through its PLT:
+
+- `split_layer_names_helper::split_layer_name`: remembers which task each
+  `pkg/Activity` belongs to from layers that have a `TID:`, and adds that task
+  to layers that don't.
+- `create_shm_wl_buffer`: video from software decoders is RGB_565, and the shm
+  path only knows 32-bit formats. Those buffers are created as RGBX.
+- `GraphicBufferMapper::lock`: hands the hwcomposer's copy loop a 32-bit
+  version of the frame. Hardware graphics import RGB_565 directly and never get
+  here.
+
+The library has no libc++ or NDK dependency: it reads libc++ strings by hand
+and is built by gcc with `-nostdlib`, so nothing it needs is resolved until
+bionic loads it.
+
+Android's own input order needs help too. `layoutAndAssignWindowLayersIfNeeded`
+skips assigning layers when focus changed, on the assumption that the focus
+change did it, but that only happens when an IME window exists, and Kernora has
+none. WindowManager's order changes and SurfaceFlinger's doesn't, so the input
+dispatcher keeps the launch order. Tasks overlap on Android's screen, so every
+click went to the app opened last. `kernora-android-windows` watches
+`wm_focused_root_task` and calls `resizeTask` with the task's own bounds and
+`RESIZE_MODE_USER_FORCED`, which reaches that function with focus unchanged, then
+`syncInputTransactions(true)` to wait for the result. Neither call touches the
+app. The transaction numbers are for Android 13 only, so the helper checks the
+SDK. Other ways of doing this fail: `am start` pauses and resumes the app and
+clears `singleTask` stacks, and `startActivityFromRecents` raises home and
+closes every other window. A task move or a resize that only changes position
+doesn't assign layers.
+
+`kernora-android-display` keeps input in step with that:
+
+- a press or wheel event on a window Android doesn't have on top sends a
+  `wl_keyboard.enter` for it, which the hwcomposer turns into `setFocusedTask`;
+- input waits until the helper answers `fronted`, for at most 0.5 s, and a held
+  press and release stay 60 ms apart, because Android loses a click delivered
+  in one go;
+- a key press moves Android back to the window KWin has active;
+- pointer motion over a window that isn't on top is held back, so it can't
+  reach the app in front, and is sent with the next press;
+- `wl_pointer.enter` is followed by a made-up `motion`: the hwcomposer ignores
+  the position in `enter`, and KWin sends no motion for a pointer that stands
+  still while a window appears under it.
+
 `kernora-android-windows` (root, started after boot) applies the rest:
 
 - `arrange()` keeps every task's top-left corner off every other task.
@@ -316,7 +387,9 @@ back arrow.
   screen is 64 px larger than the largest monitor. Android positions have no
   meaning on the desktop. It runs again after every resize and orientation
   change, and whenever the display service reports that a window went away.
-- `resize()` turns requests from the pipe into `am task resize`.
+- `resize()` turns requests from the pipe into `am task resize`. Tasks are found
+  by the packages of their activities: the `A=` name in `dumpsys` is the task
+  affinity, and Settings' is `com.android.settings.root`.
 - `open_large()` gives a resizable app with no fixed orientation a tablet-sized
   window the first time it opens, before it has laid itself out. Apps pick
   their layout when they start, and YouTube kept its phone layout, stretched,
@@ -325,8 +398,9 @@ back arrow.
 - `reshape()` turns a window round when an app asks for the other orientation.
   In a window of the wrong shape Android letterboxes it into a flat strip.
 
-Permission questions are Kernora windows. When `GrantPermissionsActivity`
-resumes, `kernora-android-windows` tells the display service to hold the app:
+Permission questions are Kernora windows. Only a dump from the permission
+controller counts, and only one question is open at a time. When
+`GrantPermissionsActivity` resumes, `kernora-android-windows` tells the display service to hold the app:
 every layer much smaller than the app's largest one moves off screen. It then
 reads the question with `uiautomator dump`, which needs `EXTERNAL_STORAGE` set
 in `waydroid shell`, and passes the text and button labels to
@@ -421,4 +495,7 @@ Store.
   Settings and the APK installer say the same thing.
 - Apps that check for a certified device: banking apps, some streaming apps,
   games with anti-cheat.
+- Apps with Google Play's automatic protection (`libpairipcore.so`), such as
+  DevCheck. They crash at start in the x86_64 and in the ARM build, at the same
+  integrity check, so it isn't a translation problem.
 - App bundles (`.xapk`, `.apks`, `.aab`); only single APK files install.

@@ -46,7 +46,22 @@ PULSE_SERIAL = 0xF0000000
 LISTED_WITHIN = 8
 MENU_SETTLES = 2
 PANEL_SETTLES = 5
+KEPT_FOR = 10
+FIT_FOR = 2
+FAKE_SERIAL = 0xF0000001
+ACK_CONFIGURE = 4
+SET_DESTINATION = 2
+SET_POSITION = 1
+COMMIT = 6
+DESTROY = 0
+FOCUS_SLOTS = {("wl_pointer", "enter"): 1, ("wl_pointer", "leave"): 1, ("wl_keyboard", "enter"): 1, ("wl_keyboard", "leave"): 1, ("wl_touch", "down"): 2}
 SET_APP_ID = 3
+INPUT = {"wl_pointer", "wl_touch", "wl_keyboard"}
+KEYBOARD_ENTER = 1
+POINTER_MOTION = 2
+PRESSED = 1
+FRONT_SETTLES = 0.5
+CLICK_TAKES = 0.06
 SYSTEM_ENTRIES = "/usr/share/applications"
 DIALOG = "/usr/bin/kernora-androiddialog"
 
@@ -120,6 +135,19 @@ class Surface:
         self.unlisted = False
         self.rebuilding = False
         self.announce_at = 0.0
+        self.server_id: int | None = None
+        self.viewport: int | None = None
+        self.client_view: int | None = None
+        self.client_surface: int | None = None
+        self.xdg_server: int | None = None
+        self.decoration: int | None = None
+        self.closing = False
+        self.kept_until = 0.0
+        self.had_focus = False
+        self.owner: Surface | None = None
+        self.frozen: list[int] = []
+        self.fitted: tuple[tuple[int, int], tuple[int, int]] | None = None
+        self.fit_until = 0.0
         self.want: tuple[int, int] | None = None
         self.settled = False
         self.resizing = False
@@ -171,7 +199,16 @@ class Session:
         self.toplevels: dict[int, Surface] = {}
         self.waiting: dict[Surface, int] = {}
         self.focused: int | None = None
+        self.keyboard: int | None = None
+        self.enter_serial = 0
+        self.front: Surface | None = None
+        self.pointed: Surface | None = None
+        self.input_held_until = 0.0
+        self.held_input: list[tuple[int | None, bytes, bool]] = []
+        self.parked_motion: bytes | None = None
         self.wm_base: int | None = None
+        self.kept: dict[str, Surface] = {}
+        self.gone: dict[str, float] = {}
 
     def allocate(self) -> int:
         if self.free:
@@ -189,11 +226,61 @@ class Session:
     def send(self, object_id: int, opcode: int, payload: bytes = b"") -> None:
         self.server_out += struct.pack("<II", object_id, ((8 + len(payload)) << 16) | opcode) + payload
 
+    def window_of(self, server_surface: int) -> Surface | None:
+        surface = self.surfaces.get(self.to_client.get(server_surface, 0))
+        while surface is not None and surface.parent is not None:
+            surface = surface.parent
+        return surface
+
+    def bring_forward(self, window: Surface | None) -> None:
+        now = time.monotonic()
+        if window is None or window.client_surface is None or self.keyboard is None:
+            return
+        changed = window is not self.front
+        if changed or now >= self.input_held_until:
+            self.client_out += struct.pack("<IIIII", self.keyboard, (20 << 16) | KEYBOARD_ENTER, self.enter_serial,
+                                           window.client_surface, 0)
+        if changed:
+            self.front = window
+            self.input_held_until = now + FRONT_SETTLES
+        if self.parked_motion is not None:
+            self.deliver_input(None, self.parked_motion)
+            self.parked_motion = None
+
+    def front_settled(self) -> None:
+        self.input_held_until = 0.0
+        self.release_input()
+
+    def release_input(self) -> None:
+        while self.held_input:
+            surface, data, pressed = self.held_input.pop(0)
+            if surface is None or surface in self.to_server:
+                self.client_out += data
+            if pressed:
+                self.input_held_until = time.monotonic() + CLICK_TAKES
+                return
+
+    def deliver_input(self, surface: int | None, data: bytes, pressed: bool = False) -> None:
+        if time.monotonic() >= self.input_held_until:
+            self.release_input()
+        if self.held_input or time.monotonic() < self.input_held_until:
+            self.held_input.append((surface, data, pressed))
+            return
+        self.client_out += data
+
     def pulse(self) -> None:
         if self.wm_base is not None:
             self.client_out += struct.pack("<III", self.wm_base, 12 << 16, PULSE_SERIAL)
         now = time.monotonic()
-        for surface in self.surfaces.values():
+        for surface in list(self.kept.values()):
+            if now >= surface.kept_until:
+                self.drop_kept(surface)
+        for key, surface in self.surfaces.items():
+            if surface.fit_until and now >= surface.fit_until and not surface.resizing:
+                surface.fit_until = 0.0
+                if surface.mapped and surface.xdg is not None:
+                    self.before_commit(self.to_server[key], surface)
+                    self.send(self.to_server[key], COMMIT)
             if surface.unlisted and surface.mapped and entry(surface.app) and not surface.rebuilding:
                 surface.rebuilding = True
                 rebuild_menu()
@@ -225,6 +312,88 @@ class Session:
         object_id = self.inject("zxdg_toplevel_decoration_v1")
         self.send(self.decoration_manager, 1, struct.pack("<II", object_id, self.to_server[toplevel]))
         self.send(object_id, 1, struct.pack("<I", SERVER_SIDE))
+        if toplevel in self.toplevels:
+            self.toplevels[toplevel].decoration = object_id
+
+    def drop_decoration(self, surface: Surface) -> None:
+        if surface.decoration is not None:
+            self.send(surface.decoration, DESTROY)
+            surface.decoration = None
+
+    def retire(self, *objects: int | None) -> None:
+        for object_id in objects:
+            if object_id is not None:
+                self.to_client.pop(object_id, None)
+                self.injected.add(object_id)
+                self.send(object_id, DESTROY)
+
+    def release(self, client_id: int) -> None:
+        object_id = self.to_server.pop(client_id, None)
+        self.to_client.pop(object_id, None)
+        self.client_out += struct.pack("<III", 1, (12 << 16) | 1, client_id)
+
+    def owner_of(self, surface: Surface) -> Surface | None:
+        if surface.owner is None and surface.parent is not None and surface.parent.kept_until:
+            surface.owner = surface.parent
+        return surface.owner
+
+    def freeze(self, owner: Surface, client_id: int) -> None:
+        owner.frozen.append(self.to_server[client_id])
+        self.release(client_id)
+
+    def thaw(self, surface: Surface) -> None:
+        self.retire(*surface.frozen)
+        surface.frozen.clear()
+
+    def may_keep(self, surface: Surface) -> bool:
+        return surface.mapped and not surface.closing and bool(surface.app) and time.monotonic() - self.gone.get(surface.app, -60) > 1
+
+    def keep(self, surface: Surface) -> None:
+        if surface.app in self.kept:
+            self.drop_kept(self.kept[surface.app])
+        surface.kept_until = time.monotonic() + KEPT_FOR
+        surface.had_focus = self.focused == surface.client_surface
+        self.kept[surface.app] = surface
+
+    def drop_kept(self, surface: Surface) -> None:
+        self.kept.pop(surface.app, None)
+        surface.kept_until = 0.0
+        self.thaw(surface)
+        self.drop_decoration(surface)
+        self.retire(surface.toplevel, surface.xdg_server)
+        self.drop_backing(surface)
+        self.retire(surface.viewport, surface.server_id)
+        self.tell_helper("arrange")
+
+    def task_gone(self, app: str) -> None:
+        self.gone[app] = time.monotonic()
+        if app in self.kept:
+            self.drop_kept(self.kept[app])
+
+    def adopt(self, kept: Surface, fresh: Surface, toplevel: int) -> None:
+        del self.kept[kept.app]
+        kept.kept_until = 0.0
+        self.drop_decoration(fresh)
+        self.retire(self.to_server[toplevel], fresh.xdg_server, fresh.viewport, fresh.server_id)
+        pairs = ((fresh.client_surface, kept.server_id), (fresh.xdg, kept.xdg_server), (toplevel, kept.toplevel), (fresh.client_view, kept.viewport))
+        for client_id, server_id in pairs:
+            if client_id is not None:
+                self.to_server[client_id] = server_id
+                self.to_client[server_id] = client_id
+        kept.client_surface = fresh.client_surface
+        kept.client_view = fresh.client_view
+        kept.xdg = fresh.xdg
+        self.surfaces[kept.client_surface] = kept
+        self.xdg_surfaces[kept.xdg] = kept
+        self.toplevels[toplevel] = kept
+        if kept.client_view is not None:
+            self.viewports[kept.client_view] = kept
+        if kept.had_focus:
+            self.focused = kept.client_surface
+        self.client_out += struct.pack("<IIiiI", toplevel, 20 << 16, 0, 0, 0)
+        self.client_out += struct.pack("<III", kept.xdg, 12 << 16, FAKE_SERIAL)
+        if kept.closing:
+            self.client_out += struct.pack("<II", toplevel, (8 << 16) | 1)
 
     def assets(self) -> None:
         if self.black is not None or self.compositor is None or self.shm is None:
@@ -311,11 +480,31 @@ class Session:
                 self.before_commit(self.to_server[key], surface)
                 self.send(self.to_server[key], 6)
 
+    def fit(self, surface: Surface, rect: tuple[int, int, int, int]) -> None:
+        live = surface.want is not None and (surface.resizing or time.monotonic() < surface.fit_until)
+        wide = surface.want[0] / rect[2] if live else 1
+        tall = surface.want[1] / rect[3] if live else 1
+        for child in surface.children:
+            if child.viewport is None or child.subsurface is None or child.server_id is None or child.hidden or not child.has_buffer \
+                    or child.size[0] <= 1 or child.size[1] <= 1:
+                continue
+            size = max(1, round(child.size[0] * wide)), max(1, round(child.size[1] * tall))
+            position = rect[0] + round((child.position[0] - rect[0]) * wide), rect[1] + round((child.position[1] - rect[1]) * tall)
+            wanted = None if (size, position) == (child.size, child.position) else (size, position)
+            if wanted != child.fitted:
+                child.fitted = wanted
+                self.send(child.viewport, SET_DESTINATION, struct.pack("<ii", *size))
+                self.send(child.subsurface, SET_POSITION, struct.pack("<ii", *position))
+                self.send(child.server_id, COMMIT)
+
     def before_commit(self, surface_id: int, surface: Surface) -> None:
         self.hide_questions(surface)
         rect = self.content(surface)
         if rect is None:
             return
+        if surface.frozen and not surface.kept_until:
+            self.thaw(surface)
+        content = rect
         if surface.want:
             if close_to(rect[2:], surface.want):
                 surface.settled = True
@@ -351,6 +540,7 @@ class Session:
             surface.geometry = rect
             self.send(self.to_server[surface.xdg], 3, struct.pack("<iiii", *rect))
         self.place_backing(surface_id, surface, rect)
+        self.fit(surface, content)
 
     @staticmethod
     def walk(signature: list, body: bytes, translate, created) -> tuple[bytearray, list, int]:
@@ -416,13 +606,20 @@ class Session:
         elif name == "commit" and surface.xdg is not None:
             self.before_commit(object_id, surface)
         elif name == "destroy":
+            owner = self.owner_of(surface)
             if surface.parent:
                 surface.parent.children.discard(surface)
             for child in surface.children:
                 child.parent = None
             self.waiting.pop(surface, None)
-            self.drop_backing(surface)
             self.surfaces.pop(client_id, None)
+            if surface.kept_until:
+                self.release(client_id)
+                return True
+            if owner:
+                self.freeze(owner, client_id)
+                return True
+            self.drop_backing(surface)
             if surface.mapped:
                 self.tell_helper("arrange")
         return False
@@ -452,8 +649,12 @@ class Session:
                 self.shm = values[1]
             elif target == "xdg_wm_base":
                 self.wm_base = values[1]
+        elif interface == "wl_seat" and name == "get_keyboard":
+            self.keyboard = values[0]
         elif interface == "wl_compositor" and name == "create_surface":
             self.surfaces[values[0]] = Surface()
+            self.surfaces[values[0]].server_id = self.to_server[values[0]]
+            self.surfaces[values[0]].client_surface = values[0]
         elif interface == "wl_subcompositor" and name == "get_subsurface":
             child = self.surfaces[values[1]]
             parent = self.surfaces[values[2]]
@@ -465,19 +666,35 @@ class Session:
             child = self.subsurfaces.get(client_id)
             if child and name == "set_position":
                 child.position = struct.unpack_from("<ii", body)
+                child.fitted = None
                 if child.hidden:
                     return
             elif child and name == "destroy":
+                owner = self.owner_of(child)
                 if child.parent:
                     child.parent.children.discard(child)
                 child.parent = None
                 self.subsurfaces.pop(client_id, None)
+                if owner:
+                    self.freeze(owner, client_id)
+                    return
         elif interface == "wp_viewporter" and name == "get_viewport":
             self.viewports[values[0]] = self.surfaces[values[1]]
+            self.surfaces[values[1]].viewport = self.to_server[values[0]]
+            self.surfaces[values[1]].client_view = values[0]
+        elif interface == "wp_viewport" and name == "destroy":
+            surface = self.viewports.pop(client_id, None)
+            if surface and surface.kept_until:
+                self.release(client_id)
+                return
+            if surface and self.owner_of(surface):
+                self.freeze(surface.owner, client_id)
+                return
         elif interface == "wp_viewport" and name == "set_destination":
             surface = self.viewports.get(client_id)
             if surface:
                 surface.size = struct.unpack_from("<ii", body)
+                surface.fitted = None
         elif interface == "wl_surface":
             if self.track_surface(client_id, object_id, name, values, out):
                 return
@@ -486,11 +703,19 @@ class Session:
         elif interface == "xdg_wm_base" and name == "get_xdg_surface":
             surface = self.surfaces[values[1]]
             surface.xdg = values[0]
+            surface.xdg_server = self.to_server[values[0]]
             self.xdg_surfaces[values[0]] = surface
         elif interface == "xdg_surface":
             if name == "set_window_geometry":
                 return
+            if name == "destroy":
+                surface = self.xdg_surfaces.pop(client_id, None)
+                if surface and surface.kept_until:
+                    self.release(client_id)
+                    return
             if name == "ack_configure":
+                if values[0] == FAKE_SERIAL:
+                    return
                 self.forward(object_id, opcode, out)
                 self.after_ack(client_id)
                 return
@@ -505,6 +730,17 @@ class Session:
                 surface = self.toplevels.get(client_id)
                 if surface:
                     surface.app = values[0][:-1].decode().removeprefix("waydroid.")
+                    if surface.app in self.kept:
+                        self.adopt(self.kept[surface.app], surface, client_id)
+                        return
+            elif name == "destroy":
+                surface = self.toplevels.pop(client_id, None)
+                if surface and self.may_keep(surface):
+                    self.keep(surface)
+                    self.release(client_id)
+                    return
+                if surface:
+                    self.drop_decoration(surface)
             elif name in ("set_maximized", "unset_maximized", "move", "resize"):
                 return
         self.forward(object_id, opcode, out)
@@ -544,6 +780,9 @@ class Session:
         width, height = struct.unpack_from("<ii", body)
         struct.pack_into("<ii", out, 0, 0, 0)
         surface = self.toplevels.get(client_id)
+        self.resized(surface, width, height, states)
+
+    def resized(self, surface: Surface | None, width: int, height: int, states: bytes) -> None:
         if surface is None or not surface.mapped or not surface.geometry or width <= 0 or height <= 0:
             return
         active = set(struct.unpack_from(f"<{len(states) // 4}I", states))
@@ -555,6 +794,7 @@ class Session:
         if asked and (surface.want or not close_to((width, height), surface.geometry[2:])):
             surface.want = (width, height)
             surface.settled = False
+            surface.fit_until = time.monotonic() + FIT_FOR
             if not resizing:
                 self.tell_android(surface, width, height)
 
@@ -565,16 +805,32 @@ class Session:
                           b"" if STATE_FULLSCREEN in surface.layout else struct.pack("<I", 0))
                 return
 
+    def kept_event(self, object_id: int, opcode: int, body: bytes) -> None:
+        for surface in self.kept.values():
+            if object_id == surface.xdg_server and opcode == 0:
+                self.send(object_id, ACK_CONFIGURE, body[:4])
+            elif object_id == surface.toplevel and opcode == 0:
+                width, height, size = struct.unpack_from("<iiI", body)
+                self.resized(surface, width, height, body[12:12 + size])
+            elif object_id == surface.toplevel and opcode == 1:
+                surface.closing = True
+
     def event(self, object_id: int, opcode: int, body: bytes) -> None:
         interface = self.interfaces.get(object_id)
         client_id = self.to_client.get(object_id)
-        if interface is None or (object_id in self.injected and object_id != 1) or client_id is None:
+        if interface is None or (object_id in self.injected and object_id != 1):
+            return
+        if client_id is None:
+            self.kept_event(object_id, opcode, body)
             return
         message = self.table[interface]["events"][opcode]
         out, values, fds = self.walk(message["args"], body, lambda value: self.to_client.get(value, 0), self.server_object)
         self.client_fds.extend(self.client_in_fds[:fds])
         del self.client_in_fds[:fds]
         name = message["name"]
+        slot = FOCUS_SLOTS.get((interface, name))
+        if slot is not None and values[slot] not in self.to_client:
+            return
         if interface == "wl_display" and name == "delete_id":
             target = values[0]
             mapped = self.to_client.pop(target, None)
@@ -602,13 +858,48 @@ class Session:
                 return
         elif interface == "xdg_toplevel" and name == "configure":
             self.configure(client_id, body, values[2], out)
+        elif interface == "xdg_toplevel" and name == "close":
+            if client_id in self.toplevels:
+                self.toplevels[client_id].closing = True
         elif interface == "wl_keyboard" and name == "enter":
             self.focused = self.to_client.get(values[1])
-        elif interface == "wl_keyboard" and name == "key" and values[2] == KEY_F11:
-            if values[3] == 1:
-                self.toggle_fullscreen()
+            self.enter_serial = values[0]
+            window = self.window_of(values[1])
+            if window is not self.front:
+                self.front = window
+                self.input_held_until = time.monotonic() + FRONT_SETTLES
+        elif interface == "wl_keyboard" and name == "key":
+            if values[2] == KEY_F11:
+                if values[3] == PRESSED:
+                    self.toggle_fullscreen()
+                return
+            window = self.surfaces.get(self.focused)
+            if window is not self.front:
+                self.bring_forward(window)
+        elif interface == "wl_pointer" and name == "enter":
+            self.pointed = self.window_of(values[1])
+            self.parked_motion = None
+        elif interface == "wl_pointer" and name == "button" and values[3] == PRESSED:
+            self.bring_forward(self.pointed)
+        elif interface == "wl_pointer" and name == "axis" and self.pointed is not self.front:
+            self.bring_forward(self.pointed)
+        elif interface == "wl_touch" and name == "down":
+            self.bring_forward(self.window_of(values[2]))
+        data = struct.pack("<II", client_id, ((8 + len(out)) << 16) | opcode) + out
+        if interface == "wl_pointer" and name == "motion" and self.pointed is not self.front:
+            self.parked_motion = data
             return
-        self.client_out += struct.pack("<II", client_id, ((8 + len(out)) << 16) | opcode) + out
+        if interface in INPUT and name not in ("keymap", "enter") or (interface, name) == ("wl_pointer", "enter"):
+            pressed = (interface, name) == ("wl_touch", "down") or ((interface, name) == ("wl_pointer", "button") and values[3] == PRESSED)
+            self.deliver_input(self.to_client.get(values[slot]) if slot is not None else None, data, pressed)
+        else:
+            self.client_out += data
+        if interface == "wl_pointer" and name == "enter":
+            moved = struct.pack("<IIIII", client_id, (20 << 16) | POINTER_MOTION, 0, values[2], values[3])
+            if self.pointed is self.front:
+                self.deliver_input(None, moved)
+            else:
+                self.parked_motion = moved
 
     @staticmethod
     def pump(buffer: bytearray, handler) -> None:
@@ -715,6 +1006,12 @@ def read_ready(fd: int, runtime: str, sessions: set[Session], ready: dict[str, f
         command, _space, value = line.partition(" ")
         if command == "dialog":
             ask(runtime, value)
+        elif command == "gone":
+            for session in sessions:
+                session.task_gone(value)
+        elif command == "fronted":
+            for session in sessions:
+                session.front_settled()
         elif command in ("hold", "release"):
             (held.add if command == "hold" else held.discard)(value)
             for session in sessions:
@@ -768,6 +1065,7 @@ def serve(table: dict, runtime: str, upstream: str) -> None:
     next_pulse = time.monotonic() + PULSE
     while True:
         due = [moment for moment in (session.next_show() for session in sessions) if moment is not None]
+        due += [session.input_held_until for session in sessions if session.held_input]
         if sessions:
             due.append(next_pulse)
         events = selector.select(max(0, min(due) - time.monotonic()) if due else None)
@@ -779,6 +1077,9 @@ def serve(table: dict, runtime: str, upstream: str) -> None:
         for session in list(sessions):
             if session.next_show() is not None:
                 session.show_due()
+                deliver(session)
+            if session.held_input and time.monotonic() >= session.input_held_until:
+                session.release_input()
                 deliver(session)
         for key, mask in events:
             if key.fd == ready_fd:

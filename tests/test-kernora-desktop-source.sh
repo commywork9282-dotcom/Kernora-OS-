@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.69.2" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.70" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -289,10 +289,11 @@ grep -Fq 'setting global force_resizable_activities 1' "$android/kernora-android
   && grep -Fq 'windows-reset-2' "$android/kernora-android" \
   && grep -Fq "section 'App exits'" "$android/kernora-android" \
   && grep -Fq "section 'Android restarts'" "$android/kernora-android" \
-  && timeout 60 python3 -I - "$android/kernora-android-display" <<'EOF' \
-  || fail "Android can freeze on a new window, or windows can reach the panel before their entry"
+  && timeout 60 python3 -I - "$android/kernora-android-display" "$android/wayland-protocols.json" <<'EOF' \
+  || fail "Android can freeze on a new window, windows can reach the panel before their entry, or lose their state when an app restarts"
 import importlib.machinery
 import importlib.util
+import json
 import os
 import pathlib
 import socket
@@ -351,6 +352,97 @@ with tempfile.TemporaryDirectory() as folder:
     ok = ok and surface.backing is None
     for item in (first, second, third, fourth):
         item.close()
+    with open(sys.argv[2], encoding="utf-8") as handle:
+        protocols = json.load(handle)
+    first, second = socket.socketpair()
+    third, fourth = socket.socketpair()
+    session = display.Session(protocols, folder, {}, set(), first, third)
+    session.tell_helper = lambda line: None
+    for client, interface in ((2, "wl_compositor"), (3, "wp_viewporter"), (4, "xdg_wm_base"), (5, "wl_subcompositor")):
+        session.client_object(client, interface)
+
+    def number(*values: int) -> bytes:
+        return struct.pack(f"<{len(values)}I", *values)
+
+    def name(text: str) -> bytes:
+        return display.wayland_string(text)
+
+    def window(base: int) -> None:
+        session.request(2, 0, number(base))
+        session.request(3, 1, number(base + 1, base))
+        session.request(4, 2, number(base + 2, base))
+        session.request(base + 2, 1, number(base + 3))
+        session.request(base + 3, 3, name("waydroid.com.example"))
+
+    window(10)
+    root = session.surfaces[10]
+    root.mapped = True
+    root.geometry = (0, 0, 100, 100)
+    root.want = (200, 200)
+    root.layout = {2}
+    servers = root.server_id, root.xdg_server, root.toplevel, root.viewport
+    session.request(2, 0, number(30))
+    session.request(3, 1, number(31, 30))
+    session.request(5, 1, number(32, 30, 10))
+    child = session.surfaces[30]
+    child.has_buffer = True
+    child.size = (100, 100)
+    session.client_out.clear()
+    session.server_out.clear()
+    session.request(13, 0, b"")
+    session.request(12, 0, b"")
+    session.request(32, 0, b"")
+    session.request(31, 0, b"")
+    session.request(30, 0, b"")
+    session.request(11, 0, b"")
+    session.request(10, 0, b"")
+    ok = ok and session.kept.get("com.example") is root and len(root.frozen) == 3 and not session.server_out
+    ok = ok and all(client not in session.to_server for client in (10, 11, 12, 13, 30, 31, 32))
+    ok = ok and len(session.client_out) == 7 * 12
+    window(20)
+    ok = ok and not session.kept and session.surfaces[20] is root and session.toplevels[23] is root
+    ok = ok and (session.to_server[20], session.to_server[22], session.to_server[23], session.to_server[21]) == servers
+    ok = ok and struct.pack("<III", 22, 12 << 16, display.FAKE_SERIAL) in bytes(session.client_out)
+    session.server_out.clear()
+    session.request(22, 4, number(display.FAKE_SERIAL))
+    ok = ok and not session.server_out
+    session.request(22, 4, number(77))
+    ok = ok and bytes(session.server_out).startswith(struct.pack("<III", servers[1], (12 << 16) | 4, 77))
+    ok = ok and root.want == (200, 200) and root.layout == {2}
+    session.toplevels[23].closing = False
+    session.request(23, 0, b"")
+    session.request(22, 0, b"")
+    session.request(21, 0, b"")
+    session.request(20, 0, b"")
+    ok = ok and "com.example" in session.kept
+    session.task_gone("com.example")
+    ok = ok and not session.kept and all(server in session.injected for server in servers)
+    window(40)
+    fresh = session.surfaces[40]
+    fresh.mapped = True
+    session.task_gone("com.example")
+    session.request(43, 0, b"")
+    ok = ok and not session.kept
+    fresh.closing = True
+    session.gone.clear()
+    ok = ok and not session.may_keep(fresh)
+    parent = display.Surface()
+    fitted = display.Surface()
+    fitted.viewport, fitted.subsurface, fitted.server_id, fitted.has_buffer = 50, 51, 52, True
+    fitted.size, fitted.position = (100, 50), (10, 10)
+    parent.children.add(fitted)
+    parent.want = (200, 100)
+    parent.resizing = True
+    session.server_out.clear()
+    session.fit(parent, (10, 10, 100, 50))
+    ok = ok and fitted.fitted == ((200, 100), (10, 10)) and struct.pack("<IIii", 50, (16 << 16) | 2, 200, 100) in bytes(session.server_out)
+    parent.resizing = False
+    parent.fit_until = 0
+    session.server_out.clear()
+    session.fit(parent, (10, 10, 100, 50))
+    ok = ok and fitted.fitted is None and struct.pack("<IIii", 50, (16 << 16) | 2, 100, 50) in bytes(session.server_out)
+    for item in (first, second, third, fourth):
+        item.close()
 sys.exit(0 if ok else 1)
 EOF
 [[ -x "$android/kernora-android-windows" ]] \
@@ -382,6 +474,12 @@ dump = """  * Task{8589fef #230 type=standard A=10127:org.fossify.math U=0 visib
 windows.android = lambda *args, **kwargs: dump
 found = windows.tasks()
 ok = sorted(found) == [230, 231] and found[230]["bounds"] == (495, 32, 944, 809) and found[230]["freeform"]
+windows.android = lambda *args, **kwargs: """  * Task{1 #40 type=standard A=1000:com.android.settings.root U=0 visible=true mode=freeform translucent=false sz=1}
+    mBounds=Rect(1, 1 - 900, 700)
+    * Hist  #0: ActivityRecord{2 u0 com.android.settings/.Settings} t40}
+"""
+ok = ok and windows.tasks()[40]["package"] == "com.android.settings" and "com.android.settings" in windows.tasks()[40]["packages"]
+windows.android = lambda *args, **kwargs: dump
 sent = []
 
 
@@ -434,6 +532,10 @@ question = windows.read_dialog()
 ok = ok and question == {"title": "Allow Maps to use this?", "message": "", "buttons": [("Allow", 50, 40), ("Don't allow", 50, 70)]}
 windows.android = lambda *args, **kwargs: "broken"
 ok = ok and windows.read_dialog() is None
+windows.android = lambda *args, **kwargs: ui.replace("<node ", '<node package="org.schabi.newpipe" ')
+ok = ok and windows.read_dialog() is None
+windows.android = lambda *args, **kwargs: ui.replace("<node ", '<node package="com.android.permissioncontroller" ')
+ok = ok and windows.read_dialog() is not None
 told.clear()
 taps = []
 windows.android = lambda *args, **kwargs: taps.append(args) or ""
@@ -441,8 +543,11 @@ windows.time.sleep = lambda seconds: None
 asked = windows.Questions("pipe")
 asked.package = "com.example.maps"
 asked.buttons = question["buttons"]
+asked.asking = True
+asked.ask("com.example.maps")
+ok = ok and not taps and not told
 asked.answer("none")
-ok = ok and not taps and told == ["release com.example.maps"]
+ok = ok and not taps and told == ["release com.example.maps"] and not asked.asking
 told.clear()
 asked.answer("2")
 ok = ok and ("input", "tap", "50", "70") in taps and told == ["release com.example.maps"]
@@ -461,6 +566,8 @@ ok = ok and calls == [("settings", "put", "system", "screen_off_timeout", "21474
                       ("settings", "put", "system", "screen_off_timeout", "1800000")]
 created = windows.EVENT.match("I/wm_create_task: [0,31]")
 removed = windows.EVENT.match("I/wm_task_removed( 280): [27,removeTask]")
+moved = windows.EVENT.match("I/wm_task_moved( 280): [27,0,0]")
+ok = ok and moved.group(1) == "wm_task_moved" and moved.group(2) == "27" and moved.group(3) == "0"
 ok = ok and created.group(1) == "wm_create_task" and created.group(3) == "31"
 ok = ok and removed.group(1) == "wm_task_removed" and removed.group(2) == "27"
 sys.exit(0 if ok else 1)
@@ -766,6 +873,295 @@ layout = {"outputs": [
 ]}
 session.quiet = lambda *args, **kwargs: subprocess.CompletedProcess(args, 0, json.dumps(layout), "")
 ok = ok and session.kernora_screens() == [(0, 0, 1536, 864), (1536, 0, 2560, 1440)]
+sys.exit(0 if ok else 1)
+EOF
+grep -Fxq 'data/android/zz-kernora-composer.rc usr/share/kernora/android' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'generated/android/libkernora-android-layers.so usr/share/kernora/android' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq 'kernora-android-layers.c' "$package_root/debian/rules" \
+  && grep -Eq '^Build-Depends:.* gcc,' "$package_root/debian/control" \
+  && grep -Fq 'composer_target=$work/overlay/system/etc/init' "$android/kernora-android" \
+  && grep -Fq 'layers_target=$work/overlay/vendor/lib64' "$android/kernora-android" \
+  && grep -Fq 'setenv LD_PRELOAD /vendor/lib64/libkernora-android-layers.so' "$android/zz-kernora-composer.rc" \
+  && grep -Fxq '    override' "$android/zz-kernora-composer.rc" \
+  || fail "the Android layer library is not packaged or installed"
+layers_test=$(mktemp -d)
+cat > "$layers_test/harness.c" <<'EOF'
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "kernora-android-layers.c"
+
+static char seen[NAME_SIZE + 1];
+static const char *gralloc = "minigbm_gbm_mesa";
+static unsigned short frame[4] = {0xf800, 0x07e0, 0x001f, 0xffff};
+static struct wayland_buffer created;
+
+static void *fake_split(void *result, const void *name)
+{
+    struct text value = read_string(name);
+    memcpy(seen, value.data, value.size);
+    seen[value.size] = 0;
+    return result;
+}
+
+static void *fake_create(void **result, void *display, const struct buffer_metadata *metadata, const void *handle)
+{
+    (void)display;
+    created.handle = handle;
+    created.metadata = *metadata;
+    *result = &created;
+    return result;
+}
+
+static int fake_lock(void *mapper, const void *handle, unsigned int usage, const void *bounds, void **address, int *pixel, int *stride)
+{
+    (void)mapper; (void)handle; (void)usage; (void)bounds; (void)pixel; (void)stride;
+    *address = frame;
+    return 0;
+}
+
+int dladdr(const void *address, struct library_info *info)
+{
+    (void)address;
+    info->file = "hwcomposer";
+    return 1;
+}
+
+void *dlopen(const char *file, int flags)
+{
+    (void)file; (void)flags;
+    return &created;
+}
+
+void *dlsym(void *library, const char *symbol)
+{
+    (void)library;
+    return !strcmp(symbol, SPLIT_SYMBOL) ? (void *)fake_split : !strcmp(symbol, CREATE_SYMBOL) ? (void *)fake_create : (void *)fake_lock;
+}
+
+int __system_property_get(const char *name, char *value)
+{
+    (void)name;
+    strcpy(value, gralloc);
+    return 0;
+}
+
+#define SPLIT _ZN24split_layer_names_helper16split_layer_nameERKNSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE
+
+static void name(const char *text)
+{
+    size_t size = strlen(text);
+    char result[96];
+    if (size <= 22) {
+        unsigned char small[24] = {0};
+        small[0] = (unsigned char)(size << 1);
+        memcpy(small + 1, text, size);
+        SPLIT(result, small);
+        return;
+    }
+    struct long_string full = {size + 2, size, text};
+    full.capacity |= 1;
+    SPLIT(result, &full);
+}
+
+int main(void)
+{
+    name("TID:45#org.example/org.example.Main#185");
+    name("org.example/org.example.Main(BLAST)#194");
+    if (strcmp(seen, "TID:45#org.example/org.example.Main(BLAST)#194")) return 1;
+    name("org.example/org.example.Main$Background#195");
+    if (strcmp(seen, "TID:45#org.example/org.example.Main$Background#195")) return 2;
+    name("org.example/org.example.Player(BLAST)#196");
+    if (strcmp(seen, "TID:45#org.example/org.example.Player(BLAST)#196")) return 3;
+    name("InputMethod#9");
+    if (strcmp(seen, "InputMethod#9")) return 4;
+    name("org.other/org.other.Main(BLAST)#7");
+    if (strcmp(seen, "org.other/org.other.Main(BLAST)#7")) return 5;
+    name("TID:46#org.example/org.example.Main#300");
+    name("org.example/org.example.Main(BLAST)#301");
+    if (strcmp(seen, "TID:46#org.example/org.example.Main(BLAST)#301")) return 6;
+    name("TID:47#org.example/org.example.Second#302");
+    name("org.example/org.example.Main(BLAST)#303");
+    if (strcmp(seen, "TID:46#org.example/org.example.Main(BLAST)#303")) return 11;
+    void *result = NULL;
+    int handle = 0;
+    struct buffer_metadata metadata = {2, 2, 2, HAL_RGB_565};
+    _Z20create_shm_wl_bufferP7displayRK15buffer_metadataPK13native_handle(&result, NULL, &metadata, &handle);
+    if (created.metadata.format != HAL_RGB_565 || video_of(&handle) == NULL) return 7;
+    void *address = NULL;
+    _ZN7android19GraphicBufferMapper4lockEPK13native_handlejRKNS_4RectEPPvPiS9_(NULL, &handle, 3, NULL, &address, NULL, NULL);
+    unsigned int *pixel = address;
+    if (pixel[0] != 0xff0000ffu || pixel[1] != 0xff00ff00u || pixel[2] != 0xffff0000u || pixel[3] != 0xffffffffu) return 8;
+    int other = 0;
+    _ZN7android19GraphicBufferMapper4lockEPK13native_handlejRKNS_4RectEPPvPiS9_(NULL, &other, 3, NULL, &address, NULL, NULL);
+    if (address != frame) return 9;
+    metadata.format = HAL_RGBX_8888;
+    _Z20create_shm_wl_bufferP7displayRK15buffer_metadataPK13native_handle(&result, NULL, &metadata, &handle);
+    if (video_of(&handle) != NULL) return 10;
+    return 0;
+}
+EOF
+gcc -std=c11 -Wall -Wextra -Wno-unused-function -I"$android" -o "$layers_test/harness" "$layers_test/harness.c" \
+  && "$layers_test/harness" \
+  && gcc -std=c11 -Wall -Wextra -Werror -O2 -fPIC -shared -nostdlib -ffreestanding -fno-builtin -fno-stack-protector \
+       -o "$layers_test/layers.so" "$android/kernora-android-layers.c" \
+  && [[ $(nm -D --defined-only "$layers_test/layers.so" | grep -c ' T ') -eq 3 ]] \
+  || fail "the Android layer library gives video layers the wrong task"
+rm -rf "$layers_test"
+timeout 60 python3 -I - "$android/kernora-android-display" "$android/wayland-protocols.json" "$android/kernora-android-windows" <<'EOF' \
+  || fail "Android windows do not take clicks in the right order"
+import importlib.machinery
+import importlib.util
+import json
+import socket
+import struct
+import sys
+import time
+
+
+def load(name, path):
+    loader = importlib.machinery.SourceFileLoader(name, path)
+    module = importlib.util.module_from_spec(importlib.util.spec_from_loader(name, loader))
+    loader.exec_module(module)
+    return module
+
+
+display = load("display", sys.argv[1])
+windows = load("windows", sys.argv[3])
+with open(sys.argv[2], encoding="utf-8") as handle:
+    protocols = json.load(handle)
+first, second = socket.socketpair()
+third, fourth = socket.socketpair()
+session = display.Session(protocols, "/tmp", {}, set(), first, third)
+session.tell_helper = lambda line: None
+
+
+def opcode(interface, name):
+    return [item["name"] for item in protocols[interface]["events"]].index(name)
+
+
+def window(client):
+    server = session.client_object(client, "wl_surface")
+    item = display.Surface()
+    item.server_id = server
+    item.client_surface = client
+    session.surfaces[client] = item
+    return item, server
+
+
+def layer(client, parent):
+    item, server = window(client)
+    item.parent = parent
+    return item, server
+
+
+keyboard = session.client_object(20, "wl_keyboard")
+pointer = session.client_object(21, "wl_pointer")
+session.keyboard = 20
+one, one_server = window(30)
+two, two_server = window(31)
+one_layer, one_layer_server = layer(32, one)
+two_layer, two_layer_server = layer(33, two)
+
+
+def enter(server):
+    session.event(keyboard, opcode("wl_keyboard", "enter"), struct.pack("<III", 7, server, 0))
+
+
+def hover(server, x=256, y=512):
+    session.event(pointer, opcode("wl_pointer", "enter"), struct.pack("<IIII", 8, server, x, y))
+
+
+def press(state=1):
+    session.event(pointer, opcode("wl_pointer", "button"), struct.pack("<IIII", 9, 1, 272, state))
+
+
+def sent(interface, name, target):
+    word = opcode(interface, name)
+    data = bytes(session.client_out)
+    found = []
+    while data:
+        client, header = struct.unpack_from("<II", data)
+        size = header >> 16
+        if client == target and header & 0xFFFF == word:
+            found.append(data[8:size])
+        data = data[size:]
+    return found
+
+
+enter(one_server)
+ok = session.front is one and len(sent("wl_keyboard", "enter", 20)) == 1 and time.monotonic() < session.input_held_until
+session.front_settled()
+session.client_out.clear()
+hover(two_layer_server)
+ok = ok and session.pointed is two and session.parked_motion is not None and not sent("wl_pointer", "motion", 21)
+session.event(pointer, opcode("wl_pointer", "motion"), struct.pack("<III", 1, 300, 400))
+ok = ok and not sent("wl_pointer", "motion", 21)
+enter(two_server)
+ok = ok and session.front is two and len(sent("wl_keyboard", "enter", 20)) == 1
+press()
+press(0)
+ok = ok and not sent("wl_pointer", "button", 21) and len(session.held_input) == 3
+session.front_settled()
+ok = ok and len(sent("wl_pointer", "motion", 21)) == 1 and len(sent("wl_pointer", "button", 21)) == 1
+ok = ok and session.held_input and time.monotonic() < session.input_held_until
+session.input_held_until = 0.0
+session.release_input()
+ok = ok and len(sent("wl_pointer", "button", 21)) == 2 and not session.held_input
+session.client_out.clear()
+session.front = one
+session.pointed = two
+press()
+ok = ok and sent("wl_keyboard", "enter", 20)[0][4:8] == struct.pack("<I", 31)
+ok = ok and not sent("wl_pointer", "button", 21) and session.front is two
+session.front_settled()
+session.input_held_until = 0.0
+session.client_out.clear()
+session.focused = 30
+session.front = two
+session.event(keyboard, opcode("wl_keyboard", "key"), struct.pack("<IIII", 9, 1, 30, 1))
+ok = ok and sent("wl_keyboard", "enter", 20)[0][4:8] == struct.pack("<I", 30) and session.front is one
+session.front_settled()
+session.input_held_until = 0.0
+session.client_out.clear()
+hover(two_layer_server)
+ok = ok and not sent("wl_pointer", "motion", 21)
+session.event(pointer, opcode("wl_pointer", "axis"), struct.pack("<IIi", 1, 0, 2560))
+ok = ok and session.front is two and sent("wl_keyboard", "enter", 20)[0][4:8] == struct.pack("<I", 31)
+session.input_held_until = time.monotonic() + 1
+session.held_input.append((99, b"gone", False))
+session.input_held_until = 0.0
+session.release_input()
+ok = ok and b"gone" not in bytes(session.client_out)
+for item in (first, second, third, fourth):
+    item.close()
+
+ok = ok and windows.FOCUS.match("I/wm_focused_root_task: [0,0,72,73,setFocusedTask]").group(1) == "72"
+ok = ok and windows.FOCUS.match("I/wm_focused_root_task(  254): [0,0,88,87,moveTaskToFront findTaskToMoveToFront]").group(1) == "88"
+ok = ok and not windows.EVENT.match("I/wm_focused_root_task: [0,0,72,73,setFocusedTask]")
+
+
+class Shell:
+    def __init__(self):
+        self.commands = []
+
+    def run(self, command):
+        self.commands.append(command)
+        if command.startswith("dumpsys"):
+            return ("  * Task{abc #7 type=standard A=1000:org.example U=0 visible=true mode=freeform translucent=false sz=1}\n"
+                    "    mBounds=Rect(3, 3 - 1120, 633)\n")
+        return ""
+
+
+front = windows.Front.__new__(windows.Front)
+front.shell = Shell()
+front.reorder(7)
+ok = ok and len(front.shell.commands) == 2
+ok = ok and "activity_task 49 i32 7 i32 1 i32 3 i32 3 i32 1120 i32 633 i32 3" in front.shell.commands[1]
+ok = ok and "service call window 104 i32 1" in front.shell.commands[1]
+front.shell = Shell()
+front.reorder(8)
+ok = ok and len(front.shell.commands) == 1
 sys.exit(0 if ok else 1)
 EOF
 grep -Fq '"ro.product.waydroid.model": model' "$android/kernora-android-device" \

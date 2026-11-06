@@ -1,0 +1,9 @@
+service vendor.hwcomposer-2-1 /vendor/bin/hw/android.hardware.graphics.composer@2.1-service --desktop_file_hint=Waydroid.desktop
+    override
+    class hal animation
+    user host
+    group system graphics drmrpc
+    capabilities SYS_NICE
+    onrestart restart surfaceflinger
+    task_profiles ServiceCapacityLow
+    setenv LD_PRELOAD /vendor/lib64/libkernora-android-layers.so

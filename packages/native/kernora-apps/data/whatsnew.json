@@ -1,5 +1,44 @@
 [
   {
+    "id": "2026-11-06-3",
+    "date": "2026-11-06",
+    "items": [
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Video plays in Android apps",
+          "ru": "Видео в приложениях Android"
+        },
+        "text": {
+          "en": "YouTube and other video apps now show the picture instead of a black window.",
+          "ru": "YouTube и другие приложения с видео теперь показывают картинку, а не чёрное окно."
+        }
+      },
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Clicks go to the right Android app",
+          "ru": "Клики попадают в нужное приложение"
+        },
+        "text": {
+          "en": "With several Android apps open, clicks and the mouse wheel now reach the window under the pointer, not the app you opened last.",
+          "ru": "Когда открыто несколько приложений Android, клики и колесо мыши теперь попадают в окно под курсором, а не в приложение, открытое последним."
+        }
+      },
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Better fullscreen and resizing",
+          "ru": "Полный экран и размер окна работают лучше"
+        },
+        "text": {
+          "en": "Android apps stay in fullscreen when they restart their screen, and the picture follows the window while you resize it.",
+          "ru": "Приложения Android больше не выпадают из полного экрана, а при изменении размера картинка следует за окном."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-06-2",
     "date": "2026-11-06",
     "items": [

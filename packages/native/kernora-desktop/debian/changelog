@@ -1,3 +1,20 @@
+kernora-desktop (1.4.70) UNRELEASED; urgency=medium
+
+  * Android windows survive an app restarting its screen: fullscreen,
+    maximize and position stay, and the last frame stays on screen meanwhile.
+  * Android apps scale to the window frame while it is being resized.
+  * Fullscreen, maximize and resize work for apps whose task has its own
+    affinity name.
+  * Only real permission questions become Kernora dialogs, one at a time.
+  * Video shows in apps that play through a wrapped context, like YouTube and
+    Google Photos: a small library in the composer gives those layers their
+    task, and software graphics can show the 16-bit video buffers.
+  * Clicks and the mouse wheel reach the Android window under the pointer:
+    Android's input order now follows focus, and a press waits for it.
+  * A window that appears under a still pointer knows where the pointer is.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 14:00:00 -0800
+
 kernora-desktop (1.4.69.2) UNRELEASED; urgency=medium
 
   * Keep stable and demo contents separated and use versions above the

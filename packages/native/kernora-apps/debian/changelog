@@ -1,3 +1,10 @@
+kernora-apps (1.1.82) UNRELEASED; urgency=medium
+
+  * What's new: video in Android apps, clicks reaching the right Android
+    window, better fullscreen and resizing.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 14:30:00 -0800
+
 kernora-apps (1.1.81) UNRELEASED; urgency=medium
 
   * Keep stable and demo contents separated and use versions above the

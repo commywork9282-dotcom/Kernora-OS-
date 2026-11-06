@@ -143,6 +143,8 @@ data/android/kernora-android-done.path usr/lib/systemd/user
 data/android/kernora-android-done.service usr/lib/systemd/user
 generated/android/KernoraCaption.apk usr/share/kernora/android
 generated/android/KernoraShell.apk usr/share/kernora/android
+generated/android/libkernora-android-layers.so usr/share/kernora/android
+data/android/zz-kernora-composer.rc usr/share/kernora/android
 data/android/waydroid usr/bin
 data/android/kernora-android@.service usr/lib/systemd/system
 data/android/kernora-android-update.service usr/lib/systemd/system

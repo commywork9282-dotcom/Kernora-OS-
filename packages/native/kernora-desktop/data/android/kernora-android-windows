@@ -23,15 +23,24 @@ SKIP = {
     "com.android.systemui",
 }
 TASK = re.compile(r"^(\s*)\* Task\{\w+ #(\d+) type=(\w+) (?:A=\d+:|I=)([\w.]+)\S*.* mode=(\S+) translucent=(\w+)")
+HISTORY = re.compile(r"\* Hist\s+#\d+: ActivityRecord\{\w+ u\d+ ([\w.]+)/")
 AWAKE = "2147483647"
 IDLE = "1800000"
-EVENT = re.compile(r"^\w/(wm_create_task|wm_task_removed|wm_set_requested_orientation|wm_set_resumed_activity)\s*(?:\(\s*\d+\))?:\s*\[(-?\d+),\s*([^,\]]+)")
+EVENT = re.compile(r"^\w/(wm_create_task|wm_task_removed|wm_task_moved|wm_set_requested_orientation|wm_set_resumed_activity)\s*(?:\(\s*\d+\))?:\s*\[(-?\d+),\s*([^,\]]+)")
+FOCUS = re.compile(r"^\w/wm_focused_root_task\s*(?:\(\s*\d+\))?:\s*\[\d+,\s*\d+,\s*(\d+),")
+ANDROID_13 = "33"
+RESIZE_TASK = 49
+RESIZE_FORCED = 3
+SYNC_INPUT = 104
+DONE = "kernora-shell-done"
+SHELL_LIMIT = 3
 BOUNDS = re.compile(r"mBounds=Rect\((-?\d+), (-?\d+) - (-?\d+), (-?\d+)\)")
 RESIZE_MODE = re.compile(r"\bresizeMode=(RESIZE_MODE_\w+)")
 ORIENTATION = re.compile(r"\brequestedOrientation=(SCREEN_ORIENTATION_\w+)")
 REQUEST = re.compile(r"^resize ([\w.]+) (\d{1,5}) (\d{1,5}) (\d{1,5}) (\d{1,5})$")
 ANSWER = re.compile(r"^answer (\d|none)$")
 PERMISSION = "GrantPermissionsActivity"
+ASKS = "permissioncontroller"
 DUMP = "/sdcard/Download/.kernora-dialog.xml"
 BOX = re.compile(r"\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\]")
 QUESTION = ("permission_message", "alertTitle")
@@ -43,6 +52,7 @@ STEP = 2
 TABLET = (1064, 600)
 LIMIT = 0.85
 LOCK = threading.Lock()
+OPEN: dict[int, str] = {}
 
 
 def android(*command: str, timeout: float = 30) -> str:
@@ -53,21 +63,85 @@ def android(*command: str, timeout: float = 30) -> str:
         return ""
 
 
-def tasks() -> dict[int, dict]:
+class Shell:
+    def __init__(self) -> None:
+        self.process: subprocess.Popen | None = None
+
+    def run(self, command: str) -> str:
+        if self.process is None or self.process.poll() is not None:
+            self.process = subprocess.Popen([REAL, "shell", "--", "sh"], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                            stderr=subprocess.DEVNULL, text=True)
+        process = self.process
+        watchdog = threading.Timer(SHELL_LIMIT, process.kill)
+        watchdog.start()
+        lines: list[str] = []
+        try:
+            process.stdin.write(f"{command} 2>/dev/null; echo {DONE}\n")
+            process.stdin.flush()
+            for line in process.stdout:
+                if line.strip() == DONE:
+                    break
+                lines.append(line)
+        except (OSError, ValueError):
+            process.kill()
+        finally:
+            watchdog.cancel()
+        return "".join(lines)
+
+
+class Front:
+    def __init__(self, pipe: str) -> None:
+        self.pipe = pipe
+        self.shell = Shell()
+        self.wanted = 0
+        self.changed = threading.Condition()
+        self.supported = android("getprop", "ro.build.version.sdk").strip() == ANDROID_13
+        threading.Thread(target=self.serve, daemon=True).start()
+
+    def bring(self, task_id: int) -> None:
+        with self.changed:
+            self.wanted = task_id
+            self.changed.notify()
+
+    def reorder(self, task_id: int) -> None:
+        with LOCK:
+            task = tasks(self.shell.run("dumpsys activity activities")).get(task_id)
+            if task is not None and movable(task):
+                left, top, right, bottom = task["bounds"]
+                self.shell.run(f"service call activity_task {RESIZE_TASK} i32 {task_id} i32 1 i32 {left} i32 {top} "
+                               f"i32 {right} i32 {bottom} i32 {RESIZE_FORCED} >/dev/null; "
+                               f"service call window {SYNC_INPUT} i32 1 >/dev/null")
+
+    def serve(self) -> None:
+        while True:
+            with self.changed:
+                while not self.wanted:
+                    self.changed.wait()
+                task_id, self.wanted = self.wanted, 0
+            if self.supported:
+                self.reorder(task_id)
+            tell_display(self.pipe, "fronted")
+
+
+def tasks(dump: str | None = None) -> dict[int, dict]:
     found: dict[int, dict] = {}
     current = None
-    for line in android("dumpsys", "activity", "activities").splitlines():
+    for line in (android("dumpsys", "activity", "activities") if dump is None else dump).splitlines():
         match = TASK.match(line)
         if match:
             task_id = int(match.group(2))
             current = None
             if task_id not in found and match.group(3) == "standard":
-                current = {"package": match.group(4), "freeform": match.group(5) == "freeform", "bounds": None,
-                           "resize": "", "orientation": ""}
+                current = {"package": match.group(4), "packages": {match.group(4)}, "freeform": match.group(5) == "freeform",
+                           "bounds": None, "resize": "", "orientation": ""}
                 found[task_id] = current
             continue
         if current is None:
             continue
+        history = HISTORY.search(line)
+        if history:
+            current["package"] = history.group(1)
+            current["packages"].add(history.group(1))
         bounds = BOUNDS.search(line)
         if bounds and current["bounds"] is None:
             current["bounds"] = tuple(int(value) for value in bounds.groups())
@@ -113,7 +187,7 @@ def arrange() -> None:
 def resize(package: str, old_width: int, width: int, height: int) -> None:
     with LOCK:
         for task_id, task in tasks().items():
-            if task["package"] == package and movable(task):
+            if package in task["packages"] and movable(task):
                 left, top, right, _bottom = task["bounds"]
                 ratio = (right - left) / max(1, old_width)
                 set_bounds(task_id, left, top, left + round(width * ratio), top + round(height * ratio))
@@ -146,6 +220,7 @@ def open_large(task_id: int, known: set[str], pipe: str) -> None:
             return
         first = task["package"] not in known
         known.add(task["package"])
+        OPEN[task_id] = task["package"]
         if (first and movable(task) and task["resize"] in RESIZABLE
                 and task["orientation"] == "SCREEN_ORIENTATION_UNSPECIFIED"):
             size = display()
@@ -162,7 +237,7 @@ def reshape(orientation: int, component: str) -> None:
     package = component.split("/")[0]
     with LOCK:
         for task_id, task in tasks().items():
-            if task["package"] != package or not movable(task):
+            if package not in task["packages"] or not movable(task):
                 continue
             left, top, right, bottom = task["bounds"]
             wide = right - left > bottom - top
@@ -184,6 +259,8 @@ def read_dialog() -> dict | None:
         return None
     title = message = ""
     buttons: list[tuple[str, int, int]] = []
+    if any(ASKS not in node.get("package", ASKS) for node in root.iter("node")):
+        return None
     for node in root.iter("node"):
         name = node.get("resource-id", "").rsplit("/", 1)[-1]
         text = node.get("text", "").strip()
@@ -204,9 +281,12 @@ class Questions:
     def __init__(self, pipe: str) -> None:
         self.pipe = pipe
         self.package = ""
+        self.asking = False
         self.buttons: list[tuple[str, int, int]] = []
 
     def ask(self, package: str) -> None:
+        if self.asking:
+            return
         self.package = package
         tell_display(self.pipe, f"hold {package}")
         found = read_dialog()
@@ -214,10 +294,12 @@ class Questions:
             tell_display(self.pipe, f"release {package}")
             return
         self.buttons = found["buttons"]
+        self.asking = True
         tell_display(self.pipe, "dialog " + json.dumps({"package": package, "title": found["title"], "message": found["message"],
                                                         "buttons": [button[0] for button in self.buttons]}, ensure_ascii=True))
 
     def answer(self, reply: str) -> None:
+        self.asking = False
         if reply == "none":
             tell_display(self.pipe, f"release {self.package}")
             return
@@ -271,10 +353,12 @@ def main() -> int:
     known = remembered(pwd.getpwuid(uid).pw_dir) if uid else set()
     pipe = f"/run/user/{uid}/{READY}"
     questions = Questions(pipe)
+    front = Front(pipe)
     if uid:
         threading.Thread(target=requests, args=(f"/run/user/{uid}/{RESIZE}", uid, questions), daemon=True).start()
     stream = subprocess.Popen([REAL, "shell", "--", "logcat", "-b", "events", "-v", "tag", "-T", "1", "wm_create_task:I",
-                               "wm_task_removed:I", "wm_set_requested_orientation:I", "wm_set_resumed_activity:I", "*:S"],
+                               "wm_task_removed:I", "wm_task_moved:I", "wm_set_requested_orientation:I", "wm_set_resumed_activity:I",
+                               "wm_focused_root_task:I", "*:S"],
                               stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
     current: list[str] = []
     running = tasks()
@@ -283,6 +367,10 @@ def main() -> int:
         open_large(task_id, known, pipe)
     arrange()
     for line in stream.stdout:
+        focus = FOCUS.match(line.strip())
+        if focus:
+            front.bring(int(focus.group(1)))
+            continue
         match = EVENT.match(line.strip())
         if not match:
             continue
@@ -290,7 +378,12 @@ def main() -> int:
             keep_awake(True, current)
             open_large(int(match.group(3)), known, pipe)
             arrange()
+        elif match.group(1) == "wm_task_moved":
+            if match.group(3) == "0" and int(match.group(2)) in OPEN:
+                tell_display(pipe, f"gone {OPEN[int(match.group(2))]}")
         elif match.group(1) == "wm_task_removed":
+            if int(match.group(2)) in OPEN:
+                tell_display(pipe, f"gone {OPEN.pop(int(match.group(2)))}")
             time.sleep(0.6)
             keep_awake(bool(tasks()), current)
             arrange()

@@ -11,6 +11,10 @@ overlay_source=/usr/share/kernora/android/KernoraCaption.apk
 overlay_target=$work/overlay/system/product/overlay/KernoraCaption
 shell_overlay_source=/usr/share/kernora/android/KernoraShell.apk
 shell_overlay_target=$work/overlay/system/product/overlay/KernoraShell
+layers_source=/usr/share/kernora/android/libkernora-android-layers.so
+layers_target=$work/overlay/vendor/lib64
+composer_source=/usr/share/kernora/android/zz-kernora-composer.rc
+composer_target=$work/overlay/system/etc/init
 sources=/etc/apt/sources.list.d/kernora-android.sources
 template=/usr/share/kernora/apt/kernora-android.sources
 real=/usr/bin/waydroid.waydroid
@@ -201,6 +205,10 @@ install_overlay() {
   [[ -s $shell_overlay_source ]] || return 0
   install -d -m 0755 "$shell_overlay_target"
   install -m 0644 "$shell_overlay_source" "$shell_overlay_target/KernoraShell.apk"
+  [[ -s $layers_source && -s $composer_source ]] || return 0
+  install -d -m 0755 "$layers_target" "$composer_target"
+  install -m 0644 "$layers_source" "$layers_target/libkernora-android-layers.so"
+  install -m 0644 "$composer_source" "$composer_target/zz-kernora-composer.rc"
 }
 
 setup_android() {
