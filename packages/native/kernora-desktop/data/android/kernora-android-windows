@@ -172,7 +172,8 @@ def reshape(orientation: int, component: str) -> None:
                     return
                 ratio = min(1, size[0] * LIMIT / (bottom - top), size[1] * LIMIT / (right - left))
                 set_bounds(task_id, left, top, left + round((bottom - top) * ratio), top + round((right - left) * ratio))
-            return
+            break
+    arrange()
 
 
 def read_dialog() -> dict | None:
@@ -243,6 +244,8 @@ def requests(path: str, uid: int, questions: "Questions") -> None:
                 continue
             with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW), encoding="ascii", errors="ignore") as handle:
                 for line in handle:
+                    if line.strip() == "arrange":
+                        arrange()
                     match = REQUEST.match(line.strip())
                     if match:
                         resize(match.group(1), int(match.group(2)), int(match.group(4)), int(match.group(5)))
@@ -274,7 +277,10 @@ def main() -> int:
                                "wm_task_removed:I", "wm_set_requested_orientation:I", "wm_set_resumed_activity:I", "*:S"],
                               stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
     current: list[str] = []
-    keep_awake(bool(tasks()), current)
+    running = tasks()
+    keep_awake(bool(running), current)
+    for task_id in running:
+        open_large(task_id, known, pipe)
     arrange()
     for line in stream.stdout:
         match = EVENT.match(line.strip())

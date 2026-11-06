@@ -298,9 +298,9 @@ copy_screens() {
   else
     rm -f "$state_dir/screens"
   fi
-  if [[ -n $home && ! -e $state_dir/windows-reset ]] && ! session_active; then
+  if [[ -n $home && ! -e $state_dir/windows-reset-2 ]] && ! session_active; then
     rm -f "$home/.local/share/waydroid/data/system_ce/0/launch_params/"*.xml
-    : > "$state_dir/windows-reset"
+    : > "$state_dir/windows-reset-2"
   fi
   if [[ -n $home && -f $home/.cache/kernora/android-ready ]]; then
     "$device" suspend-action freeze
@@ -474,6 +474,14 @@ collect_report() {
     android_shell dumpsys connectivity | grep -E '^ *NetworkAgentInfo|PrivateDns|Private DNS' | cut -c1-900 | head -n 12
     android_shell ping -c 2 -W 3 8.8.8.8
     android_shell ping -c 1 -W 3 play.googleapis.com
+    section 'Open apps'
+    android_shell dumpsys activity activities | grep -E '^  \* Task\{.*type=standard|^    mBounds=|^ *\* Hist' | cut -c1-140 | head -n 40
+    section 'App exits'
+    for package in com.android.vending $(android_shell pm list packages -3 | sed -n 's/^package://p' | tr -d '\r' | head -n 40); do
+      android_shell dumpsys activity exit-info "$package" | grep -E 'process=|timestamp=|description=' | cut -c1-160 | head -n 9
+    done
+    section 'App events'
+    android_shell logcat -d -b events | grep -E ' (am_proc_died|am_kill|am_crash|am_anr|am_low_memory|wm_create_task|wm_task_removed|wm_task_to_front|system_server_start)' | cut -c1-160 | tail -n 80
     section 'Crash log'
     android_shell logcat -d -b crash | tail -n 400
     section 'Errors'
@@ -481,6 +489,8 @@ collect_report() {
   fi
   folder=$home/.local/share/waydroid/data/system/dropbox
   if [[ -d $folder ]]; then
+    section 'Android restarts'
+    ls -t "$folder" 2>/dev/null | grep -E '^system_server_(watchdog|crash|native_crash)' | head -n 8
     section 'Recent app crashes'
     for file in $(ls -t "$folder" 2>/dev/null | grep -E '^(data_app_crash|data_app_native_crash|data_app_anr|system_app_crash)' | head -n 6); do
       printf -- '-- %s\n' "$file"

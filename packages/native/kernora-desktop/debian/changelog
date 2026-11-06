@@ -1,3 +1,17 @@
+kernora-desktop (1.4.69) UNRELEASED; urgency=medium
+
+  * Android apps that can't be resized open as normal windows instead of
+    covering the whole Android screen and closing every other window.
+  * The display helper wakes the Android compositor twice a second, so a new
+    window can't leave it waiting forever and restart Android.
+  * A new Android window waits for its menu entry, so it gets the right icon
+    and its own panel button instead of sharing one marked W.
+  * Android windows are placed again when an app changes orientation or a
+    window goes away, and their backing surfaces are released on close.
+  * Android reports list open apps, why apps closed and Android restarts.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 05 Nov 2026 19:00:00 -0800
+
 kernora-desktop (1.4.68) UNRELEASED; urgency=medium
 
   * Windows look like Chrome OS: a thin title bar with the icon and title on

@@ -281,6 +281,21 @@ protocols the hwcomposer uses. On top of plain forwarding it:
   would otherwise treat them as a new Android screen size. While the mouse
   is down the frame follows at once; on release one line goes to the
   `kernora-android-resize` pipe.
+- pings the hwcomposer twice a second and drops the pong. `window::create()`
+  waits in `wl_display_roundtrip()` while `hwc_wayland_thread` dispatches the
+  same queue. If that thread takes the reply first, the roundtrip sleeps in
+  `poll()` until the next Wayland event. With nothing on screen moving there
+  is none, SurfaceFlinger waits on the hwcomposer, and after a minute the
+  watchdog restarts `system_server` and every app is gone. Any event wakes it;
+  moving the mouse over an Android window did. The hang is rare and could not
+  be triggered on demand.
+- holds a new window until the app's `.desktop` file exists and the menu
+  database (`ksycoca6_*`) is newer than it, for up to 8 s. The panel looks an
+  app up once, when its window appears. It never looks again, and every window
+  with no entry shares the display service's process, so they all became one
+  panel button with a W. If the entry comes after the 8 s, the app id is set
+  again and `taskmanagerrulesrc` touched: the icons correct themselves, but
+  a panel button that already holds two windows stays shared until one closes.
 
 Android's own window chrome is switched off in three places.
 `persist.wm.debug.caption_on_shell=true` removes the caption apps draw inside
@@ -299,7 +314,8 @@ back arrow.
   window with no layers, so a maximized app used to close whatever was behind
   it. Tasks sit on a small diagonal, smallest first, which is why the Android
   screen is 64 px larger than the largest monitor. Android positions have no
-  meaning on the desktop.
+  meaning on the desktop. It runs again after every resize and orientation
+  change, and whenever the display service reports that a window went away.
 - `resize()` turns requests from the pipe into `am task resize`.
 - `open_large()` gives a resizable app with no fixed orientation a tablet-sized
   window the first time it opens, before it has laid itself out. Apps pick
@@ -319,6 +335,14 @@ or 10 for Esc, so a crash is never an answer: the hold is released and
 Android's own dialog shows. An answer becomes `input tap` on the real button.
 If `GrantPermissionsActivity` still has focus afterwards, the next question is
 read the same way.
+
+`force_resizable_activities=1`, set by `kernora-android-sync`, keeps every app
+in a freeform window. Without it Android gives an app with
+`resizeableActivity=false` that isn't portrait-only a `fullscreen` task. That
+task hides all the others, Android stops them, and their windows close. Android
+remembers the mode in `launch_params`, so those files are cleared once, before
+Android starts (marker `windows-reset-2`). The resize mode Android reports does
+not change, so `open_large()` still leaves those apps at their own size.
 
 Android's screen is sized by `kernora-android-device` from the outputs in
 `/var/lib/kernora/android/screens` (from `kscreen-doctor -j`, written by

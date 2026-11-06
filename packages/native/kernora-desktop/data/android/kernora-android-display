@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import array
+import glob
 import json
 import os
 import selectors
@@ -40,6 +41,13 @@ HOLD = 2.5
 SETTLE = 0.25
 READY_FOR = 15
 OFFSCREEN = -32000
+PULSE = 0.5
+PULSE_SERIAL = 0xF0000000
+LISTED_WITHIN = 8
+MENU_SETTLES = 2
+PANEL_SETTLES = 5
+SET_APP_ID = 3
+SYSTEM_ENTRIES = "/usr/share/applications"
 DIALOG = "/usr/bin/kernora-androiddialog"
 
 
@@ -49,6 +57,47 @@ def pad(size: int) -> int:
 
 def close_to(first: tuple[int, int], second: tuple[int, int]) -> bool:
     return abs(first[0] - second[0]) <= SLACK and abs(first[1] - second[1]) <= SLACK
+
+
+def wayland_string(text: str) -> bytes:
+    data = text.encode() + b"\0"
+    return struct.pack("<I", len(data)) + data.ljust(pad(len(data)), b"\0")
+
+
+def entry(app: str) -> str:
+    data = os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
+    for folder in (os.path.join(data, "applications"), SYSTEM_ENTRIES):
+        path = os.path.join(folder, f"waydroid.{app}.desktop")
+        if os.path.exists(path):
+            return path
+    return ""
+
+
+def listed(app: str) -> bool:
+    cache = os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache")
+    path = entry(app)
+    try:
+        built = max((os.path.getmtime(item) for item in glob.glob(os.path.join(glob.escape(cache), "ksycoca6_*"))), default=0)
+        return bool(path) and os.path.getmtime(path) <= built <= time.time() - MENU_SETTLES
+    except OSError:
+        return False
+
+
+def rebuild_menu() -> None:
+    def build() -> None:
+        subprocess.run(["kbuildsycoca6"], check=False, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                       env={**os.environ, "XDG_MENU_PREFIX": os.environ.get("XDG_MENU_PREFIX") or "plasma-"})
+
+    threading.Thread(target=build, daemon=True).start()
+
+
+def refresh_panel() -> None:
+    config = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+    try:
+        with open(os.path.join(config, "taskmanagerrulesrc"), "a", encoding="utf-8"):
+            os.utime(os.path.join(config, "taskmanagerrulesrc"))
+    except OSError:
+        pass
 
 
 class Surface:
@@ -66,6 +115,11 @@ class Surface:
         self.mapped = False
         self.show_at = 0.0
         self.app = ""
+        self.toplevel: int | None = None
+        self.listed_by = 0.0
+        self.unlisted = False
+        self.rebuilding = False
+        self.announce_at = 0.0
         self.want: tuple[int, int] | None = None
         self.settled = False
         self.resizing = False
@@ -117,6 +171,7 @@ class Session:
         self.toplevels: dict[int, Surface] = {}
         self.waiting: dict[Surface, int] = {}
         self.focused: int | None = None
+        self.wm_base: int | None = None
 
     def allocate(self) -> int:
         if self.free:
@@ -133,6 +188,23 @@ class Session:
 
     def send(self, object_id: int, opcode: int, payload: bytes = b"") -> None:
         self.server_out += struct.pack("<II", object_id, ((8 + len(payload)) << 16) | opcode) + payload
+
+    def pulse(self) -> None:
+        if self.wm_base is not None:
+            self.client_out += struct.pack("<III", self.wm_base, 12 << 16, PULSE_SERIAL)
+        now = time.monotonic()
+        for surface in self.surfaces.values():
+            if surface.unlisted and surface.mapped and entry(surface.app) and not surface.rebuilding:
+                surface.rebuilding = True
+                rebuild_menu()
+            if surface.unlisted and surface.mapped and listed(surface.app):
+                surface.unlisted = False
+                surface.announce_at = now + PANEL_SETTLES
+            if surface.announce_at and now >= surface.announce_at and surface.toplevel is not None:
+                surface.announce_at = 0.0
+                self.send(surface.toplevel, SET_APP_ID, wayland_string(f"waydroid.{surface.app}.listed"))
+                self.send(surface.toplevel, SET_APP_ID, wayland_string(f"waydroid.{surface.app}"))
+                refresh_panel()
 
     def bind_decoration(self) -> None:
         if self.decoration_manager or self.registry is None or self.decoration_global is None:
@@ -190,20 +262,28 @@ class Session:
         self.send(surface.backing_view, 2, struct.pack("<ii", rect[2], rect[3]))
         self.send(surface.backing, 6)
 
-    def tell_android(self, surface: Surface, width: int, height: int) -> None:
-        current = self.content(surface)
-        if current is None or not surface.app:
-            return
-        line = f"resize {surface.app} {current[2]} {current[3]} {width} {height}\n"
+    def tell_helper(self, line: str) -> None:
         try:
             fd = os.open(os.path.join(self.runtime, RESIZE), os.O_WRONLY | os.O_NONBLOCK)
         except OSError:
             return
         try:
-            os.write(fd, line.encode())
+            os.write(fd, f"{line}\n".encode())
         except OSError:
             pass
         os.close(fd)
+
+    def tell_android(self, surface: Surface, width: int, height: int) -> None:
+        current = self.content(surface)
+        if current is not None and surface.app:
+            self.tell_helper(f"resize {surface.app} {current[2]} {current[3]} {width} {height}")
+
+    def drop_backing(self, surface: Surface) -> None:
+        if surface.backing is not None:
+            self.send(surface.backing_view, 0)
+            self.send(surface.backing_sub, 0)
+            self.send(surface.backing, 0)
+            surface.backing = surface.backing_sub = surface.backing_view = None
 
     @staticmethod
     def content(surface: Surface) -> tuple[int, int, int, int] | None:
@@ -249,11 +329,20 @@ class Session:
             now = time.monotonic()
             if not surface.show_at:
                 surface.show_at = now + HOLD
+                surface.listed_by = now + LISTED_WITHIN
                 self.waiting[surface] = surface_id
                 if now - self.ready.pop(surface.app, 0) < READY_FOR:
                     surface.show_at = now + SETTLE
             if now < surface.show_at or surface.held_attach is None:
                 return
+            surface.unlisted = not listed(surface.app)
+            if surface.unlisted and entry(surface.app) and not surface.rebuilding:
+                surface.rebuilding = True
+                rebuild_menu()
+            if surface.unlisted and now < surface.listed_by:
+                return
+            if surface.rebuilding and not surface.unlisted:
+                surface.announce_at = now + PANEL_SETTLES
             self.waiting.pop(surface, None)
             self.send(surface_id, 1, surface.held_attach)
             self.send(surface_id, 2, struct.pack("<iiii", 0, 0, 0x7FFFFFFF, 0x7FFFFFFF))
@@ -332,7 +421,10 @@ class Session:
             for child in surface.children:
                 child.parent = None
             self.waiting.pop(surface, None)
+            self.drop_backing(surface)
             self.surfaces.pop(client_id, None)
+            if surface.mapped:
+                self.tell_helper("arrange")
         return False
 
     def request(self, client_id: int, opcode: int, body: bytes) -> None:
@@ -358,6 +450,8 @@ class Session:
                 self.viewporter = values[1]
             elif target == "wl_shm":
                 self.shm = values[1]
+            elif target == "xdg_wm_base":
+                self.wm_base = values[1]
         elif interface == "wl_compositor" and name == "create_surface":
             self.surfaces[values[0]] = Surface()
         elif interface == "wl_subcompositor" and name == "get_subsurface":
@@ -387,6 +481,8 @@ class Session:
         elif interface == "wl_surface":
             if self.track_surface(client_id, object_id, name, values, out):
                 return
+        elif interface == "xdg_wm_base" and name == "pong" and values[0] == PULSE_SERIAL:
+            return
         elif interface == "xdg_wm_base" and name == "get_xdg_surface":
             surface = self.surfaces[values[1]]
             surface.xdg = values[0]
@@ -400,6 +496,7 @@ class Session:
                 return
             if name == "get_toplevel":
                 self.toplevels[values[0]] = self.xdg_surfaces[client_id]
+                self.toplevels[values[0]].toplevel = self.to_server[values[0]]
                 self.forward(object_id, opcode, out)
                 self.decorate(values[0])
                 return
@@ -650,19 +747,44 @@ def serve(table: dict, runtime: str, upstream: str) -> None:
     selector.register(listener, selectors.EVENT_READ, None)
     selector.register(ready_fd, selectors.EVENT_READ, keep_open)
     sessions: set[Session] = set()
+
+    def end(session: Session) -> None:
+        sessions.discard(session)
+        for sock in (session.client, session.server):
+            try:
+                selector.unregister(sock)
+            except (KeyError, ValueError):
+                pass
+        session.close()
+
+    def deliver(session: Session) -> None:
+        try:
+            sync(selector, session)
+        except OSError:
+            traceback.print_exc()
+            end(session)
+
     notify_ready()
+    next_pulse = time.monotonic() + PULSE
     while True:
         due = [moment for moment in (session.next_show() for session in sessions) if moment is not None]
+        if sessions:
+            due.append(next_pulse)
         events = selector.select(max(0, min(due) - time.monotonic()) if due else None)
+        if time.monotonic() >= next_pulse:
+            next_pulse = time.monotonic() + PULSE
+            for session in list(sessions):
+                session.pulse()
+                deliver(session)
         for session in list(sessions):
             if session.next_show() is not None:
                 session.show_due()
-                sync(selector, session)
+                deliver(session)
         for key, mask in events:
             if key.fd == ready_fd:
                 read_ready(ready_fd, runtime, sessions, ready, held)
-                for session in sessions:
-                    sync(selector, session)
+                for session in list(sessions):
+                    deliver(session)
                 continue
             if key.data is None:
                 client, _address = listener.accept()
@@ -691,13 +813,7 @@ def serve(table: dict, runtime: str, upstream: str) -> None:
                 traceback.print_exc()
                 alive = False
             if not alive:
-                sessions.discard(session)
-                for sock in (session.client, session.server):
-                    try:
-                        selector.unregister(sock)
-                    except (KeyError, ValueError):
-                        pass
-                session.close()
+                end(session)
 
 
 def main() -> int:

@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.68" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.69" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -285,10 +285,79 @@ with tempfile.TemporaryDirectory() as folder:
         same = hashlib.sha256(handle.read()).digest() == hashlib.sha256(data).digest()
 sys.exit(0 if same and took < 10 else 1)
 EOF
+grep -Fq 'setting global force_resizable_activities 1' "$android/kernora-android-sync" \
+  && grep -Fq 'windows-reset-2' "$android/kernora-android" \
+  && grep -Fq "section 'App exits'" "$android/kernora-android" \
+  && grep -Fq "section 'Android restarts'" "$android/kernora-android" \
+  && timeout 60 python3 -I - "$android/kernora-android-display" <<'EOF' \
+  || fail "Android can freeze on a new window, or windows can reach the panel before their entry"
+import importlib.machinery
+import importlib.util
+import os
+import pathlib
+import socket
+import struct
+import sys
+import tempfile
+import time
+
+loader = importlib.machinery.SourceFileLoader("display", sys.argv[1])
+display = importlib.util.module_from_spec(importlib.util.spec_from_loader("display", loader))
+loader.exec_module(display)
+ok = display.PULSE <= 1 and display.PULSE_SERIAL > 0xE0000000
+with tempfile.TemporaryDirectory() as folder:
+    root = pathlib.Path(folder)
+    (root / "data/applications").mkdir(parents=True)
+    (root / "cache").mkdir()
+    (root / "config").mkdir()
+    os.environ.update(XDG_DATA_HOME=str(root / "data"), XDG_CACHE_HOME=str(root / "cache"), XDG_CONFIG_HOME=str(root / "config"))
+    display.SYSTEM_ENTRIES = str(root / "system")
+    ok = ok and not display.entry("com.example") and not display.listed("com.example")
+    item = root / "data/applications/waydroid.com.example.desktop"
+    item.write_text("[Desktop Entry]\n", encoding="utf-8")
+    now = time.time()
+    database = root / "cache/ksycoca6_en_x"
+    database.write_text("x", encoding="utf-8")
+    os.utime(item, (now - 60, now - 60))
+    os.utime(database, (now - 1, now - 1))
+    ok = ok and display.entry("com.example") == str(item) and not display.listed("com.example")
+    os.utime(database, (now - 30, now - 30))
+    ok = ok and display.listed("com.example")
+    os.utime(item, (now - 10, now - 10))
+    ok = ok and not display.listed("com.example")
+    display.refresh_panel()
+    ok = ok and (root / "config/taskmanagerrulesrc").exists()
+    table = {"xdg_wm_base": {"requests": [{"name": "destroy", "args": []}, {"name": "create_positioner", "args": [["new_id", "xdg_positioner"]]},
+                                          {"name": "get_xdg_surface", "args": [["new_id", "xdg_surface"], ["object", "wl_surface"]]},
+                                          {"name": "pong", "args": [["uint", ""]]}], "events": []}}
+    first, second = socket.socketpair()
+    third, fourth = socket.socketpair()
+    session = display.Session(table, folder, {}, set(), first, third)
+    session.to_server[5] = 9
+    session.to_client[9] = 5
+    session.interfaces[9] = "xdg_wm_base"
+    session.wm_base = 5
+    session.pulse()
+    ok = ok and bytes(session.client_out) == struct.pack("<III", 5, 12 << 16, display.PULSE_SERIAL)
+    session.request(5, 3, struct.pack("<I", display.PULSE_SERIAL))
+    ok = ok and not session.server_out
+    session.request(5, 3, struct.pack("<I", 77))
+    ok = ok and bytes(session.server_out) == struct.pack("<III", 9, (12 << 16) | 3, 77)
+    surface = display.Surface()
+    surface.backing, surface.backing_sub, surface.backing_view = 40, 41, 42
+    session.server_out.clear()
+    session.drop_backing(surface)
+    ok = ok and bytes(session.server_out) == struct.pack("<II", 42, 8 << 16) + struct.pack("<II", 41, 8 << 16) + struct.pack("<II", 40, 8 << 16)
+    ok = ok and surface.backing is None
+    for item in (first, second, third, fourth):
+        item.close()
+sys.exit(0 if ok else 1)
+EOF
 [[ -x "$android/kernora-android-windows" ]] \
   && grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-windows</annotate>' "$android/org.kernora.android.policy" \
   && grep -Fq 'WINDOWS = "/usr/libexec/kernora-android-windows"' "$android/kernora-android-session" \
   && ! grep -Fq 'def widen' "$android/kernora-android-windows" \
+  && grep -Fq 'for task_id in running:' "$android/kernora-android-windows" \
   && grep -Fxq 'data/android/kernora-android-windows usr/libexec' "$package_root/debian/kernora-desktop.install" \
   && timeout 60 python3 -I - "$android/kernora-android-windows" <<'EOF' \
   || fail "Android windows don't follow the desktop, or cover each other inside Android"
@@ -350,10 +419,11 @@ sent.clear()
 windows.open_large(230, known, "pipe")
 ok = ok and not sent and told[-1] == "org.fossify.math"
 windows.reshape(0, "org.fossify.math/.activities.MainActivity")
-ok = ok and sent == [("am", "task", "resize", "230", "495", "32", "1272", "481")]
+ok = ok and sent[0] == ("am", "task", "resize", "230", "495", "32", "1272", "481")
+ok = ok and ("am", "task", "resize", "231", "1", "1", "441", "761") in sent
 sent.clear()
 windows.reshape(1, "org.fossify.math/.activities.MainActivity")
-ok = ok and not sent
+ok = ok and all(item[5:] != ("1272", "481") for item in sent) and ("am", "task", "resize", "230", "3", "3", "452", "780") in sent
 ui = """<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><hierarchy rotation="0">
 <node text="Allow Maps to use this?" resource-id="com.android.permissioncontroller:id/permission_message" class="android.widget.TextView" enabled="true" bounds="[10,10][90,20]" />
 <node text="Allow" resource-id="com.android.permissioncontroller:id/permission_allow_button" class="android.widget.Button" enabled="true" bounds="[10,30][90,50]" />

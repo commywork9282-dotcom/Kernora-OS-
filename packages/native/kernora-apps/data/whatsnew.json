@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-11-05-4",
+    "date": "2026-11-05",
+    "items": [
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Android windows stay open",
+          "ru": "Окна Android больше не пропадают"
+        },
+        "text": {
+          "en": "Games and apps with a fixed size now open in a normal window and no longer hide your other Android apps. A rare freeze when opening a new window is fixed too.",
+          "ru": "Игры и приложения с фиксированным размером теперь открываются в обычном окне и не прячут другие приложения Android. Заодно исправлено редкое зависание при открытии нового окна."
+        }
+      },
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Every Android app gets its own button",
+          "ru": "У каждого приложения Android своя кнопка"
+        },
+        "text": {
+          "en": "A freshly installed app now opens with its own icon on the panel instead of sharing one button with Google Play.",
+          "ru": "Только что установленное приложение открывается со своим значком на панели и не делит одну кнопку с Google Play."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-05-3",
     "date": "2026-11-05",
     "items": [
