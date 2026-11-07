@@ -13,7 +13,8 @@ import "m3"
 PlasmoidItem {
     id: root
 
-    preferredRepresentation: fullRepresentation
+    readonly property bool inPanel: Plasmoid.formFactor !== PlasmaCore.Types.Planar
+    preferredRepresentation: inPanel ? null : fullRepresentation
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
 
     switchWidth: Plasmoid.configuration.placed ? 0 : 239
@@ -45,6 +46,8 @@ PlasmoidItem {
         Layout.preferredHeight: root.analog ? 220 : 250
         Layout.minimumWidth: 100
         Layout.minimumHeight: 100
+        Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity
+        Layout.maximumHeight: root.inPanel ? Layout.preferredHeight : Infinity
 
         Loader {
             anchors.fill: parent

@@ -6,7 +6,8 @@ import org.kde.ksysguard.sensors as Sensors
 
 PlasmoidItem {
     id: root
-    preferredRepresentation: fullRepresentation
+    readonly property bool inPanel: Plasmoid.formFactor !== PlasmaCore.Types.Planar
+    preferredRepresentation: inPanel ? null : fullRepresentation
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
     switchWidth: Plasmoid.configuration.placed ? 0 : 279
     switchHeight: Plasmoid.configuration.placed ? 0 : 255
@@ -57,6 +58,8 @@ PlasmoidItem {
         Layout.preferredHeight: 256
         Layout.minimumWidth: 240
         Layout.minimumHeight: 220
+        Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity
+        Layout.maximumHeight: root.inPanel ? Layout.preferredHeight : Infinity
         degrees: root.reading
         peak: root.peak
         history: root.history

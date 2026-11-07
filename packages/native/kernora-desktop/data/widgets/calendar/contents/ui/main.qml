@@ -12,7 +12,8 @@ import "m3"
 PlasmoidItem {
     id: root
 
-    preferredRepresentation: fullRepresentation
+    readonly property bool inPanel: Plasmoid.formFactor !== PlasmaCore.Types.Planar
+    preferredRepresentation: inPanel ? null : fullRepresentation
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
 
     switchWidth: Plasmoid.configuration.placed ? 0 : 299
@@ -50,6 +51,8 @@ PlasmoidItem {
         Layout.preferredHeight: 310
         Layout.minimumWidth: 220
         Layout.minimumHeight: 230
+        Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity
+        Layout.maximumHeight: root.inPanel ? Layout.preferredHeight : Infinity
 
         readonly property real cell: Math.min((width - 24) / 7, (height - 84) / 7)
 

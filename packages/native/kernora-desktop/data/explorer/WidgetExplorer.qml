@@ -322,7 +322,7 @@ Item {
                             delegate: WidgetCard {
                                 id: otherCard
                                 explorer: main
-                                shown: main.forPanel || !otherCard.pluginName.startsWith("org.kernora.")
+                                shown: !otherCard.pluginName.startsWith(main.forPanel ? main.kernoraPrefix : "org.kernora.")
                                 slot: main.otherShown.indexOf(otherCard.pluginName)
                                 spacing: main.cardSpacing
                                 pendingUninstalls: main.pendingUninstalls

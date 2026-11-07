@@ -1,3 +1,11 @@
+kernora-desktop (1.4.73) UNRELEASED; urgency=medium
+
+  * The panel's widget list no longer offers Kernora's desktop widgets.
+  * A desktop widget that is on a panel anyway shows as an icon that opens its
+    card, instead of squeezing the card into the panel.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 07 Nov 2026 12:30:00 -0800
+
 kernora-desktop (1.4.72) UNRELEASED; urgency=medium
 
   * Drivers: a catalog of optional drivers, a hardware scanner and a root job

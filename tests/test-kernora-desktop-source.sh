@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.72" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.73" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -1644,7 +1644,15 @@ for widget in clock glance weather battery cputemperature calendar media photo n
   xmllint --noout "$package_root/data/widgets/$widget/contents/config/main.xml" \
     || fail "the $widget widget configuration is not XML"
   grep -q "^WIDGETS = .*\b$widget\b" "$package_root/debian/rules" || fail "the $widget widget is not built"
+  widget_qml="$package_root/data/widgets/$widget/contents/ui/main.qml"
+  grep -Fq 'preferredRepresentation: inPanel ? null : fullRepresentation' "$widget_qml" \
+    && grep -Fq 'Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity' "$widget_qml" \
+    && grep -Fq 'Layout.maximumHeight: root.inPanel ? Layout.preferredHeight : Infinity' "$widget_qml" \
+    || fail "the $widget widget does not become an icon on a panel"
 done
+grep -Fq 'shown: !otherCard.pluginName.startsWith(main.forPanel ? main.kernoraPrefix : "org.kernora.")' \
+    "$package_root/data/explorer/WidgetExplorer.qml" \
+  || fail "the panel widget list offers Kernora desktop widgets"
 for po in "$package_root"/data/shell/po/plasma_applet_org.kernora.widget.*.ru.po; do
   msgfmt -c -o /dev/null "$po" 2>/dev/null || fail "$(basename "$po") does not compile"
 done
