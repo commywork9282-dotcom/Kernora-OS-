@@ -1,0 +1,3697 @@
+# Dutch translation of Kernora Settings.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-settings\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-31 13:44+0100\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/settings/qml/Main.qml:17 apps/settings/qml/Main.qml:134
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:87
+msgid "Settings"
+msgstr "Instellingen"
+
+#: apps/settings/qml/Main.qml:142
+msgid "Search settings"
+msgstr "Instellingen zoeken"
+
+#: apps/settings/qml/components/AccountCard.qml:66
+msgid "Account, picture, password"
+msgstr "Account, foto, wachtwoord"
+
+#: apps/settings/qml/components/Catalog.qml:12
+#: apps/settings/qml/pages/AccountPage.qml:20
+msgid "Account"
+msgstr "Account"
+
+#: apps/settings/qml/components/Catalog.qml:12
+msgid "Name, picture, password"
+msgstr "Naam, foto, wachtwoord"
+
+#: apps/settings/qml/components/Catalog.qml:13
+#: apps/settings/qml/pages/NetworkPage.qml:20
+msgid "Network & internet"
+msgstr "Netwerk en internet"
+
+#: apps/settings/qml/components/Catalog.qml:13
+msgid "Wi-Fi, wired, airplane mode, VPN"
+msgstr "Wifi, kabel, vliegtuigstand, VPN"
+
+#: apps/settings/qml/components/Catalog.qml:14
+#: apps/settings/qml/pages/BluetoothPage.qml:20
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+#: apps/settings/qml/components/Catalog.qml:14
+msgid "Pairing, connected devices"
+msgstr "Koppelen, verbonden apparaten"
+
+#: apps/settings/qml/components/Catalog.qml:15
+#: apps/settings/qml/pages/QuickSharePage.qml:20
+msgid "Quick Share"
+msgstr "Quick Share"
+
+#: apps/settings/qml/components/Catalog.qml:15
+msgid "Send and receive files with phones nearby"
+msgstr "Bestanden versturen naar en ontvangen van telefoons in de buurt"
+
+#: apps/settings/qml/components/Catalog.qml:16
+msgid "Brightness, Night Light, resolution, scale"
+msgstr "Helderheid, nachtlicht, resolutie, schaal"
+
+#: apps/settings/qml/components/Catalog.qml:16
+#: apps/settings/qml/pages/DisplayPage.qml:20
+msgid "Display & brightness"
+msgstr "Beeldscherm en helderheid"
+
+#: apps/settings/qml/components/Catalog.qml:17
+#: apps/settings/qml/pages/SoundPage.qml:20
+msgid "Sound"
+msgstr "Geluid"
+
+#: apps/settings/qml/components/Catalog.qml:17
+msgid "Volume, output, microphone"
+msgstr "Volume, uitvoer, microfoon"
+
+#: apps/settings/qml/components/Catalog.qml:18
+msgid "Do Not Disturb, pop-ups, history"
+msgstr "Niet storen, pop-ups, geschiedenis"
+
+#: apps/settings/qml/components/Catalog.qml:18
+#: apps/settings/qml/pages/NotificationsPage.qml:20
+msgid "Notifications"
+msgstr "Meldingen"
+
+#: apps/settings/qml/components/Catalog.qml:19
+msgid "Dark theme, colour, wallpaper, text size"
+msgstr "Donker thema, kleur, achtergrond, tekstgrootte"
+
+#: apps/settings/qml/components/Catalog.qml:19
+#: apps/settings/qml/pages/AppearancePage.qml:20
+msgid "Wallpaper & style"
+msgstr "Achtergrond en stijl"
+
+#: apps/settings/qml/components/Catalog.qml:20
+#: apps/settings/qml/pages/AppsPage.qml:19
+#: apps/settings/qml/pages/NotificationsPage.qml:199
+#: apps/settings/qml/pages/SoundPage.qml:177
+msgid "Apps"
+msgstr "Apps"
+
+#: apps/settings/qml/components/Catalog.qml:20
+msgid "Default apps, startup apps"
+msgstr "Standaardapps, opstartapps"
+
+#: apps/settings/qml/components/Catalog.qml:21
+#: apps/settings/qml/pages/PowerPage.qml:21
+msgid "Battery & power"
+msgstr "Batterij en energie"
+
+#: apps/settings/qml/components/Catalog.qml:21
+msgid "Power mode, screen timeout, sleep"
+msgstr "Energiestand, scherm uitschakelen, slaapstand"
+
+#: apps/settings/qml/components/Catalog.qml:22
+#: apps/settings/qml/pages/InputPage.qml:19
+msgid "Keyboard, mouse & touchpad"
+msgstr "Toetsenbord, muis en touchpad"
+
+#: apps/settings/qml/components/Catalog.qml:22
+msgid "Layouts, pointer speed, scrolling"
+msgstr "Indelingen, aanwijzersnelheid, scrollen"
+
+#: apps/settings/qml/components/Catalog.qml:23
+#: apps/settings/qml/pages/AccessibilityPage.qml:19
+#: apps/settings/qml/pages/ShortcutsPage.qml:35
+msgid "Accessibility"
+msgstr "Toegankelijkheid"
+
+#: apps/settings/qml/components/Catalog.qml:23
+msgid "Zoom, larger text, motion, keys"
+msgstr "Zoom, grotere tekst, beweging, toetsen"
+
+#: apps/settings/qml/components/Catalog.qml:24
+msgid "Screen lock, file search, history"
+msgstr "Schermvergrendeling, bestanden zoeken, geschiedenis"
+
+#: apps/settings/qml/components/Catalog.qml:24
+#: apps/settings/qml/pages/PrivacyPage.qml:19
+msgid "Security & privacy"
+msgstr "Beveiliging en privacy"
+
+#: apps/settings/qml/components/Catalog.qml:25
+msgid "Language, date & time, updates, storage"
+msgstr "Taal, datum en tijd, updates, opslag"
+
+#: apps/settings/qml/components/Catalog.qml:25
+#: apps/settings/qml/pages/SystemPage.qml:19
+msgid "System"
+msgstr "Systeem"
+
+#
+#: apps/settings/qml/components/Catalog.qml:26
+#: apps/settings/qml/pages/AboutPage.qml:19
+#: apps/settings/qml/pages/SystemPage.qml:153
+msgid "About Kernora"
+msgstr "Over Kernora"
+
+#: apps/settings/qml/components/Catalog.qml:26
+msgid "Device name, hardware, legal"
+msgstr "Apparaatnaam, hardware, juridisch"
+
+#: apps/settings/qml/components/Catalog.qml:35
+msgid "Wi-Fi"
+msgstr "Wifi"
+
+#: apps/settings/qml/components/Catalog.qml:35
+msgid "wireless network hotspot internet connect password"
+msgstr "wifi draadloos netwerk hotspot internet verbinden wachtwoord wireless"
+
+#: apps/settings/qml/components/Catalog.qml:36
+#: apps/settings/qml/pages/NetworkPage.qml:275
+msgid "Airplane mode"
+msgstr "Vliegtuigstand"
+
+#: apps/settings/qml/components/Catalog.qml:36
+msgid "flight offline radio"
+msgstr "vliegtuig offline radio flight"
+
+#: apps/settings/qml/components/Catalog.qml:37
+msgid "Wired network"
+msgstr "Bekabeld netwerk"
+
+#: apps/settings/qml/components/Catalog.qml:37
+msgid "ethernet cable lan"
+msgstr "ethernet kabel lan bekabeld"
+
+#: apps/settings/qml/components/Catalog.qml:38
+#: apps/settings/qml/pages/NetworkPage.qml:250
+msgid "VPN"
+msgstr "VPN"
+
+#: apps/settings/qml/components/Catalog.qml:38
+msgid "virtual private network tunnel"
+msgstr "virtueel privénetwerk tunnel vpn"
+
+#: apps/settings/qml/components/Catalog.qml:39
+msgid "Proxy and advanced network settings"
+msgstr "Proxy en geavanceerde netwerkinstellingen"
+
+#: apps/settings/qml/components/Catalog.qml:39
+msgid "ip dns proxy static"
+msgstr "ip dns proxy statisch"
+
+#: apps/settings/qml/components/Catalog.qml:40
+#: apps/settings/qml/pages/BluetoothPage.qml:143
+#: apps/settings/qml/pages/BluetoothPairPage.qml:19
+msgid "Pair a new device"
+msgstr "Een nieuw apparaat koppelen"
+
+#: apps/settings/qml/components/Catalog.qml:40
+msgid "bluetooth headphones speaker mouse keyboard add"
+msgstr "bluetooth koptelefoon speaker muis toetsenbord toevoegen koppelen"
+
+#
+#: apps/settings/qml/components/Catalog.qml:41
+msgid "Quick Share visibility"
+msgstr "Zichtbaarheid van Quick Share"
+
+#
+#: apps/settings/qml/components/Catalog.qml:41
+msgid "nearby share android phone send receive files everyone hidden"
+msgstr "nearby share delen android telefoon versturen ontvangen bestanden iedereen verborgen"
+
+#: apps/settings/qml/components/Catalog.qml:42
+#: apps/settings/qml/pages/DisplayPage.qml:38
+msgid "Brightness"
+msgstr "Helderheid"
+
+#: apps/settings/qml/components/Catalog.qml:42
+msgid "screen backlight dim"
+msgstr "scherm achtergrondverlichting dimmen helderheid"
+
+#: apps/settings/qml/components/Catalog.qml:43
+#: apps/settings/qml/pages/DisplayPage.qml:111
+msgid "Night Light"
+msgstr "Nachtlicht"
+
+#: apps/settings/qml/components/Catalog.qml:43
+msgid "blue light warm colour temperature evening"
+msgstr "blauw licht warm kleurtemperatuur avond nachtlicht"
+
+#: apps/settings/qml/components/Catalog.qml:44
+#: apps/settings/qml/pages/DisplayPage.qml:275
+msgid "Resolution"
+msgstr "Resolutie"
+
+#: apps/settings/qml/components/Catalog.qml:44
+msgid "screen monitor size pixels"
+msgstr "scherm monitor grootte pixels resolutie"
+
+#: apps/settings/qml/components/Catalog.qml:45
+#: apps/settings/qml/pages/DisplayPage.qml:288
+msgid "Refresh rate"
+msgstr "Vernieuwingsfrequentie"
+
+#: apps/settings/qml/components/Catalog.qml:45
+msgid "hz frequency monitor"
+msgstr "hz frequentie monitor verversing"
+
+#: apps/settings/qml/components/Catalog.qml:46
+#: apps/settings/qml/pages/DisplayPage.qml:297
+msgid "Scale"
+msgstr "Schaal"
+
+#: apps/settings/qml/components/Catalog.qml:46
+msgid "zoom size hidpi display scaling"
+msgstr "zoom grootte hidpi schaal schermschaal"
+
+#: apps/settings/qml/components/Catalog.qml:47
+#: apps/settings/qml/pages/DisplayPage.qml:306
+msgid "Orientation"
+msgstr "Oriëntatie"
+
+#: apps/settings/qml/components/Catalog.qml:47
+msgid "rotate portrait landscape"
+msgstr "draaien staand liggend oriëntatie"
+
+#: apps/settings/qml/components/Catalog.qml:48
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:18
+#: apps/settings/qml/pages/DisplayPage.qml:324
+msgid "Arrange screens and more"
+msgstr "Schermen schikken en meer"
+
+#: apps/settings/qml/components/Catalog.qml:48
+msgid "multiple monitors position mirror duplicate adaptive sync vrr freesync hdr overscan colour profile icc rgb range"
+msgstr "meerdere monitoren positie spiegelen dupliceren adaptive sync vrr freesync hdr overscan kleurprofiel icc rgb bereik"
+
+#: apps/settings/qml/components/Catalog.qml:49
+#: apps/settings/qml/pages/ShortcutsPage.qml:30
+#: apps/settings/qml/pages/SoundDevicePage.qml:86
+#: apps/settings/qml/pages/SoundDevicesPage.qml:181
+#: apps/settings/qml/pages/SoundPage.qml:103
+msgid "Volume"
+msgstr "Volume"
+
+#: apps/settings/qml/components/Catalog.qml:49
+msgid "loud quiet mute speaker"
+msgstr "hard zacht dempen speaker volume"
+
+#: apps/settings/qml/components/Catalog.qml:50
+msgid "Output device"
+msgstr "Uitvoerapparaat"
+
+#: apps/settings/qml/components/Catalog.qml:50
+msgid "speakers headphones hdmi"
+msgstr "luidsprekers koptelefoon hdmi uitvoer"
+
+#: apps/settings/qml/components/Catalog.qml:51
+msgid "Microphone"
+msgstr "Microfoon"
+
+#: apps/settings/qml/components/Catalog.qml:51
+msgid "input record mic"
+msgstr "invoer opnemen microfoon mic"
+
+#: apps/settings/qml/components/Catalog.qml:52
+msgid "App volume"
+msgstr "Appvolume"
+
+#: apps/settings/qml/components/Catalog.qml:52
+msgid "mixer applications streams"
+msgstr "mixer apps toepassingen streams"
+
+#: apps/settings/qml/components/Catalog.qml:53
+#: apps/settings/qml/pages/SoundDevicesPage.qml:19
+msgid "Sound devices"
+msgstr "Geluidsapparaten"
+
+#: apps/settings/qml/components/Catalog.qml:53
+msgid "profile connector balance channels surround hdmi test speakers"
+msgstr "profiel aansluiting balans kanalen surround hdmi luidsprekers testen"
+
+#: apps/settings/qml/components/Catalog.qml:54
+#: apps/settings/qml/pages/SoundPage.qml:218
+msgid "System sounds"
+msgstr "Systeemgeluiden"
+
+#
+#: apps/settings/qml/components/Catalog.qml:54
+msgid "sound theme kernora login chime alerts notification sounds"
+msgstr "geluidsthema kernora inloggen geluid waarschuwingen meldingsgeluiden"
+
+#: apps/settings/qml/components/Catalog.qml:55
+#: apps/settings/qml/pages/NotificationsPage.qml:76
+msgid "Do Not Disturb"
+msgstr "Niet storen"
+
+#: apps/settings/qml/components/Catalog.qml:55
+msgid "quiet silence focus"
+msgstr "stil stilte focus niet storen"
+
+#: apps/settings/qml/components/Catalog.qml:56
+msgid "Notification history"
+msgstr "Meldingsgeschiedenis"
+
+#: apps/settings/qml/components/Catalog.qml:56
+msgid "popups list"
+msgstr "pop-ups lijst meldingen geschiedenis"
+
+#: apps/settings/qml/components/Catalog.qml:57
+#: apps/settings/qml/pages/AppearancePage.qml:252
+msgid "Dark theme"
+msgstr "Donker thema"
+
+#: apps/settings/qml/components/Catalog.qml:57
+msgid "light dark mode colour scheme night"
+msgstr "licht donker modus kleurenschema nacht thema"
+
+#: apps/settings/qml/components/Catalog.qml:58
+#: apps/settings/qml/pages/AppearancePage.qml:264
+msgid "Colour"
+msgstr "Kleur"
+
+#: apps/settings/qml/components/Catalog.qml:58
+msgid "accent palette material color red blue green purple"
+msgstr "accent palet material kleur rood blauw groen paars"
+
+#: apps/settings/qml/components/Catalog.qml:59
+#: apps/settings/qml/pages/AppearancePage.qml:347
+msgid "Wallpaper"
+msgstr "Achtergrond"
+
+#: apps/settings/qml/components/Catalog.qml:59
+msgid "background picture desktop live shapes"
+msgstr "achtergrond afbeelding bureaublad live vormen wallpaper"
+
+#: apps/settings/qml/components/Catalog.qml:60
+#: apps/settings/qml/pages/AccessibilityPage.qml:70
+#: apps/settings/qml/pages/AppearancePage.qml:493
+msgid "Text size"
+msgstr "Tekstgrootte"
+
+#: apps/settings/qml/components/Catalog.qml:60
+msgid "font size bigger smaller"
+msgstr "lettergrootte groter kleiner tekst"
+
+#: apps/settings/qml/components/Catalog.qml:61
+#: apps/settings/qml/pages/AppearancePage.qml:522
+#: apps/settings/qml/pages/FontsPage.qml:18
+msgid "Fonts"
+msgstr "Lettertypen"
+
+#: apps/settings/qml/components/Catalog.qml:61
+msgid "typeface font family monospace code terminal"
+msgstr "lettertype letterfamilie monospace code terminal font"
+
+#: apps/settings/qml/components/Catalog.qml:62
+#: apps/settings/qml/pages/AppearancePage.qml:506
+msgid "Animations"
+msgstr "Animaties"
+
+#: apps/settings/qml/components/Catalog.qml:62
+msgid "speed effects motion"
+msgstr "snelheid effecten beweging animaties"
+
+#: apps/settings/qml/components/Catalog.qml:63
+#: apps/settings/qml/pages/AppsPage.qml:29
+#: apps/settings/qml/pages/DefaultAppsPage.qml:18
+msgid "Default apps"
+msgstr "Standaardapps"
+
+#: apps/settings/qml/components/Catalog.qml:63
+msgid "browser mail files open with association"
+msgstr "browser mail bestanden openen met koppeling standaard"
+
+#: apps/settings/qml/components/Catalog.qml:64
+#: apps/settings/qml/pages/AppsPage.qml:37
+#: apps/settings/qml/pages/AutostartPage.qml:19
+msgid "Startup apps"
+msgstr "Opstartapps"
+
+#: apps/settings/qml/components/Catalog.qml:64
+msgid "autostart login launch"
+msgstr "automatisch starten inloggen opstarten autostart"
+
+#: apps/settings/qml/components/Catalog.qml:65
+#: apps/settings/qml/pages/PowerPage.qml:88
+msgid "Power mode"
+msgstr "Energiestand"
+
+#: apps/settings/qml/components/Catalog.qml:65
+msgid "performance balanced power saver profile"
+msgstr "prestaties gebalanceerd energiebesparing profiel"
+
+#: apps/settings/qml/components/Catalog.qml:66
+msgid "Screen timeout"
+msgstr "Scherm uitschakelen"
+
+#: apps/settings/qml/components/Catalog.qml:66
+msgid "dim turn off display idle"
+msgstr "dimmen scherm uit inactief time-out"
+
+#: apps/settings/qml/components/Catalog.qml:67
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:100
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:162
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:170
+#: apps/settings/qml/pages/PowerPage.qml:174
+#: apps/settings/qml/pages/PowerPage.qml:196
+#: apps/settings/qml/pages/PowerPage.qml:214
+msgid "Sleep"
+msgstr "Slaapstand"
+
+#: apps/settings/qml/components/Catalog.qml:67
+msgid "suspend idle lid power button"
+msgstr "slaapstand inactief deksel aan-uitknop"
+
+#: apps/settings/qml/components/Catalog.qml:68
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:49
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:69
+msgid "Battery"
+msgstr "Batterij"
+
+#: apps/settings/qml/components/Catalog.qml:68
+msgid "charge percentage"
+msgstr "opladen percentage batterij accu"
+
+#: apps/settings/qml/components/Catalog.qml:69
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:19
+#: apps/settings/qml/pages/PowerPage.qml:230
+msgid "Advanced power settings"
+msgstr "Geavanceerde energie-instellingen"
+
+#: apps/settings/qml/components/Catalog.qml:69
+msgid "low battery critical level hibernate wireless mouse keyboard battery hybrid sleep pause media"
+msgstr "lage batterij kritiek niveau slaapstand op schijf draadloze muis toetsenbord batterij hybride slaap media pauzeren"
+
+#: apps/settings/qml/components/Catalog.qml:70
+#: apps/settings/qml/pages/InputPage.qml:30
+#: apps/settings/qml/pages/LanguagePage.qml:84
+msgid "Keyboard layouts"
+msgstr "Toetsenbordindelingen"
+
+#: apps/settings/qml/components/Catalog.qml:70
+msgid "language input switch keymap"
+msgstr "taal invoer wisselen toetsenbordindeling"
+
+#: apps/settings/qml/components/Catalog.qml:71
+msgid "Key repeat"
+msgstr "Toetsherhaling"
+
+#: apps/settings/qml/components/Catalog.qml:71
+msgid "delay rate typing"
+msgstr "vertraging snelheid typen herhalen"
+
+#: apps/settings/qml/components/Catalog.qml:72
+#: apps/settings/qml/pages/InputPage.qml:226
+msgid "Pointer speed"
+msgstr "Aanwijzersnelheid"
+
+#: apps/settings/qml/components/Catalog.qml:72
+msgid "mouse acceleration sensitivity"
+msgstr "muis versnelling gevoeligheid snelheid"
+
+#: apps/settings/qml/components/Catalog.qml:73
+#: apps/settings/qml/pages/InputPage.qml:245
+msgid "Natural scrolling"
+msgstr "Natuurlijk scrollen"
+
+#: apps/settings/qml/components/Catalog.qml:73
+msgid "reverse scroll direction touchpad"
+msgstr "scrollrichting omkeren touchpad scrollen"
+
+#: apps/settings/qml/components/Catalog.qml:74
+#: apps/settings/qml/pages/InputPage.qml:255
+msgid "Tap to click"
+msgstr "Tikken om te klikken"
+
+#: apps/settings/qml/components/Catalog.qml:74
+msgid "touchpad tapping"
+msgstr "touchpad tikken klikken"
+
+#: apps/settings/qml/components/Catalog.qml:75
+msgid "Primary button"
+msgstr "Primaire knop"
+
+#: apps/settings/qml/components/Catalog.qml:75
+msgid "left handed mouse"
+msgstr "linkshandig muis knop"
+
+#: apps/settings/qml/components/Catalog.qml:76
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:22
+msgid "Compose key"
+msgstr "Compose-toets"
+
+#: apps/settings/qml/components/Catalog.qml:76
+msgid "special characters accents caps lock alt meta keyboard model xkb options"
+msgstr "speciale tekens accenten caps lock alt meta toetsenbordmodel xkb opties"
+
+#: apps/settings/qml/components/Catalog.qml:77
+#: apps/settings/qml/pages/AppsPage.qml:67
+#: apps/settings/qml/pages/InputPage.qml:297
+#: apps/settings/qml/pages/ShortcutsPage.qml:19
+msgid "Keyboard shortcuts"
+msgstr "Sneltoetsen"
+
+#: apps/settings/qml/components/Catalog.qml:77
+msgid "hotkeys key bindings global shortcut meta"
+msgstr "sneltoetsen toetscombinaties globale sneltoets meta"
+
+#: apps/settings/qml/components/Catalog.qml:78
+#: apps/settings/qml/pages/InputPage.qml:304
+#: apps/settings/qml/pages/PointerOptionsPage.qml:17
+msgid "Touchpad and mouse options"
+msgstr "Opties voor touchpad en muis"
+
+#: apps/settings/qml/components/Catalog.qml:78
+msgid "two finger scrolling edge tap and drag drag lock right click acceleration middle click"
+msgstr "scrollen met twee vingers rand tikken en slepen sleepvergrendeling rechtsklik versnelling middelklik"
+
+#: apps/settings/qml/components/Catalog.qml:79
+#: apps/settings/qml/pages/AccessibilityPage.qml:58
+msgid "Zoom"
+msgstr "Zoom"
+
+#: apps/settings/qml/components/Catalog.qml:79
+msgid "magnifier enlarge screen"
+msgstr "vergrootglas vergroten scherm zoom"
+
+#: apps/settings/qml/components/Catalog.qml:80
+#: apps/settings/qml/pages/AccessibilityPage.qml:136
+msgid "Reduce motion"
+msgstr "Minder beweging"
+
+#: apps/settings/qml/components/Catalog.qml:80
+msgid "animations off"
+msgstr "animaties uit beweging"
+
+#: apps/settings/qml/components/Catalog.qml:81
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:48
+#: apps/settings/qml/pages/AccessibilityPage.qml:186
+msgid "Sticky keys"
+msgstr "Plaktoetsen"
+
+#: apps/settings/qml/components/Catalog.qml:81
+msgid "modifier keys shift"
+msgstr "aanpassingstoetsen shift plaktoetsen"
+
+#: apps/settings/qml/components/Catalog.qml:82
+#: apps/settings/qml/pages/AccessibilityPage.qml:84
+msgid "Cursor size"
+msgstr "Cursorgrootte"
+
+#: apps/settings/qml/components/Catalog.qml:82
+msgid "pointer large mouse"
+msgstr "aanwijzer groot muis cursor"
+
+#: apps/settings/qml/components/Catalog.qml:83
+#: apps/settings/qml/pages/PrivacyPage.qml:35
+msgid "Screen lock"
+msgstr "Schermvergrendeling"
+
+#: apps/settings/qml/components/Catalog.qml:83
+msgid "lock password idle security"
+msgstr "vergrendelen wachtwoord inactief beveiliging"
+
+#: apps/settings/qml/components/Catalog.qml:84
+#: apps/settings/qml/pages/PrivacyPage.qml:101
+msgid "File search"
+msgstr "Bestanden zoeken"
+
+#: apps/settings/qml/components/Catalog.qml:84
+msgid "indexing baloo search files"
+msgstr "indexeren baloo zoeken bestanden"
+
+#: apps/settings/qml/components/Catalog.qml:85
+msgid "Recent files"
+msgstr "Recente bestanden"
+
+#: apps/settings/qml/components/Catalog.qml:85
+msgid "history clear activity"
+msgstr "geschiedenis wissen activiteit recent"
+
+#: apps/settings/qml/components/Catalog.qml:86
+#: apps/settings/qml/pages/AccountPage.qml:107
+#: apps/settings/qml/pages/AccountsPage.qml:137
+#: apps/settings/qml/pages/NetworkPage.qml:327
+msgid "Password"
+msgstr "Wachtwoord"
+
+#: apps/settings/qml/components/Catalog.qml:86
+msgid "change password login"
+msgstr "wachtwoord wijzigen inloggen"
+
+#: apps/settings/qml/components/Catalog.qml:87
+msgid "Account picture"
+msgstr "Accountfoto"
+
+#: apps/settings/qml/components/Catalog.qml:87
+msgid "avatar photo face user"
+msgstr "avatar foto gezicht gebruiker"
+
+#: apps/settings/qml/components/Catalog.qml:88
+#: apps/settings/qml/pages/AboutPage.qml:208
+#: apps/settings/qml/pages/AccountPage.qml:91
+#: apps/settings/qml/pages/AccountsPage.qml:114
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:41
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:87
+msgid "Name"
+msgstr "Naam"
+
+#: apps/settings/qml/components/Catalog.qml:88
+msgid "full name user"
+msgstr "volledige naam gebruiker"
+
+#: apps/settings/qml/components/Catalog.qml:89
+#: apps/settings/qml/pages/AccountsPage.qml:19
+msgid "Accounts"
+msgstr "Accounts"
+
+#: apps/settings/qml/components/Catalog.qml:89
+msgid "users people add account administrator delete user"
+msgstr "gebruikers mensen account toevoegen beheerder gebruiker verwijderen"
+
+#: apps/settings/qml/components/Catalog.qml:90
+#: apps/settings/qml/pages/DateTimePage.qml:19
+#: apps/settings/qml/pages/SystemPage.qml:71
+msgid "Date & time"
+msgstr "Datum en tijd"
+
+#: apps/settings/qml/components/Catalog.qml:90
+msgid "clock time zone automatic 24-hour"
+msgstr "klok tijdzone automatisch 24-uurs datum tijd"
+
+#: apps/settings/qml/components/Catalog.qml:91
+#: apps/settings/qml/pages/LanguagePage.qml:19
+#: apps/settings/qml/pages/SystemPage.qml:63
+msgid "Language & region"
+msgstr "Taal en regio"
+
+#: apps/settings/qml/components/Catalog.qml:91
+msgid "language translation locale formats region"
+msgstr "taal vertaling locale notaties regio"
+
+#: apps/settings/qml/components/Catalog.qml:92
+#: apps/settings/qml/pages/FormatsPage.qml:18
+#: apps/settings/qml/pages/LanguagePage.qml:91
+msgid "Detailed formats"
+msgstr "Gedetailleerde notaties"
+
+#: apps/settings/qml/components/Catalog.qml:92
+msgid "numbers currency money measurement units paper size metric imperial date format"
+msgstr "getallen valuta geld maateenheden papierformaat metrisch imperiaal datumnotatie"
+
+#: apps/settings/qml/components/Catalog.qml:93
+#: apps/settings/qml/pages/SystemPage.qml:79
+#: apps/settings/qml/pages/UpdatesPage.qml:19
+#: apps/settings/qml/pages/UpdatesPage.qml:39
+msgid "Software updates"
+msgstr "Software-updates"
+
+#: apps/settings/qml/components/Catalog.qml:93
+msgid "upgrade packages install security"
+msgstr "upgrade pakketten installeren beveiliging updates"
+
+#: apps/settings/qml/components/Catalog.qml:94
+#: apps/settings/qml/pages/DriversPage.qml:19
+#: apps/settings/qml/pages/SystemPage.qml:90
+msgid "Drivers"
+msgstr "Stuurprogramma's"
+
+#: apps/settings/qml/components/Catalog.qml:94
+msgid "graphics card video nvidia gpu driver"
+msgstr "grafische kaart videokaart nvidia gpu stuurprogramma driver"
+
+#
+#: apps/settings/qml/components/Catalog.qml:95
+#: apps/settings/qml/pages/SystemPage.qml:112
+msgid "Demo updates"
+msgstr "Demo-updates"
+
+#: apps/settings/qml/components/Catalog.qml:95
+msgid "early access beta testing new versions demo"
+msgstr "vroege toegang bèta testen nieuwe versies demo"
+
+#: apps/settings/qml/components/Catalog.qml:96
+#: apps/settings/qml/pages/StoragePage.qml:20
+#: apps/settings/qml/pages/SystemPage.qml:98
+msgid "Storage"
+msgstr "Opslag"
+
+#: apps/settings/qml/components/Catalog.qml:96
+msgid "disk space free trash"
+msgstr "schijf ruimte vrij prullenbak opslag"
+
+#: apps/settings/qml/components/Catalog.qml:97
+#: apps/settings/qml/pages/ModulesPage.qml:18
+#: apps/settings/qml/pages/SystemPage.qml:145
+msgid "More settings"
+msgstr "Meer instellingen"
+
+#
+#: apps/settings/qml/components/Catalog.qml:97
+msgid "advanced kde modules printers shortcuts fonts"
+msgstr "geavanceerd kde modules printers sneltoetsen lettertypen"
+
+#: apps/settings/qml/components/Catalog.qml:98
+#: apps/settings/qml/pages/AboutPage.qml:116
+#: apps/settings/qml/pages/AboutPage.qml:196
+#: apps/settings/qml/pages/QuickSharePage.qml:124
+#: apps/settings/qml/pages/QuickSharePage.qml:212
+#: apps/settings/qml/pages/QuickSharePage.qml:224
+msgid "Device name"
+msgstr "Apparaatnaam"
+
+#: apps/settings/qml/components/Catalog.qml:98
+msgid "hostname computer name"
+msgstr "hostnaam computernaam"
+
+#: apps/settings/qml/components/Catalog.qml:99
+msgid "System information"
+msgstr "Systeeminformatie"
+
+#: apps/settings/qml/components/Catalog.qml:99
+msgid "version hardware processor memory graphics kernel"
+msgstr "versie hardware processor geheugen grafisch kernel"
+
+#: apps/settings/qml/components/Catalog.qml:100
+#: apps/settings/qml/pages/AboutPage.qml:168
+#: apps/settings/qml/pages/LegalPage.qml:19
+msgid "Legal information"
+msgstr "Juridische informatie"
+
+#: apps/settings/qml/components/Catalog.qml:100
+msgid "licenses copyright authors credits open source"
+msgstr "licenties copyright auteurs dankbetuiging open source"
+
+#: apps/settings/qml/components/SearchResults.qml:74
+msgid "Section"
+msgstr "Onderdeel"
+
+#: apps/settings/qml/components/SearchResults.qml:93
+msgid "Nothing found"
+msgstr "Niets gevonden"
+
+#: apps/settings/qml/components/SearchResults.qml:94
+msgid "Try another word, like “Wi-Fi”, “wallpaper” or “password”."
+msgstr "Probeer een ander woord, zoals “wifi”, “achtergrond” of “wachtwoord”."
+
+#: apps/settings/qml/pages/AboutPage.qml:38
+msgid "The name could not be changed."
+msgstr "De naam kon niet worden gewijzigd."
+
+#: apps/settings/qml/pages/AboutPage.qml:50
+msgid "Based on Debian %1"
+msgstr "Gebaseerd op Debian %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:51
+msgid "Processor: %1"
+msgstr "Processor: %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:52
+msgid "Memory: %1"
+msgstr "Geheugen: %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:53
+msgid "Graphics: %1"
+msgstr "Grafisch: %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:54
+msgid "Kernel: %1"
+msgstr "Kernel: %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:55
+msgid "Desktop: KDE Plasma %1, Frameworks %2, Qt %3"
+msgstr "Bureaublad: KDE Plasma %1, Frameworks %2, Qt %3"
+
+#: apps/settings/qml/pages/AboutPage.qml:95
+msgid "Version %1"
+msgstr "Versie %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:103
+msgid "Running from the installation medium"
+msgstr "Draait vanaf het installatiemedium"
+
+#: apps/settings/qml/pages/AboutPage.qml:113
+#: apps/settings/qml/pages/StoragePage.qml:59
+msgid "This computer"
+msgstr "Deze computer"
+
+#: apps/settings/qml/pages/AboutPage.qml:124
+msgid "Model"
+msgstr "Model"
+
+#: apps/settings/qml/pages/AboutPage.qml:132
+msgid "Processor"
+msgstr "Processor"
+
+#: apps/settings/qml/pages/AboutPage.qml:134
+msgid "%2, %1 thread"
+msgid_plural "%2, %1 threads"
+msgstr[0] "%2, %1 thread"
+msgstr[1] "%2, %1 threads"
+
+#: apps/settings/qml/pages/AboutPage.qml:139
+msgid "Memory"
+msgstr "Geheugen"
+
+#: apps/settings/qml/pages/AboutPage.qml:141
+msgid "%1, %2 available"
+msgstr "%1, %2 beschikbaar"
+
+#: apps/settings/qml/pages/AboutPage.qml:146
+msgid "Graphics"
+msgstr "Grafisch"
+
+#: apps/settings/qml/pages/AboutPage.qml:155
+msgid "Software"
+msgstr "Software"
+
+#: apps/settings/qml/pages/AboutPage.qml:158
+msgid "Based on"
+msgstr "Gebaseerd op"
+
+#: apps/settings/qml/pages/AboutPage.qml:158
+msgid "Debian %1"
+msgstr "Debian %1"
+
+#: apps/settings/qml/pages/AboutPage.qml:159
+msgid "Kernel"
+msgstr "Kernel"
+
+#: apps/settings/qml/pages/AboutPage.qml:160
+msgid "KDE Plasma"
+msgstr "KDE Plasma"
+
+#: apps/settings/qml/pages/AboutPage.qml:161
+msgid "KDE Frameworks"
+msgstr "KDE Frameworks"
+
+#: apps/settings/qml/pages/AboutPage.qml:162
+msgid "Qt"
+msgstr "Qt"
+
+#: apps/settings/qml/pages/AboutPage.qml:163
+msgid "Graphics platform"
+msgstr "Grafisch platform"
+
+#
+#: apps/settings/qml/pages/AboutPage.qml:169
+msgid "Licences, authors and copyrights of the software in Kernora"
+msgstr "Licenties, auteurs en auteursrechten van de software in Kernora"
+
+#: apps/settings/qml/pages/AboutPage.qml:176
+msgid "Copy system details"
+msgstr "Systeemgegevens kopiëren"
+
+#: apps/settings/qml/pages/AboutPage.qml:177
+msgid "For a bug report or a support request"
+msgstr "Voor een foutmelding of een hulpvraag"
+
+#: apps/settings/qml/pages/AboutPage.qml:184
+msgid "System details copied."
+msgstr "Systeemgegevens gekopieerd."
+
+#: apps/settings/qml/pages/AboutPage.qml:197
+msgid "Other devices on the network and Bluetooth see this computer by this name."
+msgstr "Andere apparaten op het netwerk en via Bluetooth zien deze computer onder deze naam."
+
+#: apps/settings/qml/pages/AboutPage.qml:198
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:77
+#: apps/settings/qml/pages/QuickSharePage.qml:214
+msgid "Rename"
+msgstr "Naam wijzigen"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:17
+#: apps/settings/qml/pages/AccessibilityPage.qml:225
+msgid "More accessibility options"
+msgstr "Meer opties voor toegankelijkheid"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:29
+#: apps/settings/qml/pages/InputPage.qml:152
+msgid "%1 ms"
+msgstr "%1 ms"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:52
+msgid "Lock a key pressed twice"
+msgstr "Een toets vergrendelen die twee keer wordt ingedrukt"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:53
+msgid "Press Shift twice and it stays on until you press it again"
+msgstr "Druk twee keer op Shift en hij blijft aan tot je hem weer indrukt"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:61
+msgid "Turn off when two keys are pressed together"
+msgstr "Uitzetten als twee toetsen tegelijk worden ingedrukt"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:69
+msgid "Sound when a modifier key is used"
+msgstr "Geluid als een aanpassingstoets wordt gebruikt"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:79
+msgid "Key delays"
+msgstr "Toetsvertragingen"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:83
+msgid "Hold a key for"
+msgstr "Een toets ingedrukt houden gedurende"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:92
+msgid "Ignore repeated presses for"
+msgstr "Herhaalde aanslagen negeren gedurende"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:103
+#: apps/settings/qml/pages/AccessibilityPage.qml:183
+msgid "Keyboard"
+msgstr "Toetsenbord"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:106
+msgid "Turn features on with the keyboard"
+msgstr "Functies aanzetten met het toetsenbord"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:107
+msgid "Press Shift five times for sticky keys, or hold it for eight seconds for slow keys"
+msgstr "Druk vijf keer op Shift voor plaktoetsen, of houd hem acht seconden ingedrukt voor langzame toetsen"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:115
+msgid "Sound for Caps Lock and Num Lock"
+msgstr "Geluid voor Caps Lock en Num Lock"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:125
+msgid "Pointer"
+msgstr "Aanwijzer"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:128
+msgid "Move the pointer with the number keys"
+msgstr "De aanwijzer bewegen met de cijfertoetsen"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:129
+msgid "The keys around 5 move it, 5 clicks"
+msgstr "De toetsen rond de 5 bewegen hem, de 5 klikt"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:137
+msgid "Pointer speed with the keys"
+msgstr "Aanwijzersnelheid met de toetsen"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:142
+msgid "Slow"
+msgstr "Langzaam"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:143
+#: apps/settings/qml/pages/AccessibilityPage.qml:75
+#: apps/settings/qml/pages/AccessibilityPage.qml:88
+#: apps/settings/qml/pages/AppearancePage.qml:498
+#: apps/settings/qml/pages/InputPage.qml:236
+#: apps/settings/qml/pages/InputPage.qml:286
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:69
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:73
+#: apps/settings/qml/pages/ShortcutsPage.qml:248
+msgid "Default"
+msgstr "Standaard"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:144
+msgid "Fast"
+msgstr "Snel"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:150
+msgid "Shake the pointer to find it"
+msgstr "Schud de aanwijzer om hem te vinden"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:151
+msgid "Shaking the mouse makes the pointer bigger for a moment"
+msgstr "Als je de muis schudt, wordt de aanwijzer even groter"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:161
+msgid "Alerts"
+msgstr "Waarschuwingen"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:164
+msgid "Play the system bell"
+msgstr "De systeembel laten klinken"
+
+#: apps/settings/qml/pages/AccessibilityMorePage.qml:165
+msgid "A short sound when an app asks for attention"
+msgstr "Een kort geluid als een app om aandacht vraagt"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:55
+msgid "Seeing"
+msgstr "Zien"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:59
+msgid "Magnify the screen with Meta and + or −; Meta and 0 goes back"
+msgstr "Vergroot het scherm met Meta en + of −; Meta en 0 zet het terug"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:74
+#: apps/settings/qml/pages/AppearancePage.qml:497
+msgid "Small"
+msgstr "Klein"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:76
+#: apps/settings/qml/pages/AccessibilityPage.qml:89
+#: apps/settings/qml/pages/AppearancePage.qml:499
+msgid "Large"
+msgstr "Groot"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:77
+#: apps/settings/qml/pages/AccessibilityPage.qml:90
+#: apps/settings/qml/pages/AppearancePage.qml:500
+msgid "Larger"
+msgstr "Groter"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:78
+#: apps/settings/qml/pages/AccessibilityPage.qml:91
+msgid "Largest"
+msgstr "Grootst"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:102
+msgid "Colour filter"
+msgstr "Kleurfilter"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:106
+#: apps/settings/qml/pages/AppearancePage.qml:510
+#: apps/settings/qml/pages/DisplayPage.qml:119
+#: apps/settings/qml/pages/InputPage.qml:171
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:22
+#: apps/settings/qml/pages/NotificationsPage.qml:63
+#: apps/settings/qml/pages/PointerOptionsPage.qml:153
+msgid "Off"
+msgstr "Uit"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:107
+msgid "Red-green (protanopia)"
+msgstr "Rood-groen (protanopie)"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:108
+msgid "Green-red (deuteranopia)"
+msgstr "Groen-rood (deuteranopie)"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:109
+msgid "Blue-yellow (tritanopia)"
+msgstr "Blauw-geel (tritanopie)"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:110
+msgid "Greyscale"
+msgstr "Grijstinten"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:133
+msgid "Motion and sound"
+msgstr "Beweging en geluid"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:137
+msgid "Turn off animations everywhere"
+msgstr "Animaties overal uitzetten"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:148
+msgid "Flash the screen for alerts"
+msgstr "Het scherm laten flitsen bij waarschuwingen"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:149
+msgid "Show the system bell instead of only playing it"
+msgstr "De systeembel tonen in plaats van alleen te laten klinken"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:160
+msgid "Screen reader"
+msgstr "Schermlezer"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:161
+msgid "Orca reads out what is on the screen"
+msgstr "Orca leest voor wat er op het scherm staat"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:187
+msgid "Press Shift, Ctrl or Alt one after another instead of together"
+msgstr "Druk Shift, Ctrl of Alt na elkaar in in plaats van tegelijk"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:198
+msgid "Slow keys"
+msgstr "Langzame toetsen"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:199
+msgid "A key counts only when held down for a moment"
+msgstr "Een toets telt pas als hij even ingedrukt blijft"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:210
+msgid "Bounce keys"
+msgstr "Stuitertoetsen"
+
+#: apps/settings/qml/pages/AccessibilityPage.qml:211
+msgid "Ignore a key pressed again too quickly"
+msgstr "Een toets negeren die te snel opnieuw wordt ingedrukt"
+
+#: apps/settings/qml/pages/AccountPage.qml:28
+msgid "Your password was changed."
+msgstr "Je wachtwoord is gewijzigd."
+
+#: apps/settings/qml/pages/AccountPage.qml:80
+msgid "Administrator · %1"
+msgstr "Beheerder · %1"
+
+#: apps/settings/qml/pages/AccountPage.qml:88
+msgid "Your account"
+msgstr "Je account"
+
+#: apps/settings/qml/pages/AccountPage.qml:92
+#: apps/settings/qml/pages/DefaultAppsPage.qml:32
+msgid "Not set"
+msgstr "Niet ingesteld"
+
+#: apps/settings/qml/pages/AccountPage.qml:99
+msgid "Picture"
+msgstr "Foto"
+
+#: apps/settings/qml/pages/AccountPage.qml:100
+msgid "Choose a picture or a photo of your own"
+msgstr "Kies een afbeelding of een eigen foto"
+
+#: apps/settings/qml/pages/AccountPage.qml:108
+msgid "Used to log in, unlock the screen and install software"
+msgstr "Gebruikt om in te loggen, het scherm te ontgrendelen en software te installeren"
+
+#: apps/settings/qml/pages/AccountPage.qml:117
+msgid "Other accounts"
+msgstr "Andere accounts"
+
+#: apps/settings/qml/pages/AccountPage.qml:120
+msgid "Manage accounts"
+msgstr "Accounts beheren"
+
+#: apps/settings/qml/pages/AccountPage.qml:121
+msgid "Add people who use this computer"
+msgstr "Mensen toevoegen die deze computer gebruiken"
+
+#: apps/settings/qml/pages/AccountPage.qml:131
+msgid "Your name"
+msgstr "Je naam"
+
+#: apps/settings/qml/pages/AccountPage.qml:132
+msgid "Shown on the login screen and in the launcher."
+msgstr "Wordt getoond op het inlogscherm en in het startmenu."
+
+#: apps/settings/qml/pages/AccountPage.qml:133
+msgid "Save"
+msgstr "Opslaan"
+
+#: apps/settings/qml/pages/AccountPage.qml:143
+msgid "Full name"
+msgstr "Volledige naam"
+
+#: apps/settings/qml/pages/AccountPage.qml:154
+#: apps/settings/qml/pages/AccountPage.qml:218
+#: apps/settings/qml/pages/AppearancePage.qml:533
+msgid "Choose a picture"
+msgstr "Een afbeelding kiezen"
+
+#: apps/settings/qml/pages/AccountPage.qml:207
+msgid "Choose a file…"
+msgstr "Een bestand kiezen…"
+
+#: apps/settings/qml/pages/AccountPage.qml:219
+msgid "Pictures (*.png *.jpg *.jpeg *.webp *.avif)"
+msgstr "Afbeeldingen (*.png *.jpg *.jpeg *.webp *.avif)"
+
+#: apps/settings/qml/pages/AccountPage.qml:231
+#: apps/settings/qml/pages/PrivacyPage.qml:88
+msgid "Change password"
+msgstr "Wachtwoord wijzigen"
+
+#: apps/settings/qml/pages/AccountPage.qml:232
+msgid "Use at least 8 characters. The system asks for your current password to confirm."
+msgstr "Gebruik minstens 8 tekens. Het systeem vraagt ter bevestiging om je huidige wachtwoord."
+
+#: apps/settings/qml/pages/AccountPage.qml:233
+#: apps/settings/qml/pages/UserPage.qml:103
+msgid "Change"
+msgstr "Wijzigen"
+
+#: apps/settings/qml/pages/AccountPage.qml:249
+#: apps/settings/qml/pages/UserPage.qml:115
+msgid "New password"
+msgstr "Nieuw wachtwoord"
+
+#: apps/settings/qml/pages/AccountPage.qml:251
+#: apps/settings/qml/pages/AccountsPage.qml:139
+#: apps/settings/qml/pages/UserPage.qml:117
+msgid "At least 8 characters"
+msgstr "Minstens 8 tekens"
+
+#: apps/settings/qml/pages/AccountPage.qml:256
+#: apps/settings/qml/pages/UserPage.qml:122
+msgid "Repeat the new password"
+msgstr "Herhaal het nieuwe wachtwoord"
+
+#: apps/settings/qml/pages/AccountPage.qml:258
+#: apps/settings/qml/pages/AccountsPage.qml:146
+#: apps/settings/qml/pages/UserPage.qml:124
+msgid "The passwords are different"
+msgstr "De wachtwoorden zijn verschillend"
+
+#: apps/settings/qml/pages/AccountsPage.qml:20
+msgid "People who use this computer"
+msgstr "Mensen die deze computer gebruiken"
+
+#: apps/settings/qml/pages/AccountsPage.qml:28
+msgid "The account “%1” was added."
+msgstr "Het account “%1” is toegevoegd."
+
+#: apps/settings/qml/pages/AccountsPage.qml:54
+msgid "(you)"
+msgstr "(jij)"
+
+#: apps/settings/qml/pages/AccountsPage.qml:55
+#: apps/settings/qml/pages/AccountsPage.qml:151
+#: apps/settings/qml/pages/UserPage.qml:63
+msgid "Administrator"
+msgstr "Beheerder"
+
+#: apps/settings/qml/pages/AccountsPage.qml:55
+msgid "Standard account"
+msgstr "Standaardaccount"
+
+#: apps/settings/qml/pages/AccountsPage.qml:68
+#: apps/settings/qml/pages/AccountsPage.qml:96
+msgid "Add an account"
+msgstr "Een account toevoegen"
+
+#: apps/settings/qml/pages/AccountsPage.qml:84
+msgid "Only an administrator can add accounts."
+msgstr "Alleen een beheerder kan accounts toevoegen."
+
+#: apps/settings/qml/pages/AccountsPage.qml:97
+msgid "Add"
+msgstr "Toevoegen"
+
+#: apps/settings/qml/pages/AccountsPage.qml:124
+msgid "User name"
+msgstr "Gebruikersnaam"
+
+#: apps/settings/qml/pages/AccountsPage.qml:125
+msgid "Used to log in; small Latin letters and digits"
+msgstr "Gebruikt om in te loggen; kleine Latijnse letters en cijfers"
+
+#: apps/settings/qml/pages/AccountsPage.qml:144
+msgid "Repeat the password"
+msgstr "Herhaal het wachtwoord"
+
+#: apps/settings/qml/pages/AccountsPage.qml:152
+#: apps/settings/qml/pages/UserPage.qml:64
+msgid "Can install software and change settings for everyone"
+msgstr "Kan software installeren en instellingen voor iedereen wijzigen"
+
+#: apps/settings/qml/pages/AppearancePage.qml:28
+msgid "The theme could not be changed."
+msgstr "Het thema kon niet worden gewijzigd."
+
+#: apps/settings/qml/pages/AppearancePage.qml:40
+msgid "The style could not be changed."
+msgstr "De stijl kon niet worden gewijzigd."
+
+#: apps/settings/qml/pages/AppearancePage.qml:53
+msgid "The colour could not be changed."
+msgstr "De kleur kon niet worden gewijzigd."
+
+#
+#: apps/settings/qml/pages/AppearancePage.qml:129
+msgid "The panel transparency could not be changed."
+msgstr "De transparantie van het paneel kon niet worden gewijzigd."
+
+#: apps/settings/qml/pages/AppearancePage.qml:249
+msgid "Theme"
+msgstr "Thema"
+
+#: apps/settings/qml/pages/AppearancePage.qml:253
+#: apps/settings/qml/pages/AppearancePage.qml:265
+#: apps/settings/qml/pages/AppearancePage.qml:321
+#: apps/settings/qml/pages/AppearancePage.qml:336
+msgid "Applying…"
+msgstr "Toepassen…"
+
+#: apps/settings/qml/pages/AppearancePage.qml:253
+msgid "Dark backgrounds for the system and apps"
+msgstr "Donkere achtergronden voor het systeem en apps"
+
+#: apps/settings/qml/pages/AppearancePage.qml:265
+msgid "Apps, the panel, windows and the live wallpapers take on the chosen colour."
+msgstr "Apps, het paneel, vensters en de live achtergronden krijgen de gekozen kleur."
+
+#
+#: apps/settings/qml/pages/AppearancePage.qml:285
+msgid "Themed app icons"
+msgstr "App-iconen in themakleur"
+
+#: apps/settings/qml/pages/AppearancePage.qml:286
+msgid "Apps without a Kernora icon take on the colour too"
+msgstr "Apps zonder Kernora-icoon krijgen de kleur ook"
+
+#: apps/settings/qml/pages/AppearancePage.qml:305
+msgid "Style"
+msgstr "Stijl"
+
+#: apps/settings/qml/pages/AppearancePage.qml:306
+msgid "Shapes, depth, buttons and the quick settings follow the chosen generation of Material."
+msgstr "Vormen, diepte, knoppen en snelle instellingen volgen de gekozen generatie van Material."
+
+#: apps/settings/qml/pages/AppearancePage.qml:309
+msgid "Interface style"
+msgstr "Interfacestijl"
+
+#: apps/settings/qml/pages/AppearancePage.qml:314
+msgid "2021 · Material You"
+msgstr "2021 · Material You"
+
+#: apps/settings/qml/pages/AppearancePage.qml:315
+msgid "2018 · Material Theming"
+msgstr "2018 · Material Theming"
+
+#: apps/settings/qml/pages/AppearancePage.qml:316
+msgid "2014 · paper and ink"
+msgstr "2014 · papier en inkt"
+
+#: apps/settings/qml/pages/AppearancePage.qml:331
+msgid "Panel"
+msgstr "Paneel"
+
+#: apps/settings/qml/pages/AppearancePage.qml:332
+msgid "Applies to all panels. The shape and colour follow the system style."
+msgstr "Geldt voor alle panelen. Vorm en kleur volgen de systeemstijl."
+
+#: apps/settings/qml/pages/AppearancePage.qml:335
+msgid "Transparent panel"
+msgstr "Transparant paneel"
+
+#: apps/settings/qml/pages/AppearancePage.qml:336
+msgid "Let the wallpaper show through a softly tinted background"
+msgstr "Laat de achtergrond doorschijnen door een zacht getinte achtergrondkleur"
+
+#: apps/settings/qml/pages/AppearancePage.qml:361
+msgid "Live"
+msgstr "Live"
+
+#: apps/settings/qml/pages/AppearancePage.qml:380
+msgid "Your picture"
+msgstr "Jouw afbeelding"
+
+#: apps/settings/qml/pages/AppearancePage.qml:381
+msgid "Choose…"
+msgstr "Kiezen…"
+
+#: apps/settings/qml/pages/AppearancePage.qml:392
+msgid "Use on the lock screen too"
+msgstr "Ook op het vergrendelscherm gebruiken"
+
+#: apps/settings/qml/pages/AppearancePage.qml:414
+msgid "Speed"
+msgstr "Snelheid"
+
+#: apps/settings/qml/pages/AppearancePage.qml:421
+#: apps/settings/qml/pages/InputPage.qml:286
+msgid "%1×"
+msgstr "%1×"
+
+#: apps/settings/qml/pages/AppearancePage.qml:421
+#: apps/settings/qml/pages/AppearancePage.qml:512
+msgid "Normal"
+msgstr "Normaal"
+
+#: apps/settings/qml/pages/AppearancePage.qml:426
+msgid "Changing colours"
+msgstr "Wisselende kleuren"
+
+#: apps/settings/qml/pages/AppearancePage.qml:427
+msgid "The shapes slowly move through the palette"
+msgstr "De vormen bewegen langzaam door het palet"
+
+#: apps/settings/qml/pages/AppearancePage.qml:439
+msgid "Pause behind windows"
+msgstr "Pauzeren achter vensters"
+
+#: apps/settings/qml/pages/AppearancePage.qml:440
+msgid "Saves power while a maximised window covers the desktop"
+msgstr "Bespaart energie als een gemaximaliseerd venster het bureaublad bedekt"
+
+#: apps/settings/qml/pages/AppearancePage.qml:490
+msgid "Text and motion"
+msgstr "Tekst en beweging"
+
+#: apps/settings/qml/pages/AppearancePage.qml:511
+msgid "Faster"
+msgstr "Sneller"
+
+#: apps/settings/qml/pages/AppearancePage.qml:513
+msgid "Slower"
+msgstr "Langzamer"
+
+#: apps/settings/qml/pages/AppearancePage.qml:523
+msgid "Typefaces for the interface and for code"
+msgstr "Lettertypen voor de interface en voor code"
+
+#: apps/settings/qml/pages/AppearancePage.qml:534
+msgid "Pictures (*.png *.jpg *.jpeg *.webp *.avif *.svg)"
+msgstr "Afbeeldingen (*.png *.jpg *.jpeg *.webp *.avif *.svg)"
+
+#: apps/settings/qml/pages/AppsPage.qml:30
+msgid "Browser, email, files and media"
+msgstr "Browser, e-mail, bestanden en media"
+
+#: apps/settings/qml/pages/AppsPage.qml:30
+msgid "Browser: %1"
+msgstr "Browser: %1"
+
+#: apps/settings/qml/pages/AppsPage.qml:38
+#: apps/settings/qml/pages/AutostartPage.qml:28
+msgid "Nothing starts at login"
+msgstr "Er start niets bij het inloggen"
+
+#: apps/settings/qml/pages/AppsPage.qml:39
+msgid "%1 app starts at login"
+msgid_plural "%1 apps start at login"
+msgstr[0] "%1 app start bij inloggen"
+msgstr[1] "%1 apps starten bij inloggen"
+
+#: apps/settings/qml/pages/AppsPage.qml:46
+#: apps/settings/qml/pages/NotificationAppsPage.qml:20
+#: apps/settings/qml/pages/NotificationsPage.qml:202
+msgid "App notifications"
+msgstr "Appmeldingen"
+
+#: apps/settings/qml/pages/AppsPage.qml:47
+msgid "Which apps may show pop-ups"
+msgstr "Welke apps pop-ups mogen tonen"
+
+#: apps/settings/qml/pages/AppsPage.qml:56
+#: apps/settings/qml/pages/InputPage.qml:294
+#: apps/settings/qml/pages/NetworkPage.qml:272
+#: apps/settings/qml/pages/SystemPage.qml:142
+msgid "More"
+msgstr "Meer"
+
+#: apps/settings/qml/pages/AppsPage.qml:59
+msgid "File types"
+msgstr "Bestandstypen"
+
+#: apps/settings/qml/pages/AppsPage.qml:60
+msgid "Choose an app for any kind of file"
+msgstr "Kies een app voor elk soort bestand"
+
+#: apps/settings/qml/pages/AppsPage.qml:68
+msgid "Shortcuts for apps and the desktop"
+msgstr "Sneltoetsen voor apps en het bureaublad"
+
+#: apps/settings/qml/pages/AutostartPage.qml:20
+msgid "These apps start when you log in."
+msgstr "Deze apps starten als je inlogt."
+
+#: apps/settings/qml/pages/AutostartPage.qml:29
+msgid "Add an app to have it ready as soon as you log in."
+msgstr "Voeg een app toe om hem klaar te hebben zodra je inlogt."
+
+#: apps/settings/qml/pages/AutostartPage.qml:51
+#: apps/settings/qml/pages/InputPage.qml:72
+msgid "Remove"
+msgstr "Verwijderen"
+
+#: apps/settings/qml/pages/AutostartPage.qml:70
+msgid "Add an app"
+msgstr "Een app toevoegen"
+
+#: apps/settings/qml/pages/AutostartPage.qml:80
+msgid "Start at login"
+msgstr "Starten bij inloggen"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:19
+#: apps/settings/qml/pages/BluetoothPage.qml:65
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:29
+#: apps/settings/qml/pages/NetworkPage.qml:111
+msgid "Connected"
+msgstr "Verbonden"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:19
+#: apps/settings/qml/pages/BluetoothPage.qml:65
+#: apps/settings/qml/pages/NetworkPage.qml:123
+msgid "Not connected"
+msgstr "Niet verbonden"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:25
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:54
+#: apps/settings/qml/pages/NetworkPage.qml:313
+msgid "Connect"
+msgstr "Verbinden"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:25
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:45
+msgid "Disconnect"
+msgstr "Verbinding verbreken"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:30
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:97
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:64
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:106
+msgid "Forget"
+msgstr "Vergeten"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:38
+msgid "Device"
+msgstr "Apparaat"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:52
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:282
+#: apps/settings/qml/pages/DisplayPage.qml:226
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:38
+#: apps/settings/qml/pages/PowerPage.qml:73
+#: apps/settings/qml/pages/SoundDevicePage.qml:66
+#: apps/settings/qml/pages/SoundDevicesPage.qml:192
+#: apps/settings/qml/pages/SoundDevicesPage.qml:211
+#: apps/settings/qml/pages/SoundPage.qml:111
+#: apps/settings/qml/pages/SoundPage.qml:150
+#: apps/settings/qml/pages/SoundPage.qml:192
+#: apps/settings/qml/pages/StoragePage.qml:70
+msgid "%1%"
+msgstr "%1%"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:57
+msgid "Connect automatically"
+msgstr "Automatisch verbinden"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:58
+msgid "Let the device connect without asking"
+msgstr "Laat het apparaat verbinden zonder te vragen"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:66
+msgid "Address"
+msgstr "Adres"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:76
+msgid "Rename device"
+msgstr "Apparaat hernoemen"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:95
+msgid "Forget this device?"
+msgstr "Dit apparaat vergeten?"
+
+#: apps/settings/qml/pages/BluetoothDevicePage.qml:96
+msgid "To use it again you have to pair it again."
+msgstr "Om het weer te gebruiken moet je het opnieuw koppelen."
+
+#: apps/settings/qml/pages/BluetoothPage.qml:67
+msgid "%1% battery"
+msgstr "%1% batterij"
+
+#: apps/settings/qml/pages/BluetoothPage.qml:75
+msgid "No Bluetooth adapter"
+msgstr "Geen Bluetooth-adapter"
+
+#: apps/settings/qml/pages/BluetoothPage.qml:76
+msgid "This computer has no Bluetooth, or its adapter is switched off in hardware."
+msgstr "Deze computer heeft geen Bluetooth, of de adapter is in de hardware uitgeschakeld."
+
+#: apps/settings/qml/pages/BluetoothPage.qml:82
+msgid "Use Bluetooth"
+msgstr "Bluetooth gebruiken"
+
+#: apps/settings/qml/pages/BluetoothPage.qml:93
+msgid "Visible to nearby devices as “%1” while this page is open."
+msgstr "Zichtbaar voor apparaten in de buurt als “%1” zolang deze pagina open is."
+
+#: apps/settings/qml/pages/BluetoothPage.qml:97
+msgid "Your devices"
+msgstr "Je apparaten"
+
+#: apps/settings/qml/pages/BluetoothPage.qml:99
+msgid "No paired devices yet."
+msgstr "Nog geen gekoppelde apparaten."
+
+#: apps/settings/qml/pages/BluetoothPage.qml:123
+msgid "Device details"
+msgstr "Apparaatgegevens"
+
+#: apps/settings/qml/pages/BluetoothPage.qml:144
+msgid "Headphones, speakers, keyboards, mice, phones"
+msgstr "Koptelefoons, speakers, toetsenborden, muizen, telefoons"
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:20
+msgid "Make sure the device is in pairing mode and close by."
+msgstr "Zorg dat het apparaat in koppelstand staat en dichtbij is."
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:52
+msgid "Couldn't pair with %1"
+msgstr "Koppelen met %1 is mislukt"
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:57
+msgid "Paired with %1"
+msgstr "Gekoppeld met %1"
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:75
+msgid "Searching…"
+msgstr "Zoeken…"
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:80
+msgid "Available devices"
+msgstr "Beschikbare apparaten"
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:81
+msgid "No devices found yet."
+msgstr "Nog geen apparaten gevonden."
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:89
+msgid "Pairing…"
+msgstr "Koppelen…"
+
+#: apps/settings/qml/pages/BluetoothPairPage.qml:90
+msgid "Pairing failed. Try again."
+msgstr "Koppelen mislukt. Probeer het opnieuw."
+
+#: apps/settings/qml/pages/DateTimePage.qml:88
+msgid "Set the time automatically"
+msgstr "De tijd automatisch instellen"
+
+#: apps/settings/qml/pages/DateTimePage.qml:89
+msgid "From time servers on the internet"
+msgstr "Via tijdservers op internet"
+
+#: apps/settings/qml/pages/DateTimePage.qml:100
+msgid "Time zone"
+msgstr "Tijdzone"
+
+#: apps/settings/qml/pages/DateTimePage.qml:103
+msgid "Choose a time zone"
+msgstr "Een tijdzone kiezen"
+
+#: apps/settings/qml/pages/DateTimePage.qml:112
+#: apps/settings/qml/pages/DateTimePage.qml:134
+msgid "Set date and time"
+msgstr "Datum en tijd instellen"
+
+#: apps/settings/qml/pages/DateTimePage.qml:123
+msgid "Time and date format"
+msgstr "Notatie van tijd en datum"
+
+#: apps/settings/qml/pages/DateTimePage.qml:124
+msgid "Follows your region"
+msgstr "Volgt je regio"
+
+#: apps/settings/qml/pages/DateTimePage.qml:135
+#: apps/settings/qml/pages/ShortcutsPage.qml:194
+msgid "Set"
+msgstr "Instellen"
+
+#: apps/settings/qml/pages/DateTimePage.qml:150
+msgid "The time could not be set."
+msgstr "De tijd kon niet worden ingesteld."
+
+#: apps/settings/qml/pages/DateTimePage.qml:156
+msgid "Date (YYYY-MM-DD)"
+msgstr "Datum (JJJJ-MM-DD)"
+
+#: apps/settings/qml/pages/DateTimePage.qml:161
+msgid "Time (HH:MM)"
+msgstr "Tijd (UU:MM)"
+
+#: apps/settings/qml/pages/DefaultAppsPage.qml:19
+msgid "The apps that open links, folders and files."
+msgstr "De apps die links, mappen en bestanden openen."
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:24
+#: apps/settings/qml/pages/DisplayPage.qml:208
+msgid "The display settings could not be applied."
+msgstr "De beeldscherminstellingen konden niet worden toegepast."
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:36
+#: apps/settings/qml/pages/DisplayPage.qml:248
+msgid "%1. %2"
+msgstr "%1. %2"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:99
+msgid "Nothing more to set up"
+msgstr "Niets meer in te stellen"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:100
+msgid "Connect another screen to arrange them, or use Display & brightness for this one."
+msgstr "Sluit nog een scherm aan om ze te schikken, of gebruik Beeldscherm en helderheid voor dit scherm."
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:202
+msgid "Drag a screen to where it stands on your desk. Screens snap to each other's edges."
+msgstr "Sleep een scherm naar waar het op je bureau staat. Schermen klikken aan elkaars randen vast."
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:206
+msgid "Mirroring"
+msgstr "Spiegelen"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:216
+msgid "What %1 shows"
+msgstr "Wat %1 laat zien"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:217
+msgid "Its own picture"
+msgstr "Een eigen beeld"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:219
+msgid "The same as %1"
+msgstr "Hetzelfde als %1"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:236
+#: apps/settings/qml/pages/DisplayPage.qml:248
+#: apps/settings/qml/pages/PowerPage.qml:141
+msgid "Screen"
+msgstr "Scherm"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:239
+msgid "Adaptive sync"
+msgstr "Adaptive sync"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:244
+msgid "In full-screen games and videos"
+msgstr "In games en video's op volledig scherm"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:245
+msgid "Always"
+msgstr "Altijd"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:246
+#: apps/settings/qml/pages/PowerPage.qml:41
+#: apps/settings/qml/pages/PrivacyPage.qml:43
+msgid "Never"
+msgstr "Nooit"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:252
+msgid "Colour range"
+msgstr "Kleurbereik"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:257
+msgid "Automatic"
+msgstr "Automatisch"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:258
+msgid "For computer monitors"
+msgstr "Voor computermonitoren"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:258
+msgid "Full"
+msgstr "Volledig"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:259
+msgid "For TVs that show grey instead of black"
+msgstr "Voor tv's die grijs tonen in plaats van zwart"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:259
+msgid "Limited"
+msgstr "Beperkt"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:265
+msgid "HDR"
+msgstr "HDR"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:266
+msgid "Brighter highlights in apps and videos that support it"
+msgstr "Fellere hooglichten in apps en video's die dit ondersteunen"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:275
+msgid "Overscan"
+msgstr "Overscan"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:291
+msgid "Colour profile"
+msgstr "Kleurprofiel"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:292
+#: apps/settings/qml/pages/ShortcutsPage.qml:154
+#: apps/settings/qml/pages/ShortcutsPage.qml:231
+#: apps/settings/qml/pages/ShortcutsPage.qml:249
+msgid "None"
+msgstr "Geen"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:301
+msgid "Choose a colour profile"
+msgstr "Een kleurprofiel kiezen"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:302
+msgid "Colour profiles (*.icc *.icm)"
+msgstr "Kleurprofielen (*.icc *.icm)"
+
+#: apps/settings/qml/pages/DisplayArrangementPage.qml:307
+msgid "Remove the colour profile"
+msgstr "Het kleurprofiel verwijderen"
+
+#: apps/settings/qml/pages/DisplayPage.qml:47
+msgid "Screen brightness"
+msgstr "Schermhelderheid"
+
+#: apps/settings/qml/pages/DisplayPage.qml:113
+msgid "Night Light makes the screen warmer, which is easier on the eyes in the evening."
+msgstr "Nachtlicht maakt het scherm warmer, wat 's avonds prettiger is voor je ogen."
+
+#: apps/settings/qml/pages/DisplayPage.qml:116
+msgid "Use Night Light"
+msgstr "Nachtlicht gebruiken"
+
+#: apps/settings/qml/pages/DisplayPage.qml:118
+msgid "On now"
+msgstr "Nu aan"
+
+#: apps/settings/qml/pages/DisplayPage.qml:118
+msgid "Paused for now"
+msgstr "Voorlopig gepauzeerd"
+
+#: apps/settings/qml/pages/DisplayPage.qml:118
+msgid "Waiting for the evening"
+msgstr "Wacht op de avond"
+
+#: apps/settings/qml/pages/DisplayPage.qml:130
+msgid "Schedule"
+msgstr "Planning"
+
+#: apps/settings/qml/pages/DisplayPage.qml:135
+msgid "Always on"
+msgstr "Altijd aan"
+
+#: apps/settings/qml/pages/DisplayPage.qml:136
+msgid "Custom times"
+msgstr "Eigen tijden"
+
+#: apps/settings/qml/pages/DisplayPage.qml:136
+msgid "From %1 to %2"
+msgstr "Van %1 tot %2"
+
+#: apps/settings/qml/pages/DisplayPage.qml:137
+msgid "Follows your location"
+msgstr "Volgt je locatie"
+
+#: apps/settings/qml/pages/DisplayPage.qml:137
+msgid "Sunset to sunrise"
+msgstr "Zonsondergang tot zonsopkomst"
+
+#: apps/settings/qml/pages/DisplayPage.qml:146
+msgid "Turns on at"
+msgstr "Gaat aan om"
+
+#: apps/settings/qml/pages/DisplayPage.qml:159
+msgid "Turns off at"
+msgstr "Gaat uit om"
+
+#: apps/settings/qml/pages/DisplayPage.qml:172
+msgid "Warmth"
+msgstr "Warmte"
+
+#: apps/settings/qml/pages/DisplayPage.qml:180
+msgid "%1 K"
+msgstr "%1 K"
+
+#: apps/settings/qml/pages/DisplayPage.qml:251
+msgid "Use this screen"
+msgstr "Dit scherm gebruiken"
+
+#: apps/settings/qml/pages/DisplayPage.qml:260
+msgid "Main screen"
+msgstr "Hoofdscherm"
+
+#: apps/settings/qml/pages/DisplayPage.qml:261
+msgid "Holds the panel and new windows"
+msgstr "Bevat het paneel en nieuwe vensters"
+
+#: apps/settings/qml/pages/DisplayPage.qml:282
+msgid "Recommended"
+msgstr "Aanbevolen"
+
+#: apps/settings/qml/pages/DisplayPage.qml:292
+msgid "%1 Hz"
+msgstr "%1 Hz"
+
+#: apps/settings/qml/pages/DisplayPage.qml:311
+msgid "Landscape"
+msgstr "Liggend"
+
+#: apps/settings/qml/pages/DisplayPage.qml:312
+msgid "Portrait"
+msgstr "Staand"
+
+#: apps/settings/qml/pages/DisplayPage.qml:313
+msgid "Landscape, flipped"
+msgstr "Liggend, omgedraaid"
+
+#: apps/settings/qml/pages/DisplayPage.qml:314
+msgid "Portrait, flipped"
+msgstr "Staand, omgedraaid"
+
+#: apps/settings/qml/pages/DisplayPage.qml:325
+msgid "Position of several screens, mirroring, colour"
+msgstr "Positie van meerdere schermen, spiegelen, kleur"
+
+#: apps/settings/qml/pages/DisplayPage.qml:339
+msgid "Keep these display settings?"
+msgstr "Deze beeldscherminstellingen houden?"
+
+#: apps/settings/qml/pages/DisplayPage.qml:340
+msgid "The previous settings come back in %1 second."
+msgid_plural "The previous settings come back in %1 seconds."
+msgstr[0] "De vorige instellingen komen terug over %1 seconde."
+msgstr[1] "De vorige instellingen komen terug over %1 seconden."
+
+#: apps/settings/qml/pages/DisplayPage.qml:341
+msgid "Keep"
+msgstr "Houden"
+
+#: apps/settings/qml/pages/DisplayPage.qml:342
+msgid "Revert"
+msgstr "Terugzetten"
+
+#
+#: apps/settings/qml/pages/DriversPage.qml:20
+msgid "Kernora finds the drivers your hardware needs and installs them by itself."
+msgstr "Kernora vindt de stuurprogramma's die je hardware nodig heeft en installeert ze vanzelf."
+
+#: apps/settings/qml/pages/DriversPage.qml:39
+msgid "NVIDIA graphics card"
+msgstr "NVIDIA-videokaart"
+
+#: apps/settings/qml/pages/DriversPage.qml:81
+msgid "Looking at your hardware…"
+msgstr "Je hardware bekijken…"
+
+#: apps/settings/qml/pages/DriversPage.qml:84
+msgid "No extra drivers are needed"
+msgstr "Er zijn geen extra stuurprogramma's nodig"
+
+#: apps/settings/qml/pages/DriversPage.qml:90
+msgid "Installing the driver…"
+msgstr "Het stuurprogramma installeren…"
+
+#: apps/settings/qml/pages/DriversPage.qml:93
+msgid "Removing the driver…"
+msgstr "Het stuurprogramma verwijderen…"
+
+#: apps/settings/qml/pages/DriversPage.qml:96
+msgid "Restart to use the driver"
+msgstr "Start opnieuw op om het stuurprogramma te gebruiken"
+
+#: apps/settings/qml/pages/DriversPage.qml:99
+msgid "The driver is installed"
+msgstr "Het stuurprogramma is geïnstalleerd"
+
+#: apps/settings/qml/pages/DriversPage.qml:102
+msgid "The driver could not be installed"
+msgstr "Het stuurprogramma kon niet worden geïnstalleerd"
+
+#
+#: apps/settings/qml/pages/DriversPage.qml:112
+msgid "Your graphics card works with the drivers built into Kernora."
+msgstr "Je videokaart werkt met de stuurprogramma's die in Kernora zitten."
+
+#
+#: apps/settings/qml/pages/DriversPage.qml:115
+msgid "Kernora could not start this. Install the latest updates and try again."
+msgstr "Kernora kon dit niet starten. Installeer de nieuwste updates en probeer het opnieuw."
+
+#: apps/settings/qml/pages/DriversPage.qml:118
+msgid "The installer sets up the driver for %1 when the computer is online."
+msgstr "Het installatieprogramma stelt het stuurprogramma voor %1 in als de computer online is."
+
+#
+#: apps/settings/qml/pages/DriversPage.qml:121
+msgid "NVIDIA no longer makes a driver for this card. It keeps working with the open driver built into Kernora."
+msgstr "NVIDIA maakt geen stuurprogramma meer voor deze kaart. Hij blijft werken met het open stuurprogramma dat in Kernora zit."
+
+#
+#: apps/settings/qml/pages/DriversPage.qml:124
+msgid "Kernora is downloading the driver for %1 and installing it. It takes a few minutes, and you can keep working."
+msgstr "Kernora downloadt het stuurprogramma voor %1 en installeert het. Dat duurt een paar minuten, en je kunt gewoon doorwerken."
+
+#
+#: apps/settings/qml/pages/DriversPage.qml:127
+msgid "Kernora is removing the NVIDIA driver."
+msgstr "Kernora verwijdert het NVIDIA-stuurprogramma."
+
+#: apps/settings/qml/pages/DriversPage.qml:130
+msgid "The driver for %1 is installed. It starts working after a restart."
+msgstr "Het stuurprogramma voor %1 is geïnstalleerd. Het werkt na een herstart."
+
+#: apps/settings/qml/pages/DriversPage.qml:134
+msgid "%1 uses the NVIDIA driver %2."
+msgstr "%1 gebruikt het NVIDIA-stuurprogramma %2."
+
+#: apps/settings/qml/pages/DriversPage.qml:135
+msgid "%1 uses the NVIDIA driver."
+msgstr "%1 gebruikt het NVIDIA-stuurprogramma."
+
+#: apps/settings/qml/pages/DriversPage.qml:138
+msgid "The NVIDIA driver cannot load while Secure Boot is on. Turn Secure Boot off in the computer's firmware settings, then try again."
+msgstr "Het NVIDIA-stuurprogramma kan niet laden zolang Secure Boot aan staat. Zet Secure Boot uit in de firmware-instellingen van de computer en probeer het opnieuw."
+
+#: apps/settings/qml/pages/DriversPage.qml:141
+msgid "Check the internet connection and try again."
+msgstr "Controleer de internetverbinding en probeer het opnieuw."
+
+#: apps/settings/qml/pages/DriversPage.qml:144
+msgid "There is no internet connection. The driver for %1 will be installed when the computer is online."
+msgstr "Er is geen internetverbinding. Het stuurprogramma voor %1 wordt geïnstalleerd als de computer online is."
+
+#: apps/settings/qml/pages/DriversPage.qml:147
+msgid "The NVIDIA driver is removed and stops being used after a restart."
+msgstr "Het NVIDIA-stuurprogramma is verwijderd en wordt na een herstart niet meer gebruikt."
+
+#: apps/settings/qml/pages/DriversPage.qml:150
+msgid "The NVIDIA driver will be installed automatically as soon as the computer is online."
+msgstr "Het NVIDIA-stuurprogramma wordt automatisch geïnstalleerd zodra de computer online is."
+
+#: apps/settings/qml/pages/DriversPage.qml:151
+msgid "Install the NVIDIA driver to get the full speed of this card."
+msgstr "Installeer het NVIDIA-stuurprogramma om de volledige snelheid van deze kaart te krijgen."
+
+#: apps/settings/qml/pages/DriversPage.qml:212
+#: apps/settings/qml/pages/UpdatesPage.qml:176
+msgid "Restart"
+msgstr "Opnieuw opstarten"
+
+#: apps/settings/qml/pages/DriversPage.qml:219
+#: apps/settings/qml/pages/UpdatesPage.qml:169
+msgid "Install now"
+msgstr "Nu installeren"
+
+#: apps/settings/qml/pages/DriversPage.qml:219
+msgid "Try again"
+msgstr "Opnieuw proberen"
+
+#: apps/settings/qml/pages/DriversPage.qml:226
+msgid "Remove the driver"
+msgstr "Het stuurprogramma verwijderen"
+
+#: apps/settings/qml/pages/DriversPage.qml:239
+msgid "Install drivers automatically"
+msgstr "Stuurprogramma's automatisch installeren"
+
+#
+#: apps/settings/qml/pages/DriversPage.qml:240
+msgid "When a graphics card needs a driver, Kernora installs it and asks you to restart"
+msgstr "Als een videokaart een stuurprogramma nodig heeft, installeert Kernora het en vraagt je opnieuw op te starten"
+
+#: apps/settings/qml/pages/FontsPage.qml:87
+msgid "The quick brown fox jumps over the lazy dog"
+msgstr "Wijzigt Joost Bijl voor 's middags nu ook zijn quiz?"
+
+#: apps/settings/qml/pages/FontsPage.qml:95
+msgid "Menus, buttons and the text in apps use this typeface."
+msgstr "Menu's, knoppen en de tekst in apps gebruiken dit lettertype."
+
+#: apps/settings/qml/pages/FontsPage.qml:113
+msgid "Interface"
+msgstr "Interface"
+
+#: apps/settings/qml/pages/FontsPage.qml:116
+#: apps/settings/qml/pages/FontsPage.qml:138
+msgid "Typeface"
+msgstr "Lettertype"
+
+#: apps/settings/qml/pages/FontsPage.qml:125
+#: apps/settings/qml/pages/FontsPage.qml:147
+msgid "Size"
+msgstr "Grootte"
+
+#: apps/settings/qml/pages/FontsPage.qml:128
+#: apps/settings/qml/pages/FontsPage.qml:150
+msgid "%1 pt"
+msgstr "%1 pt"
+
+#: apps/settings/qml/pages/FontsPage.qml:135
+msgid "Code and terminals"
+msgstr "Code en terminals"
+
+#
+#: apps/settings/qml/pages/FontsPage.qml:158
+msgid "Restore the Kernora fonts"
+msgstr "De Kernora-lettertypen terugzetten"
+
+#: apps/settings/qml/pages/FormatsPage.qml:19
+msgid "Each format follows the region unless you choose another one"
+msgstr "Elke notatie volgt de regio, tenzij je een andere kiest"
+
+#: apps/settings/qml/pages/FormatsPage.qml:25
+#: apps/settings/qml/pages/LanguagePage.qml:78
+msgid "Numbers"
+msgstr "Getallen"
+
+#: apps/settings/qml/pages/FormatsPage.qml:26
+msgid "Date and time"
+msgstr "Datum en tijd"
+
+#: apps/settings/qml/pages/FormatsPage.qml:27
+#: apps/settings/qml/pages/LanguagePage.qml:79
+msgid "Money"
+msgstr "Geld"
+
+#: apps/settings/qml/pages/FormatsPage.qml:28
+msgid "Units of measurement"
+msgstr "Maateenheden"
+
+#: apps/settings/qml/pages/FormatsPage.qml:29
+msgid "Paper size"
+msgstr "Papierformaat"
+
+#: apps/settings/qml/pages/FormatsPage.qml:46
+#: apps/settings/qml/pages/LanguagePage.qml:38
+msgid "Log out to finish"
+msgstr "Afmelden om af te ronden"
+
+#: apps/settings/qml/pages/FormatsPage.qml:47
+#: apps/settings/qml/pages/LanguagePage.qml:39
+msgid "Apps use the new language and formats after you log in again."
+msgstr "Apps gebruiken de nieuwe taal en notaties nadat je opnieuw bent ingelogd."
+
+#: apps/settings/qml/pages/FormatsPage.qml:48
+#: apps/settings/qml/pages/LanguagePage.qml:40
+msgid "Log out"
+msgstr "Afmelden"
+
+#: apps/settings/qml/pages/FormatsPage.qml:68
+#: apps/settings/qml/pages/FormatsPage.qml:72
+msgid "As in the region"
+msgstr "Zoals in de regio"
+
+#: apps/settings/qml/pages/InputPage.qml:31
+msgid "The first layout is used when you log in."
+msgstr "De eerste indeling wordt gebruikt als je inlogt."
+
+#: apps/settings/qml/pages/InputPage.qml:40
+msgid "Main layout"
+msgstr "Hoofdindeling"
+
+#: apps/settings/qml/pages/InputPage.qml:61
+msgid "Make main layout"
+msgstr "Als hoofdindeling instellen"
+
+#: apps/settings/qml/pages/InputPage.qml:85
+#: apps/settings/qml/pages/InputPage.qml:115
+msgid "Add a layout"
+msgstr "Een indeling toevoegen"
+
+#: apps/settings/qml/pages/InputPage.qml:97
+msgid "Switch layouts with"
+msgstr "Indelingen wisselen met"
+
+#: apps/settings/qml/pages/InputPage.qml:102
+msgid "Meta+Alt+K"
+msgstr "Meta+Alt+K"
+
+#: apps/settings/qml/pages/InputPage.qml:102
+msgid "The desktop shortcut"
+msgstr "De sneltoets van het bureaublad"
+
+#: apps/settings/qml/pages/InputPage.qml:103
+msgid "Alt+Shift"
+msgstr "Alt+Shift"
+
+#: apps/settings/qml/pages/InputPage.qml:104
+msgid "Ctrl+Shift"
+msgstr "Ctrl+Shift"
+
+#: apps/settings/qml/pages/InputPage.qml:105
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:23
+msgid "Caps Lock"
+msgstr "Caps Lock"
+
+#: apps/settings/qml/pages/InputPage.qml:106
+msgid "Super+Space (XKB)"
+msgstr "Super+Spatie (XKB)"
+
+#: apps/settings/qml/pages/InputPage.qml:134
+msgid "Typing"
+msgstr "Typen"
+
+#: apps/settings/qml/pages/InputPage.qml:137
+msgid "Repeat keys"
+msgstr "Toetsen herhalen"
+
+#: apps/settings/qml/pages/InputPage.qml:138
+msgid "Holding a key down types it again and again"
+msgstr "Een ingedrukte toets wordt steeds opnieuw getypt"
+
+#: apps/settings/qml/pages/InputPage.qml:146
+msgid "Delay before repeating"
+msgstr "Vertraging voor herhalen"
+
+#: apps/settings/qml/pages/InputPage.qml:156
+msgid "Repeat speed"
+msgstr "Herhaalsnelheid"
+
+#: apps/settings/qml/pages/InputPage.qml:162
+msgid "%1 per second"
+msgstr "%1 per seconde"
+
+#: apps/settings/qml/pages/InputPage.qml:166
+msgid "Num Lock at login"
+msgstr "Num Lock bij inloggen"
+
+#: apps/settings/qml/pages/InputPage.qml:170
+msgid "On"
+msgstr "Aan"
+
+#: apps/settings/qml/pages/InputPage.qml:172
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:147
+msgid "Leave as it is"
+msgstr "Laten zoals het is"
+
+#: apps/settings/qml/pages/InputPage.qml:208
+#: apps/settings/qml/pages/PointerOptionsPage.qml:52
+msgid "The setting could not be changed."
+msgstr "De instelling kon niet worden gewijzigd."
+
+#: apps/settings/qml/pages/InputPage.qml:222
+#: apps/settings/qml/pages/PointerOptionsPage.qml:114
+msgid "Mouse"
+msgstr "Muis"
+
+#: apps/settings/qml/pages/InputPage.qml:222
+#: apps/settings/qml/pages/PointerOptionsPage.qml:114
+#: apps/settings/qml/pages/ShortcutsPage.qml:34
+msgid "Touchpad"
+msgstr "Touchpad"
+
+#: apps/settings/qml/pages/InputPage.qml:246
+msgid "Content moves the way your fingers move"
+msgstr "De inhoud beweegt zoals je vingers bewegen"
+
+#: apps/settings/qml/pages/InputPage.qml:264
+msgid "Ignore while typing"
+msgstr "Negeren tijdens typen"
+
+#: apps/settings/qml/pages/InputPage.qml:273
+msgid "Right button is the primary one"
+msgstr "Rechterknop is de primaire knop"
+
+#: apps/settings/qml/pages/InputPage.qml:274
+msgid "For the left hand"
+msgstr "Voor de linkerhand"
+
+#: apps/settings/qml/pages/InputPage.qml:283
+msgid "Scrolling speed"
+msgstr "Scrollsnelheid"
+
+#: apps/settings/qml/pages/InputPage.qml:305
+msgid "Scrolling, tapping, right click, acceleration"
+msgstr "Scrollen, tikken, rechtsklikken, versnelling"
+
+#: apps/settings/qml/pages/InputPage.qml:312
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:18
+msgid "Advanced keyboard options"
+msgstr "Geavanceerde toetsenbordopties"
+
+#: apps/settings/qml/pages/InputPage.qml:313
+msgid "Compose key, special keys, keyboard model"
+msgstr "Compose-toets, speciale toetsen, toetsenbordmodel"
+
+#: apps/settings/qml/pages/KeyboardOptionGroupPage.qml:20
+msgid "Only one can be on"
+msgstr "Er kan er maar één aan staan"
+
+#: apps/settings/qml/pages/KeyboardOptionGroupPage.qml:20
+msgid "Several can be on at once"
+msgstr "Er kunnen er meerdere tegelijk aan staan"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:24
+msgid "Key for extra characters"
+msgstr "Toets voor extra tekens"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:25
+msgid "Alt and Meta keys"
+msgstr "Alt- en Meta-toetsen"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:43
+msgid "Try your keys here"
+msgstr "Probeer je toetsen hier"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:48
+msgid "Keyboard model"
+msgstr "Toetsenbordmodel"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:58
+msgid "Special keys"
+msgstr "Speciale toetsen"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:82
+msgid "All options"
+msgstr "Alle opties"
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:83
+msgid "One option is on."
+msgid_plural "%1 options are on."
+msgstr[0] "Eén optie staat aan."
+msgstr[1] "%1 opties staan aan."
+
+#: apps/settings/qml/pages/KeyboardOptionsPage.qml:103
+msgid "Turn off all options"
+msgstr "Alle opties uitzetten"
+
+#: apps/settings/qml/pages/LanguagePage.qml:52
+msgid "Language"
+msgstr "Taal"
+
+#: apps/settings/qml/pages/LanguagePage.qml:61
+msgid "Region"
+msgstr "Regio"
+
+#: apps/settings/qml/pages/LanguagePage.qml:66
+msgid "Formats of region"
+msgstr "Notaties van regio"
+
+#: apps/settings/qml/pages/LanguagePage.qml:74
+msgid "Examples"
+msgstr "Voorbeelden"
+
+#: apps/settings/qml/pages/LanguagePage.qml:76
+msgid "Date"
+msgstr "Datum"
+
+#: apps/settings/qml/pages/LanguagePage.qml:77
+msgid "Time"
+msgstr "Tijd"
+
+#: apps/settings/qml/pages/LanguagePage.qml:92
+msgid "Separate settings for numbers, time, currency and measurement units"
+msgstr "Aparte instellingen voor getallen, tijd, valuta en maateenheden"
+
+#
+#: apps/settings/qml/pages/LegalPage.qml:20
+msgid "Kernora OS is free software, made from the work of many open-source projects. Their authors and licences are listed here."
+msgstr "Kernora OS is vrije software, gemaakt van het werk van veel opensourceprojecten. Hun auteurs en licenties staan hier."
+
+#: apps/settings/qml/pages/LegalPage.qml:31
+#: apps/settings/qml/pages/LegalPage.qml:34
+msgid "Kernora OS"
+msgstr "Kernora OS"
+
+#
+#: apps/settings/qml/pages/LegalPage.qml:35
+msgid "The Kernora shell, apps and design: GNU General Public License 2.0 or later"
+msgstr "De Kernora-shell, apps en vormgeving: GNU General Public License 2.0 of later"
+
+#: apps/settings/qml/pages/LegalPage.qml:42
+msgid "GNU General Public License 2.0"
+msgstr "GNU General Public License 2.0"
+
+#: apps/settings/qml/pages/LegalPage.qml:51
+msgid "Built with"
+msgstr "Gemaakt met"
+
+#: apps/settings/qml/pages/LegalPage.qml:69
+msgid "All installed packages"
+msgstr "Alle geïnstalleerde pakketten"
+
+#: apps/settings/qml/pages/LegalPage.qml:73
+msgid "Show every package"
+msgstr "Elk pakket tonen"
+
+#: apps/settings/qml/pages/LegalPage.qml:74
+msgid "The copyright file of each of the installed packages"
+msgstr "Het copyrightbestand van elk geïnstalleerd pakket"
+
+#: apps/settings/qml/pages/LegalPage.qml:89
+msgid "Filter %1 package"
+msgid_plural "Filter %1 packages"
+msgstr[0] "%1 pakket filteren"
+msgstr[1] "%1 pakketten filteren"
+
+#: apps/settings/qml/pages/LicensePage.qml:29
+msgid "Project website"
+msgstr "Website van het project"
+
+#: apps/settings/qml/pages/LicensePage.qml:55
+msgid "The licence text is not installed."
+msgstr "De licentietekst is niet geïnstalleerd."
+
+#: apps/settings/qml/pages/ModulesPage.qml:19
+msgid "Every option of the system, including the rarely used ones."
+msgstr "Elke optie van het systeem, ook de zelden gebruikte."
+
+#: apps/settings/qml/pages/ModulesPage.qml:40
+msgid "Filter"
+msgstr "Filteren"
+
+#: apps/settings/qml/pages/ModulesPage.qml:44
+msgid "Nothing matches."
+msgstr "Niets komt overeen."
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:29
+msgid "Saved network"
+msgstr "Opgeslagen netwerk"
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:72
+msgid "Details"
+msgstr "Details"
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:90
+msgid "Edit connection"
+msgstr "Verbinding bewerken"
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:91
+msgid "Password, automatic connection, IP addresses, DNS"
+msgstr "Wachtwoord, automatisch verbinden, IP-adressen, DNS"
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:102
+msgid "Forget “%1”?"
+msgstr "“%1” vergeten?"
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:104
+msgid "The saved password is removed. You can connect again later by entering it."
+msgstr "Het opgeslagen wachtwoord wordt verwijderd. Je kunt later opnieuw verbinden door het in te voeren."
+
+#: apps/settings/qml/pages/NetworkDetailsPage.qml:105
+msgid "The saved settings of this connection are removed."
+msgstr "De opgeslagen instellingen van deze verbinding worden verwijderd."
+
+#: apps/settings/qml/pages/NetworkPage.qml:113
+msgid "Connecting…"
+msgstr "Verbinden…"
+
+#: apps/settings/qml/pages/NetworkPage.qml:115
+msgid "Disconnecting…"
+msgstr "Verbinding verbreken…"
+
+#: apps/settings/qml/pages/NetworkPage.qml:119
+msgid "Saved"
+msgstr "Opgeslagen"
+
+#: apps/settings/qml/pages/NetworkPage.qml:121
+msgid "Open network"
+msgstr "Open netwerk"
+
+#: apps/settings/qml/pages/NetworkPage.qml:123
+msgid "Available"
+msgstr "Beschikbaar"
+
+#: apps/settings/qml/pages/NetworkPage.qml:161
+msgid "Use Wi-Fi"
+msgstr "Wifi gebruiken"
+
+#: apps/settings/qml/pages/NetworkPage.qml:172
+msgid "Airplane mode is on"
+msgstr "Vliegtuigstand staat aan"
+
+#: apps/settings/qml/pages/NetworkPage.qml:173
+msgid "Wi-Fi and Bluetooth are off until you turn airplane mode off."
+msgstr "Wifi en Bluetooth staan uit tot je de vliegtuigstand uitzet."
+
+#: apps/settings/qml/pages/NetworkPage.qml:174
+msgid "Turn off"
+msgstr "Uitzetten"
+
+#: apps/settings/qml/pages/NetworkPage.qml:182
+msgid "Wi-Fi networks"
+msgstr "Wifi-netwerken"
+
+#: apps/settings/qml/pages/NetworkPage.qml:184
+msgid "Looking for networks…"
+msgstr "Netwerken zoeken…"
+
+#: apps/settings/qml/pages/NetworkPage.qml:214
+msgid "Network details"
+msgstr "Netwerkgegevens"
+
+#: apps/settings/qml/pages/NetworkPage.qml:225
+msgid "Wired"
+msgstr "Bekabeld"
+
+#: apps/settings/qml/pages/NetworkPage.qml:276
+msgid "Turns off Wi-Fi, Bluetooth and mobile data"
+msgstr "Zet wifi, Bluetooth en mobiele data uit"
+
+#: apps/settings/qml/pages/NetworkPage.qml:288
+msgid "Add a VPN or connection"
+msgstr "Een VPN of verbinding toevoegen"
+
+#: apps/settings/qml/pages/NetworkPage.qml:289
+msgid "WireGuard, OpenVPN, hidden Wi-Fi, static addresses"
+msgstr "WireGuard, OpenVPN, verborgen wifi, vaste adressen"
+
+#: apps/settings/qml/pages/NetworkPage.qml:296
+msgid "Advanced network settings"
+msgstr "Geavanceerde netwerkinstellingen"
+
+#: apps/settings/qml/pages/NetworkPage.qml:297
+msgid "Addresses, DNS, proxy and every saved connection"
+msgstr "Adressen, DNS, proxy en elke opgeslagen verbinding"
+
+#: apps/settings/qml/pages/NetworkPage.qml:311
+msgid "Connect to “%1”"
+msgstr "Verbinden met “%1”"
+
+#: apps/settings/qml/pages/NetworkPage.qml:312
+msgid "Enter the network password."
+msgstr "Voer het netwerkwachtwoord in."
+
+#: apps/settings/qml/pages/NotificationAppsPage.qml:21
+msgid "Apps are listed after they have sent a notification."
+msgstr "Apps verschijnen hier nadat ze een melding hebben gestuurd."
+
+#: apps/settings/qml/pages/NotificationAppsPage.qml:57
+msgid "No apps yet"
+msgstr "Nog geen apps"
+
+#: apps/settings/qml/pages/NotificationAppsPage.qml:58
+msgid "When an app sends a notification, you can choose here how it may notify you."
+msgstr "Als een app een melding stuurt, kun je hier kiezen hoe hij je mag waarschuwen."
+
+#: apps/settings/qml/pages/NotificationAppsPage.qml:70
+msgid "Only in the history"
+msgstr "Alleen in de geschiedenis"
+
+#: apps/settings/qml/pages/NotificationAppsPage.qml:70
+msgid "Pop-ups allowed"
+msgstr "Pop-ups toegestaan"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:66
+msgid "Turned on by an app"
+msgstr "Aangezet door een app"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:69
+msgid "On until you turn it off"
+msgstr "Aan tot je het uitzet"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:71
+msgid "On until %1"
+msgstr "Aan tot %1"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:83
+msgid "Status"
+msgstr "Status"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:90
+msgid "For one hour"
+msgstr "Een uur lang"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:98
+msgid "Until tomorrow morning"
+msgstr "Tot morgenochtend"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:111
+msgid "Show critical notifications"
+msgstr "Kritieke meldingen tonen"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:112
+msgid "Even while Do Not Disturb is on"
+msgstr "Ook als Niet storen aan staat"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:120
+msgid "Quiet while sharing the screen"
+msgstr "Stil tijdens scherm delen"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:121
+msgid "Turn on Do Not Disturb while screens are mirrored or shared"
+msgstr "Niet storen aanzetten als schermen worden gespiegeld of gedeeld"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:135
+msgid "Pop-ups"
+msgstr "Pop-ups"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:138
+msgid "Position"
+msgstr "Positie"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:142
+msgid "Near the notification bell"
+msgstr "Bij de meldingsbel"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:143
+msgid "Top right"
+msgstr "Rechtsboven"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:144
+msgid "Top centre"
+msgstr "Midden boven"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:145
+msgid "Top left"
+msgstr "Linksboven"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:146
+msgid "Bottom right"
+msgstr "Rechtsonder"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:147
+msgid "Bottom centre"
+msgstr "Midden onder"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:148
+msgid "Bottom left"
+msgstr "Linksonder"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:154
+msgid "Hide pop-ups after"
+msgstr "Pop-ups verbergen na"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:157
+msgid "%1 second"
+msgid_plural "%1 seconds"
+msgstr[0] "%1 seconde"
+msgstr[1] "%1 seconden"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:162
+msgid "Low-priority notifications"
+msgstr "Meldingen met lage prioriteit"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:163
+msgid "Show pop-ups for less important messages"
+msgstr "Pop-ups tonen voor minder belangrijke berichten"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:171
+msgid "Progress of file transfers"
+msgstr "Voortgang van bestandsoverdrachten"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:172
+msgid "Show copying and downloads as notifications"
+msgstr "Kopiëren en downloads als meldingen tonen"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:180
+#: apps/settings/qml/pages/SoundDevicesPage.qml:184
+msgid "Notification sounds"
+msgstr "Meldingsgeluiden"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:188
+msgid "Badges on app icons"
+msgstr "Badges op app-iconen"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:189
+msgid "Count unread notifications on the taskbar"
+msgstr "Ongelezen meldingen tellen op de taakbalk"
+
+#: apps/settings/qml/pages/NotificationsPage.qml:203
+msgid "Choose which apps may show notifications"
+msgstr "Kies welke apps meldingen mogen tonen"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:102
+msgid "No mouse or touchpad"
+msgstr "Geen muis of touchpad"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:103
+msgid "Connect a mouse or a touchpad to set it up."
+msgstr "Sluit een muis of touchpad aan om die in te stellen."
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:118
+msgid "Use the touchpad"
+msgstr "Het touchpad gebruiken"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:127
+msgid "Turn off while a mouse is connected"
+msgstr "Uitzetten als er een muis is aangesloten"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:136
+msgid "Pointer acceleration"
+msgstr "Versnelling van de aanwijzer"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:137
+msgid "Faster movements take the pointer further"
+msgstr "Snellere bewegingen brengen de aanwijzer verder"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:146
+msgid "Scrolling"
+msgstr "Scrollen"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:151
+msgid "With two fingers"
+msgstr "Met twee vingers"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:152
+msgid "Along the right edge"
+msgstr "Langs de rechterrand"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:159
+msgid "Scroll while holding a button"
+msgstr "Scrollen met een ingedrukte knop"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:160
+msgid "Hold the middle button and move the mouse"
+msgstr "Houd de middelste knop ingedrukt en beweeg de muis"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:169
+#: apps/settings/qml/pages/PointerOptionsPage.qml:206
+msgid "Right click"
+msgstr "Rechtsklikken"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:174
+msgid "Press the bottom right corner"
+msgstr "Druk op de rechterbenedenhoek"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:175
+msgid "Press with two fingers"
+msgstr "Druk met twee vingers"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:181
+msgid "Tap and drag"
+msgstr "Tikken en slepen"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:182
+msgid "Tap, then touch again and move to drag"
+msgstr "Tik, raak daarna opnieuw aan en beweeg om te slepen"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:191
+msgid "Drag lock"
+msgstr "Sleepvergrendeling"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:192
+msgid "Lifting the finger for a moment does not drop what you drag"
+msgstr "Als je je vinger even optilt, laat je niet los wat je sleept"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:201
+msgid "Two-finger tap"
+msgstr "Tikken met twee vingers"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:206
+msgid "Three fingers: middle click"
+msgstr "Drie vingers: middelklik"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:207
+msgid "Middle click"
+msgstr "Middelklik"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:207
+msgid "Three fingers: right click"
+msgstr "Drie vingers: rechtsklik"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:213
+msgid "Middle click with both buttons"
+msgstr "Middelklik met beide knoppen"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:214
+msgid "Press the left and right buttons together"
+msgstr "Druk de linker- en rechterknop tegelijk in"
+
+#: apps/settings/qml/pages/PointerOptionsPage.qml:223
+msgid "Restore defaults"
+msgstr "Standaardwaarden terugzetten"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:73
+msgid "Warn about low battery at"
+msgstr "Waarschuwen bij lage batterij op"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:84
+msgid "Critical battery level"
+msgstr "Kritiek batterijniveau"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:95
+msgid "At the critical level"
+msgstr "Bij het kritieke niveau"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:99
+msgid "Hibernate"
+msgstr "Slaapstand op schijf"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:99
+msgid "Save everything to disk and turn off"
+msgstr "Alles op schijf opslaan en uitzetten"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:101
+#: apps/settings/qml/pages/PowerPage.qml:197
+#: apps/settings/qml/pages/PowerPage.qml:217
+msgid "Shut down"
+msgstr "Afsluiten"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:102
+#: apps/settings/qml/pages/PowerPage.qml:200
+#: apps/settings/qml/pages/PowerPage.qml:218
+msgid "Do nothing"
+msgstr "Niets doen"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:113
+msgid "Other devices"
+msgstr "Andere apparaten"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:114
+msgid "Wireless mice, keyboards, headphones and other devices with their own battery."
+msgstr "Draadloze muizen, toetsenborden, koptelefoons en andere apparaten met een eigen batterij."
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:117
+msgid "Warn about their low battery at"
+msgstr "Waarschuwen bij hun lage batterij op"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:130
+msgid "Power mode for each state"
+msgstr "Energiestand per situatie"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:132
+msgid "The power mode switches by itself when the computer changes between these states."
+msgstr "De energiestand wisselt vanzelf als de computer tussen deze situaties wisselt."
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:136
+#: apps/settings/qml/pages/PowerPage.qml:119
+msgid "Plugged in"
+msgstr "Aan het stroomnet"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:137
+#: apps/settings/qml/pages/PowerPage.qml:120
+msgid "On battery"
+msgstr "Op batterij"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:138
+#: apps/settings/qml/pages/PowerPage.qml:121
+msgid "Low battery"
+msgstr "Lage batterij"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:148
+#: apps/settings/qml/pages/PowerPage.qml:94
+msgid "Power saver"
+msgstr "Energiebesparing"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:149
+#: apps/settings/qml/pages/PowerPage.qml:95
+msgid "Balanced"
+msgstr "Gebalanceerd"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:150
+#: apps/settings/qml/pages/PowerPage.qml:96
+msgid "Performance"
+msgstr "Prestaties"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:165
+msgid "How to sleep"
+msgstr "Hoe te slapen"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:170
+msgid "Keeps working in memory, wakes up at once"
+msgstr "Blijft in het geheugen werken, wordt meteen wakker"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:171
+msgid "Also saves to disk in case the power runs out"
+msgstr "Slaat ook op schijf op voor het geval de stroom uitvalt"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:171
+msgid "Hybrid sleep"
+msgstr "Hybride slaapstand"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:172
+msgid "Hibernates after some time asleep"
+msgstr "Gaat na een tijdje slapen over op slaapstand op schijf"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:172
+msgid "Sleep, then hibernate"
+msgstr "Slaapstand, daarna slaapstand op schijf"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:183
+msgid "Pause media before sleep"
+msgstr "Media pauzeren voor de slaapstand"
+
+#: apps/settings/qml/pages/PowerAdvancedPage.qml:184
+msgid "Music and videos stop when the computer goes to sleep"
+msgstr "Muziek en video's stoppen als de computer gaat slapen"
+
+#: apps/settings/qml/pages/PowerPage.qml:44
+#: apps/settings/qml/pages/PrivacyPage.qml:43
+msgid "After %1 minute"
+msgid_plural "After %1 minutes"
+msgstr[0] "Na %1 minuut"
+msgstr[1] "Na %1 minuten"
+
+#: apps/settings/qml/pages/PowerPage.qml:46
+msgid "After %1 hour"
+msgid_plural "After %1 hours"
+msgstr[0] "Na %1 uur"
+msgstr[1] "Na %1 uur"
+
+#: apps/settings/qml/pages/PowerPage.qml:79
+msgid "Charging"
+msgstr "Opladen"
+
+#: apps/settings/qml/pages/PowerPage.qml:79
+msgid "Fully charged"
+msgstr "Volledig opgeladen"
+
+#: apps/settings/qml/pages/PowerPage.qml:80
+msgid "On battery power"
+msgstr "Op batterijstroom"
+
+#: apps/settings/qml/pages/PowerPage.qml:109
+msgid "Faster, but uses more power and may run warmer."
+msgstr "Sneller, maar gebruikt meer stroom en kan warmer worden."
+
+#: apps/settings/qml/pages/PowerPage.qml:110
+msgid "Longer battery life; the computer may feel slower."
+msgstr "Langere batterijduur; de computer kan trager aanvoelen."
+
+#: apps/settings/qml/pages/PowerPage.qml:111
+msgid "A balance of speed and battery life."
+msgstr "Een balans tussen snelheid en batterijduur."
+
+#: apps/settings/qml/pages/PowerPage.qml:144
+msgid "Dim the screen"
+msgstr "Het scherm dimmen"
+
+#: apps/settings/qml/pages/PowerPage.qml:158
+#: apps/settings/qml/pages/PowerPage.qml:199
+#: apps/settings/qml/pages/PowerPage.qml:216
+msgid "Turn off the screen"
+msgstr "Het scherm uitzetten"
+
+#: apps/settings/qml/pages/PowerPage.qml:177
+msgid "Sleep when inactive"
+msgstr "Slaapstand bij inactiviteit"
+
+#: apps/settings/qml/pages/PowerPage.qml:191
+msgid "Power button"
+msgstr "Aan-uitknop"
+
+#: apps/settings/qml/pages/PowerPage.qml:195
+msgid "Ask what to do"
+msgstr "Vragen wat er moet gebeuren"
+
+#: apps/settings/qml/pages/PowerPage.qml:198
+#: apps/settings/qml/pages/PowerPage.qml:215
+msgid "Lock the screen"
+msgstr "Het scherm vergrendelen"
+
+#: apps/settings/qml/pages/PowerPage.qml:209
+msgid "When the lid is closed"
+msgstr "Als het deksel dicht gaat"
+
+#: apps/settings/qml/pages/PowerPage.qml:231
+msgid "Low battery, other devices, sleep"
+msgstr "Lage batterij, andere apparaten, slaapstand"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:38
+msgid "Lock the screen automatically"
+msgstr "Het scherm automatisch vergrendelen"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:55
+msgid "Lock after waking up"
+msgstr "Vergrendelen na ontwaken"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:56
+msgid "Ask for the password when the computer wakes from sleep"
+msgstr "Om het wachtwoord vragen als de computer uit de slaapstand komt"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:67
+msgid "Unlock without a password for"
+msgstr "Zonder wachtwoord ontgrendelen tot"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:73
+msgid "%1 second after locking"
+msgid_plural "%1 seconds after locking"
+msgstr[0] "%1 seconde na vergrendelen"
+msgstr[1] "%1 seconden na vergrendelen"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:73
+msgid "No time"
+msgstr "Geen tijd"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:82
+msgid "Lock now"
+msgstr "Nu vergrendelen"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:103
+msgid "The index stays on this computer. It lets search find files by name and by what they contain."
+msgstr "De index blijft op deze computer. Daarmee vindt zoeken bestanden op naam en op inhoud."
+
+#: apps/settings/qml/pages/PrivacyPage.qml:106
+msgid "Index files for search"
+msgstr "Bestanden indexeren voor zoeken"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:117
+msgid "Only file names"
+msgstr "Alleen bestandsnamen"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:118
+msgid "Don't look inside documents"
+msgstr "Niet in documenten kijken"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:145
+msgid "The history of recent files was cleared."
+msgstr "De geschiedenis van recente bestanden is gewist."
+
+#: apps/settings/qml/pages/PrivacyPage.qml:149
+msgid "History"
+msgstr "Geschiedenis"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:152
+msgid "Remember recently used files"
+msgstr "Recent gebruikte bestanden onthouden"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:153
+msgid "Show them in the launcher, in Files and in apps"
+msgstr "Toon ze in het startmenu, in Bestanden en in apps"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:161
+msgid "Clear history"
+msgstr "Geschiedenis wissen"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:162
+msgid "Forget recently used files and folders"
+msgstr "Recent gebruikte bestanden en mappen vergeten"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:173
+msgid "Clear history?"
+msgstr "Geschiedenis wissen?"
+
+#: apps/settings/qml/pages/PrivacyPage.qml:174
+msgid "Lists of recently used files and folders are emptied. The files themselves stay."
+msgstr "Lijsten met recent gebruikte bestanden en mappen worden leeggemaakt. De bestanden zelf blijven staan."
+
+#: apps/settings/qml/pages/PrivacyPage.qml:175
+msgid "Clear"
+msgstr "Wissen"
+
+#
+#: apps/settings/qml/pages/QuickSharePage.qml:28
+msgid "%1 min"
+msgstr "%1 min"
+
+#
+#: apps/settings/qml/pages/QuickSharePage.qml:28
+msgid "%1 sec"
+msgstr "%1 sec"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:41
+msgid "%1 file"
+msgid_plural "%1 files"
+msgstr[0] "%1 bestand"
+msgstr[1] "%1 bestanden"
+
+#
+#: apps/settings/qml/pages/QuickSharePage.qml:42
+msgid "A Wi-Fi network"
+msgstr "Een wifi-netwerk"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:42
+msgid "A link"
+msgstr "Een link"
+
+#
+#: apps/settings/qml/pages/QuickSharePage.qml:42
+msgid "Text"
+msgstr "Tekst"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:45
+msgid "%1 · received"
+msgstr "%1 · ontvangen"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:45
+msgid "%1 · sent"
+msgstr "%1 · verstuurd"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:47
+msgid "%1 · declined"
+msgstr "%1 · geweigerd"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:49
+msgid "%1 · cancelled"
+msgstr "%1 · geannuleerd"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:51
+msgid "%1 · not finished"
+msgstr "%1 · niet voltooid"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:53
+msgid "%1 · waiting"
+msgstr "%1 · wachten"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:56
+msgid "%1 · %2%"
+msgstr "%1 · %2%"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:98
+msgid "Share files, photos and links with Android phones and computers nearby."
+msgstr "Deel bestanden, foto's en links met Android-telefoons en computers in de buurt."
+
+#
+#: apps/settings/qml/pages/QuickSharePage.qml:104
+msgid "Use Quick Share"
+msgstr "Quick Share gebruiken"
+
+#
+#: apps/settings/qml/pages/QuickSharePage.qml:114
+msgid "Send and receive"
+msgstr "Versturen en ontvangen"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:115
+msgid "Open Quick Share"
+msgstr "Quick Share openen"
+
+#
+#: apps/settings/qml/pages/QuickSharePage.qml:125
+msgid "How your device appears to others"
+msgstr "Hoe je apparaat voor anderen verschijnt"
+
+#
+#: apps/settings/qml/pages/QuickSharePage.qml:138
+msgid "Device visibility"
+msgstr "Zichtbaarheid van apparaat"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:139
+msgid "Your device visibility controls who can share with you while your screen is unlocked. Every transfer still waits for you to accept it."
+msgstr "De zichtbaarheid van je apparaat bepaalt wie met je kan delen terwijl je scherm ontgrendeld is. Elke overdracht wacht nog steeds tot jij hem accepteert."
+
+#: apps/settings/qml/pages/QuickSharePage.qml:140
+msgid "Quick Share is off. Nobody can see this computer."
+msgstr "Quick Share staat uit. Niemand kan deze computer zien."
+
+#: apps/settings/qml/pages/QuickSharePage.qml:144
+msgid "Everyone"
+msgstr "Iedereen"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:145
+msgid "Any device nearby can share with you"
+msgstr "Elk apparaat in de buurt kan met je delen"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:150
+msgid "Hidden"
+msgstr "Verborgen"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:151
+msgid "No one can share with you"
+msgstr "Niemand kan met je delen"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:157
+msgid "Visible to everyone"
+msgstr "Zichtbaar voor iedereen"
+
+#
+#: apps/settings/qml/pages/QuickSharePage.qml:158
+msgid "%1 left"
+msgstr "nog %1"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:158
+msgid "For 10 min"
+msgstr "10 min lang"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:167
+msgid "Ask when a device nearby is sharing"
+msgstr "Vragen als een apparaat in de buurt deelt"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:168
+msgid "Offer to become visible when a phone nearby opens Quick Share"
+msgstr "Aanbieden om zichtbaar te worden als een telefoon in de buurt Quick Share opent"
+
+#
+#: apps/settings/qml/pages/QuickSharePage.qml:178
+msgid "Received files"
+msgstr "Ontvangen bestanden"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:182
+#: apps/settings/qml/pages/QuickSharePage.qml:235
+msgid "Save received files to"
+msgstr "Ontvangen bestanden opslaan in"
+
+#
+#: apps/settings/qml/pages/QuickSharePage.qml:192
+msgid "Recent"
+msgstr "Recent"
+
+#
+#: apps/settings/qml/pages/QuickSharePage.qml:200
+msgid "Unknown device"
+msgstr "Onbekend apparaat"
+
+#: apps/settings/qml/pages/QuickSharePage.qml:213
+msgid "How your device appears to others in Quick Share."
+msgstr "Hoe je apparaat voor anderen verschijnt in Quick Share."
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:25
+msgid "Windows and desktops"
+msgstr "Vensters en bureaubladen"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:26
+msgid "Desktop and panel"
+msgstr "Bureaublad en paneel"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:27
+msgid "Screenshot"
+msgstr "Schermafbeelding"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:28
+msgid "Terminal"
+msgstr "Terminal"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:29
+msgid "Media"
+msgstr "Media"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:31
+msgid "Keyboard layout"
+msgstr "Toetsenbordindeling"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:32
+msgid "Power"
+msgstr "Energie"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:33
+msgid "Screens"
+msgstr "Schermen"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:36
+msgid "Emoji"
+msgstr "Emoji"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:37
+#: apps/settings/qml/pages/SystemPage.qml:126
+msgid "Session"
+msgstr "Sessie"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:60
+msgctxt "start the app"
+msgid "Open"
+msgstr "Openen"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:115
+msgid "The shortcut could not be changed."
+msgstr "De sneltoets kon niet worden gewijzigd."
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:132
+msgid "Search shortcuts"
+msgstr "Sneltoetsen zoeken"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:138
+msgid "No shortcuts found"
+msgstr "Geen sneltoetsen gevonden"
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:139
+msgid "Try another word."
+msgstr "Probeer een ander woord."
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:193
+msgid "Press the new shortcut, or Esc to cancel."
+msgstr "Druk op de nieuwe sneltoets, of op Esc om te annuleren."
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:243
+msgid "Already used for “%1”. It will be taken from there."
+msgstr "Al in gebruik voor “%1”. Daar wordt hij weggehaald."
+
+#: apps/settings/qml/pages/ShortcutsPage.qml:261
+msgid "No shortcut"
+msgstr "Geen sneltoets"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:24
+#: apps/settings/qml/pages/SoundDevicesPage.qml:101
+msgid "In use"
+msgstr "In gebruik"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:48
+msgid "Left"
+msgstr "Links"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:48
+msgid "Right"
+msgstr "Rechts"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:51
+msgid "Mono"
+msgstr "Mono"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:52
+msgid "Front left"
+msgstr "Linksvoor"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:53
+msgid "Front right"
+msgstr "Rechtsvoor"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:54
+msgid "Front centre"
+msgstr "Middenvoor"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:55
+msgid "Rear left"
+msgstr "Linksachter"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:56
+msgid "Rear right"
+msgstr "Rechtsachter"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:57
+msgid "Rear centre"
+msgstr "Middenachter"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:58
+msgid "Side left"
+msgstr "Linkerzijde"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:59
+msgid "Side right"
+msgstr "Rechterzijde"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:60
+msgid "Subwoofer"
+msgstr "Subwoofer"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:70
+#: apps/settings/qml/pages/SoundPage.qml:138
+msgid "Input"
+msgstr "Invoer"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:70
+#: apps/settings/qml/pages/SoundPage.qml:99
+msgid "Output"
+msgstr "Uitvoer"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:73
+msgid "Play sound through this device"
+msgstr "Geluid via dit apparaat afspelen"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:73
+msgid "Record sound from this device"
+msgstr "Geluid van dit apparaat opnemen"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:95
+#: apps/settings/qml/pages/SoundDevicesPage.qml:192
+#: apps/settings/qml/pages/SoundPage.qml:111
+#: apps/settings/qml/pages/SoundPage.qml:150
+#: apps/settings/qml/pages/SoundPage.qml:192
+msgid "Muted"
+msgstr "Gedempt"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:102
+#: apps/settings/qml/pages/SoundPage.qml:128
+msgid "Mute"
+msgstr "Dempen"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:110
+msgid "Connector"
+msgstr "Aansluiting"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:117
+msgid "Nothing plugged in"
+msgstr "Niets aangesloten"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:123
+#: apps/settings/qml/pages/SoundDevicesPage.qml:168
+msgid "Profile"
+msgstr "Profiel"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:130
+#: apps/settings/qml/pages/SoundDevicesPage.qml:172
+msgid "Not available"
+msgstr "Niet beschikbaar"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:138
+msgid "Channels"
+msgstr "Kanalen"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:140
+msgid "Turn one side down to move the sound towards the other."
+msgstr "Zet één kant zachter om het geluid naar de andere kant te verplaatsen."
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:160
+msgid "Test speakers"
+msgstr "Luidsprekers testen"
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:162
+msgid "Click a speaker to play a short sound from it."
+msgstr "Klik op een luidspreker om er een kort geluid uit te laten komen."
+
+#: apps/settings/qml/pages/SoundDevicePage.qml:172
+msgid "Playing"
+msgstr "Speelt af"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:113
+#: apps/settings/qml/pages/SoundPage.qml:94
+msgid "No sound devices"
+msgstr "Geen geluidsapparaten"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:114
+#: apps/settings/qml/pages/SoundPage.qml:95
+msgid "Connect speakers or headphones to hear sound."
+msgstr "Sluit luidsprekers of een koptelefoon aan om geluid te horen."
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:118
+msgid "Outputs"
+msgstr "Uitvoer"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:137
+msgid "Inputs"
+msgstr "Invoer"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:156
+msgid "Sound cards"
+msgstr "Geluidskaarten"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:158
+msgid "A profile decides which outputs and inputs a card offers, for example stereo, surround or HDMI."
+msgstr "Een profiel bepaalt welke uitgangen en ingangen een kaart biedt, bijvoorbeeld stereo, surround of HDMI."
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:199
+msgid "Allow volume above 100%"
+msgstr "Volume boven 100% toestaan"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:200
+msgid "Up to 150%, which can distort the sound"
+msgstr "Tot 150%, wat het geluid kan vervormen"
+
+#: apps/settings/qml/pages/SoundDevicesPage.qml:208
+msgid "Volume step"
+msgstr "Volumestap"
+
+#: apps/settings/qml/pages/SoundPage.qml:115
+msgid "Play sound through"
+msgstr "Geluid afspelen via"
+
+#: apps/settings/qml/pages/SoundPage.qml:142
+msgid "Microphone volume"
+msgstr "Microfoonvolume"
+
+#: apps/settings/qml/pages/SoundPage.qml:154
+msgid "Record sound from"
+msgstr "Geluid opnemen van"
+
+#: apps/settings/qml/pages/SoundPage.qml:167
+msgid "Mute microphone"
+msgstr "Microfoon dempen"
+
+#: apps/settings/qml/pages/SoundPage.qml:179
+msgid "Apps appear here while they play sound."
+msgstr "Apps verschijnen hier terwijl ze geluid afspelen."
+
+#: apps/settings/qml/pages/SoundPage.qml:221
+msgid "Sounds"
+msgstr "Geluiden"
+
+#
+#: apps/settings/qml/pages/SoundPage.qml:222
+msgid "Kernora"
+msgstr "Kernora"
+
+#: apps/settings/qml/pages/SoundPage.qml:228
+msgid "Listen"
+msgstr "Luisteren"
+
+#: apps/settings/qml/pages/SoundPage.qml:234
+msgid "Sound at login"
+msgstr "Geluid bij inloggen"
+
+#: apps/settings/qml/pages/SoundPage.qml:235
+msgid "A short chime when the desktop is ready"
+msgstr "Een kort geluidje als het bureaublad klaar is"
+
+#: apps/settings/qml/pages/SoundPage.qml:249
+msgid "Volume change sound"
+msgstr "Geluid bij volumewijziging"
+
+#: apps/settings/qml/pages/SoundPage.qml:250
+msgid "Play a short sound when the volume changes"
+msgstr "Een kort geluid afspelen als het volume verandert"
+
+#: apps/settings/qml/pages/SoundPage.qml:258
+msgid "Advanced sound settings"
+msgstr "Geavanceerde geluidsinstellingen"
+
+#: apps/settings/qml/pages/SoundPage.qml:259
+msgid "Profiles, channel balance, every device"
+msgstr "Profielen, kanaalbalans, elk apparaat"
+
+#: apps/settings/qml/pages/StoragePage.qml:65
+msgid "%1 free of %2"
+msgstr "%1 vrij van %2"
+
+#: apps/settings/qml/pages/StoragePage.qml:85
+#: apps/settings/qml/pages/StoragePage.qml:88
+msgid "Trash"
+msgstr "Prullenbak"
+
+#: apps/settings/qml/pages/StoragePage.qml:89
+msgctxt "the trash has nothing in it"
+msgid "Empty"
+msgstr "Leeg"
+
+#: apps/settings/qml/pages/StoragePage.qml:89
+msgid "Takes %1"
+msgstr "Neemt %1 in beslag"
+
+#: apps/settings/qml/pages/StoragePage.qml:94
+#: apps/settings/qml/pages/StoragePage.qml:115
+msgid "Empty"
+msgstr "Legen"
+
+#: apps/settings/qml/pages/StoragePage.qml:102
+msgid "Open Files"
+msgstr "Bestanden openen"
+
+#: apps/settings/qml/pages/StoragePage.qml:113
+msgid "Empty the trash?"
+msgstr "Prullenbak legen?"
+
+#: apps/settings/qml/pages/StoragePage.qml:114
+msgid "Everything in the trash is deleted for good."
+msgstr "Alles in de prullenbak wordt definitief verwijderd."
+
+#: apps/settings/qml/pages/StoragePage.qml:132
+msgid "Trash emptied"
+msgstr "Prullenbak geleegd"
+
+#: apps/settings/qml/pages/SystemPage.qml:81
+msgid "%1 update available"
+msgid_plural "%1 updates available"
+msgstr[0] "%1 update beschikbaar"
+msgstr[1] "%1 updates beschikbaar"
+
+#: apps/settings/qml/pages/SystemPage.qml:82
+msgid "Security fixes and new versions"
+msgstr "Beveiligingsoplossingen en nieuwe versies"
+
+#: apps/settings/qml/pages/SystemPage.qml:91
+msgid "Graphics card drivers"
+msgstr "Stuurprogramma's voor de videokaart"
+
+#: apps/settings/qml/pages/SystemPage.qml:99
+msgid "Free space, trash"
+msgstr "Vrije ruimte, prullenbak"
+
+#: apps/settings/qml/pages/SystemPage.qml:108
+msgid "Early access"
+msgstr "Vroege toegang"
+
+#: apps/settings/qml/pages/SystemPage.qml:114
+msgid "You get new versions before everyone else. If you turn this off, you keep them until a normal update replaces them"
+msgstr "Je krijgt nieuwe versies eerder dan iedereen. Zet je dit uit, dan houd je ze tot een gewone update ze vervangt"
+
+#: apps/settings/qml/pages/SystemPage.qml:115
+msgid "Get new versions before everyone else. They are still being tested and can have bugs"
+msgstr "Krijg nieuwe versies eerder dan iedereen. Ze worden nog getest en kunnen fouten bevatten"
+
+#: apps/settings/qml/pages/SystemPage.qml:129
+msgid "When you log in"
+msgstr "Bij het inloggen"
+
+#: apps/settings/qml/pages/SystemPage.qml:133
+msgid "Start with an empty desktop"
+msgstr "Beginnen met een leeg bureaublad"
+
+#: apps/settings/qml/pages/SystemPage.qml:134
+msgid "Reopen the apps that were open"
+msgstr "De apps die open waren weer openen"
+
+#: apps/settings/qml/pages/SystemPage.qml:146
+msgid "Printers, shortcuts, fonts and every other option"
+msgstr "Printers, sneltoetsen, lettertypen en alle andere opties"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:32
+msgid "Checking for updates…"
+msgstr "Zoeken naar updates…"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:33
+msgid "Your system is up to date"
+msgstr "Je systeem is up-to-date"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:34
+msgid "%1 update is available"
+msgid_plural "%1 updates are available"
+msgstr[0] "%1 update is beschikbaar"
+msgstr[1] "%1 updates zijn beschikbaar"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:35
+msgid "Installing updates…"
+msgstr "Updates installeren…"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:36
+msgid "Updates are installed"
+msgstr "Updates zijn geïnstalleerd"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:37
+msgid "Updating did not work"
+msgstr "Bijwerken is niet gelukt"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:43
+msgid "The update service is not available."
+msgstr "De updatedienst is niet beschikbaar."
+
+#: apps/settings/qml/pages/UpdatesPage.qml:52
+msgid "Restart the computer to finish."
+msgstr "Start de computer opnieuw op om af te ronden."
+
+#: apps/settings/qml/pages/UpdatesPage.qml:55
+msgid "Last checked %1"
+msgstr "Laatst gecontroleerd %1"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:89
+msgid "Updates come with the installation"
+msgstr "Updates komen met de installatie"
+
+#
+#: apps/settings/qml/pages/UpdatesPage.qml:95
+msgid "You are trying Kernora from the installation medium, and nothing installed here is kept. Install Kernora: when the computer is online, the installer brings the new system up to date by itself."
+msgstr "Je probeert Kernora vanaf het installatiemedium, en niets wat je hier installeert blijft bewaard. Installeer Kernora: als de computer online is, werkt het installatieprogramma het nieuwe systeem vanzelf bij."
+
+#
+#: apps/settings/qml/pages/UpdatesPage.qml:102
+msgid "Install Kernora"
+msgstr "Kernora installeren"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:182
+msgid "Check again"
+msgstr "Opnieuw controleren"
+
+#: apps/settings/qml/pages/UpdatesPage.qml:192
+msgid "What changes"
+msgstr "Wat er verandert"
+
+#: apps/settings/qml/pages/UserPage.qml:36
+msgid "The password was changed."
+msgstr "Het wachtwoord is gewijzigd."
+
+#: apps/settings/qml/pages/UserPage.qml:73
+msgid "Set a new password"
+msgstr "Een nieuw wachtwoord instellen"
+
+#: apps/settings/qml/pages/UserPage.qml:74
+msgid "When the password is forgotten"
+msgstr "Als het wachtwoord vergeten is"
+
+#: apps/settings/qml/pages/UserPage.qml:85
+msgid "Delete the account"
+msgstr "Het account verwijderen"
+
+#: apps/settings/qml/pages/UserPage.qml:101
+msgid "New password for %1"
+msgstr "Nieuw wachtwoord voor %1"
+
+#: apps/settings/qml/pages/UserPage.qml:102
+msgid "Use at least 8 characters."
+msgstr "Gebruik minstens 8 tekens."
+
+#: apps/settings/qml/pages/UserPage.qml:132
+msgid "Delete %1?"
+msgstr "%1 verwijderen?"
+
+#: apps/settings/qml/pages/UserPage.qml:133
+msgid "The account can no longer log in."
+msgstr "Met het account kan niet meer worden ingelogd."
+
+#: apps/settings/qml/pages/UserPage.qml:134
+msgid "Delete"
+msgstr "Verwijderen"
+
+#: apps/settings/qml/pages/UserPage.qml:142
+msgid "Delete their files too"
+msgstr "Ook hun bestanden verwijderen"
+
+#: apps/settings/qml/pages/UserPage.qml:143
+msgid "Documents, pictures and everything else in the home folder"
+msgstr "Documenten, afbeeldingen en al het andere in de persoonlijke map"
+
+#: src/apps/host.cpp:59
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:67
+msgid "Files or pages to open."
+msgstr "Bestanden of pagina's om te openen."
+
+#: src/apps/settings.cpp:8
+msgctxt "@title application name"
+msgid "Settings"
+msgstr "Instellingen"

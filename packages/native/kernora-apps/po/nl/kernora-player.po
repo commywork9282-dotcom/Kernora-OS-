@@ -1,0 +1,128 @@
+# Dutch translation of Kernora Player.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-player\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-31 13:44+0100\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/player/qml/Main.qml:28 apps/player/qml/Main.qml:117
+#: apps/player/qml/Main.qml:196
+msgid "Media Player"
+msgstr "Mediaspeler"
+
+#: apps/player/qml/Main.qml:111
+msgid "This file cannot be played."
+msgstr "Dit bestand kan niet worden afgespeeld."
+
+#: apps/player/qml/Main.qml:199 apps/player/qml/Main.qml:269
+msgid "Open a file"
+msgstr "Een bestand openen"
+
+#: apps/player/qml/Main.qml:230
+msgid "Music"
+msgstr "Muziek"
+
+#: apps/player/qml/Main.qml:245
+msgid "Videos"
+msgstr "Video's"
+
+#: apps/player/qml/Main.qml:267
+msgid "Nothing to play yet"
+msgstr "Nog niets om af te spelen"
+
+#: apps/player/qml/Main.qml:268
+msgid "Music from your Music folder and videos from your Videos folder appear here. You can also open any file."
+msgstr "Muziek uit je map Muziek en video's uit je map Video's verschijnen hier. Je kunt ook elk ander bestand openen."
+
+#: apps/player/qml/Main.qml:359
+msgid "Library"
+msgstr "Bibliotheek"
+
+#: apps/player/qml/Main.qml:455
+msgid "Up next"
+msgstr "Hierna"
+
+#: apps/player/qml/Main.qml:516
+msgid "Repeat: all"
+msgstr "Herhalen: alles"
+
+#: apps/player/qml/Main.qml:516
+msgid "Repeat: off"
+msgstr "Herhalen: uit"
+
+#: apps/player/qml/Main.qml:516
+msgid "Repeat: this one"
+msgstr "Herhalen: deze"
+
+#: apps/player/qml/Main.qml:522
+msgid "Previous"
+msgstr "Vorige"
+
+#: apps/player/qml/Main.qml:528
+msgid "Pause"
+msgstr "Pauzeren"
+
+#: apps/player/qml/Main.qml:528
+msgid "Play"
+msgstr "Afspelen"
+
+#: apps/player/qml/Main.qml:531
+msgid "Next"
+msgstr "Volgende"
+
+#: apps/player/qml/Main.qml:536
+msgid "Speed: %1×"
+msgstr "Snelheid: %1×"
+
+#: apps/player/qml/Main.qml:543
+msgid "Mute"
+msgstr "Dempen"
+
+#: apps/player/qml/Main.qml:543
+msgid "Unmute"
+msgstr "Geluid aan"
+
+#: apps/player/qml/Main.qml:550
+msgid "Full screen"
+msgstr "Volledig scherm"
+
+#: apps/player/qml/Main.qml:599
+msgid "%1×"
+msgstr "%1×"
+
+#: apps/player/qml/Main.qml:599
+msgid "Normal"
+msgstr "Normaal"
+
+#: apps/player/qml/Main.qml:611
+msgid "Open a video or music file"
+msgstr "Een video- of muziekbestand openen"
+
+#: apps/player/qml/Main.qml:613
+msgid "All files (*)"
+msgstr "Alle bestanden (*)"
+
+#: apps/player/qml/Main.qml:613
+msgid "Media files (*.mp4 *.mkv *.webm *.avi *.mov *.m4v *.ogv *.mpg *.mp3 *.flac *.ogg *.oga *.opus *.wav *.m4a *.aac)"
+msgstr "Mediabestanden (*.mp4 *.mkv *.webm *.avi *.mov *.m4v *.ogv *.mpg *.mp3 *.flac *.ogg *.oga *.opus *.wav *.m4a *.aac)"
+
+#: src/apps/host.cpp:59
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:67
+msgid "Files or pages to open."
+msgstr "Bestanden of pagina's om te openen."
+
+#: src/apps/player.cpp:8
+msgctxt "@title application name"
+msgid "Media Player"
+msgstr "Mediaspeler"

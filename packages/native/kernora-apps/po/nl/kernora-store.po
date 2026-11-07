@@ -1,0 +1,544 @@
+# Dutch translation of Kernora Store.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-store\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-31 13:44+0100\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/store/qml/AppPage.qml:59 apps/store/qml/AppPage.qml:297
+msgid "%1 is installed. Open it from the app menu."
+msgstr "%1 is geïnstalleerd. Open het vanuit het appmenu."
+
+#: apps/store/qml/AppPage.qml:182 apps/store/qml/ListPage.qml:65
+#: apps/store/qml/MyAppsPage.qml:37 apps/store/qml/components/Shelf.qml:110
+msgid "Back"
+msgstr "Terug"
+
+#: apps/store/qml/AppPage.qml:246 apps/store/qml/AppPage.qml:578
+msgid "%1 rating"
+msgid_plural "%1 ratings"
+msgstr[0] "%1 beoordeling"
+msgstr[1] "%1 beoordelingen"
+
+#: apps/store/qml/AppPage.qml:251 apps/store/qml/AppPage.qml:645
+msgid "Source"
+msgstr "Bron"
+
+#: apps/store/qml/AppPage.qml:257 apps/store/qml/AppPage.qml:643
+msgid "Version"
+msgstr "Versie"
+
+#: apps/store/qml/AppPage.qml:263
+msgid "Size"
+msgstr "Grootte"
+
+#
+#: apps/store/qml/AppPage.qml:280 apps/store/qml/AppPage.qml:670
+msgid "Uninstall"
+msgstr "Verwijderen"
+
+#: apps/store/qml/AppPage.qml:287 apps/store/qml/UpdatesPage.qml:173
+msgid "Update"
+msgstr "Bijwerken"
+
+#: apps/store/qml/AppPage.qml:288
+msgid "Install"
+msgstr "Installeren"
+
+#: apps/store/qml/AppPage.qml:288 apps/store/qml/AppPage.qml:293
+msgid "Open"
+msgstr "Openen"
+
+#: apps/store/qml/AppPage.qml:332 apps/store/qml/UpdatesPage.qml:96
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: apps/store/qml/AppPage.qml:344
+msgid "From Flathub. App updates are available in Store."
+msgstr "Van Flathub. App-updates zijn beschikbaar in de Store."
+
+#: apps/store/qml/AppPage.qml:346
+msgid "From Debian. Installing it asks for your password."
+msgstr "Van Debian. Bij het installeren wordt om je wachtwoord gevraagd."
+
+#
+#: apps/store/qml/AppPage.qml:356
+msgid "Only install packages you trust. This one comes from a file, not from a checked source, and gets full access to your computer."
+msgstr "Installeer alleen pakketten die je vertrouwt. Dit pakket komt uit een bestand, niet uit een gecontroleerde bron, en krijgt volledige toegang tot je computer."
+
+#
+#: apps/store/qml/AppPage.qml:362
+msgid "You are trying Kernora. Apps you install now disappear after a restart."
+msgstr "Je probeert Kernora. Apps die je nu installeert, verdwijnen na een herstart."
+
+#: apps/store/qml/AppPage.qml:447 apps/store/qml/AppPage.qml:739
+msgid "Previous"
+msgstr "Vorige"
+
+#: apps/store/qml/AppPage.qml:459 apps/store/qml/AppPage.qml:749
+msgid "Next"
+msgstr "Volgende"
+
+#: apps/store/qml/AppPage.qml:477
+msgid "About this app"
+msgstr "Over deze app"
+
+#: apps/store/qml/AppPage.qml:482
+msgid "Read more"
+msgstr "Meer lezen"
+
+#: apps/store/qml/AppPage.qml:482
+msgid "Show less"
+msgstr "Minder tonen"
+
+#
+#: apps/store/qml/AppPage.qml:506
+msgid "Updated on %1"
+msgstr "Bijgewerkt op %1"
+
+#
+#: apps/store/qml/AppPage.qml:558
+msgid "Ratings"
+msgstr "Beoordelingen"
+
+#: apps/store/qml/AppPage.qml:626
+msgid "Ratings come from Linux users through the Open Desktop Ratings Service."
+msgstr "Beoordelingen komen van Linux-gebruikers via de Open Desktop Ratings Service."
+
+#: apps/store/qml/AppPage.qml:635
+msgid "App info"
+msgstr "App-info"
+
+#
+#: apps/store/qml/AppPage.qml:644
+msgid "Updated on"
+msgstr "Bijgewerkt op"
+
+#
+#: apps/store/qml/AppPage.qml:646
+msgid "Package"
+msgstr "Pakket"
+
+#: apps/store/qml/AppPage.qml:647
+msgid "Size on disk"
+msgstr "Grootte op schijf"
+
+#: apps/store/qml/AppPage.qml:648
+msgid "Licence"
+msgstr "Licentie"
+
+#: apps/store/qml/AppPage.qml:649
+msgid "Website"
+msgstr "Website"
+
+#: apps/store/qml/AppPage.qml:650
+msgid "File"
+msgstr "Bestand"
+
+#
+#: apps/store/qml/AppPage.qml:666
+msgid "Uninstall %1?"
+msgstr "%1 verwijderen?"
+
+#: apps/store/qml/AppPage.qml:668
+msgid "The app and its files in the sandbox are removed. Your documents stay."
+msgstr "De app en zijn bestanden in de sandbox worden verwijderd. Je documenten blijven staan."
+
+#: apps/store/qml/AppPage.qml:669
+msgid "The app is removed from the computer. Your documents stay."
+msgstr "De app wordt van de computer verwijderd. Je documenten blijven staan."
+
+#: apps/store/qml/AppPage.qml:758
+msgid "Close"
+msgstr "Sluiten"
+
+#
+#: apps/store/qml/HomePage.qml:38
+msgid "You are trying Kernora. Apps you install now disappear after a restart, install Kernora to keep them."
+msgstr "Je probeert Kernora. Apps die je nu installeert, verdwijnen na een herstart. Installeer Kernora om ze te houden."
+
+#: apps/store/qml/HomePage.qml:43
+msgid "Chat & calls"
+msgstr "Chatten en bellen"
+
+#: apps/store/qml/HomePage.qml:49 src/store/store.cpp:630
+msgid "Music & video"
+msgstr "Muziek en video"
+
+#: apps/store/qml/HomePage.qml:55
+msgid "Create"
+msgstr "Maken"
+
+#: apps/store/qml/HomePage.qml:61
+msgid "Work & study"
+msgstr "Werk en studie"
+
+#: apps/store/qml/ListPage.qml:74
+msgid "Results for “%1”"
+msgstr "Resultaten voor “%1”"
+
+#: apps/store/qml/ListPage.qml:82
+msgid "%1 app installed"
+msgid_plural "%1 apps installed"
+msgstr[0] "%1 app geïnstalleerd"
+msgstr[1] "%1 apps geïnstalleerd"
+
+#: apps/store/qml/ListPage.qml:83
+msgid "%1 app"
+msgid_plural "%1 apps"
+msgstr[0] "%1 app"
+msgstr[1] "%1 apps"
+
+#: apps/store/qml/ListPage.qml:160
+msgid "No apps from the store yet"
+msgstr "Nog geen apps uit de Store"
+
+#: apps/store/qml/ListPage.qml:161
+msgid "Nothing found"
+msgstr "Niets gevonden"
+
+#: apps/store/qml/ListPage.qml:161
+msgid "This category is empty"
+msgstr "Deze categorie is leeg"
+
+#: apps/store/qml/ListPage.qml:162
+msgid "Apps you install from the store appear here."
+msgstr "Apps die je uit de Store installeert, verschijnen hier."
+
+#: apps/store/qml/ListPage.qml:163
+msgid "Try another name or a shorter word."
+msgstr "Probeer een andere naam of een korter woord."
+
+#: apps/store/qml/Main.qml:19 apps/store/qml/Main.qml:178
+msgid "Store"
+msgstr "Store"
+
+#: apps/store/qml/Main.qml:34
+msgid "Apps"
+msgstr "Apps"
+
+#: apps/store/qml/Main.qml:35 src/store/store.cpp:624
+msgid "Games"
+msgstr "Games"
+
+#: apps/store/qml/Main.qml:36
+msgid "Categories"
+msgstr "Categorieën"
+
+#: apps/store/qml/Main.qml:55
+msgid "All games"
+msgstr "Alle games"
+
+#: apps/store/qml/Main.qml:57
+msgid "Recommended"
+msgstr "Aanbevolen"
+
+#: apps/store/qml/Main.qml:64
+msgid "Search"
+msgstr "Zoeken"
+
+#
+#: apps/store/qml/Main.qml:195
+msgid "Search apps and games"
+msgstr "Apps en games zoeken"
+
+#: apps/store/qml/Main.qml:211
+msgid "Refresh"
+msgstr "Vernieuwen"
+
+#: apps/store/qml/Main.qml:211
+msgid "Refreshing…"
+msgstr "Vernieuwen…"
+
+#
+#: apps/store/qml/Main.qml:224 apps/store/qml/Main.qml:231
+#: apps/store/qml/MyAppsPage.qml:43
+msgid "My apps"
+msgstr "Mijn apps"
+
+#: apps/store/qml/Main.qml:322
+msgid "Getting the catalogue ready"
+msgstr "De catalogus klaarmaken"
+
+#: apps/store/qml/Main.qml:322
+msgid "The catalogue is not available"
+msgstr "De catalogus is niet beschikbaar"
+
+#: apps/store/qml/Main.qml:323
+msgid "This takes a moment the first time."
+msgstr "De eerste keer duurt dit even."
+
+#: apps/store/qml/Main.qml:324 apps/store/qml/UpdatesPage.qml:207
+msgid "Try again"
+msgstr "Opnieuw proberen"
+
+#: apps/store/qml/MyAppsPage.qml:52
+msgid "Updates"
+msgstr "Updates"
+
+#
+#: apps/store/qml/MyAppsPage.qml:52
+msgid "Updates (%1)"
+msgstr "Updates (%1)"
+
+#: apps/store/qml/MyAppsPage.qml:53 apps/store/qml/components/AppCard.qml:103
+#: apps/store/qml/components/AppTile.qml:83
+msgid "Installed"
+msgstr "Geïnstalleerd"
+
+#: apps/store/qml/UpdatesPage.qml:64
+msgid "%1 app has a new version"
+msgid_plural "%1 apps have a new version"
+msgstr[0] "%1 app heeft een nieuwe versie"
+msgstr[1] "%1 apps hebben een nieuwe versie"
+
+#: apps/store/qml/UpdatesPage.qml:64
+msgid "App components have new versions"
+msgstr "Onderdelen van apps hebben nieuwe versies"
+
+#: apps/store/qml/UpdatesPage.qml:65
+msgid "Checking for updates…"
+msgstr "Zoeken naar updates…"
+
+#: apps/store/qml/UpdatesPage.qml:66 apps/store/qml/UpdatesPage.qml:205
+msgid "Could not check for updates"
+msgstr "Kon niet zoeken naar updates"
+
+#: apps/store/qml/UpdatesPage.qml:66
+msgid "Your apps are up to date"
+msgstr "Je apps zijn up-to-date"
+
+#: apps/store/qml/UpdatesPage.qml:71
+msgid "Update all"
+msgstr "Alles bijwerken"
+
+#: apps/store/qml/UpdatesPage.qml:162
+msgid "A new version is ready"
+msgstr "Er staat een nieuwe versie klaar"
+
+#: apps/store/qml/UpdatesPage.qml:173 apps/store/qml/components/AppCard.qml:102
+#: apps/store/qml/components/AppTile.qml:82
+msgid "%1%"
+msgstr "%1%"
+
+#: apps/store/qml/UpdatesPage.qml:173 apps/store/qml/components/AppCard.qml:102
+#: apps/store/qml/components/AppTile.qml:82
+msgid "Working…"
+msgstr "Bezig…"
+
+#
+#: apps/store/qml/UpdatesPage.qml:188
+msgid "Also %1 shared component used by your apps."
+msgid_plural "Also %1 shared components used by your apps."
+msgstr[0] "Ook %1 gedeeld onderdeel dat je apps gebruiken."
+msgstr[1] "Ook %1 gedeelde onderdelen die je apps gebruiken."
+
+#: apps/store/qml/UpdatesPage.qml:196
+msgid "Everything is up to date"
+msgstr "Alles is up-to-date"
+
+#: apps/store/qml/UpdatesPage.qml:197
+msgid "The store checks for new versions of your apps by itself."
+msgstr "De Store zoekt zelf naar nieuwe versies van je apps."
+
+#: apps/store/qml/UpdatesPage.qml:206
+msgid "Check your internet connection and try again. Your installed apps are still available."
+msgstr "Controleer je internetverbinding en probeer het opnieuw. Je geïnstalleerde apps blijven beschikbaar."
+
+#
+#: apps/store/qml/UpdatesPage.qml:232
+msgid "Kernora and the apps that come with it update in Settings"
+msgstr "Kernora en de apps die erbij horen worden bijgewerkt in Instellingen"
+
+#: apps/store/qml/UpdatesPage.qml:236
+msgid "Open Settings"
+msgstr "Instellingen openen"
+
+#
+#: apps/store/qml/components/AppCard.qml:103
+#: apps/store/qml/components/AppTile.qml:83
+msgid "Update available"
+msgstr "Update beschikbaar"
+
+#: apps/store/qml/components/Shelf.qml:121
+msgid "More"
+msgstr "Meer"
+
+#: src/apps/host.cpp:59
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:67
+msgid "Files or pages to open."
+msgstr "Bestanden of pagina's om te openen."
+
+#: src/apps/store.cpp:37
+msgctxt "@title application name"
+msgid "Store"
+msgstr "Store"
+
+#: src/store/debianbackend.cpp:23
+msgid "Downloading…"
+msgstr "Downloaden…"
+
+#: src/store/debianbackend.cpp:25
+msgid "Waiting for your password…"
+msgstr "Wachten op je wachtwoord…"
+
+#: src/store/debianbackend.cpp:28
+msgid "Waiting for another installation to finish…"
+msgstr "Wachten tot een andere installatie klaar is…"
+
+#: src/store/debianbackend.cpp:30 src/store/debianbackend.cpp:32
+#: src/store/flatpakbackend.cpp:50
+msgid "Removing…"
+msgstr "Verwijderen…"
+
+#: src/store/debianbackend.cpp:32 src/store/flatpakbackend.cpp:55
+msgid "Installing…"
+msgstr "Installeren…"
+
+#: src/store/debianbackend.cpp:153
+msgid "The package sources could not be read. Refresh the catalogue and try again."
+msgstr "De pakketbronnen konden niet worden gelezen. Vernieuw de catalogus en probeer het opnieuw."
+
+#: src/store/debianbackend.cpp:162 src/store/debianbackend.cpp:175
+#: src/store/debianbackend.cpp:188
+msgid "Preparing…"
+msgstr "Voorbereiden…"
+
+#: src/store/debianbackend.cpp:166
+msgid "This app is not available from the Debian sources right now."
+msgstr "Deze app is nu niet beschikbaar uit de Debian-bronnen."
+
+#: src/store/debianbackend.cpp:169 src/store/flatpakbackend.cpp:435
+msgid "The app could not be installed."
+msgstr "De app kon niet worden geïnstalleerd."
+
+#: src/store/debianbackend.cpp:182
+msgid "The app could not be removed."
+msgstr "De app kon niet worden verwijderd."
+
+#: src/store/debianbackend.cpp:189
+msgid "The package could not be installed."
+msgstr "Het pakket kon niet worden geïnstalleerd."
+
+#: src/store/flatpakbackend.cpp:53
+msgid "Downloading %1 of %2"
+msgstr "%1 van %2 downloaden"
+
+#: src/store/flatpakbackend.cpp:385
+msgid "Flatpak is not available."
+msgstr "Flatpak is niet beschikbaar."
+
+#: src/store/store.cpp:149 src/store/store.cpp:1234
+msgid "Downloading the Flathub catalogue…"
+msgstr "De Flathub-catalogus downloaden…"
+
+#: src/store/store.cpp:157 src/store/store.cpp:1239
+msgid "Downloading the Debian catalogue…"
+msgstr "De Debian-catalogus downloaden…"
+
+#: src/store/store.cpp:164
+msgid "The catalogue could not be downloaded. Check the internet connection and try again."
+msgstr "De catalogus kon niet worden gedownload. Controleer de internetverbinding en probeer het opnieuw."
+
+#: src/store/store.cpp:248
+msgid "Loading the catalogue…"
+msgstr "De catalogus laden…"
+
+#: src/store/store.cpp:248
+msgid "Updating the catalogue…"
+msgstr "De catalogus bijwerken…"
+
+#: src/store/store.cpp:627
+msgid "Internet & chat"
+msgstr "Internet en chat"
+
+#: src/store/store.cpp:633
+msgid "Graphics & photos"
+msgstr "Grafisch en foto's"
+
+#: src/store/store.cpp:636
+msgid "Office"
+msgstr "Kantoor"
+
+#: src/store/store.cpp:639
+msgid "Learning & science"
+msgstr "Leren en wetenschap"
+
+#: src/store/store.cpp:642
+msgid "Development"
+msgstr "Ontwikkeling"
+
+#: src/store/store.cpp:645
+msgid "Tools"
+msgstr "Hulpmiddelen"
+
+#: src/store/store.cpp:844
+msgid "Flatpak file"
+msgstr "Flatpak-bestand"
+
+#: src/store/store.cpp:848
+msgid "Package file"
+msgstr "Pakketbestand"
+
+#: src/store/store.cpp:900
+msgid "Proprietary"
+msgstr "Niet-vrij"
+
+#: src/store/store.cpp:956
+msgid "Waiting…"
+msgstr "Wachten…"
+
+#: src/store/store.cpp:970
+msgid "This package could not be read. Choose a valid Debian package and try again."
+msgstr "Dit pakket kon niet worden gelezen. Kies een geldig Debian-pakket en probeer het opnieuw."
+
+#: src/store/store.cpp:1053
+msgid "Cancelling…"
+msgstr "Annuleren…"
+
+#: src/store/store.cpp:1096 src/store/store.cpp:1097
+msgid "%1 is installed"
+msgstr "%1 is geïnstalleerd"
+
+#: src/store/store.cpp:1097
+msgid "Open it from the app menu."
+msgstr "Open het vanuit het appmenu."
+
+#: src/store/store.cpp:1099
+msgid "%1 is removed"
+msgstr "%1 is verwijderd"
+
+#: src/store/store.cpp:1101 src/store/store.cpp:1102
+msgid "All apps are up to date"
+msgstr "Alle apps zijn up-to-date"
+
+#: src/store/store.cpp:1104
+msgid "%1 is updated"
+msgstr "%1 is bijgewerkt"
+
+#: src/store/store.cpp:1109
+msgid "%1 could not be removed: %2"
+msgstr "%1 kon niet worden verwijderd: %2"
+
+#: src/store/store.cpp:1111
+msgid "%1 could not be updated: %2"
+msgstr "%1 kon niet worden bijgewerkt: %2"
+
+#: src/store/store.cpp:1111
+msgid "The updates could not be installed: %1"
+msgstr "De updates konden niet worden geïnstalleerd: %1"
+
+#: src/store/store.cpp:1113
+msgid "%1 could not be installed: %2"
+msgstr "%1 kon niet worden geïnstalleerd: %2"
