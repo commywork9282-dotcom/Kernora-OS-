@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Drivers
+Name[ru]=Драйверы
+GenericName=Drivers
+GenericName[ru]=Драйверы
+Comment=Install and update drivers, see what's in this computer
+Comment[ru]=Установка и обновление драйверов, устройства этого компьютера
+Icon=org.kernora.drivers
+Exec=kernora-drivers
+Categories=Qt;System;Settings;HardwareSettings;
+Keywords=drivers;hardware;devices;nvidia;graphics;wifi;printer;scanner;firmware;bios;драйверы;драйвера;устройства;железо;видеокарта;принтер;сканер;прошивка;
+StartupNotify=true

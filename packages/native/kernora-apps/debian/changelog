@@ -1,3 +1,10 @@
+kernora-apps (1.1.84) UNRELEASED; urgency=medium
+
+  * Drivers: a new app to install and update drivers and firmware and to see
+    every device in the computer. Settings opens it.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 20:00:00 -0800
+
 kernora-apps (1.1.83) UNRELEASED; urgency=medium
 
   * What's new: the default panel is now the Kernora panel.

@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.83" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.84" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -61,9 +61,35 @@ grep -Fq '!SystemInfo.live && Updates.available' "$package_root/apps/settings/qm
   || fail "Settings downloads updates in the live session"
 [[ "$(grep -c 'Default Applications' "$package_root/src/system/defaultapps.cpp")" -ge 2 ]] \
   || fail "Settings shows a stale default app after choosing one"
-[[ -s "$package_root/apps/settings/qml/pages/DriversPage.qml" ]] \
-  && grep -Fq 'page.open("DriversPage.qml"' "$package_root/apps/settings/qml/pages/SystemPage.qml" \
-  || fail "Settings has no Drivers page"
+[[ ! -e "$package_root/apps/settings/qml/pages/DriversPage.qml" ]] \
+  && grep -Fq 'Process.launchApplication("org.kernora.drivers.desktop")' "$package_root/apps/settings/qml/pages/SystemPage.qml" \
+  && grep -Fq '"org.kernora.drivers.desktop"' "$package_root/apps/settings/qml/components/Catalog.qml" \
+  || fail "Settings does not open the Drivers app"
+for page in Main DriversPage DevicesPage DevicePage NvidiaPage UpdatesPage JobBar; do
+  [[ -s "$package_root/apps/drivers/qml/$page.qml" ]] || fail "Drivers has no $page"
+done
+[[ -s "$package_root/src/apps/drivers.cpp" && -s "$package_root/po/ru/kernora-drivers.po" ]] \
+  && grep -Fq 'Icon=org.kernora.drivers' "$package_root/apps/drivers/org.kernora.drivers.desktop" \
+  && grep -Eq 'set\(KERNORA_APPS .* drivers ' "$package_root/CMakeLists.txt" \
+  && grep -Fq 'kernora-desktop (>= 1.4.72)' "$package_root/debian/control" \
+  || fail "the Drivers app is not packaged"
+python3 - "$package_root" <<'PY' || fail "a Drivers string has no translation"
+import re
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+po = (root / "po/ru/kernora-drivers.po").read_text()
+known = set(re.findall(r'^msgid "(.*)"$', po, re.MULTILINE))
+strings = set()
+for page in (root / "apps/drivers/qml").glob("*.qml"):
+    text = page.read_text()
+    strings.update(re.findall(r'\bi18np?\(\s*"((?:[^"\\]|\\.)*)"', text))
+    strings.update(re.findall(r'\bi18nc\(\s*"(?:[^"\\]|\\.)*",\s*"((?:[^"\\]|\\.)*)"', text))
+missing = sorted(strings - known)
+if missing:
+    sys.exit(f"untranslated: {missing}")
+PY
 grep -Fq 'driverReady' "$package_root/src/updatenotifier/main.cpp" \
   && grep -Fxq '[Event/driverReady]' "$package_root/data/knotifications/kernora-updates.notifyrc" \
   || fail "nobody is told to restart after a driver install"
@@ -135,7 +161,7 @@ grep -Fq 'Procs.ApplicationDataModel {' "$package_root/apps/taskmanager/qml/Main
   || fail "Task Manager can't list, end or chart"
 grep -Fxq 'X-KDE-Shortcuts=Ctrl+Shift+Esc,Ctrl+Esc' "$package_root/apps/taskmanager/org.kernora.taskmanager.desktop" \
   && grep -Fq 'DESTINATION ${KDE_INSTALL_DATADIR}/kglobalaccel' "$package_root/CMakeLists.txt" \
-  && grep -q 'share taskmanager apkinstaller appsplash androiddialog)' "$package_root/src/apps/CMakeLists.txt" \
+  && grep -q 'share taskmanager drivers apkinstaller appsplash androiddialog)' "$package_root/src/apps/CMakeLists.txt" \
   || fail "Task Manager has no shortcut or is not built"
 for dependency in ksystemstats libksysguard-bin qml6-module-org-kde-ksysguard qml6-module-org-kde-kitemmodels qml6-module-org-kde-quickcharts; do
   grep -Eq "^ $dependency,?$" "$package_root/debian/control" || fail "Task Manager needs $dependency"
@@ -205,7 +231,7 @@ grep -Fq '{ id: "android", title: i18n("Android apps")' "$package_root/apps/sett
 grep -Fxq 'MimeType=application/vnd.android.package-archive;' "$package_root/apps/apkinstaller/org.kernora.apkinstaller.desktop" \
   && grep -Fq 'Android.inspect(url)' "$package_root/apps/apkinstaller/qml/Main.qml" \
   && grep -Fq 'Android.install(app.file, app.apk.package' "$package_root/apps/apkinstaller/qml/Main.qml" \
-  && grep -q 'taskmanager apkinstaller appsplash androiddialog)' "$package_root/src/apps/CMakeLists.txt" \
+  && grep -q 'taskmanager drivers apkinstaller appsplash androiddialog)' "$package_root/src/apps/CMakeLists.txt" \
   || fail "the APK installer is missing"
 grep -Fq 'adaptive-icon' "$package_root/src/system/apk.cpp" \
   && grep -Fq 'QSvgRenderer renderer(vectorToSvg(elements));' "$package_root/src/system/apk.cpp" \

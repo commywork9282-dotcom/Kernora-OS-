@@ -95,7 +95,7 @@ QtObject {
             [i18n("Language & region"), "system", "LanguagePage.qml", i18n("language translation locale formats region")],
             [i18n("Detailed formats"), "system", "FormatsPage.qml", i18n("numbers currency money measurement units paper size metric imperial date format")],
             [i18n("Software updates"), "system", "UpdatesPage.qml", i18n("upgrade packages install security")],
-            [i18n("Drivers"), "system", "DriversPage.qml", i18n("graphics card video nvidia gpu driver")],
+            [i18n("Drivers"), "system", "org.kernora.drivers.desktop", i18n("graphics card video nvidia gpu driver firmware printer scanner device hardware wifi")],
             [i18n("Demo updates"), "system", "", i18n("early access beta testing new versions demo")],
             [i18n("Storage"), "system", "StoragePage.qml", i18n("disk space free trash")],
             [i18n("More settings"), "system", "ModulesPage.qml", i18n("advanced kde modules printers shortcuts fonts")],

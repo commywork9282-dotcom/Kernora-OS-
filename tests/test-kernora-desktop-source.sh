@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.71" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.72" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -176,6 +176,305 @@ grep -Fq 'OnActiveSec=90s' "$drivers/kernora-drivers.timer" \
   || fail "the driver check is not scheduled"
 grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-drivers</annotate>' "$drivers/org.kernora.drivers.policy" \
   || fail "Settings cannot run kernora-drivers"
+[[ -x "$drivers/kernora-hardware" && -x "$drivers/kernora-driver-job" ]] \
+  || fail "the hardware scanner or driver job is not executable"
+grep -Fq 'ExecStart=/usr/libexec/kernora-driver-job run' "$drivers/kernora-driver-job.service" \
+  && grep -Fq 'data/drivers/kernora-driver-job.service' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq 'data/drivers/catalog.json usr/share/kernora/hardware' "$package_root/debian/kernora-desktop.install" \
+  || fail "the driver job is not installed"
+grep -Fq '"$job_tool" needs-non-free || rm -f "$debian_sources"' "$drivers/kernora-drivers" \
+  && grep -Fq 'add | drop | flash) exec "$job_tool" request' "$drivers/kernora-drivers" \
+  || fail "kernora-drivers does not hand jobs over"
+leftovers=$(printf '%s\n' 'ii nvidia-settings' 'ii libnvidia-glcore:amd64' 'ii libnvidia-glcore:i386' 'ii libglx-nvidia0:amd64' \
+    'ii libcuda1:amd64' 'ii xserver-xorg-video-nvidia' 'ii firmware-nvidia-graphics' 'ii mesa-vulkan-drivers:amd64' \
+    'rc nvidia-driver' 'iF nvidia-kernel-dkms' \
+  | awk -v names="$(sed -n "s/^leftover_names='\(.*\)'$/\1/p" "$drivers/kernora-drivers")" '$1 ~ /^i/ && $2 ~ names { print $2 }' | wc -l)
+[[ "$leftovers" == 7 ]] || fail "removing the NVIDIA driver leaves the wrong packages: $leftovers"
+python3 - "$drivers" <<'PY' || fail "the hardware scanner or driver job is wrong"
+import importlib.machinery
+import importlib.util
+import json
+import os
+import re
+import shutil
+import stat
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+drivers = Path(sys.argv[1])
+catalog = json.loads((drivers / "catalog.json").read_text())
+
+ids = [item["id"] for item in catalog["items"]]
+assert len(ids) == len(set(ids)), "duplicate catalog id"
+for item in catalog["items"]:
+    assert item["marker"] in item["packages"], item["id"]
+    for text in (item["name"], item["text"]):
+        assert text["en"] and text["ru"], item["id"]
+    assert not {"source", "module"} & item.keys() or item.get("source") or item["module"]
+for prefix, package in catalog["firmware"]:
+    assert package.startswith("firmware-"), prefix
+for group in catalog["updates"]:
+    re.compile(group["pattern"])
+    assert group["name"]["en"] and group["name"]["ru"], group["id"]
+wl = next(item for item in catalog["items"] if item["id"] == "broadcom-wl")
+assert "14e4:43b1" in wl["match"]["pci"] and wl["module"] == "wl" and wl["source"] == "non-free"
+
+
+def load(name):
+    loader = importlib.machinery.SourceFileLoader(name.replace("-", "_"), str(drivers / name))
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+def write(path, text=""):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
+
+
+def executable(path, text):
+    write(path, text)
+    path.chmod(path.stat().st_mode | stat.S_IEXEC)
+
+
+def pci(root, address, vendor, device, code, driver="", module=""):
+    path = root / "sys/bus/pci/devices" / address
+    write(path / "vendor", f"0x{vendor}\n")
+    write(path / "device", f"0x{device}\n")
+    write(path / "class", f"0x{code}\n")
+    if driver:
+        target = root / "sys/bus/pci/drivers" / driver
+        target.mkdir(parents=True, exist_ok=True)
+        (path / "driver").symlink_to(target)
+        if module:
+            modules = root / "sys/module" / module
+            modules.mkdir(parents=True, exist_ok=True)
+            (target / "module").symlink_to(modules)
+    return path
+
+
+def usb(root, name, vendor, product, interface_class, device_class="00", driver=""):
+    path = root / "sys/bus/usb/devices" / name
+    write(path / "idVendor", f"{vendor}\n")
+    write(path / "idProduct", f"{product}\n")
+    write(path / "bDeviceClass", f"{device_class}\n")
+    interface = path / f"{name}:1.0"
+    write(interface / "bInterfaceClass", f"{interface_class}\n")
+    write(interface / "bInterfaceSubClass", "00\n")
+    write(interface / "bInterfaceProtocol", "00\n")
+    if driver:
+        target = root / "sys/bus/usb/drivers" / driver
+        target.mkdir(parents=True, exist_ok=True)
+        (interface / "driver").symlink_to(target)
+
+
+work = Path(tempfile.mkdtemp())
+try:
+    root = work / "root"
+    bin_dir = work / "bin"
+    executable(bin_dir / "systemd-detect-virt", "#!/bin/sh\ncat \"$VIRT\"\n")
+    executable(bin_dir / "dpkg-query", "#!/bin/sh\ncat \"$PACKAGES\"\n")
+    write(work / "virt", "kvm\n")
+    write(work / "packages", "")
+    environment = dict(os.environ, PATH=f"{bin_dir}:{os.environ['PATH']}", VIRT=str(work / "virt"),
+                       PACKAGES=str(work / "packages"))
+    shutil.copy(drivers / "catalog.json", work / "catalog.json")
+    write(root / "usr/share/kernora/hardware/catalog.json", (drivers / "catalog.json").read_text())
+    write(root / "proc/sys/kernel/osrelease", "6.12.0-test\n")
+    write(root / "proc/cpuinfo", "model name : Intel(R) Core(TM) i5-1 CPU @ 2.90GHz\n")
+    write(root / "etc/os-release", 'PRETTY_NAME="Kernora test"\n')
+    write(root / "usr/share/misc/pci.ids",
+          "8086  Intel Corporation\n\t46a6  Alder Lake-P GT2 [Iris Xe Graphics]\n"
+          "\t51f0  Alder Lake-P PCH CNVi WiFi\n"
+          "14e4  Broadcom Inc. and subsidiaries\n\t43b1  BCM4352 802.11ac Wireless\n"
+          "C 00  Unclassified device\n\t00  Non-VGA\n")
+    write(root / "usr/share/misc/usb.ids",
+          "03f0  HP, Inc\n\t0c17  LaserJet 1010\n1d6b  Linux Foundation\n\t0002  2.0 root hub\n")
+    pci(root, "0000:00:02.0", "8086", "46a6", "030000", "i915", "i915")
+    pci(root, "0000:00:14.3", "8086", "51f0", "028000", "iwlwifi", "iwlwifi")
+    write(root / "sys/bus/pci/devices/0000:00:14.3/net/wlan0/phy80211/name", "phy0\n")
+    broadcom = pci(root, "0000:03:00.0", "14e4", "43b1", "028000")
+    pci(root, "0000:00:1f.3", "8086", "51c8", "040300")
+    pci(root, "0000:00:00.0", "8086", "4601", "060000")
+    usb(root, "1-1", "03f0", "0c17", "07", driver="usblp")
+    usb(root, "1-2", "05e3", "0608", "09", device_class="09")
+    usb(root, "usb1", "1d6b", "0002", "09", device_class="09")
+
+    def scan():
+        done = subprocess.run([str(drivers / "kernora-hardware"), "--root", str(root), "scan"],
+                              capture_output=True, text=True, env=environment, check=True)
+        return json.loads(done.stdout)
+
+    def items(data):
+        return {item["id"]: item for item in data["items"]}
+
+    data = scan()
+    found = {device["id"]: device for device in data["devices"]}
+    assert found["pci:0000:00:02.0"]["name"] == "Intel Iris Xe Graphics", found["pci:0000:00:02.0"]
+    assert found["pci:0000:00:02.0"]["category"] == "graphics"
+    assert found["pci:0000:00:02.0"]["version"] == "6.12.0-test"
+    assert found["pci:0000:00:14.3"]["wifi"] and found["pci:0000:00:14.3"]["status"] == "ok"
+    assert found["pci:0000:03:00.0"]["status"] == "none"
+    assert found["pci:0000:00:1f.3"]["status"] == "none" and found["pci:0000:00:1f.3"]["category"] == "audio"
+    assert found["pci:0000:00:00.0"]["status"] == "idle" and found["pci:0000:00:00.0"]["category"] == "system"
+    assert found["usb:1-1"]["category"] == "printer" and found["usb:1-1"]["driver"] == "usblp"
+    assert found["usb:1-1"]["name"] == "HP LaserJet 1010", found["usb:1-1"]
+    assert "usb:1-2" not in found and "usb:usb1" not in found, "hubs are not devices"
+    assert found["cpu:0"]["name"] == "Intel Core i5-1", found["cpu:0"]
+
+    offered = items(data)
+    assert found["pci:0000:03:00.0"]["offer"] == "broadcom-wl", "the card has a driver on offer"
+    assert found["pci:0000:00:1f.3"]["offer"] == "", "this one really has nothing"
+    assert offered["broadcom-wl"]["recommended"] and offered["broadcom-wl"]["nonFree"]
+    assert offered["broadcom-wl"]["restart"] and not offered["broadcom-wl"]["blocked"]
+    assert offered["printing"]["recommended"], "a USB printer recommends printing"
+    assert offered["vm-qemu"]["recommended"] and "vm-vmware" not in offered
+    assert "firmware-updates" not in offered, "virtual machines have no firmware to update"
+    assert not offered["intel-video"]["recommended"] and not offered["opencl"]["recommended"]
+
+    write(work / "virt", "none\n")
+    offered = items(scan())
+    assert "firmware-updates" in offered and "vm-qemu" not in offered
+
+    shutil.rmtree(root / "sys/bus/usb/devices/1-1")
+    assert not items(scan())["printing"]["recommended"]
+
+    secure = root / "sys/firmware/efi/efivars/SecureBoot-8be4df61-93ca-11d2-aa0d-00e098032b8c"
+    secure.parent.mkdir(parents=True)
+    secure.write_bytes(b"\x06\x00\x00\x00\x01")
+    offered = items(scan())
+    assert offered["broadcom-wl"]["blocked"] == "secureboot" and not offered["printing"]["blocked"]
+    secure.write_bytes(b"\x06\x00\x00\x00\x00")
+    assert not items(scan())["broadcom-wl"]["blocked"]
+
+    write(broadcom / "bcma0:1/net/wlan1/phy80211/name", "phy1\n")
+    assert "broadcom-wl" not in items(scan()), "a working card needs nothing"
+    shutil.rmtree(broadcom / "bcma0:1")
+
+    write(work / "packages", "broadcom-sta-dkms ii \n")
+    offered = items(scan())
+    assert offered["broadcom-wl"]["state"] == "installed" and not offered["broadcom-wl"]["removable"]
+    write(root / "var/lib/kernora/drivers/items/broadcom-wl.json", "{}")
+    assert items(scan())["broadcom-wl"]["removable"]
+    write(work / "packages", "broadcom-sta-dkms rc \n")
+    assert items(scan())["broadcom-wl"]["state"] == "available", "removed packages are not installed"
+
+    write(root / "var/lib/kernora/drivers/firmware-missing.json", json.dumps([
+        {"driver": "iwlwifi", "device": "0000:00:14.3", "file": "iwlwifi-so-a0-gf-a0-89.ucode"},
+        {"driver": "bluetooth", "device": "hci0", "file": "unknown/none.bin"}]))
+    data = scan()
+    offered = items(data)
+    assert "firmware:firmware-iwlwifi" in offered and offered["firmware:firmware-iwlwifi"]["recommended"]
+    assert "Intel" in offered["firmware:firmware-iwlwifi"]["text"]["en"]
+    assert next(d for d in data["devices"] if d["id"] == "pci:0000:00:14.3")["status"] == "firmware"
+    assert len([key for key in offered if key.startswith("firmware:")]) == 1
+    write(work / "packages", "firmware-iwlwifi ii \n")
+    data = scan()
+    assert "firmware:firmware-iwlwifi" not in items(data), "the package is already installed"
+    assert next(d for d in data["devices"] if d["id"] == "pci:0000:00:14.3")["status"] == "ok"
+
+    done = subprocess.run([str(drivers / "kernora-hardware"), "--root", str(root), "report"],
+                          capture_output=True, text=True, env=environment, check=True)
+    assert "Intel Iris Xe Graphics [8086:46a6]: i915" in done.stdout and "no driver" in done.stdout
+
+    hardware = load("kernora-hardware")
+    assert hardware.short_vendor("Advanced Micro Devices, Inc. [AMD/ATI]") == "AMD"
+    assert hardware.short_vendor("Realtek Semiconductor Co., Ltd.") == "Realtek"
+    assert hardware.short_vendor("Samsung Electronics Co Ltd") == "Samsung"
+    assert hardware.device_label("input", "Razer USA", "Razer DeathAdder") == "Razer DeathAdder"
+    assert hardware.device_label("graphics", "AMD", "Navi 31 [Radeon RX 7900 XT]") == "AMD Radeon RX 7900 XT"
+    assert hardware.firmware_package(catalog, "intel/ibt-0040-0041.sfi") == "firmware-iwlwifi"
+    assert hardware.firmware_package(catalog, "intel/sof-ipc4/x.ri") == "firmware-sof-signed"
+    assert hardware.firmware_package(catalog, "regulatory.db") == ""
+
+    job = load("kernora-driver-job")
+    job.CATALOG = drivers / "catalog.json"
+    assert job.resolve("add", "printing")["marker"] == "cups"
+    assert job.resolve("add", "firmware:firmware-realtek")["packages"] == ["firmware-realtek"]
+    assert job.resolve("add", "firmware:evil-package") is None
+    assert job.resolve("add", "cups") is None
+    assert job.resolve("add", "../../etc/passwd") is None
+    assert job.resolve("drop", "firmware:firmware-realtek") is None
+    assert job.resolve("purge", "printing") is None
+    assert job.resolve("flash", "a" * 40) and job.resolve("flash", "a" * 39) is None
+    assert job.resolve("flash", "-" + "a" * 39) is None
+
+    plan = job.parse_plan("Inst cups (2.4)\nRemv intel-media [1]\nPurg hplip [2]\nConf cups (2.4)\n")
+    assert plan == {"install": {"cups"}, "remove": {"intel-media", "hplip"}}
+
+    job.JOB = work / "run/job.json"
+    state = job.Job("add", "printing")
+    job.read_status("dlstatus:1:12.5:Retrieving\n", state)
+    assert state.values["step"] == "download" and state.values["percent"] == 12
+    job.read_status("pmstatus:cups:50.0:Installing: cups\n", state)
+    assert state.values["step"] == "install" and state.values["percent"] == 50
+    assert json.loads(job.JOB.read_text())["percent"] == 50
+    assert job.JOB.stat().st_mode & 0o777 == 0o644, "the app has to read the job"
+    job.read_status("garbage\n", state)
+    assert state.values["percent"] == 50
+    state.finish(True)
+    following = job.Job("add", "opencl")
+    assert following.values["restart"], "the next job must not forget a pending restart"
+    following.finish(False)
+    assert json.loads(job.JOB.read_text())["restart"]
+
+    job.FIRMWARE = work / "firmware"
+    write(job.FIRMWARE / "iwlwifi-so-a0-gf-a0-83.ucode.xz")
+    write(job.FIRMWARE / "rtl_nic/rtl8125a-3.fw")
+    log = "\n".join([
+        "iwlwifi 0000:00:14.3: Direct firmware load for iwlwifi-so-a0-gf-a0-89.ucode failed with error -2",
+        "r8169 0000:03:00.0: Direct firmware load for rtl_nic/rtl8168h-2.fw failed with error -2",
+        "r8169 0000:03:00.0: Direct firmware load for rtl_nic/rtl8125a-3.fw failed with error -2",
+        "bluetooth hci0: Direct firmware load for rtl_bt/rtl8761bu_fw.bin failed with error -2",
+        "bluetooth hci0: Direct firmware load for rtl_bt/rtl8761bu_fw.bin failed with error -2",
+        "ath10k_pci 0000:02:00.0: Direct firmware load for ath10k/x/board.bin failed with error -13",
+        "usb 1-1: new high-speed USB device"])
+    assert [entry["file"] for entry in job.parse_missing(log)] == [
+        "rtl_bt/rtl8761bu_fw.bin", "rtl_nic/rtl8168h-2.fw"], job.parse_missing(log)
+    assert job.parse_missing(log)[0]["device"] == "hci0"
+
+    answer = "broadcom-sta-dkms iF \nlinux-headers-amd64 ic \ndkms ii \nnever-here un \ngone pn \n"
+    job.subprocess = type("Query", (), {"run": staticmethod(
+        lambda command, **options: type("Done", (), {"stdout": answer})())})
+    assert job.on_disk(["broadcom-sta-dkms", "linux-headers-amd64", "dkms", "never-here", "gone"]) == {
+        "broadcom-sta-dkms", "linux-headers-amd64", "dkms"}, "a failed package has to be undone too"
+    assert job.installed(["broadcom-sta-dkms", "dkms"]) == {"dkms"}
+    job.subprocess = subprocess
+
+    calls = []
+    job.subprocess = type("Calls", (), {"run": staticmethod(lambda command, **options: calls.append(command))})
+    job.administrators = lambda: ["ann", "bob"]
+    printing = job.resolve("add", "printing")
+    assert printing["groups"] == ["lpadmin"], "without lpadmin nobody can add a printer"
+    job.group_members = lambda group: ["ann"]
+    job.join_groups(printing)
+    assert calls == [["usermod", "-aG", "lpadmin", "bob"]], calls
+    calls.clear()
+    job.leave_groups(printing)
+    assert calls == [["gpasswd", "-d", "ann", "lpadmin"], ["gpasswd", "-d", "bob", "lpadmin"]], calls
+    calls.clear()
+    job.join_groups(job.resolve("add", "vm-qemu"))
+    assert not calls
+    job.subprocess = subprocess
+
+    job.ITEMS = work / "items"
+    write(job.ITEMS / "printing.json", json.dumps({"packages": ["cups"], "source": ""}))
+    write(job.ITEMS / "broadcom-wl.json", json.dumps({"packages": ["linux-headers-amd64"], "source": "non-free"}))
+    job.installed = lambda names: set()
+    assert job.shared_packages("printing") == {"linux-headers-amd64"}
+    assert job.source_needed()
+    (job.ITEMS / "broadcom-wl.json").unlink()
+    assert not job.source_needed()
+    job.installed = lambda names: set(names) if "nvidia-driver" in names else set()
+    assert job.source_needed(), "the legacy NVIDIA driver still needs non-free"
+    job.installed = lambda names: {"nvidia-open"} & set(names)
+    assert job.shared_packages("broadcom-wl") == {"linux-headers-amd64", "cups"}
+finally:
+    shutil.rmtree(work)
+PY
 android="$package_root/data/android"
 bash -n "$android/kernora-android" && bash -n "$android/waydroid" \
   && python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' "$android/kernora-android-session" \
@@ -1394,8 +1693,8 @@ KERNORA_COLOUR=blue python3 "$tools_root/gen-icon-theme" "$package_root/data/sym
   || fail "gen-icon-theme fails for a colour"
 grep -Fxq 'Inherits=Kernora,breeze-dark,breeze,hicolor' "$icons/Kernora-blue/index.theme" \
   || fail "a colour's icons do not fall back to Kernora's"
-[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 16 ]] \
-  || fail "a colour's icon theme should hold only the sixteen app icons"
+[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 17 ]] \
+  || fail "a colour's icon theme should hold only the seventeen app icons"
 for icon in actions/kernora-quickshare status/kernora-tile-quickshare-on apps/org.kernora.quickshare; do
   [[ -e "$icons/Kernora/scalable/$icon.svg" ]] || fail "the icon theme has no $icon"
 done

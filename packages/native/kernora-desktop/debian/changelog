@@ -1,3 +1,11 @@
+kernora-desktop (1.4.72) UNRELEASED; urgency=medium
+
+  * Drivers: a catalog of optional drivers, a hardware scanner and a root job
+    that installs and removes them with progress and rollback.
+  * Finds firmware the kernel asked for and could not load.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 20:00:00 -0800
+
 kernora-desktop (1.4.71) UNRELEASED; urgency=medium
 
   * Add Panel, Default Panel adds the Kernora panel instead of KDE's.

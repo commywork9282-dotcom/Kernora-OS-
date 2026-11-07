@@ -756,8 +756,8 @@ msgid "Drivers"
 msgstr "Драйверы"
 
 #: apps/settings/qml/components/Catalog.qml:98
-msgid "graphics card video nvidia gpu driver"
-msgstr "видеокарта видео графика nvidia gpu драйвер"
+msgid "graphics card video nvidia gpu driver firmware printer scanner device hardware wifi"
+msgstr "прошивка принтер сканер устройство оборудование вайфай видеокарта видео графика nvidia gpu драйвер"
 
 #: apps/settings/qml/components/Catalog.qml:99
 #: apps/settings/qml/pages/SystemPage.qml:112
@@ -3771,8 +3771,8 @@ msgid "Security fixes and new versions"
 msgstr "Исправления безопасности и новые версии"
 
 #: apps/settings/qml/pages/SystemPage.qml:91
-msgid "Graphics card drivers"
-msgstr "Драйверы видеокарты"
+msgid "Install and update drivers, see your devices"
+msgstr "Установка и обновление драйверов, ваши устройства"
 
 #: apps/settings/qml/pages/SystemPage.qml:99
 msgid "Free space, trash"

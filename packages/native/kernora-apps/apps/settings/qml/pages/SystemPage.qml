@@ -86,13 +86,12 @@ SettingsPage {
             onClicked: page.open("UpdatesPage.qml", {})
         }
         ListItem {
-            visible: !SystemInfo.live
             title: i18n("Drivers")
-            subtitle: i18n("Graphics card drivers")
-            icon: "cpu"
+            subtitle: i18n("Install and update drivers, see your devices")
+            icon: "kernora-drivers"
             accent: 1
             chevron: true
-            onClicked: page.open("DriversPage.qml", {})
+            onClicked: Process.launchApplication("org.kernora.drivers.desktop")
         }
         ListItem {
             title: i18n("Storage")

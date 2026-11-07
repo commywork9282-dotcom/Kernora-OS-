@@ -189,7 +189,13 @@ AppWindow {
                     visible: search.text.trim().length > 0
                     query: search.text
                     entries: catalog.searchEntries
-                    onActivated: entry => app.openCategory(entry.category, entry.page || "", {})
+                    onActivated: entry => {
+                        if ((entry.page || "").endsWith(".desktop")) {
+                            Process.launchApplication(entry.page);
+                        } else {
+                            app.openCategory(entry.category, entry.page || "", {});
+                        }
+                    }
                 }
             }
         }

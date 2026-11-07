@@ -437,6 +437,8 @@ ICONS: list[tuple[str, bool, str, list[str]]] = [
     ("apk_document", False, "mimetypes", ["application-vnd.android.package-archive"]),
     ("deployed_code", False, "mimetypes", ["application-vnd.debian.binary-package", "application-x-deb", "application-x-rpm", "application-vnd.flatpak", "application-vnd.flatpak.ref", "application-vnd.appimage", "application-x-sharedlib"]),
     ("album", False, "mimetypes", ["application-x-cd-image", "application-x-iso9660-image", "application-x-raw-disk-image"]),
+    ("developer_board", False, "devices", ["kernora-drivers", "video-card"]),
+    ("devices", False, "devices", ["kernora-devices"]),
     ("font_download", False, "mimetypes", ["font-ttf", "font-otf", "font-woff", "application-x-font-ttf"]),
     ("draft", False, "mimetypes", ["application-x-zerosize", "text-x-empty"]),
 ]
@@ -456,6 +458,7 @@ APP_ICONS: list[tuple[str, bool, list[str]]] = [
     ("storefront", True, ["org.kernora.store"]),
     ("monitor_heart", True, ["htop", "utilities-system-monitor"]),
     ("monitoring", True, ["org.kernora.taskmanager"]),
+    ("developer_board", True, ["org.kernora.drivers"]),
     ("bug_report", True, ["tools-report-bug"]),
     ("kernora_quick_share", False, ["org.kernora.quickshare", "org.kernora.share"]),
     ("android", False, ["org.kernora.android", "waydroid"]),

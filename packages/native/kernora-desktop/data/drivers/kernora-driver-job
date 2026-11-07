@@ -1,0 +1,439 @@
+#!/usr/bin/python3
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+import fcntl
+import grp
+import json
+import os
+import pwd
+import re
+import shutil
+import socket
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+CATALOG = Path("/usr/share/kernora/hardware/catalog.json")
+STATE = Path("/var/lib/kernora/drivers")
+ITEMS = STATE / "items"
+MISSING = STATE / "firmware-missing.json"
+LOCK = STATE / "lock"
+JOB = Path("/run/kernora-drivers/job.json")
+SOURCES = Path("/etc/apt/sources.list.d/kernora-nvidia-debian.sources")
+FIRMWARE = Path("/lib/firmware")
+LIVE = Path("/run/live/medium")
+UNIT = "kernora-driver-job.service"
+HEADERS = "linux-headers-amd64"
+NVIDIA = ("nvidia-open", "nvidia-driver", "nvidia-kernel-open-dkms", "nvidia-kernel-dkms")
+QUEUE_LIFETIME = 60
+ADMINS = "sudo"
+FIRST_USER = 1000
+DEBIAN_SOURCES = """Types: deb
+URIs: https://deb.debian.org/debian
+Suites: trixie trixie-updates
+Components: contrib non-free
+Signed-By: /usr/share/keyrings/debian-archive-keyring.pgp
+
+Types: deb
+URIs: https://security.debian.org/debian-security
+Suites: trixie-security
+Components: contrib non-free
+Signed-By: /usr/share/keyrings/debian-archive-keyring.pgp
+"""
+FIRMWARE_ERROR = re.compile(r"^(\S+) (\S+): Direct firmware load for (\S+) failed with error -2\b")
+PLAN_LINE = re.compile(r"^(Inst|Remv|Purg) (\S+)", re.MULTILINE)
+FLASH_ID = re.compile(r"[0-9a-f]{40}")
+APT_OPTIONS = ["-o", "DPkg::Lock::Timeout=900", "-o", "Dpkg::Options::=--force-confdef",
+               "-o", "Dpkg::Options::=--force-confold"]
+
+
+def load_json(path, default):
+    try:
+        return json.loads(path.read_text())
+    except (OSError, ValueError):
+        return default
+
+
+def write_json(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + ".new")
+    temporary.write_text(json.dumps(value, ensure_ascii=False))
+    temporary.chmod(0o644)
+    os.replace(temporary, path)
+
+
+def resolve(action, name):
+    catalog = load_json(CATALOG, {})
+    if action == "flash":
+        return {"id": name} if FLASH_ID.fullmatch(name) else None
+    if action == "add" and name.startswith("firmware:"):
+        package = name.split(":", 1)[1]
+        if package in {candidate for _, candidate in catalog.get("firmware", [])}:
+            return {"id": name, "marker": package, "packages": [package], "restart": True}
+        return None
+    if action in ("add", "drop"):
+        return next((item for item in catalog.get("items", []) if item["id"] == name), None)
+    return None
+
+
+class Job:
+    def __init__(self, action, name):
+        pending = load_json(JOB, {}).get("restart", False)
+        self.values = {"action": action, "id": name, "state": "queued", "step": "waiting",
+                       "percent": -1, "error": "", "detail": "", "restart": pending,
+                       "time": int(time.time())}
+        self.work = "install"
+
+    def update(self, **values):
+        changed = any(self.values.get(key) != value for key, value in values.items())
+        if changed:
+            self.values.update(values)
+            write_json(JOB, self.values)
+
+    def finish(self, restart):
+        self.update(state="done", step="", percent=100, restart=restart or self.values["restart"],
+                    time=int(time.time()))
+        return True
+
+    def fail(self, error, detail=""):
+        print(f"kernora-driver-job: {error} {detail}".rstrip(), flush=True)
+        self.update(state="failed", step="", percent=-1, error=error, detail=detail,
+                    time=int(time.time()))
+        return False
+
+
+def installed(names):
+    if not names:
+        return set()
+    done = subprocess.run(["dpkg-query", "-W", "-f=${Package} ${db:Status-Abbrev}\n", *names],
+                          capture_output=True, text=True, check=False)
+    return {line.split()[0] for line in done.stdout.splitlines()
+            if len(line.split()) > 1 and line.split()[1].startswith("ii")}
+
+
+def on_disk(names):
+    if not names:
+        return set()
+    done = subprocess.run(["dpkg-query", "-W", "-f=${Package} ${db:Status-Abbrev}\n", *names],
+                          capture_output=True, text=True, check=False)
+    return {line.split()[0] for line in done.stdout.splitlines()
+            if len(line.split()) > 1 and line.split()[1][1:2] != "n"}
+
+
+def secure_boot():
+    done = subprocess.run(["mokutil", "--sb-state"], capture_output=True, text=True, check=False)
+    return "SecureBoot enabled" in done.stdout
+
+
+def online():
+    try:
+        socket.getaddrinfo("deb.debian.org", 443)
+    except OSError:
+        return False
+    return True
+
+
+def parse_plan(text):
+    plan = {"install": set(), "remove": set()}
+    for kind, package in PLAN_LINE.findall(text):
+        plan["install" if kind == "Inst" else "remove"].add(package)
+    return plan
+
+
+def simulate(arguments):
+    done = subprocess.run(["apt-get", "-s", "-q", *arguments], capture_output=True, text=True,
+                          check=False, env=dict(os.environ, DEBIAN_FRONTEND="noninteractive"))
+    return parse_plan(done.stdout) if done.returncode == 0 else None
+
+
+def read_status(line, job):
+    parts = line.rstrip("\n").split(":", 3)
+    if len(parts) < 4 or parts[0] not in ("dlstatus", "pmstatus"):
+        return
+    try:
+        percent = int(float(parts[2]))
+    except ValueError:
+        return
+    step = "download" if parts[0] == "dlstatus" else job.work
+    job.update(step=step, percent=percent)
+
+
+def apt(job, arguments, track=True):
+    read_end, write_end = os.pipe()
+    command = ["apt-get", "-q", "-y", "-o", f"APT::Status-Fd={write_end}", *APT_OPTIONS, *arguments]
+    process = subprocess.Popen(command, pass_fds=(write_end,),
+                               env=dict(os.environ, DEBIAN_FRONTEND="noninteractive"))
+    os.close(write_end)
+    with os.fdopen(read_end, errors="replace") as stream:
+        for line in stream:
+            if track:
+                read_status(line, job)
+    return process.wait() == 0
+
+
+def add_source():
+    if SOURCES.exists():
+        return False
+    SOURCES.write_text(DEBIAN_SOURCES)
+    return True
+
+
+def source_needed():
+    records = [load_json(path, {}) for path in ITEMS.glob("*.json")]
+    return any(record.get("source") == "non-free" for record in records) \
+        or "nvidia-driver" in installed(["nvidia-driver"])
+
+
+def release_source():
+    if SOURCES.exists() and not source_needed():
+        SOURCES.unlink()
+        return True
+    return False
+
+
+def module_built(name):
+    kernels = [path for path in Path("/lib/modules").iterdir() if (path / "build").is_dir()]
+    return bool(kernels) and all(any(path.rglob(f"{name}.ko*")) for path in kernels)
+
+
+def group_members(group):
+    try:
+        return grp.getgrnam(group).gr_mem
+    except KeyError:
+        return []
+
+
+def administrators():
+    return [name for name in group_members(ADMINS) if pwd.getpwnam(name).pw_uid >= FIRST_USER]
+
+
+def join_groups(item):
+    for group in item.get("groups", []):
+        for user in set(administrators()) - set(group_members(group)):
+            subprocess.run(["usermod", "-aG", group, user], check=False)
+
+
+def leave_groups(item):
+    for group in item.get("groups", []):
+        for user in administrators():
+            subprocess.run(["gpasswd", "-d", user, group], capture_output=True, check=False)
+
+
+def undo(job, new, replaced, added_source):
+    job.update(step="undoing", percent=-1)
+    present = sorted(on_disk(new))
+    if present:
+        apt(job, ["purge", "--autoremove", *present], track=False)
+    subprocess.run(["dpkg", "--configure", "--pending"], check=False)
+    if replaced:
+        apt(job, ["install", *sorted(replaced)], track=False)
+    if added_source:
+        SOURCES.unlink(missing_ok=True)
+        apt(job, ["update"], track=False)
+
+
+def add(job, item):
+    if LIVE.exists():
+        return job.fail("live")
+    if item.get("module") and secure_boot():
+        return job.fail("secureboot")
+    if not online():
+        return job.fail("offline")
+    job.update(state="running", step="preparing", percent=-1)
+    added_source = item.get("source") == "non-free" and add_source()
+    if not apt(job, ["update"], track=False):
+        if added_source:
+            SOURCES.unlink(missing_ok=True)
+        return job.fail("sources")
+    packages = item["packages"]
+    plan = simulate(["install", *packages])
+    if plan is None:
+        undo(job, [], set(), added_source)
+        return job.fail("packages")
+    allowed = set(item.get("replaces", []))
+    surprises = plan["remove"] - allowed
+    if surprises:
+        undo(job, [], set(), added_source)
+        return job.fail("conflict", " ".join(sorted(surprises)))
+    new = sorted(set(packages) - installed(packages))
+    replaced = plan["remove"] & allowed
+    worked = apt(job, ["install", *packages])
+    if worked and item.get("module"):
+        worked = module_built(item["module"])
+    if not worked:
+        undo(job, new, replaced, added_source)
+        return job.fail("packages")
+    write_json(ITEMS / f"{item['id'].replace(':', '-')}.json",
+               {"packages": new, "replaced": sorted(replaced), "source": item.get("source", "")})
+    join_groups(item)
+    apt(job, ["clean"], track=False)
+    return job.finish(bool(item.get("restart")))
+
+
+def shared_packages(name):
+    keep = set()
+    for path in ITEMS.glob("*.json"):
+        if path.stem != name:
+            keep.update(load_json(path, {}).get("packages", []))
+    if installed(list(NVIDIA)):
+        keep.add(HEADERS)
+    return keep
+
+
+def manual_packages():
+    done = subprocess.run(["apt-mark", "showmanual"], capture_output=True, text=True, check=False)
+    return set(done.stdout.split())
+
+
+def drop(job, item):
+    record_path = ITEMS / f"{item['id']}.json"
+    record = load_json(record_path, None)
+    if record is None:
+        return job.fail("foreign")
+    job.update(state="running", step="preparing", percent=-1)
+    packages = sorted(installed(sorted(set(record["packages"]) - shared_packages(item["id"]))))
+    if packages:
+        plan = simulate(["purge", "--autoremove", *packages])
+        if plan is None:
+            return job.fail("packages")
+        blockers = (plan["remove"] & manual_packages()) - set(packages)
+        if blockers:
+            return job.fail("in-use", " ".join(sorted(blockers)))
+        job.work = "remove"
+        leave_groups(item)
+        if not apt(job, ["purge", "--autoremove", *packages]):
+            join_groups(item)
+            return job.fail("packages")
+    if record.get("replaced"):
+        job.work = "install"
+        if not apt(job, ["install", *record["replaced"]]):
+            return job.fail("packages")
+    record_path.unlink(missing_ok=True)
+    if release_source():
+        apt(job, ["update"], track=False)
+    return job.finish(bool(item.get("restart")))
+
+
+def needs_restart():
+    done = subprocess.run(["fwupdmgr", "get-devices", "--json"], capture_output=True, text=True,
+                          check=False)
+    try:
+        devices = json.loads(done.stdout).get("Devices", [])
+    except ValueError:
+        return False
+    return any("needs-reboot" in device.get("Flags", []) for device in devices)
+
+
+def flash(job, item):
+    if LIVE.exists():
+        return job.fail("live")
+    if not shutil.which("fwupdmgr"):
+        return job.fail("flash")
+    job.update(state="running", step="flash", percent=-1)
+    done = subprocess.run(["fwupdmgr", "update", item["id"], "--assume-yes", "--no-reboot-check"],
+                          capture_output=True, text=True, check=False)
+    print(done.stdout, done.stderr, flush=True)
+    if done.returncode != 0:
+        lines = (done.stderr or done.stdout).strip().splitlines()
+        return job.fail("flash", lines[-1] if lines else "")
+    return job.finish(needs_restart())
+
+
+def fell_back(file):
+    if any((FIRMWARE / f"{file}{suffix}").exists() for suffix in ("", ".xz", ".zst")):
+        return True
+    path = Path(file)
+    stem = re.sub(r"[-_.]?\d*(\.[A-Za-z0-9]+)?$", "", path.name)
+    folder = FIRMWARE / path.parent
+    return bool(stem) and folder.is_dir() and any(folder.glob(f"{stem}*"))
+
+
+def parse_missing(text):
+    found = {}
+    for line in text.splitlines():
+        match = FIRMWARE_ERROR.match(line)
+        if match and not fell_back(match.group(3)):
+            found[match.group(3)] = {"driver": match.group(1), "device": match.group(2),
+                                     "file": match.group(3)}
+    return [found[file] for file in sorted(found)]
+
+
+def scan():
+    done = subprocess.run(["journalctl", "-k", "-b", "-o", "cat", "--no-pager"],
+                          capture_output=True, text=True, errors="replace", check=False)
+    write_json(MISSING, parse_missing(done.stdout))
+    for item in load_json(CATALOG, {}).get("items", []):
+        if (ITEMS / f"{item['id']}.json").exists():
+            join_groups(item)
+    return 0
+
+
+def busy():
+    STATE.mkdir(parents=True, exist_ok=True)
+    with open(LOCK, "a") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            return True
+    current = load_json(JOB, {})
+    return current.get("state") == "queued" \
+        and time.time() - current.get("time", 0) < QUEUE_LIFETIME
+
+
+def request(action, name):
+    if resolve(action, name) is None:
+        print(f"kernora-driver-job: unknown request {action} {name}", file=sys.stderr)
+        return 2
+    if busy():
+        print("kernora-driver-job: another driver job is running", file=sys.stderr)
+        return 3
+    job = Job(action, name)
+    write_json(JOB, job.values)
+    return subprocess.run(["systemctl", "start", "--no-block", UNIT], check=False).returncode
+
+
+def run():
+    current = load_json(JOB, {})
+    if current.get("state") != "queued":
+        return 0
+    job = Job(current["action"], current["id"])
+    job.values["time"] = current["time"]
+    item = resolve(job.values["action"], job.values["id"])
+    if item is None:
+        job.fail("packages")
+        return 1
+    STATE.mkdir(parents=True, exist_ok=True)
+    with open(LOCK, "a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            worked = {"add": add, "drop": drop, "flash": flash}[job.values["action"]](job, item)
+        except Exception as error:
+            job.fail("packages", str(error))
+            raise
+    scan()
+    return 0 if worked else 1
+
+
+def main():
+    arguments = sys.argv[1:]
+    if os.geteuid() != 0:
+        print("kernora-driver-job: run as root", file=sys.stderr)
+        return 1
+    if arguments == ["run"]:
+        return run()
+    if arguments == ["scan"]:
+        return scan()
+    if arguments == ["needs-non-free"]:
+        return 0 if any(load_json(path, {}).get("source") == "non-free"
+                        for path in ITEMS.glob("*.json")) else 1
+    if len(arguments) == 3 and arguments[0] == "request":
+        return request(arguments[1], arguments[2])
+    print("usage: kernora-driver-job request add|drop|flash NAME|run|scan|needs-non-free",
+          file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

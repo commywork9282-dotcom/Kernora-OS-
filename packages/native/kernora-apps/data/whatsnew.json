@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-06-5",
+    "date": "2026-11-06",
+    "items": [
+      {
+        "icon": "kernora-drivers",
+        "title": {
+          "en": "New Drivers app",
+          "ru": "Новое приложение «Драйверы»"
+        },
+        "text": {
+          "en": "See every device in your computer and which driver it uses. Install drivers for NVIDIA cards, Broadcom Wi-Fi, printers and scanners, update drivers and firmware, and save a hardware report when you need help.",
+          "ru": "Здесь видно все устройства компьютера и их драйверы. Можно установить драйверы для видеокарт NVIDIA, Wi-Fi Broadcom, принтеров и сканеров, обновить драйверы и прошивки и сохранить отчёт об оборудовании, если нужна помощь."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-06-4",
     "date": "2026-11-06",
     "items": [

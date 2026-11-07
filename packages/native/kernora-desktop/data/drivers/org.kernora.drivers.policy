@@ -7,10 +7,10 @@
 <policyconfig>
   <vendor>Kernora OS</vendor>
   <action id="org.kernora.drivers">
-    <description>Manage graphics drivers</description>
-    <description xml:lang="ru">Управление драйверами видеокарты</description>
-    <message>Installing or removing a graphics driver changes the system</message>
-    <message xml:lang="ru">Установка или удаление драйвера видеокарты изменяет систему</message>
+    <description>Manage drivers</description>
+    <description xml:lang="ru">Управление драйверами</description>
+    <message>Installing or removing a driver changes the system</message>
+    <message xml:lang="ru">Установка или удаление драйвера меняет систему</message>
     <icon_name>cpu</icon_name>
     <defaults>
       <allow_any>no</allow_any>

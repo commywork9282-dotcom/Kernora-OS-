@@ -1,0 +1,454 @@
+# Russian translations for kernora-drivers package.
+# Copyright (C) 2026 THE kernora-drivers'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-drivers package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-drivers\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-11-06 12:00-0800\n"
+"PO-Revision-Date: 2026-11-06 12:00-0800\n"
+"Last-Translator: Kernora Developers\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgctxt "@title application name"
+msgid "Drivers"
+msgstr "Драйверы"
+
+msgid "Maker"
+msgstr "Производитель"
+
+msgid "Driver"
+msgstr "Драйвер"
+
+msgid "Driver version"
+msgstr "Версия драйвера"
+
+msgid "Microcode"
+msgstr "Микрокод"
+
+msgid "Kernel module"
+msgstr "Модуль ядра"
+
+msgid "Hardware ID"
+msgstr "ID оборудования"
+
+msgid "Connected to"
+msgstr "Подключение"
+
+msgid "USB speed"
+msgstr "Скорость USB"
+
+msgid "%1 Mbit/s"
+msgstr "%1 Мбит/с"
+
+msgid "Unknown device"
+msgstr "Неизвестное устройство"
+
+msgid "No driver is using this device"
+msgstr "Драйвер для этого устройства не используется"
+
+msgid "This device needs firmware to work"
+msgstr "Для работы устройству нужна прошивка"
+
+msgid "Working"
+msgstr "Работает"
+
+msgid "Firmware is missing"
+msgstr "Нет прошивки"
+
+msgid "A driver is available"
+msgstr "Есть драйвер"
+
+msgid "Go to Drivers"
+msgstr "Перейти к драйверам"
+
+msgid "Graphics"
+msgstr "Видеокарта"
+
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+msgid "Network"
+msgstr "Сеть"
+
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+msgid "Sound"
+msgstr "Звук"
+
+msgid "Cameras"
+msgstr "Камеры"
+
+msgid "Printers"
+msgstr "Принтеры"
+
+msgid "Storage"
+msgstr "Накопители"
+
+msgid "Input devices"
+msgstr "Устройства ввода"
+
+msgid "USB controllers"
+msgstr "Контроллеры USB"
+
+msgid "Processor"
+msgstr "Процессор"
+
+msgid "Other"
+msgstr "Другое"
+
+msgid "System devices"
+msgstr "Системные устройства"
+
+msgid "Devices"
+msgstr "Устройства"
+
+msgid "No driver"
+msgstr "Нет драйвера"
+
+msgid "Needs firmware"
+msgstr "Нужна прошивка"
+
+msgid "Microcode %1"
+msgstr "Микрокод %1"
+
+msgid "Driver: %1"
+msgstr "Драйвер: %1"
+
+msgid "Report saved to Downloads"
+msgstr "Отчёт сохранён в «Загрузки»"
+
+msgid "Open"
+msgstr "Открыть"
+
+msgid "Couldn't save the report"
+msgstr "Не удалось сохранить отчёт"
+
+msgid "Save report"
+msgstr "Сохранить отчёт"
+
+msgid "%1 device"
+msgid_plural "%1 devices"
+msgstr[0] "%1 устройство"
+msgstr[1] "%1 устройства"
+msgstr[2] "%1 устройств"
+
+msgid "NVIDIA graphics card"
+msgstr "Видеокарта NVIDIA"
+
+msgid "Drivers"
+msgstr "Драйверы"
+
+msgid "Looking at your hardware…"
+msgstr "Проверяем оборудование…"
+
+msgid "You can add drivers after installing Kernora."
+msgstr "Драйверы можно добавить после установки Kernora."
+
+msgid "Everything is set up"
+msgstr "Всё настроено"
+
+msgid "Couldn't install the driver"
+msgstr "Не удалось установить драйвер"
+
+msgid "Restart to use the driver"
+msgstr "Перезагрузите компьютер, чтобы драйвер заработал"
+
+msgid "NVIDIA driver %1"
+msgstr "Драйвер NVIDIA %1"
+
+msgid "NVIDIA driver"
+msgstr "Драйвер NVIDIA"
+
+msgid "Uses the built-in open driver"
+msgstr "Работает со встроенным открытым драйвером"
+
+msgid "Turn off Secure Boot to install the driver"
+msgstr "Чтобы установить драйвер, отключите Secure Boot"
+
+msgid "The NVIDIA driver is ready to install"
+msgstr "Драйвер NVIDIA готов к установке"
+
+msgid "Turn off Secure Boot to use this"
+msgstr "Чтобы это работало, отключите Secure Boot"
+
+msgid "That didn't work"
+msgstr "Не получилось"
+
+msgid "OK"
+msgstr "ОК"
+
+msgid "Restart to finish"
+msgstr "Перезагрузите компьютер"
+
+msgid "Your changes start working after a restart."
+msgstr "Изменения заработают после перезагрузки."
+
+msgid "Restart"
+msgstr "Перезагрузить"
+
+msgid "Recommended"
+msgstr "Рекомендуется"
+
+msgid "Installed"
+msgstr "Установлено"
+
+msgid "More"
+msgstr "Дополнительно"
+
+msgid "No driver found"
+msgstr "Драйвер не найден"
+
+msgid "Kernora has nothing to offer for these yet. Save a report on the Devices page if you need help."
+msgstr "Для этих устройств у Kernora пока ничего нет. Если нужна помощь, сохраните отчёт на странице «Устройства»."
+
+msgid "Install"
+msgstr "Установить"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Remove %1?"
+msgstr "Удалить «%1»?"
+
+msgid "Install %1?"
+msgstr "Установить «%1»?"
+
+msgid "You can install it again later. A restart finishes the removal."
+msgstr "Позже можно установить снова. Удаление завершится после перезагрузки."
+
+msgid "You can install it again later."
+msgstr "Позже можно установить снова."
+
+msgid "This driver isn't open source. You'll need to restart to use it."
+msgstr "Это драйвер с закрытым кодом. Он заработает после перезагрузки."
+
+msgid "This driver isn't open source."
+msgstr "Это драйвер с закрытым кодом."
+
+msgid "You'll need to restart to use it."
+msgstr "Заработает после перезагрузки."
+
+msgid "It's downloaded from Debian, the system Kernora is built on."
+msgstr "Загружается из Debian, на котором построена Kernora."
+
+msgid "%1 driver is ready to install"
+msgid_plural "%1 drivers are ready to install"
+msgstr[0] "%1 драйвер готов к установке"
+msgstr[1] "%1 драйвера готовы к установке"
+msgstr[2] "%1 драйверов готовы к установке"
+
+msgid "%1 device has no driver"
+msgid_plural "%1 devices have no driver"
+msgstr[0] "У %1 устройства нет драйвера"
+msgstr[1] "У %1 устройств нет драйвера"
+msgstr[2] "У %1 устройств нет драйвера"
+
+msgid "Removing the NVIDIA driver…"
+msgstr "Удаление драйвера NVIDIA…"
+
+msgid "Installing the NVIDIA driver…"
+msgstr "Установка драйвера NVIDIA…"
+
+msgid "Waiting for another install to finish…"
+msgstr "Ждём завершения другой установки…"
+
+msgid "Getting ready…"
+msgstr "Подготовка…"
+
+msgid "Downloading…"
+msgstr "Загрузка…"
+
+msgid "Installing…"
+msgstr "Установка…"
+
+msgid "Removing…"
+msgstr "Удаление…"
+
+msgid "Something went wrong. Undoing the changes…"
+msgstr "Что-то пошло не так. Отменяем изменения…"
+
+msgid "Updating firmware. Don't turn off the computer."
+msgstr "Обновление прошивки. Не выключайте компьютер."
+
+msgctxt "%1 driver name, %2 what is happening"
+msgid "%1: %2"
+msgstr "%1: %2"
+
+msgctxt "progress in percent"
+msgid "%1%"
+msgstr "%1%"
+
+msgid "There's no internet connection. Connect and try again."
+msgstr "Нет подключения к интернету. Подключитесь и повторите."
+
+msgid "This driver can't load while Secure Boot is on."
+msgstr "Этот драйвер не загрузится, пока включён Secure Boot."
+
+msgid "Install Kernora on this computer first."
+msgstr "Сначала установите Kernora на этот компьютер."
+
+msgid "Kernora couldn't reach the download server. Try again later."
+msgstr "Kernora не удалось связаться с сервером загрузки. Повторите позже."
+
+msgid "It doesn't work together with other installed software. Nothing was changed."
+msgstr "Не работает вместе с другими установленными программами. Ничего не изменилось."
+
+msgid "Other apps still need it: %1"
+msgstr "Это ещё нужно другим программам: %1"
+
+msgid "This wasn't installed from Drivers, so it can't be removed here."
+msgstr "Это установлено не через «Драйверы», поэтому здесь удалить нельзя."
+
+msgid "The firmware wasn't updated: %1"
+msgstr "Прошивка не обновлена: %1"
+
+msgid "The firmware wasn't updated."
+msgstr "Прошивка не обновлена."
+
+msgid "It couldn't be removed. Try again."
+msgstr "Не удалось удалить. Повторите попытку."
+
+msgid "It couldn't be installed. Nothing was changed."
+msgstr "Не удалось установить. Ничего не изменилось."
+
+msgid "Firmware updated"
+msgstr "Прошивка обновлена"
+
+msgid "%1 removed"
+msgstr "«%1» удалено"
+
+msgid "%1 installed"
+msgstr "«%1» установлено"
+
+msgid "Another install is still running. Try again when it finishes."
+msgstr "Другая установка ещё идёт. Повторите, когда она закончится."
+
+msgid "Kernora didn't get permission to do this."
+msgstr "Kernora не получила разрешения на это действие."
+
+msgid "Kernora couldn't start this. Install the latest updates and try again."
+msgstr "Kernora не удалось это запустить. Установите последние обновления и повторите."
+
+msgid "Updates"
+msgstr "Обновления"
+
+msgctxt "Language key of the driver catalog: ru in Russian"
+msgid "en"
+msgstr "ru"
+
+msgid "The installer sets up the driver for %1 when the computer is online."
+msgstr "Установщик настроит драйвер для %1, когда компьютер будет в сети."
+
+msgid "It takes a few minutes. You can keep using the computer."
+msgstr "Это займёт несколько минут. Компьютером можно пользоваться."
+
+msgid "The driver is installed. It starts working after a restart."
+msgstr "Драйвер установлен. Он заработает после перезагрузки."
+
+msgid "This card uses the NVIDIA driver %1."
+msgstr "Видеокарта работает с драйвером NVIDIA %1."
+
+msgid "This card uses the NVIDIA driver."
+msgstr "Видеокарта работает с драйвером NVIDIA."
+
+msgid "The NVIDIA driver can't load while Secure Boot is on. Turn it off in the computer's firmware settings, then try again."
+msgstr "Драйвер NVIDIA не загрузится, пока включён Secure Boot. Отключите его в настройках BIOS и повторите."
+
+msgid "The driver couldn't be installed. Check the internet connection and try again."
+msgstr "Не удалось установить драйвер. Проверьте интернет и повторите."
+
+msgid "There's no internet connection. The driver will be installed when the computer is online."
+msgstr "Нет подключения к интернету. Драйвер установится, когда компьютер будет в сети."
+
+msgid "The NVIDIA driver is removed and stops being used after a restart."
+msgstr "Драйвер NVIDIA удалён. Он перестанет использоваться после перезагрузки."
+
+msgid "The NVIDIA driver will be installed automatically as soon as the computer is online."
+msgstr "Драйвер NVIDIA установится сам, как только компьютер будет в сети."
+
+msgid "Install the NVIDIA driver to get the full speed of this card."
+msgstr "Установите драйвер NVIDIA, чтобы видеокарта работала на полную мощность."
+
+msgid "Not installed"
+msgstr "Не установлен"
+
+msgid "Try again"
+msgstr "Повторить"
+
+msgid "Install automatically"
+msgstr "Устанавливать автоматически"
+
+msgid "When a graphics card needs a driver, Kernora installs it and asks you to restart"
+msgstr "Когда видеокарте нужен драйвер, Kernora установит его и попросит перезагрузить компьютер"
+
+msgid "Remove the NVIDIA driver?"
+msgstr "Удалить драйвер NVIDIA?"
+
+msgid "The card goes back to the built-in open driver after a restart."
+msgstr "После перезагрузки видеокарта вернётся на встроенный открытый драйвер."
+
+msgid "Checking for updates…"
+msgstr "Проверка обновлений…"
+
+msgid "Your drivers are up to date"
+msgstr "Драйверы обновлены"
+
+msgid "Check"
+msgstr "Проверить"
+
+msgid "Updates didn't finish"
+msgstr "Обновление не завершилось"
+
+msgid "Update drivers"
+msgstr "Обновить драйверы"
+
+msgid "Firmware"
+msgstr "Прошивка"
+
+msgid "Firmware comes from your device's maker through LVFS."
+msgstr "Прошивки поступают от производителя устройства через LVFS."
+
+msgid "Turn on"
+msgstr "Включить"
+
+msgid "Couldn't check for firmware updates"
+msgstr "Не удалось проверить обновления прошивки"
+
+msgid "Firmware is up to date"
+msgstr "Прошивка обновлена"
+
+msgid "Check the internet connection and try again."
+msgstr "Проверьте интернет и повторите."
+
+msgid "Update"
+msgstr "Обновить"
+
+msgid "Update %1?"
+msgstr "Обновить «%1»?"
+
+msgid "Keep the computer plugged in and don't turn it off. It may restart during the update."
+msgstr "Держите компьютер подключённым к сети и не выключайте его. Во время обновления он может перезагрузиться."
+
+msgctxt "firmware version change"
+msgid "%1 → %2"
+msgstr "%1 → %2"
+
+msgid "%1 update available"
+msgid_plural "%1 updates available"
+msgstr[0] "Доступно %1 обновление"
+msgstr[1] "Доступно %1 обновления"
+msgstr[2] "Доступно %1 обновлений"
+
+msgid "%1 package"
+msgid_plural "%1 packages"
+msgstr[0] "%1 пакет"
+msgstr[1] "%1 пакета"
+msgstr[2] "%1 пакетов"

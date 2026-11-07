@@ -123,6 +123,10 @@ data/plymouth/kernora-boot-theme usr/libexec
 data/plymouth/plymouth-quit-kernora.conf usr/lib/systemd/system/plymouth-quit.service.d
 data/plymouth/sddm-plymouth.conf usr/lib/systemd/system/sddm.service.d
 data/drivers/kernora-drivers usr/libexec
+data/drivers/kernora-driver-job usr/libexec
+data/drivers/kernora-hardware usr/libexec
+data/drivers/catalog.json usr/share/kernora/hardware
+data/drivers/kernora-driver-job.service usr/lib/systemd/system
 data/drivers/nvidia-archive-keyring.gpg usr/share/kernora
 data/drivers/kernora-drivers.service usr/lib/systemd/system
 data/drivers/kernora-drivers.timer usr/lib/systemd/system
