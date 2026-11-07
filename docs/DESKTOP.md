@@ -405,7 +405,10 @@ city, chosen in either weather widget's settings, is shared through
 Fahrenheit follows a US locale. Plasma sizes a new desktop applet from its
 `switchWidth`/`switchHeight`, so each widget sets them to its preferred
 size until it has been placed once (`placed` in its configuration) and
-then drops them, which keeps it from ever collapsing into an icon.
+then drops them, which keeps it from ever collapsing into an icon. On a
+panel it is the other way round: a widget stays an icon and opens its card
+above it. Plasma saves a popup at 560x400 before the card exists, so
+`Layout.maximum*` hold the popup to the card's preferred size.
 
 ### Widget picker and edit mode
 
@@ -422,7 +425,8 @@ monitor, files, media, system, input, panel). Widgets the table does not
 know keep their own icon on a Material shape. A tap adds a widget, dragging
 it (`WidgetDrag.qml`, MIME `text/x-plasmoidservicename`) drops it where it
 should go. On a panel the Kernora widgets give way to the panel applets and
-the panel group comes first. The Kernora cards come in a fixed order, the
+the panel group comes first. Plasma's panel takes any drop, so a Kernora
+widget dragged there from the desktop's list still lands, as an icon. The Kernora cards come in a fixed order, the
 clock first. Plasma 6 hides
 "Add or Manage Widgets…" from the desktop's right-click menu; the
 `kernora_add_widgets_menu` kconf_update script turns it back on

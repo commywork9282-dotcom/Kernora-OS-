@@ -12,7 +12,8 @@ import "m3"
 PlasmoidItem {
     id: root
 
-    preferredRepresentation: fullRepresentation
+    readonly property bool inPanel: Plasmoid.formFactor !== PlasmaCore.Types.Planar
+    preferredRepresentation: inPanel ? null : fullRepresentation
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
 
     switchWidth: Plasmoid.configuration.placed ? 0 : 239
@@ -33,6 +34,8 @@ PlasmoidItem {
         Layout.preferredHeight: 220
         Layout.minimumWidth: 140
         Layout.minimumHeight: 120
+        Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity
+        Layout.maximumHeight: root.inPanel ? Layout.preferredHeight : Infinity
         color: M3.tertiaryContainer
 
         Timer {

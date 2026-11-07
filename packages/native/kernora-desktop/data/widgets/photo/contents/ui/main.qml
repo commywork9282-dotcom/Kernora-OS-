@@ -15,7 +15,8 @@ import "m3"
 PlasmoidItem {
     id: root
 
-    preferredRepresentation: fullRepresentation
+    readonly property bool inPanel: Plasmoid.formFactor !== PlasmaCore.Types.Planar
+    preferredRepresentation: inPanel ? null : fullRepresentation
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
 
     switchWidth: Plasmoid.configuration.placed ? 0 : 229
@@ -72,6 +73,8 @@ PlasmoidItem {
         Layout.preferredHeight: 230
         Layout.minimumWidth: 120
         Layout.minimumHeight: 120
+        Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity
+        Layout.maximumHeight: root.inPanel ? Layout.preferredHeight : Infinity
 
         readonly property bool shown: photo.status === Image.Ready
 

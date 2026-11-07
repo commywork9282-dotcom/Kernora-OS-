@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-07-1",
+    "date": "2026-11-07",
+    "items": [
+      {
+        "icon": "preferences-desktop-widgets",
+        "title": {
+          "en": "Widgets no longer squeeze into the panel",
+          "ru": "Виджеты больше не сжимаются на панели"
+        },
+        "text": {
+          "en": "Now Playing and the other desktop widgets are gone from the panel's widget list. If one is already on your panel, it turns into a small icon, and a click opens the full card.",
+          "ru": "«Сейчас играет» и другие виджеты рабочего стола убраны из списка виджетов панели. Если такой виджет уже стоит на панели, он станет маленьким значком, а по нажатию откроется полная карточка."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-06-2",
     "date": "2026-11-06",
     "items": [
