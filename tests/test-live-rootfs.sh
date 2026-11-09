@@ -296,17 +296,17 @@ command -v pkexec >/dev/null || fail "pkexec is missing; the installer cannot st
 [[ -s /usr/share/plymouth/themes/kernora/kernora.script && -s /usr/share/plymouth/themes/kernora/shape-0.png ]] \
   || fail "the Kernora boot splash is incomplete"
 initrd=$(find /boot -maxdepth 1 -name 'initrd.img-*' | sort | tail -n1)
-lsinitramfs "$initrd" | grep -q 'usr/share/plymouth/themes/kernora/kernora.script' \
+lsinitramfs "$initrd" | grep 'usr/share/plymouth/themes/kernora/kernora.script' >/dev/null \
   || fail "the initramfs does not carry the Kernora boot splash"
 command -v bsdtar >/dev/null || fail "bsdtar is missing; Files cannot handle archives"
 [[ -x /usr/bin/kernora-installer ]] || fail "the Kernora installer launcher is missing"
 [[ -s /etc/xdg/autostart/org.kernora.welcome.desktop ]] || fail "Welcome is not started at first login"
 # English and Russian are ready for the live session and the installer.
 for locale in en_US.utf8 ru_RU.utf8; do
-  locale -a | grep -Fxq "$locale" || fail "locale is not generated: $locale"
+  locale -a | grep -Fx "$locale" >/dev/null || fail "locale is not generated: $locale"
 done
 for entry in 'en_PH.UTF-8 UTF-8' 'fil_PH UTF-8' 'de_DE.UTF-8 UTF-8'; do
-  sed 's/^[[:space:]#]*//' /etc/locale.gen | grep -Fxq "$entry" \
+  sed 's/^[[:space:]#]*//' /etc/locale.gen | grep -Fx "$entry" >/dev/null \
     || fail "the installable locale catalog lacks $entry"
 done
 [[ -x /usr/lib/kernora/live-language ]] || fail "the boot menu language cannot be applied"
