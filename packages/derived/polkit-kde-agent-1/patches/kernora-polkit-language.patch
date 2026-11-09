@@ -1,0 +1,34 @@
+Description: Localise polkit messages in the language of the desktop
+ libpolkit-agent registers the agent with the locale from LANG, which follows
+ the region. When the desktop language differs from the region, every reason
+ shown in the prompt stays in the language of the region. The agent now
+ registers with the first user interface language instead.
+Author: Kernora Developers <developers@kernora.invalid>
+Forwarded: not-needed
+Last-Update: 2026-11-08
+---
+--- a/main.cpp
++++ b/main.cpp
+@@ -16,6 +16,7 @@
+ // Qt
+ #include <QApplication>
+ #include <QDebug>
++#include <QLocale>
+ #include <QSessionManager>
+ // std
+ #if HAVE_SYS_PRCTL_H
+@@ -63,6 +64,14 @@
+     QObject::connect(&app, &QGuiApplication::commitDataRequest, disableSessionManagement);
+     QObject::connect(&app, &QGuiApplication::saveStateRequest, disableSessionManagement);
+ 
++    const QStringList languages = QLocale::system().uiLanguages();
++    if (!languages.isEmpty()) {
++        const QLocale language(languages.first());
++        if (language.language() != QLocale::C) {
++            qputenv("LANG", language.name().toUtf8() + ".UTF-8");
++        }
++    }
++
+     // register agent
+     PolicyKitListener *listener = new PolicyKitListener(&app);
+ 

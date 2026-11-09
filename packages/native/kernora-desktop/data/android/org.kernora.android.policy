@@ -71,4 +71,17 @@
     </defaults>
     <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-refresh</annotate>
   </action>
+  <action id="org.kernora.android.report">
+    <description>Save a report about Android apps</description>
+    <description xml:lang="ru">Сохранение отчёта об Android-приложениях</description>
+    <message>Reading the logs of Android apps for a report needs administrator rights</message>
+    <message xml:lang="ru">Чтобы прочитать журналы Android-приложений для отчёта, нужны права администратора</message>
+    <icon_name>org.kernora.android</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android-report</annotate>
+  </action>
 </policyconfig>

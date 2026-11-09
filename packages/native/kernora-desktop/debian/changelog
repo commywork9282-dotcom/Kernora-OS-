@@ -1,3 +1,27 @@
+kernora-desktop (1.4.74) UNRELEASED; urgency=medium
+
+  * Android apps start once right after setup, before "ready" is announced:
+    Google Play and the app menu entries are there, and the first sign-in is
+    no longer cut off by Google Play services finishing their own setup.
+  * Text copied on the desktop can be pasted into Android apps.
+  * Android windows that grow on their own move back onto the screen.
+    Permission questions stay above other windows and out of the panel.
+  * Answers to permission questions reach the app that asked, also when
+    another Android window covers it.
+  * Bringing an Android window forward only reorders Android when it really
+    has another window on top, so the first click isn't swallowed.
+  * Opening an app no longer leaves a "Deleting (Failed)" notification.
+  * Android apps use the language chosen in Kernora.
+  * The time left while downloading Android is steadier.
+  * The size of Android apps counts their data. The package cache is cleaned
+    after setup.
+  * Saving an Android report asks for the password with its own message.
+  * Logging in starts with an empty desktop, as Settings says, instead of
+    reopening the apps of the last session.
+  * After a desktop update, restarting is offered.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 08 Nov 2026 10:00:00 -0800
+
 kernora-desktop (1.4.73) UNRELEASED; urgency=medium
 
   * The panel's widget list no longer offers Kernora's desktop widgets.

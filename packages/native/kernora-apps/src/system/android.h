@@ -55,4 +55,5 @@ private:
     QDBusServiceWatcher *m_session = nullptr;
     QHash<int, QJSValue> m_iconRequests;
     int m_nextRequest = 0;
+    int m_iconRetries = 0;
 };

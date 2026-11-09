@@ -2,6 +2,10 @@
 set -e
 
 if [ "$1" = configure ]; then
+    if [ -n "${2:-}" ] && [ -d /run ]; then
+        touch /run/reboot-required 2>/dev/null || true
+        echo kernora-desktop >> /run/reboot-required.pkgs 2>/dev/null || true
+    fi
     /usr/libexec/kernora-locales
     update-alternatives --install /usr/share/icons/default/index.theme x-cursor-theme \
         /usr/share/icons/kernora_cursors/cursor.theme 100

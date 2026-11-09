@@ -29,6 +29,8 @@ TIMEOUT = 30
 PIECE = 4 << 20
 BLOCK = 256 << 10
 STALL = 3
+RATE_WINDOW = 30
+RATE_MINIMUM = 5
 MIRRORS = 6
 ROUNDS = 5
 NETWORK_ERRORS = (OSError, ValueError, http.client.HTTPException)
@@ -79,18 +81,18 @@ class Progress:
             self.total += amount
 
     def report(self) -> None:
-        rate = 0.0
-        samples = 0
-        last = self.done
+        history: collections.deque[tuple[float, int]] = collections.deque()
         while not self.stopped.wait(1):
             with self.lock:
                 done, total = self.done, self.total
-            step = max(0, done - last)
-            last = done
-            if step > 0:
-                samples += 1
-            rate = step if rate == 0 else 0.8 * rate + 0.2 * step
-            left = round((total - done) / rate) if rate > 0 and samples >= 5 else -1
+            now = time.monotonic()
+            history.append((now, done))
+            while len(history) > 2 and now - history[1][0] >= RATE_WINDOW:
+                history.popleft()
+            first_time, first_done = history[0]
+            span = now - first_time
+            rate = (done - first_done) / span if span >= RATE_MINIMUM else 0.0
+            left = round((total - done) / rate) if rate > 0 else -1
             print(f"progress {min(done, total)} {total} {left}", flush=True)
 
     def stop(self) -> None:

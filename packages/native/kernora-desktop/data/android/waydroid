@@ -16,12 +16,14 @@ if (( EUID != 0 )); then
         kernora-appsplash "${3:-}" "$ready" > /dev/null 2>&1 &
         if ! KERNORA_ANDROID_SPLASH=1 /usr/libexec/kernora-android-session; then
           : > "$ready"
+          (sleep 10; rm -f "$ready") > /dev/null 2>&1 &
           exit 1
         fi
         "$real" "$@"
         status=$?
         sleep 1.5
         : > "$ready"
+        (sleep 10; rm -f "$ready") > /dev/null 2>&1 &
         exit "$status"
       fi
       /usr/libexec/kernora-android-session || exit 1

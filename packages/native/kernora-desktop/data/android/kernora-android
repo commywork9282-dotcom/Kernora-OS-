@@ -96,8 +96,10 @@ install_packages() {
   apt_get update -o Dir::Etc::SourceList="$sources" -o Dir::Etc::SourceParts=- -o APT::Get::List-Cleanup=0 || return 1
   progress=3
   record installing
-  apt_get -o APT::Status-Fd=3 install --no-install-recommends waydroid 3>&1 1>&2 | apt_progress
-  return "${PIPESTATUS[0]}"
+  apt_get -o APT::Status-Fd=3 install --no-install-recommends waydroid wl-clipboard 3>&1 1>&2 | apt_progress
+  local code=${PIPESTATUS[0]}
+  apt_get clean || true
+  return "$code"
 }
 
 fetch_images() {
@@ -315,6 +317,10 @@ copy_screens() {
   else
     "$device" suspend-action stop
   fi
+  if [[ -n $home && -d $home/.local/share/waydroid/data ]]; then
+    timeout 20 du -sb --apparent-size "$home/.local/share/waydroid/data" 2>/dev/null | cut -f1 > "$state_dir/data-size.new" \
+      && mv "$state_dir/data-size.new" "$state_dir/data-size"
+  fi
 }
 
 refresh_android() {
@@ -383,7 +389,7 @@ remove_android() {
   fi
   rm -rf --one-file-system "$work"
   "$device" arm-remove
-  rm -f "$state_dir/properties" "$state_dir/properties.next" "$state_dir/screens" "$state_dir/graphics-software"
+  rm -f "$state_dir/properties" "$state_dir/properties.next" "$state_dir/screens" "$state_dir/graphics-software" "$state_dir/data-size"
   rm -f "$sources"
   apt_get update > /dev/null 2>&1 || true
   kind=
@@ -403,12 +409,14 @@ cancel_setup() {
 }
 
 print_status() {
-  local status installed_flag=no ready=no size=0 container=inactive job=no
+  local status installed_flag=no ready=no size=0 data= container=inactive job=no
   installed && installed_flag=yes
   systemctl list-units --no-legend --state=activating,active 'kernora-android@*' 2>/dev/null | grep -q . && job=yes
   initialized && ready=yes
   if [[ $ready == yes ]]; then
-    size=$(du -sb --apparent-size "$images" 2>/dev/null | cut -f1)
+    size=$(du -sbc --apparent-size "$images" "$work/overlay" 2>/dev/null | tail -n 1 | cut -f1)
+    data=$(head -c 20 "$state_dir/data-size" 2>/dev/null)
+    [[ $data =~ ^[0-9]+$ && $size =~ ^[0-9]+$ ]] && size=$(( size + data ))
     container=$(systemctl is-active waydroid-container.service 2>/dev/null)
   fi
   status=$(read_state status)
@@ -417,6 +425,7 @@ print_status() {
     "$(read_state bytes)" "$(read_state bytes_total)" "$(read_state time)" \
     "${size:-0}" "${container:-inactive}" "$job" "$(live_session && echo yes || echo no)"
   printf 'arm=%s\ndisplay=%s\n' "$("$device" arm-status)" "${XDG_SESSION_TYPE:-}"
+  printf 'warming=%s\n' "$([[ -n ${XDG_RUNTIME_DIR:-} && -e ${XDG_RUNTIME_DIR}/kernora-android-warming ]] && echo yes || echo no)"
   printf 'google_id=%s\ngoogle_accounts=%s\n' \
     "$(sed -n 's/^android_id=//p' "$state_dir/google" 2>/dev/null)" "$(sed -n 's/^accounts=//p' "$state_dir/google" 2>/dev/null)"
 }

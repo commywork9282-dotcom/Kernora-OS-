@@ -43,6 +43,7 @@ static constexpr int FirstCheck = 2 * 60;
 static constexpr int CheckInterval = 6 * 60 * 60;
 static constexpr int RefreshAge = 24 * 60 * 60;
 static constexpr int RestartInterval = 10 * 60;
+static constexpr int RecheckDelay = 10;
 static constexpr int DriverInterval = 60;
 static constexpr int WhatsNewDelay = 6;
 static constexpr qint64 PanicAge = 3 * 24 * 60 * 60;
@@ -145,7 +146,11 @@ public:
         m_check.setSingleShot(true);
         connect(&m_check, &QTimer::timeout, this, &Notifier::check);
         connect(Daemon::global(), &Daemon::updatesChanged, this, [this]() {
-            schedule(60);
+            if (m_busy) {
+                m_recheck = true;
+            } else {
+                schedule(RecheckDelay);
+            }
         });
         connect(&m_restart, &QTimer::timeout, this, &Notifier::checkRestart);
         m_restart.start(RestartInterval * 1000);
@@ -208,7 +213,8 @@ private:
         });
         connect(list, &Transaction::finished, this, [this, ids, security](Transaction::Exit exit) {
             m_busy = false;
-            schedule(CheckInterval);
+            schedule(m_recheck ? RecheckDelay : CheckInterval);
+            m_recheck = false;
             if (exit == Transaction::ExitSuccess) {
                 announce(*ids, *security);
             }
@@ -230,6 +236,13 @@ private:
             return !notified.contains(id);
         });
         if (!fresh) {
+            if (ids.size() != notified.size()) {
+                m_state.writeEntry("Notified", ids);
+                m_state.sync();
+                if (m_updates) {
+                    m_updates->setText(updatesText(int(ids.size()), security));
+                }
+            }
             return;
         }
         m_state.writeEntry("Notified", ids);
@@ -242,10 +255,7 @@ private:
         m_updates->setComponentName(QStringLiteral("kernora-updates"));
         m_updates->setIconName(QStringLiteral("system-software-update"));
         m_updates->setTitle(i18n("Updates are available"));
-        m_updates->setText(security > 0
-                               ? i18np("%1 update is ready to install, with security fixes.",
-                                       "%1 updates are ready to install, among them security fixes.", int(ids.size()))
-                               : i18np("%1 update is ready to install.", "%1 updates are ready to install.", int(ids.size())));
+        m_updates->setText(updatesText(int(ids.size()), security));
         KNotification *notification = m_updates;
         connect(m_updates->addDefaultAction(i18n("Open Updates")), &KNotificationAction::activated, this, [notification]() {
             openUpdates(notification);
@@ -254,6 +264,13 @@ private:
             openUpdates(notification);
         });
         m_updates->sendEvent();
+    }
+
+    static QString updatesText(int count, int security)
+    {
+        return security > 0 ? i18np("%1 update is ready to install, with security fixes.",
+                                    "%1 updates are ready to install, among them security fixes.", count)
+                            : i18np("%1 update is ready to install.", "%1 updates are ready to install.", count);
     }
 
     void checkRestart()
@@ -344,6 +361,7 @@ private:
     QTimer m_driver;
     QPointer<KNotification> m_updates;
     bool m_busy = false;
+    bool m_recheck = false;
 };
 
 int main(int argc, char **argv)

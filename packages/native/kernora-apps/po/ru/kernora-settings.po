@@ -1454,10 +1454,6 @@ msgstr "Попробовать снова"
 msgid "Get apps from"
 msgstr "Откуда брать приложения"
 
-#: apps/settings/qml/pages/AndroidPage.qml:333
-msgid "Needs about 3 GB of space. Banking apps and games with anti-cheat don't work here."
-msgstr "Нужно около 3 ГБ места. Банковские приложения и игры с античитом здесь не работают."
-
 #: apps/settings/qml/pages/AndroidPage.qml:339
 msgid "Google Play and APK files"
 msgstr "Google Play и APK-файлы"
@@ -4073,3 +4069,11 @@ msgstr "Некоторые устройства не передают назва
 
 msgid "Show devices without names (%1)"
 msgstr "Показать устройства без имени (%1)"
+
+#: apps/settings/qml/pages/AndroidPage.qml:142
+msgid "Android starts for the first time. This takes a few minutes, and apps open quickly afterwards."
+msgstr "Android запускается в первый раз. Это займёт несколько минут, зато потом приложения будут открываться быстро."
+
+#: apps/settings/qml/pages/AndroidPage.qml:323
+msgid "Needs about 4 GB of space. Banking apps and games with anti-cheat don't work here."
+msgstr "Нужно около 4 ГБ места. Банковские приложения и игры с античитом здесь не работают."

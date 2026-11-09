@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.85" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.86" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -71,7 +71,7 @@ done
 [[ -s "$package_root/src/apps/drivers.cpp" && -s "$package_root/po/ru/kernora-drivers.po" ]] \
   && grep -Fq 'Icon=org.kernora.drivers' "$package_root/apps/drivers/org.kernora.drivers.desktop" \
   && grep -Eq 'set\(KERNORA_APPS .* drivers ' "$package_root/CMakeLists.txt" \
-  && grep -Fq 'kernora-desktop (>= 1.4.72)' "$package_root/debian/control" \
+  && grep -Fq 'kernora-desktop (>= 1.4.74)' "$package_root/debian/control" \
   || fail "the Drivers app is not packaged"
 python3 - "$package_root" <<'PY' || fail "a Drivers string has no translation"
 import re
@@ -284,11 +284,26 @@ grep -Fq 'readonly property bool runs: apk.compatible || android.arm !== "unsupp
   && grep -Fq 'msgstr "Почти готово"' "$package_root/po/ru/kernora-apkinstaller.po" \
   && grep -Fq '"id": "2026-11-01-2"' "$package_root/data/whatsnew.json" \
   || fail "The installer still refuses apps made for ARM processors"
-grep -Fq 'Process.run("pkexec", [page.tool, "report"]' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+grep -Fq 'Process.run("pkexec", ["/usr/libexec/kernora-android-report"]' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
   && grep -Fq 'msgstr "Сообщить о проблеме"' "$package_root/po/ru/kernora-settings.po" \
   && grep -Fq '"id": "2026-11-01-3"' "$package_root/data/whatsnew.json" \
   && grep -Fq '"id": "2026-11-01-4"' "$package_root/data/whatsnew.json" \
   && grep -Fq '"id": "2026-11-02-1"' "$package_root/data/whatsnew.json" \
   || fail "Settings cannot save a report about Android apps"
+
+! grep -Fq 'Files.remove' "$package_root/apps/appsplash/qml/Main.qml" \
+  || fail "the app splash deletes its ready file with a visible job"
+grep -Fq 'readonly property bool warming: info.warming === "yes"' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq '"kernora-android-done.path", "kernora-android-sync.path"' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq 'Needs about 4 GB of space' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq 'msgstr "Android запускается в первый раз.' "$package_root/po/ru/kernora-settings.po" \
+  || fail "Settings does not show Android's first start"
+grep -Fq 'themeFinished.enabled = true;' "$package_root/apps/settings/qml/Main.qml" \
+  && grep -Fq 'm_pending = true;' "$package_root/src/system/appearance.cpp" \
+  || fail "closing Settings can leave a theme half applied"
+grep -Fq 'm_recheck = true;' "$package_root/src/updatenotifier/main.cpp" \
+  && grep -Fq 'IconRetries' "$package_root/src/system/android.cpp" \
+  && grep -Fq '"id": "2026-11-08-1"' "$package_root/data/whatsnew.json" \
+  || fail "an app fix from 1.1.86 is missing"
 
 printf 'kernora-apps source test: OK\n'

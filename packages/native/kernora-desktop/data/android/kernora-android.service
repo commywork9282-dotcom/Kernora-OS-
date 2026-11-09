@@ -10,7 +10,7 @@ Type=dbus
 BusName=id.waydro.Session
 ExecStartPre=-/usr/libexec/kernora-android-session --prepare
 ExecStartPre=-/usr/bin/pkexec /usr/libexec/kernora-android-refresh
-ExecStart=/usr/bin/env WAYLAND_DISPLAY=kernora-android-0 /usr/bin/waydroid.waydroid session start
+ExecStart=/usr/bin/env KERNORA_HOST_WAYLAND_DISPLAY=${WAYLAND_DISPLAY} WAYLAND_DISPLAY=kernora-android-0 PYTHONPATH=/usr/share/kernora/android/python /usr/bin/waydroid.waydroid session start
 ExecStartPost=/bin/sh -c '/usr/libexec/kernora-android-session --sync-after-boot > /dev/null 2>&1 &'
 ExecStop=/usr/bin/waydroid.waydroid session stop
 TimeoutStopSec=30

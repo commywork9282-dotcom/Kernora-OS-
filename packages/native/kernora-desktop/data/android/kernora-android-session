@@ -25,6 +25,10 @@ STORE = "com.android.vending"
 WAIT = 300
 SCREENS = pathlib.Path.home() / ".cache/kernora/android-screens"
 READY = pathlib.Path.home() / ".cache/kernora/android-ready"
+WARMED = pathlib.Path.home() / ".cache/kernora/android-warmed"
+WARMING = pathlib.Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp")) / "kernora-android-warming"
+SETTLE = {"gapps": 90, "vanilla": 15}
+PATHS = ("kernora-android-sync.path", "kernora-android-done.path")
 RULE = "kernora-android"
 LAYOUTS = {
     "ara": "arabic", "az": "azerbaijani", "be": "belgian", "bg": "bulgarian", "br": "brazilian", "by": "belarusian",
@@ -227,7 +231,14 @@ def record_screens(found: list[tuple[int, int, int, int]]) -> None:
         SCREENS.unlink(missing_ok=True)
 
 
+def start_paths() -> None:
+    for unit in PATHS:
+        if quiet("systemctl", "--user", "-q", "is-active", unit).returncode != 0:
+            quiet("systemctl", "--user", "start", unit, timeout=20)
+
+
 def prepare() -> int:
+    start_paths()
     record_screens(kernora_screens())
     if quiet("systemctl", "--user", "-q", "is-enabled", UNIT).returncode == 0:
         READY.parent.mkdir(parents=True, exist_ok=True)
@@ -411,6 +422,47 @@ def needs_wayland() -> bool:
     return True
 
 
+def fully_ready(since: float | None) -> bool:
+    if since is None or not booted():
+        return False
+    log = quiet("journalctl", "--user", "-u", UNIT, "--since", f"@{int(since) - 1}", "-o", "cat", "--no-pager").stdout
+    if "is ready" in log:
+        return True
+    if android_prop("sys.user.0.ce_available") != "true":
+        return False
+    if not UNLOCKED_AT:
+        UNLOCKED_AT.append(time.monotonic())
+    return time.monotonic() - UNLOCKED_AT[0] >= 60
+
+
+def warm_up(kind: str, stamp: str) -> None:
+    try:
+        if WARMED.read_text(encoding="utf-8").strip() == stamp:
+            return
+    except OSError:
+        pass
+    WARMING.touch()
+    try:
+        if needs_wayland():
+            return
+        if not session_running() and not start_unit():
+            return
+        since = session_started()
+        deadline = time.monotonic() + WAIT * 2
+        while not fully_ready(since):
+            if time.monotonic() > deadline or unit_failed():
+                return
+            if not session_running():
+                return
+            time.sleep(2)
+        time.sleep(SETTLE.get(kind, 15))
+        sync()
+        WARMED.parent.mkdir(parents=True, exist_ok=True)
+        WARMED.write_text(stamp + "\n", encoding="utf-8")
+    finally:
+        WARMING.unlink(missing_ok=True)
+
+
 def setup_done() -> int:
     done = read_state("done")
     stamp = done.get("time", "")
@@ -424,6 +476,7 @@ def setup_done() -> int:
     seen.write_text(stamp + "\n", encoding="utf-8")
     if done.get("status") == "ready":
         key = "ready-gapps" if done.get("kind") == "gapps" else "ready-vanilla"
+        warm_up(done.get("kind", ""), stamp)
     elif done.get("status") == "failed":
         key = "setup-failed"
     else:

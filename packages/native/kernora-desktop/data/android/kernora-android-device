@@ -9,6 +9,7 @@ import http.client
 import json
 import os
 import platform
+import pwd
 import re
 import shutil
 import sys
@@ -139,6 +140,47 @@ def screen_size(found: list[tuple[int, int, int, int]]) -> tuple[int, int]:
     return max(width for _, _, width, _ in found) + MARGIN, max(height for _, _, _, height in found) + MARGIN
 
 
+def read_private(path: str) -> str:
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except OSError:
+        return ""
+    try:
+        if not os.path.isfile(f"/proc/self/fd/{fd}"):
+            return ""
+        return os.read(fd, 65536).decode("utf-8", "replace")
+    except OSError:
+        return ""
+    finally:
+        os.close(fd)
+
+
+def locale() -> str:
+    found = ""
+    uid = os.environ.get("PKEXEC_UID", "")
+    if uid.isdigit() and int(uid) >= 1000:
+        try:
+            home = pwd.getpwuid(int(uid)).pw_dir
+        except KeyError:
+            home = ""
+        if home:
+            parser = configparser.ConfigParser(strict=False, interpolation=None)
+            try:
+                parser.read_string(read_private(os.path.join(home, ".config/plasma-localerc")))
+            except configparser.Error:
+                pass
+            found = parser.get("Translations", "LANGUAGE", fallback="").split(":")[0].strip()
+            if not found:
+                found = parser.get("Formats", "LANG", fallback="").strip()
+    if not found:
+        match = re.search(r"^LANG=\"?([^\"\n]+)", read("/etc/default/locale"), re.MULTILINE)
+        found = match.group(1) if match else ""
+    found = found.split(".")[0].split("@")[0]
+    if not re.fullmatch(r"[a-z]{2,3}(_[A-Z]{2})?", found):
+        return ""
+    return found.replace("_", "-")
+
+
 def wanted(model: str) -> dict[str, str]:
     properties = {
         "persist.waydroid.multi_windows": "true",
@@ -159,6 +201,9 @@ def wanted(model: str) -> dict[str, str]:
     if name:
         properties.update(ARM)
         properties.update(TRANSLATORS[name]["properties"])
+    language = locale()
+    if language:
+        properties["persist.sys.locale"] = language
     return properties
 
 

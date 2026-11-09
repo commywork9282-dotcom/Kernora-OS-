@@ -1,0 +1,19 @@
+{
+    "KPackageStructure": "KWin/Script",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Description": "Keeps Android app windows on the screen when an app changes its own size",
+        "Description[ru]": "Возвращает окна Android-приложений на экран, когда приложение само меняет размер",
+        "EnabledByDefault": true,
+        "Id": "kernora-android-place",
+        "License": "GPL-2.0-or-later",
+        "Name": "Android app windows",
+        "Name[ru]": "Окна Android-приложений"
+    },
+    "X-Plasma-API": "javascript",
+    "X-Plasma-MainScript": "code/main.js"
+}

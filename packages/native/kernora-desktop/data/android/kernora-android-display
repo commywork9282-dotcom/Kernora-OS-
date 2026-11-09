@@ -1126,6 +1126,9 @@ def main() -> int:
     upstream = display if os.path.isabs(display) else os.path.join(runtime, display)
     with open(TABLE, encoding="utf-8") as handle:
         table = json.load(handle)
+    subprocess.Popen(["gdbus", "call", "--session", "--dest", "org.kde.KWin", "--object-path", "/Scripting",
+                      "--method", "org.kde.kwin.Scripting.start"],
+                     stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     serve(table, runtime, upstream)
     return 0
 

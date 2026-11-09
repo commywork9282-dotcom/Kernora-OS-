@@ -23,6 +23,25 @@ AppWindow {
     visible: true
 
     readonly property bool narrow: width < 880
+
+    onClosing: close => {
+        if (Appearance.busy) {
+            close.accepted = false;
+            app.visible = false;
+            themeFinished.enabled = true;
+        }
+    }
+
+    Connections {
+        id: themeFinished
+        target: Appearance
+        enabled: false
+        function onBusyChanged(): void {
+            if (!Appearance.busy) {
+                Qt.quit();
+            }
+        }
+    }
     property string currentCategory: ""
     property bool pageShown: false
 

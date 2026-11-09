@@ -1,3 +1,16 @@
+kernora-apps (1.1.86) UNRELEASED; urgency=medium
+
+  * Settings: Android apps says "Almost ready" while Android starts for the
+    first time, and app icons show up as soon as Android writes them.
+  * Settings: closing it while a theme is being applied finishes the change
+    instead of leaving the theme half applied. A change made meanwhile is
+    applied right after.
+  * The "updates are available" notification follows updates installed in
+    Settings.
+  * What's new: Android apps fixes.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 08 Nov 2026 10:00:00 -0800
+
 kernora-apps (1.1.85) UNRELEASED; urgency=medium
 
   * What's new: desktop widgets on the panel.

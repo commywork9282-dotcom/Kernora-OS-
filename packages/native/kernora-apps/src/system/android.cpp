@@ -38,6 +38,8 @@ constexpr int IconSize = 192;
 constexpr int InstallTimeout = 10 * 60 * 1000;
 constexpr int InstallPoll = 2000;
 constexpr int InstallChecks = 30;
+constexpr int IconRetry = 2000;
+constexpr int IconRetries = 15;
 
 void reply(QObject *context, const QJSValue &callback, const QJSValueList &arguments)
 {
@@ -86,6 +88,17 @@ void run(QObject *context, QProcess *process, int timeout, std::function<void(bo
     process->closeWriteChannel();
 }
 
+QString iconUrl(const QString &path)
+{
+    QUrl url = QUrl::fromLocalFile(path);
+    const QFileInfo info(path);
+    if (info.exists()) {
+        url.setQuery(QStringLiteral("v=") + QString::number(info.lastModified().toMSecsSinceEpoch()) + QLatin1Char('-')
+                     + QString::number(info.size()));
+    }
+    return url.toString();
+}
+
 bool listed(const QString &output, const QString &package)
 {
     const QString wanted = QStringLiteral("packageName: ") + package;
@@ -107,7 +120,10 @@ Android::Android(QObject *parent)
     const QString folder = applicationsFolder();
     QDir().mkpath(folder);
     m_watcher->addPath(folder);
-    connect(m_watcher, &QFileSystemWatcher::directoryChanged, this, &Android::scan);
+    connect(m_watcher, &QFileSystemWatcher::directoryChanged, this, [this] {
+        scan();
+        QTimer::singleShot(IconRetry * 3, this, &Android::scan);
+    });
     connect(m_session, &QDBusServiceWatcher::serviceOwnerChanged, this, [this](const QString &, const QString &, const QString &owner) {
         const bool running = !owner.isEmpty();
         if (running != m_running) {
@@ -129,15 +145,19 @@ void Android::scan()
     const QDir folder(applicationsFolder());
     const QStringList files = folder.entryList({QStringLiteral("waydroid.*.desktop")}, QDir::Files);
     QList<QVariantMap> found;
+    bool iconMissing = false;
     for (const QString &name : files) {
         KDesktopFile desktop(folder.filePath(name));
         if (desktop.noDisplay()) {
             continue;
         }
         const QString icon = desktop.readIcon();
+        if (icon.startsWith(QLatin1Char('/')) && !QFileInfo::exists(icon)) {
+            iconMissing = true;
+        }
         found.append({{QStringLiteral("package"), name.mid(9, name.size() - 17)},
                       {QStringLiteral("name"), desktop.readName()},
-                      {QStringLiteral("icon"), icon.startsWith(QLatin1Char('/')) ? QUrl::fromLocalFile(icon).toString() : icon}});
+                      {QStringLiteral("icon"), icon.startsWith(QLatin1Char('/')) ? iconUrl(icon) : icon}});
     }
     QCollator collator;
     std::sort(found.begin(), found.end(), [&collator](const QVariantMap &a, const QVariantMap &b) {
@@ -150,6 +170,12 @@ void Android::scan()
     if (apps != m_apps) {
         m_apps = apps;
         Q_EMIT appsChanged();
+    }
+    if (iconMissing && m_iconRetries < IconRetries) {
+        ++m_iconRetries;
+        QTimer::singleShot(IconRetry, this, &Android::scan);
+    } else if (!iconMissing) {
+        m_iconRetries = 0;
     }
 }
 

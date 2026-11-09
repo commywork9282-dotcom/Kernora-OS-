@@ -34,7 +34,8 @@ SettingsPage {
     readonly property var working: ["installing", "downloading", "unpacking", "removing", "updating"]
     readonly property bool jobRunning: info.job === "yes"
     readonly property bool fresh: Number(info.time || 0) >= requestedAt - 1 && Date.now() / 1000 - requestedAt < 20
-    readonly property bool busy: working.includes(status) && (jobRunning || fresh)
+    readonly property bool warming: info.warming === "yes" && info.ready === "yes"
+    readonly property bool busy: (working.includes(status) && (jobRunning || fresh)) || warming
     readonly property bool stalled: working.includes(status) && status !== "updating" && !busy
     readonly property bool failed: !busy && (status === "failed" || status === "offline" || stalled || actionFailed)
     readonly property bool google: info.kind === "gapps"
@@ -69,6 +70,7 @@ SettingsPage {
 
     function request(action: string): void {
         page.actionFailed = false;
+        Process.run("systemctl", ["--user", "start", "kernora-android-done.path", "kernora-android-sync.path"], () => {});
         Process.run("pkexec", [page.tool, "request", action], code => {
             page.actionFailed = code !== 0 && code !== 126;
             if (code === 0) {
@@ -80,7 +82,7 @@ SettingsPage {
 
     function saveReport(): void {
         page.reporting = true;
-        Process.run("pkexec", [page.tool, "report"], (code, output) => {
+        Process.run("pkexec", ["/usr/libexec/kernora-android-report"], (code, output) => {
             page.reporting = false;
             const path = output.trim().split("\n").pop();
             if (code !== 0 || !path.startsWith("/")) {
@@ -114,6 +116,9 @@ SettingsPage {
     }
 
     readonly property string headline: {
+        if (warming) {
+            return i18n("Almost ready…");
+        }
         if (busy) {
             switch (status) {
             case "removing":
@@ -133,6 +138,9 @@ SettingsPage {
     }
 
     readonly property string detail: {
+        if (warming) {
+            return i18n("Android starts for the first time. This takes a few minutes, and apps open quickly afterwards.");
+        }
         if (busy) {
             switch (status) {
             case "removing":
@@ -312,7 +320,7 @@ SettingsPage {
 
     Group {
         title: i18n("Get apps from")
-        note: i18n("Needs about 3 GB of space. Banking apps and games with anti-cheat don't work here.")
+        note: i18n("Needs about 4 GB of space. Banking apps and games with anti-cheat don't work here.")
         visible: page.loaded && !page.live && !page.ready && !page.busy
 
         Choice {

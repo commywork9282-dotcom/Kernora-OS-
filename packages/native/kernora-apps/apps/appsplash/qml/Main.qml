@@ -40,7 +40,6 @@ Window {
         running: splash.readyFile.length > 0 && !splash.leaving
         onTriggered: {
             if (Files.exists("file://" + splash.readyFile)) {
-                Files.remove(["file://" + splash.readyFile]);
                 splash.leave();
             }
         }

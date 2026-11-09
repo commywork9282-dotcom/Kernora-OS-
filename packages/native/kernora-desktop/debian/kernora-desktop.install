@@ -74,6 +74,7 @@ data/folderview/kernora-desktop-launchers usr/libexec
 data/editmode/ConfigOverlay.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
 data/panelspacer/main.qml usr/share/plasma/plasmoids/org.kde.plasma.panelspacer/contents/ui
 data/kwin-tabbox/org.kernora.switcher usr/share/kwin/tabbox
+data/kwin-scripts/kernora-android-place usr/share/kwin/scripts
 generated/librewolf/theme@kernora.os.xpi usr/share/librewolf/distribution/extensions
 data/librewolf/kernora.js usr/share/librewolf/browser/defaults/preferences
 generated/librewolf/userChrome.css usr/share/kernora/librewolf
@@ -145,12 +146,14 @@ data/android/wayland-protocols.json usr/share/kernora/android
 data/android/kernora-android-keyboard usr/libexec
 data/android/kernora-android-device usr/libexec
 data/android/kernora-android-refresh usr/libexec
+data/android/kernora-android-report usr/libexec
 data/android/kernora-android-done.path usr/lib/systemd/user
 data/android/kernora-android-done.service usr/lib/systemd/user
 generated/android/KernoraCaption.apk usr/share/kernora/android
 generated/android/KernoraShell.apk usr/share/kernora/android
 generated/android/libkernora-android-layers.so usr/share/kernora/android
 data/android/zz-kernora-composer.rc usr/share/kernora/android
+data/android/pyclip.py usr/share/kernora/android/python
 data/android/waydroid usr/bin
 data/android/kernora-android@.service usr/lib/systemd/system
 data/android/kernora-android-update.service usr/lib/systemd/system
@@ -165,6 +168,7 @@ data/greeter/kernora-splash-wallpaper usr/libexec
 data/greeter/org.kernora.greeter-background.policy usr/share/polkit-1/actions
 data/greeter/50-kernora-greeter-background.rules usr/share/polkit-1/rules.d
 data/xdg-kscreenlockerrc/kscreenlockerrc usr/share/kernora/xdg
+data/xdg-ksmserverrc/ksmserverrc usr/share/kernora/xdg
 data/plasma-env/kernora-config-dirs.sh etc/xdg/plasma-workspace/env
 data/plasma-env/kernora-video-decoding.sh etc/xdg/plasma-workspace/env
 data/locales/kernora-locales usr/libexec

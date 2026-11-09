@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.73" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.74" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -487,7 +487,7 @@ grep -Fq 'Suites: trixie-backports' "$android/kernora-android.sources" \
   || fail "kernora-android does not set Waydroid up from backports with separate windows"
 grep -Fq 'ExecStart=/usr/libexec/kernora-android %i' "$android/kernora-android@.service" \
   && grep -Fq 'BusName=id.waydro.Session' "$android/kernora-android.service" \
-  && grep -Fq 'ExecStart=/usr/bin/env WAYLAND_DISPLAY=kernora-android-0 /usr/bin/waydroid.waydroid session start' "$android/kernora-android.service" \
+  && grep -Fq 'ExecStart=/usr/bin/env KERNORA_HOST_WAYLAND_DISPLAY=${WAYLAND_DISPLAY} WAYLAND_DISPLAY=kernora-android-0 PYTHONPATH=/usr/share/kernora/android/python /usr/bin/waydroid.waydroid session start' "$android/kernora-android.service" \
   && grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-android</annotate>' "$android/org.kernora.android.policy" \
   || fail "Settings cannot run kernora-android"
 grep -Fq 'real=/usr/bin/waydroid.waydroid' "$android/waydroid" \
@@ -1441,11 +1441,16 @@ ok = ok and not windows.EVENT.match("I/wm_focused_root_task: [0,0,72,73,setFocus
 
 
 class Shell:
-    def __init__(self):
+    def __init__(self, top=5):
         self.commands = []
+        self.top = top
 
     def run(self, command):
         self.commands.append(command)
+        if command == "dumpsys input":
+            return ("  Windows:\n      0: name='StatusBar', id=1\n"
+                    f"      2: name='Embedded{{Caption of Task={self.top}}}', id=714 frame=[3,3][1120,4]\n"
+                    "      7: name='Embedded{Caption of Task=7}', id=674\n")
         if command.startswith("dumpsys"):
             return ("  * Task{abc #7 type=standard A=1000:org.example U=0 visible=true mode=freeform translucent=false sz=1}\n"
                     "    mBounds=Rect(3, 3 - 1120, 633)\n")
@@ -1455,12 +1460,15 @@ class Shell:
 front = windows.Front.__new__(windows.Front)
 front.shell = Shell()
 front.reorder(7)
-ok = ok and len(front.shell.commands) == 2
-ok = ok and "activity_task 49 i32 7 i32 1 i32 3 i32 3 i32 1120 i32 633 i32 3" in front.shell.commands[1]
-ok = ok and "service call window 104 i32 1" in front.shell.commands[1]
+ok = ok and len(front.shell.commands) == 3
+ok = ok and "activity_task 49 i32 7 i32 1 i32 3 i32 3 i32 1120 i32 633 i32 3" in front.shell.commands[2]
+ok = ok and "service call window 104 i32 1" in front.shell.commands[2]
 front.shell = Shell()
 front.reorder(8)
-ok = ok and len(front.shell.commands) == 1
+ok = ok and len(front.shell.commands) == 2
+front.shell = Shell(top=7)
+front.reorder(7)
+ok = ok and front.shell.commands == ["dumpsys input"]
 sys.exit(0 if ok else 1)
 EOF
 grep -Fq 'loadTemplate("org.kde.plasma.desktop.defaultPanel")' \
@@ -2108,6 +2116,44 @@ plymouth_out=$(mktemp -d)
 rm -rf "$plymouth_out"
 grep -Fq 'generated/faces/*.png usr/share/kernora/faces' "$package_root/debian/kernora-desktop.install" \
   || fail "the Kernora face is not built in every colour"
+
+grep -Fq 'data/android/pyclip.py usr/share/kernora/android/python' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq '"wl-copy", "--type", "text/plain;charset=utf-8"' "$android/pyclip.py" \
+  && grep -Fq 'install --no-install-recommends waydroid wl-clipboard' "$android/kernora-android" \
+  || fail "Android apps cannot share the clipboard with the desktop"
+grep -Fq 'data/kwin-scripts/kernora-android-place usr/share/kwin/scripts' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq '"EnabledByDefault": true' "$package_root/data/kwin-scripts/kernora-android-place/metadata.json" \
+  && grep -Fq 'window.frameGeometry = rect;' "$package_root/data/kwin-scripts/kernora-android-place/contents/code/main.js" \
+  && grep -Fq 'window.output.devicePixelRatio' "$package_root/data/kwin-scripts/kernora-android-place/contents/code/main.js" \
+  && ! grep -Fq 'Qt.' "$package_root/data/kwin-scripts/kernora-android-place/contents/code/main.js" \
+  && grep -Fq 'window.keepAbove = true;' "$package_root/data/kwin-scripts/kernora-android-place/contents/code/main.js" \
+  && grep -Fq '"org.kde.kwin.Scripting.start"' "$android/kernora-android-display" \
+  || fail "Android windows that grow are not kept on the screen"
+grep -Fq 'def asking_task()' "$android/kernora-android-windows" \
+  && grep -Fq 'questions.ask(found[1], found[0])' "$android/kernora-android-windows" \
+  && grep -Fq 'focus_task(self.task_id)' "$android/kernora-android-windows" \
+  && grep -Fq 'if self.top_input_task() == task_id:' "$android/kernora-android-windows" \
+  || fail "permission answers can reach the wrong Android window"
+grep -Fq 'def warm_up(kind: str, stamp: str)' "$android/kernora-android-session" \
+  && grep -Fq 'warm_up(done.get("kind", ""), stamp)' "$android/kernora-android-session" \
+  && grep -Fq 'kernora-android-warming' "$android/kernora-android" \
+  && grep -Fq 'def start_paths()' "$android/kernora-android-session" \
+  || fail "Android is not warmed up after setup"
+grep -Fq '(sleep 10; rm -f "$ready")' "$android/waydroid" \
+  && grep -Fq 'RATE_WINDOW = 30' "$android/kernora-android-fetch" \
+  && grep -Fq 'properties["persist.sys.locale"] = language' "$android/kernora-android-device" \
+  && grep -Fq 'data-size' "$android/kernora-android" \
+  && grep -Fq 'org.kernora.android.report' "$android/org.kernora.android.policy" \
+  && grep -Fq 'data/android/kernora-android-report usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  || fail "an Android apps fix from 1.4.74 is missing"
+grep -Fq 'loginMode=emptySession' "$package_root/data/xdg-ksmserverrc/ksmserverrc" \
+  && grep -Fq 'data/xdg-ksmserverrc/ksmserverrc usr/share/kernora/xdg' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq 'touch /run/reboot-required' "$package_root/debian/kernora-desktop.postinst" \
+  || fail "logging in or updating does not behave as Settings says"
+PYTHONDONTWRITEBYTECODE=1 python3 -c 'import ast, sys; [ast.parse(open(path).read()) for path in sys.argv[1:]]' \
+  "$android/kernora-android-session" "$android/kernora-android-windows" "$android/kernora-android-device" \
+  "$android/kernora-android-display" "$android/kernora-android-fetch" "$android/pyclip.py" \
+  || fail "an Android helper does not parse"
 
 PYTHONDONTWRITEBYTECODE=1 python3 "$project_root/tests/locales/run.py" \
   || fail "locale restoration and installer preparation failed"
