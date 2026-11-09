@@ -23,6 +23,25 @@ AppWindow {
     visible: true
 
     readonly property bool narrow: width < 880
+
+    onClosing: close => {
+        if (Appearance.busy) {
+            close.accepted = false;
+            app.visible = false;
+            themeFinished.enabled = true;
+        }
+    }
+
+    Connections {
+        id: themeFinished
+        target: Appearance
+        enabled: false
+        function onBusyChanged(): void {
+            if (!Appearance.busy) {
+                Qt.quit();
+            }
+        }
+    }
     property string currentCategory: ""
     property bool pageShown: false
 
@@ -189,7 +208,13 @@ AppWindow {
                     visible: search.text.trim().length > 0
                     query: search.text
                     entries: catalog.searchEntries
-                    onActivated: entry => app.openCategory(entry.category, entry.page || "", {})
+                    onActivated: entry => {
+                        if ((entry.page || "").endsWith(".desktop")) {
+                            Process.launchApplication(entry.page);
+                        } else {
+                            app.openCategory(entry.category, entry.page || "", {});
+                        }
+                    }
                 }
             }
         }

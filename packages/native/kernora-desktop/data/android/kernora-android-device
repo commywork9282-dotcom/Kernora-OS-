@@ -1,0 +1,399 @@
+#!/usr/bin/python3
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+import configparser
+import glob
+import hashlib
+import http.client
+import json
+import os
+import platform
+import pwd
+import re
+import shutil
+import sys
+import time
+import urllib.request
+import zipfile
+
+DRM = "/sys/class/drm"
+CPUINFO = "/proc/cpuinfo"
+WORK = "/var/lib/waydroid"
+CONFIG = WORK + "/waydroid.cfg"
+BASE = WORK + "/waydroid_base.prop"
+OVERLAY = WORK + "/overlay/system"
+STATE = "/var/lib/kernora/android"
+MANAGED = STATE + "/properties"
+CACHE = STATE + "/arm"
+INSTALLED = STATE + "/arm-installed"
+SCREENS = STATE + "/screens"
+FORCED = STATE + "/graphics-software"
+MARGIN = 64
+AGENT = "Python-urllib/%d.%d" % sys.version_info[:2]
+TIMEOUT = 30
+NVIDIA = {"nvidia", "nouveau"}
+SOFTWARE = {"ro.hardware.gralloc": "default", "ro.hardware.egl": "swiftshader", "ro.hardware.vulkan": "pastel"}
+ARM = {
+    "ro.product.cpu.abilist": "x86_64,x86,arm64-v8a,armeabi-v7a,armeabi",
+    "ro.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
+    "ro.product.cpu.abilist64": "x86_64,arm64-v8a",
+    "ro.dalvik.vm.isa.arm": "x86",
+    "ro.dalvik.vm.isa.arm64": "x86_64",
+}
+TRANSLATORS = {
+    "ndk": {
+        "url": "https://github.com/supremegamers/vendor_google_proprietary_ndk_translation-prebuilt/archive/"
+               "68734c52556d3d7a6db34c603dd9276915c29f2f.zip",
+        "sha256": "a142d1586c9eafb5edf62277110f2128bc03066179a6783bcaa33ee322e1cbd0",
+        "size": 17827087,
+        "properties": {"ro.dalvik.vm.native.bridge": "libndk_translation.so", "ro.ndk_translation.version": "0.2.3"},
+    },
+    "houdini": {
+        "url": "https://github.com/supremegamers/vendor_intel_proprietary_houdini/archive/"
+               "2f8f088671182e17e67321e098e8411a3972a628.zip",
+        "sha256": "2e82cdc88ddc4d418f7fb861aeebb7c49c83a91b97f57da10510b5e1146a4ed5",
+        "size": 75152963,
+        "properties": {"ro.dalvik.vm.native.bridge": "libhoudini.so"},
+    },
+}
+VENDORS = {"AuthenticAMD": "ndk", "HygonGenuine": "ndk", "GenuineIntel": "houdini"}
+SKIPPED = ("etc/init/", "etc/binfmt_misc/")
+KEPT = {"", "bin", "etc", "lib", "lib64"}
+
+
+def read(path: str) -> str:
+    try:
+        with open(path, encoding="utf-8", errors="replace") as handle:
+            return handle.read().strip()
+    except OSError:
+        return ""
+
+
+def driver(node: str) -> str:
+    try:
+        return os.path.basename(os.readlink(os.path.join(node, "device", "driver")))
+    except OSError:
+        return ""
+
+
+def usable(node: str) -> bool:
+    name = driver(node)
+    if name in ("virtio_gpu", "virtio-pci"):
+        features = [read(node + "/device/features")] + [read(path) for path in glob.glob(node + "/device/virtio*/features")]
+        return any(value[:1] == "1" for value in features)
+    return bool(name) and name not in NVIDIA
+
+
+def signature() -> str:
+    nodes = sorted(path for path in glob.glob(DRM + "/*") if re.fullmatch(r"(card|renderD)\d+", os.path.basename(path)))
+    return " ".join(f"{os.path.basename(node)}={driver(node)}" for node in nodes)
+
+
+def software_graphics() -> bool:
+    if read(FORCED) == signature():
+        return True
+    cards = sorted(path for path in glob.glob(DRM + "/card*") if re.fullmatch(r"card\d+", os.path.basename(path)))
+    primary = next((card for card in cards if read(card + "/device/boot_vga") == "1"), None)
+    if primary is None:
+        primary = next((card for card in cards
+                        if any(read(status) == "connected" for status in glob.glob(card + "-*/status"))), None)
+    if primary is not None and not usable(primary):
+        return True
+    return not any(usable(path) for path in glob.glob(DRM + "/renderD*"))
+
+
+def translator() -> str:
+    if platform.machine() != "x86_64":
+        return ""
+    found = re.search(r"^vendor_id\s*:\s*(\S+)", read(CPUINFO), re.MULTILINE)
+    return VENDORS.get(found.group(1), "") if found else ""
+
+
+def manifest() -> dict:
+    try:
+        with open(INSTALLED, encoding="utf-8") as handle:
+            data = json.load(handle)
+    except (OSError, ValueError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def installed() -> str:
+    data = manifest()
+    name = data.get("name", "")
+    library = TRANSLATORS.get(name, {}).get("properties", {}).get("ro.dalvik.vm.native.bridge", "")
+    if library and os.path.isfile(os.path.join(OVERLAY, "lib64", library)):
+        return name
+    return ""
+
+
+def screens() -> list[tuple[int, int, int, int]]:
+    found = []
+    for line in read(SCREENS).splitlines()[:8]:
+        if re.fullmatch(r"-?\d{1,5},-?\d{1,5},\d{1,5},\d{1,5}", line):
+            found.append(tuple(int(value) for value in line.split(",")))
+    return found
+
+
+def screen_size(found: list[tuple[int, int, int, int]]) -> tuple[int, int]:
+    return max(width for _, _, width, _ in found) + MARGIN, max(height for _, _, _, height in found) + MARGIN
+
+
+def read_private(path: str) -> str:
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except OSError:
+        return ""
+    try:
+        if not os.path.isfile(f"/proc/self/fd/{fd}"):
+            return ""
+        return os.read(fd, 65536).decode("utf-8", "replace")
+    except OSError:
+        return ""
+    finally:
+        os.close(fd)
+
+
+def locale() -> str:
+    found = ""
+    uid = os.environ.get("PKEXEC_UID", "")
+    if uid.isdigit() and int(uid) >= 1000:
+        try:
+            home = pwd.getpwuid(int(uid)).pw_dir
+        except KeyError:
+            home = ""
+        if home:
+            parser = configparser.ConfigParser(strict=False, interpolation=None)
+            try:
+                parser.read_string(read_private(os.path.join(home, ".config/plasma-localerc")))
+            except configparser.Error:
+                pass
+            found = parser.get("Translations", "LANGUAGE", fallback="").split(":")[0].strip()
+            if not found:
+                found = parser.get("Formats", "LANG", fallback="").strip()
+    if not found:
+        match = re.search(r"^LANG=\"?([^\"\n]+)", read("/etc/default/locale"), re.MULTILINE)
+        found = match.group(1) if match else ""
+    found = found.split(".")[0].split("@")[0]
+    if not re.fullmatch(r"[a-z]{2,3}(_[A-Z]{2})?", found):
+        return ""
+    return found.replace("_", "-")
+
+
+def wanted(model: str) -> dict[str, str]:
+    properties = {
+        "persist.waydroid.multi_windows": "true",
+        "persist.wm.debug.caption_on_shell": "true",
+        "persist.waydroid.fake_wifi": "*",
+        "ro.product.waydroid.brand": "Kernora",
+        "ro.product.waydroid.manufacturer": "Kernora",
+        "ro.product.waydroid.model": model,
+        "ro.hw_timeout_multiplier": "3",
+    }
+    if software_graphics():
+        properties.update(SOFTWARE)
+    found = screens()
+    if found:
+        width, height = screen_size(found)
+        properties.update({"persist.waydroid.width": str(width), "persist.waydroid.height": str(height)})
+    name = installed()
+    if name:
+        properties.update(ARM)
+        properties.update(TRANSLATORS[name]["properties"])
+    language = locale()
+    if language:
+        properties["persist.sys.locale"] = language
+    return properties
+
+
+def load_managed(path: str) -> list[str]:
+    try:
+        with open(path, encoding="utf-8") as handle:
+            data = json.load(handle)
+    except (OSError, ValueError):
+        return []
+    return [key for key in data if isinstance(key, str)] if isinstance(data, list) else []
+
+
+def properties(model: str) -> bool:
+    desired = wanted(model)
+    previous = load_managed(MANAGED)
+    cfg = configparser.ConfigParser()
+    cfg.read(CONFIG)
+    if not cfg.has_section("properties"):
+        cfg.add_section("properties")
+    stale = [key for key in previous if key not in desired]
+    for key in stale:
+        cfg.remove_option("properties", key)
+    for key, value in desired.items():
+        cfg["properties"][key] = value
+    with open(CONFIG, "w", encoding="utf-8") as handle:
+        cfg.write(handle)
+    os.makedirs(STATE, 0o755, exist_ok=True)
+    with open(MANAGED + ".next", "w", encoding="utf-8") as handle:
+        json.dump(sorted(desired), handle)
+    base = set(read(BASE).splitlines())
+    return bool(stale) or any(f"{key}={value}" not in base for key, value in desired.items())
+
+
+def applied() -> None:
+    if os.path.exists(MANAGED + ".next"):
+        os.replace(MANAGED + ".next", MANAGED)
+
+
+def sha256(path: str) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        while chunk := handle.read(1 << 20):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def archive(name: str) -> str:
+    return os.path.join(CACHE, name + ".zip")
+
+
+def download(name: str) -> None:
+    item = TRANSLATORS[name]
+    target = archive(name)
+    if os.path.isfile(target) and sha256(target) == item["sha256"]:
+        return
+    os.makedirs(CACHE, 0o755, exist_ok=True)
+    partial = target + ".part"
+    request = urllib.request.Request(item["url"], headers={"User-Agent": AGENT})
+    started = time.monotonic()
+    shown = 0.0
+    done = 0
+    with urllib.request.urlopen(request, timeout=TIMEOUT) as response, open(partial, "wb") as handle:
+        while block := response.read(256 << 10):
+            handle.write(block)
+            done += len(block)
+            now = time.monotonic()
+            if now - shown >= 1:
+                shown = now
+                elapsed = now - started
+                left = int((item["size"] - done) * elapsed / done) if elapsed > 3 and done < item["size"] else -1
+                print(f"progress {min(done, item['size'])} {item['size']} {left}", flush=True)
+    if sha256(partial) != item["sha256"]:
+        os.remove(partial)
+        raise ValueError(f"{item['url']} does not match its checksum")
+    os.replace(partial, target)
+
+
+def remove() -> None:
+    folders = set()
+    for relative in manifest().get("files", []):
+        if not isinstance(relative, str) or relative.startswith("/") or ".." in relative.split("/"):
+            continue
+        try:
+            os.remove(os.path.join(OVERLAY, relative))
+        except OSError:
+            pass
+        folder = os.path.dirname(relative)
+        while folder not in KEPT:
+            folders.add(folder)
+            folder = os.path.dirname(folder)
+    for folder in sorted(folders, key=lambda path: path.count("/"), reverse=True):
+        try:
+            os.rmdir(os.path.join(OVERLAY, folder))
+        except OSError:
+            pass
+    try:
+        os.remove(INSTALLED)
+    except FileNotFoundError:
+        pass
+
+
+def install(name: str) -> None:
+    path = archive(name)
+    if sha256(path) != TRANSLATORS[name]["sha256"]:
+        raise ValueError(f"{path} does not match its checksum")
+    remove()
+    files = []
+    with zipfile.ZipFile(path) as handle:
+        for info in handle.infolist():
+            parts = info.filename.split("/", 2)
+            if info.is_dir() or len(parts) < 3 or parts[1] != "prebuilts" or parts[2].startswith(SKIPPED):
+                continue
+            relative = os.path.normpath(parts[2])
+            if relative.startswith(("/", "..")):
+                continue
+            target = os.path.join(OVERLAY, relative)
+            os.makedirs(os.path.dirname(target), 0o755, exist_ok=True)
+            with handle.open(info) as source, open(target + ".kernora", "wb") as destination:
+                shutil.copyfileobj(source, destination)
+            executable = relative.startswith("bin/")
+            os.chmod(target + ".kernora", 0o755 if executable else 0o644)
+            os.chown(target + ".kernora", 0, 2000 if executable else 0)
+            os.replace(target + ".kernora", target)
+            files.append(relative)
+    os.makedirs(STATE, 0o755, exist_ok=True)
+    with open(INSTALLED + ".new", "w", encoding="utf-8") as handle:
+        json.dump({"name": name, "files": files}, handle)
+    os.replace(INSTALLED + ".new", INSTALLED)
+    os.remove(path)
+
+
+def arm_status() -> str:
+    name = translator()
+    if not name:
+        return "unsupported"
+    return "yes" if installed() == name else "no"
+
+
+def main() -> int:
+    command = sys.argv[1] if len(sys.argv) > 1 else ""
+    if command == "properties" and len(sys.argv) == 3:
+        print("pending" if properties(sys.argv[2]) else "current")
+        return 0
+    if command == "applied":
+        applied()
+        return 0
+    if command == "suspend-action" and len(sys.argv) == 3 and sys.argv[2] in ("freeze", "stop"):
+        cfg = configparser.ConfigParser()
+        cfg.read(CONFIG)
+        if cfg.has_section("waydroid") and cfg["waydroid"].get("suspend_action") != sys.argv[2]:
+            cfg["waydroid"]["suspend_action"] = sys.argv[2]
+            with open(CONFIG, "w", encoding="utf-8") as handle:
+                cfg.write(handle)
+        return 0
+    if command == "arm-status":
+        print(arm_status())
+        return 0
+    if command == "graphics":
+        print("software" if software_graphics() else "hardware")
+        return 0
+    if command == "graphics-fallback":
+        os.makedirs(STATE, 0o755, exist_ok=True)
+        with open(FORCED, "w", encoding="utf-8") as handle:
+            handle.write(signature() + "\n")
+        return 0
+    if command in ("arm-download", "arm-install"):
+        name = translator()
+        if not name:
+            return 1
+        if installed() == name:
+            return 0
+        try:
+            if command == "arm-download":
+                download(name)
+            elif os.path.isfile(archive(name)):
+                install(name)
+            else:
+                return 1
+        except (OSError, ValueError, http.client.HTTPException, zipfile.BadZipFile) as error:
+            print(f"kernora-android-device: {error}", file=sys.stderr)
+            return 2
+        return 0
+    if command == "arm-remove":
+        remove()
+        shutil.rmtree(CACHE, ignore_errors=True)
+        return 0
+    print("usage: kernora-android-device properties MODEL|applied|suspend-action freeze|stop|arm-status|graphics|graphics-fallback|arm-download|arm-install|arm-remove",
+          file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

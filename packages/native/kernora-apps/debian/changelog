@@ -1,19 +1,52 @@
-kernora-apps (1.1.80.2) UNRELEASED; urgency=medium
+kernora-apps (1.1.86) UNRELEASED; urgency=medium
+
+  * Settings: Android apps says "Almost ready" while Android starts for the
+    first time, and app icons show up as soon as Android writes them.
+  * Settings: closing it while a theme is being applied finishes the change
+    instead of leaving the theme half applied. A change made meanwhile is
+    applied right after.
+  * The "updates are available" notification follows updates installed in
+    Settings.
+  * What's new: Android apps fixes.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 08 Nov 2026 10:00:00 -0800
+
+kernora-apps (1.1.85) UNRELEASED; urgency=medium
 
   * What's new: desktop widgets on the panel.
 
- -- Kernora Developers <developers@kernora.invalid>  Sat, 07 Nov 2026 12:45:00 -0800
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 07 Nov 2026 12:30:00 -0800
 
-kernora-apps (1.1.80.1) UNRELEASED; urgency=medium
+kernora-apps (1.1.84) UNRELEASED; urgency=medium
+
+  * Drivers: a new app to install and update drivers and firmware and to see
+    every device in the computer. Settings opens it.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 20:00:00 -0800
+
+kernora-apps (1.1.83) UNRELEASED; urgency=medium
+
+  * What's new: the default panel is now the Kernora panel.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 16:45:00 -0800
+
+kernora-apps (1.1.82) UNRELEASED; urgency=medium
+
+  * What's new: video in Android apps, clicks reaching the right Android
+    window, better fullscreen and resizing.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 14:30:00 -0800
+
+kernora-apps (1.1.81) UNRELEASED; urgency=medium
 
   * Keep stable and demo contents separated and use versions above the
     briefly published intermediate packages so all systems can update.
-  * Preserve the existing stable desktop contents and install the matching
+  * Preserve the existing demo desktop contents and install the matching
     desktop revision alongside the Files update.
 
  -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 12:00:00 -0800
 
-kernora-apps (1.1.64.6) UNRELEASED; urgency=medium
+kernora-apps (1.1.80) UNRELEASED; urgency=medium
 
   * Add Files tabs with independent history, search, selection and scrolling.
   * Add checkboxes, rectangle selection and reliable Ctrl/Shift selection.
@@ -24,7 +57,13 @@ kernora-apps (1.1.64.6) UNRELEASED; urgency=medium
 
  -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 10:00:00 -0800
 
-kernora-apps (1.1.64.5) UNRELEASED; urgency=medium
+kernora-apps (1.1.79) UNRELEASED; urgency=medium
+
+  * What's new: Android windows stay open and get their own panel button.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 05 Nov 2026 19:00:00 -0800
+
+kernora-apps (1.1.78.2) UNRELEASED; urgency=medium
 
   * Require the archive update with Debian application components and
     amd64/i386 support for Steam's dependencies.
@@ -32,7 +71,7 @@ kernora-apps (1.1.64.5) UNRELEASED; urgency=medium
 
  -- Kernora Developers <developers@kernora.invalid>  Thu, 05 Nov 2026 18:40:00 -0800
 
-kernora-apps (1.1.64.4) UNRELEASED; urgency=medium
+kernora-apps (1.1.78.1) UNRELEASED; urgency=medium
 
   * Bluetooth discovery owns its scan session, waits for adapter readiness,
     reports failures and releases pending sessions on page close.
@@ -43,26 +82,151 @@ kernora-apps (1.1.64.4) UNRELEASED; urgency=medium
 
  -- Kernora Developers <developers@kernora.invalid>  Thu, 05 Nov 2026 10:00:00 -0800
 
-kernora-apps (1.1.64.3) UNRELEASED; urgency=medium
+kernora-apps (1.1.78) UNRELEASED; urgency=medium
 
-  * What's new: Philippine and other missing regional locales are repaired.
-  * Require kernora-desktop 1.4.55.3, which provides locale repair.
+  * New kernora-androiddialog shows questions from Android apps as Kernora
+    dialogs.
+  * Require kernora-desktop 1.4.68.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 04 Nov 2026 22:00:00 -0800
+
+kernora-apps (1.1.77) UNRELEASED; urgency=medium
+
+  * Settings and the APK installer explain when Android apps need a Wayland
+    session.
+  * What's new: Android apps under X11 and the Android time zone.
+  * Require kernora-desktop 1.4.67.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 04 Nov 2026 17:00:00 -0800
+
+kernora-apps (1.1.76.1) UNRELEASED; urgency=medium
+
+  * What's new: missing regional locales and Philippine locale repair.
+  * Require kernora-desktop 1.4.66.1 for the repair.
 
  -- Kernora Developers <developers@kernora.invalid>  Wed, 04 Nov 2026 20:15:00 -0800
 
-kernora-apps (1.1.64.2) UNRELEASED; urgency=medium
+kernora-apps (1.1.76) UNRELEASED; urgency=medium
 
   * What's new: smoother account pictures and rounded press effects.
-  * Require kernora-desktop 1.4.55.2, which provides the rendering fix.
+  * Require kernora-desktop 1.4.66 so demo systems receive the fix.
 
  -- Kernora Developers <developers@kernora.invalid>  Tue, 03 Nov 2026 20:45:00 -0800
 
-kernora-apps (1.1.64.1) UNRELEASED; urgency=medium
+kernora-apps (1.1.75) UNRELEASED; urgency=medium
 
-  * What's new: CPU temperature widget, in English and Russian.
-  * Require kernora-desktop 1.4.55.1, which provides the widget.
+  * What's new: CPU temperature widget, in English and Russian, while
+    retaining the demo release history and Android features.
+  * Require kernora-desktop 1.4.65 so demo users receive the new widget.
 
- -- Kernora Developers <developers@kernora.invalid>  Tue, 03 Nov 2026 12:00:00 -0800
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 03 Nov 2026 19:00:00 -0800
+
+kernora-apps (1.1.74) UNRELEASED; urgency=medium
+
+  * What's new: steadier Android apps that use less memory.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 22:00:00 -0700
+
+kernora-apps (1.1.73) UNRELEASED; urgency=medium
+
+  * Settings > Android apps: the register step is gone; finishing Google
+    Play is one button that opens it to sign in.
+  * What's new: Android apps start on more computers.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 20:00:00 -0700
+
+kernora-apps (1.1.72) UNRELEASED; urgency=medium
+
+  * Settings > Android apps: Report a problem saves a file with what
+    Android apps logged, to send to Kernora's developers.
+  * What's new: Android apps on every monitor, reports, downloads that go
+    on after Google Play is closed.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 12:00:00 -0700
+
+kernora-apps (1.1.71) UNRELEASED; urgency=medium
+
+  * The APK installer takes apps built only for ARM once Android apps can
+    run them (kernora-android status arm=yes), says to try again in a few
+    minutes while the translator is still being set up, and refuses them
+    only on processors without one.
+  * What's new: apps made for phones, Android apps on NVIDIA graphics.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 03:00:00 -0700
+
+kernora-apps (1.1.70) UNRELEASED; urgency=medium
+
+  * What's new: Android apps type in your keyboard layout.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 01:00:00 -0700
+
+kernora-apps (1.1.69) UNRELEASED; urgency=medium
+
+  * What's new: Android apps without the on-screen keyboard and setup
+    prompts.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 23:00:00 -0700
+
+kernora-apps (1.1.68) UNRELEASED; urgency=medium
+
+  * Settings > Android apps: the progress shows a percentage from the
+    start (Waydroid's packages too) and the size downloaded so far.
+  * Google Play sign-in in two steps: "Register this computer" starts
+    Android if needed, waits for the Google device ID, copies it and
+    opens Google's page; "Sign in to Google Play" restarts Android once
+    after registering and opens the Play Store. The steps go away once a
+    Google account is signed in, and they come before the app list.
+  * What's new: Android apps open like computer apps.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 20:00:00 -0700
+
+kernora-apps (1.1.67) UNRELEASED; urgency=medium
+
+  * Settings > Android apps: a radio list instead of side-by-side cards,
+    with "Google Play and APK files" first, marked as recommended and
+    picked by default. Shorter texts on the page.
+  * Android App Installer follows Android's own installer: the current
+    step on top, the app icon, name and version in the middle, a short
+    reason only when something is wrong, and the actions at the end.
+  * The app splash shows the plain app icon with the loading indicator.
+  * Android App Installer waits up to a minute for Android to finish
+    installing before it reports the result. Big apps like Termux showed
+    "App not installed" although Android installed them a few seconds
+    later.
+  * What's new: Google Play is the recommended choice.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 16:00:00 -0700
+
+kernora-apps (1.1.66) UNRELEASED; urgency=medium
+
+  * Settings > Android apps shows how much time is left while the image
+    downloads.
+  * What's new: Android apps set up much faster.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 12:00:00 -0700
+
+kernora-apps (1.1.65) UNRELEASED; urgency=medium
+
+  * Settings > Android apps: choose plain Android or Android with Google
+    Play, download it with progress, start and stop it, open Android's
+    own settings, see and uninstall Android apps, register with Google
+    and remove Android again.
+  * Android App Installer opens .apk files: it reads the name, version
+    and icon (adaptive and vector icons included) from the file itself,
+    warns about apps made only for ARM phones or for newer Android, and
+    installs or updates the app.
+  * Settings > Android apps speaks of apps, not of Android: choice cards
+    for APK files or Google Play, the user's apps, Google Play,
+    "Open apps faster" (start at sign-in), storage and removal.
+  * The APK installer is a frameless Material dialog in the Pixel style:
+    the app icon on a turning shape, a check when it is done.
+  * kernora-appsplash shows the app's own icon and name with the
+    Expressive loading indicator while Android apps get ready.
+  * Files shows the real icons of APK files.
+  * What's new: Android apps.
+  * Require kernora-desktop 1.4.56, which carries the Android service.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 30 Oct 2026 20:00:00 -0700
 
 kernora-apps (1.1.64) UNRELEASED; urgency=medium
 

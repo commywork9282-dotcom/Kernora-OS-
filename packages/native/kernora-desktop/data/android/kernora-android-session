@@ -1,0 +1,552 @@
+#!/usr/bin/python3
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+import configparser
+import fcntl
+import json
+import os
+import pathlib
+import re
+import subprocess
+import sys
+import time
+
+REAL = "/usr/bin/waydroid.waydroid"
+UNIT = "kernora-android.service"
+SYNC = "/usr/libexec/kernora-android-sync"
+WINDOWS = "/usr/libexec/kernora-android-windows"
+KEYBOARD = "/usr/libexec/kernora-android-keyboard"
+REFRESH = "/usr/libexec/kernora-android-refresh"
+CHECK = 40
+STATE = pathlib.Path("/var/lib/kernora/android")
+SYSTEM_PACKAGES = STATE / "system-packages"
+STORE = "com.android.vending"
+WAIT = 300
+SCREENS = pathlib.Path.home() / ".cache/kernora/android-screens"
+READY = pathlib.Path.home() / ".cache/kernora/android-ready"
+WARMED = pathlib.Path.home() / ".cache/kernora/android-warmed"
+WARMING = pathlib.Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp")) / "kernora-android-warming"
+SETTLE = {"gapps": 90, "vanilla": 15}
+PATHS = ("kernora-android-sync.path", "kernora-android-done.path")
+RULE = "kernora-android"
+LAYOUTS = {
+    "ara": "arabic", "az": "azerbaijani", "be": "belgian", "bg": "bulgarian", "br": "brazilian", "by": "belarusian",
+    "ca": "french_ca", "ch": "swiss_german", "cz": "czech", "de": "german", "dk": "danish", "ee": "estonian",
+    "es": "spanish", "fi": "finnish", "fr": "french", "gb": "english_uk", "ge": "georgian", "gr": "greek",
+    "hr": "croatian", "hu": "hungarian", "il": "hebrew", "ir": "persian", "is": "icelandic", "it": "italian",
+    "latam": "spanish_latin", "lt": "lithuanian", "lv": "latvian", "mn": "mongolian", "no": "norwegian",
+    "pl": "polish", "pt": "portuguese", "ru": "russian", "se": "swedish", "si": "slovenian", "sk": "slovak",
+    "tr": "turkish", "ua": "ukrainian", "us": "english_us",
+}
+VARIANTS = {
+    ("us", "dvorak"): "english_us_dvorak", ("us", "colemak"): "english_us_colemak", ("us", "intl"): "english_us_intl",
+    ("us", "workman"): "english_us_workman", ("ru", "mac"): "russian_mac", ("ch", "fr"): "swiss_french",
+    ("bg", "phonetic"): "bulgarian_phonetic", ("tr", "f"): "turkish_f", ("cz", "qwerty"): "czech_qwerty",
+}
+
+TEXT = {
+    "ru": {
+        "source": "Android-приложения",
+        "starting": ("Открываем приложение", "Это займёт несколько секунд."),
+        "failed": ("Приложение не открылось", "Попробуйте ещё раз. Если не поможет, перезагрузите компьютер."),
+        "ready-gapps": ("Android-приложения готовы", "Осталось войти в Google Play. Нажмите, чтобы продолжить."),
+        "ready-vanilla": ("Android-приложения готовы", "Откройте любой APK-файл, чтобы установить приложение."),
+        "setup-failed": ("Не удалось настроить Android-приложения", "Нажмите, чтобы попробовать ещё раз."),
+        "wayland": ("Android-приложениям нужен сеанс Wayland", "Сейчас вы вошли через X11. Нажмите, чтобы выйти: в следующий раз включится Wayland."),
+    },
+    "en": {
+        "source": "Android apps",
+        "starting": ("Opening the app", "This takes a few seconds."),
+        "failed": ("The app didn't open", "Try again. If that doesn't help, restart the computer."),
+        "ready-gapps": ("Android apps are ready", "Sign in to Google Play to finish. Click to continue."),
+        "ready-vanilla": ("Android apps are ready", "Open any APK file to install an app."),
+        "setup-failed": ("Android apps couldn't be set up", "Click to try again."),
+        "wayland": ("Android apps need a Wayland session", "You're signed in with X11. Click to sign out, and Wayland is used next time."),
+    },
+}
+
+
+def language() -> str:
+    for variable in ("LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG"):
+        value = os.environ.get(variable, "")
+        if value:
+            return value.split(":")[0].split("_")[0]
+    return "en"
+
+
+def quiet(*command: str, timeout: float | None = None) -> subprocess.CompletedProcess:
+    return subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
+                          timeout=timeout, check=False)
+
+
+def session_running() -> bool:
+    return quiet("busctl", "--user", "status", "id.waydro.Session").returncode == 0
+
+
+def android_prop(name: str) -> str:
+    try:
+        return quiet(REAL, "prop", "get", name, timeout=20).stdout.strip()
+    except subprocess.TimeoutExpired:
+        return ""
+
+
+def booted() -> bool:
+    return android_prop("sys.boot_completed") == "1"
+
+
+def start_unit() -> bool:
+    if quiet("systemctl", "--user", "show", "-p", "NeedDaemonReload", "--value", UNIT).stdout.strip() == "yes":
+        quiet("systemctl", "--user", "daemon-reload")
+    return quiet("systemctl", "--user", "start", UNIT).returncode == 0
+
+
+def unit_failed() -> bool:
+    return quiet("systemctl", "--user", "-q", "is-failed", UNIT).returncode == 0
+
+
+def session_started() -> float | None:
+    value = quiet("systemctl", "--user", "show", "-p", "ExecMainStartTimestampMonotonic", "--value", UNIT).stdout.strip()
+    if not value.isdigit() or int(value) == 0:
+        return None
+    return time.time() - (time.monotonic() - int(value) / 1000000)
+
+
+UNLOCKED_AT: list[float] = []
+
+
+def unlocked(since: float | None) -> bool:
+    if since is None:
+        time.sleep(3)
+        return True
+    log = quiet("journalctl", "--user", "-u", UNIT, "--since", f"@{int(since) - 1}", "-o", "cat", "--no-pager").stdout
+    if "is ready" in log:
+        return True
+    if android_prop("sys.user.0.ce_available") != "true":
+        return False
+    if not UNLOCKED_AT:
+        UNLOCKED_AT.append(time.monotonic())
+    return time.monotonic() - UNLOCKED_AT[0] >= 3
+
+
+def notify(key: str, timeout: int, clickable: bool = False) -> int:
+    if os.environ.get("KERNORA_ANDROID_QUIET") or (key == "starting" and os.environ.get("KERNORA_ANDROID_SPLASH")):
+        return 0
+    texts = TEXT.get(language(), TEXT["en"])
+    title, body = texts[key]
+    actions = '["default", ""]' if clickable else "[]"
+    result = quiet("gdbus", "call", "--session", "--dest", "org.freedesktop.Notifications",
+                   "--object-path", "/org/freedesktop/Notifications",
+                   "--method", "org.freedesktop.Notifications.Notify",
+                   texts["source"], "0", "org.kernora.android", title, body, actions, "{}", str(timeout))
+    found = re.search(r"uint32 (\d+)", result.stdout)
+    return int(found.group(1)) if found else 0
+
+
+def close(notification: int) -> None:
+    if notification:
+        quiet("gdbus", "call", "--session", "--dest", "org.freedesktop.Notifications",
+              "--object-path", "/org/freedesktop/Notifications",
+              "--method", "org.freedesktop.Notifications.CloseNotification", str(notification))
+
+
+def read_ini(path: str) -> configparser.ConfigParser:
+    parser = configparser.ConfigParser(strict=False, interpolation=None)
+    try:
+        parser.read(os.path.expanduser(path), encoding="utf-8")
+    except (configparser.Error, UnicodeDecodeError):
+        pass
+    return parser
+
+
+def setting(name: str, group: str, key: str, fallback: str) -> str:
+    home = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+    folders = [home, os.path.join(home, "kdedefaults")]
+    folders += [folder for folder in os.environ.get("XDG_CONFIG_DIRS", "/usr/share/kernora/xdg:/etc/xdg").split(":") if folder]
+    for folder in folders:
+        value = read_ini(os.path.join(folder, name)).get(group, key, fallback=None)
+        if value is not None:
+            return value
+    return fallback
+
+
+def kernora_density() -> str:
+    try:
+        outputs = json.loads(quiet("kscreen-doctor", "-j", timeout=10).stdout).get("outputs", [])
+    except (subprocess.TimeoutExpired, ValueError, AttributeError):
+        return ""
+    enabled = [output for output in outputs if output.get("enabled")]
+    if not enabled:
+        return ""
+    primary = min(enabled, key=lambda output: output.get("priority") or 99)
+    scale = float(primary.get("scale") or 1)
+    return str(min(480, max(100, round(160 * scale))))
+
+
+def kernora_screens() -> list[tuple[int, int, int, int]]:
+    try:
+        outputs = json.loads(quiet("kscreen-doctor", "-j", timeout=10).stdout).get("outputs", [])
+    except (subprocess.TimeoutExpired, ValueError, AttributeError):
+        return []
+    screens = []
+    for output in sorted((output for output in outputs if output.get("enabled")),
+                         key=lambda output: output.get("priority") or 99):
+        scale = float(output.get("scale") or 1)
+        mode = next((mode for mode in output.get("modes", []) if str(mode.get("id")) == str(output.get("currentModeId"))), {})
+        size = mode.get("size") or output.get("size") or {}
+        width, height = int(size.get("width") or 0), int(size.get("height") or 0)
+        if output.get("rotation") in (2, 8):
+            width, height = height, width
+        position = output.get("pos") or {}
+        if width and height:
+            screens.append((int(position.get("x") or 0), int(position.get("y") or 0), round(width / scale), round(height / scale)))
+    return screens
+
+
+def remove_window_rule() -> None:
+    def read(group: str, key: str) -> str:
+        return quiet("kreadconfig6", "--file", "kwinrulesrc", "--group", group, "--key", key, timeout=10).stdout.strip()
+
+    def write(group: str, key: str, value: str) -> None:
+        quiet("kwriteconfig6", "--file", "kwinrulesrc", "--group", group, "--key", key, value, timeout=10)
+
+    rules = [rule for rule in read("General", "rules").split(",") if rule]
+    if RULE not in rules:
+        return
+    rules.remove(RULE)
+    for key in ("Description", "wmclass", "wmclassmatch", "position", "positionrule"):
+        quiet("kwriteconfig6", "--file", "kwinrulesrc", "--group", RULE, "--key", key, "--delete", timeout=10)
+    write("General", "rules", ",".join(rules))
+    write("General", "count", str(len(rules)))
+    quiet("gdbus", "call", "--session", "--dest", "org.kde.KWin", "--object-path", "/KWin", "--method",
+          "org.kde.KWin.reconfigure", timeout=10)
+
+
+def record_screens(found: list[tuple[int, int, int, int]]) -> None:
+    remove_window_rule()
+    if found:
+        SCREENS.parent.mkdir(parents=True, exist_ok=True)
+        SCREENS.write_text("".join(f"{x},{y},{width},{height}\n" for x, y, width, height in found[:8]), encoding="utf-8")
+    else:
+        SCREENS.unlink(missing_ok=True)
+
+
+def start_paths() -> None:
+    for unit in PATHS:
+        if quiet("systemctl", "--user", "-q", "is-active", unit).returncode != 0:
+            quiet("systemctl", "--user", "start", unit, timeout=20)
+
+
+def prepare() -> int:
+    start_paths()
+    record_screens(kernora_screens())
+    if quiet("systemctl", "--user", "-q", "is-enabled", UNIT).returncode == 0:
+        READY.parent.mkdir(parents=True, exist_ok=True)
+        READY.touch()
+    else:
+        READY.unlink(missing_ok=True)
+    return 0
+
+
+def kernora_theme() -> tuple[str, str, str]:
+    colour = setting("kernorarc", "Style", "colour", "kernora")
+    if not re.fullmatch(r"[a-z-]+", colour):
+        colour = "kernora"
+    seed = read_ini(f"/usr/share/kernora/palettes/{colour}.conf").get("Colour", "seed", fallback="ff6a1e")
+    if not re.fullmatch(r"[0-9A-Fa-f]{6}", seed):
+        seed = "ff6a1e"
+    scheme = setting("kdeglobals", "General", "ColorScheme", "KernoraDark")
+    return seed, "light" if scheme.endswith("Light") else "dark", "SPRITZ" if colour == "grey" else "TONAL_SPOT"
+
+
+def hide_system_apps() -> None:
+    try:
+        system = set(SYSTEM_PACKAGES.read_text(encoding="utf-8").split()) - {STORE}
+    except OSError:
+        return
+    folder = pathlib.Path(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))) / "applications"
+    for entry in folder.glob("waydroid.*.desktop"):
+        if entry.name[len("waydroid."):-len(".desktop")] not in system:
+            continue
+        lines = entry.read_text(encoding="utf-8").splitlines()
+        if "NoDisplay=true" in lines:
+            continue
+        lines = [line for line in lines if not line.startswith("NoDisplay=")]
+        index = lines.index("[Desktop Entry]") + 1 if "[Desktop Entry]" in lines else 0
+        lines.insert(index, "NoDisplay=true")
+        entry.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def sync() -> int:
+    if not session_running():
+        return 0
+    seed, mode, style = kernora_theme()
+    density = kernora_density()
+    try:
+        quiet("pkexec", SYNC, seed, mode, style, *([density] if density else []), timeout=180)
+    except subprocess.TimeoutExpired:
+        pass
+    hide_system_apps()
+    return 0
+
+
+def graphics_check() -> bool:
+    try:
+        code = quiet("pkexec", REFRESH, "check", timeout=120).returncode
+    except subprocess.TimeoutExpired:
+        return False
+    if code != 75:
+        return False
+    quiet("systemd-run", "--user", "--collect", "--quiet", "--", "systemctl", "--user", "restart", UNIT)
+    return True
+
+
+def sync_after_boot() -> int:
+    since = session_started()
+    deadline = time.monotonic() + WAIT
+    checked = False
+    while time.monotonic() < deadline:
+        if not session_running():
+            return 0
+        if not checked and time.monotonic() > deadline - WAIT + CHECK:
+            checked = True
+            if not booted() and graphics_check():
+                return 0
+        if booted() and unlocked(since):
+            subprocess.Popen(["pkexec", WINDOWS], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL, start_new_session=True)
+            subprocess.Popen([sys.argv[0], "--keyboard-follow"], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL, start_new_session=True)
+            return sync()
+        time.sleep(2)
+    return 1
+
+
+def host_layouts() -> tuple[list[tuple[str, str]], int]:
+    try:
+        listed = quiet("gdbus", "call", "--session", "--dest", "org.kde.keyboard", "--object-path", "/Layouts",
+                       "--method", "org.kde.KeyboardLayouts.getLayoutsList", timeout=10).stdout
+        current = quiet("gdbus", "call", "--session", "--dest", "org.kde.keyboard", "--object-path", "/Layouts",
+                        "--method", "org.kde.KeyboardLayouts.getLayout", timeout=10).stdout
+    except subprocess.TimeoutExpired:
+        return [], 0
+    pairs = re.findall(r"\('([^']*)', '([^']*)', '[^']*'\)", listed)
+    found = re.search(r"uint32 (\d+)", current)
+    index = int(found.group(1)) if found else 0
+    return pairs, index if index < len(pairs) else 0
+
+
+def android_layouts(pairs: list[tuple[str, str]]) -> tuple[list[str], list[int]]:
+    names: list[str] = []
+    positions: list[int] = []
+    for layout, variant in pairs:
+        name = VARIANTS.get((layout, variant)) or LAYOUTS.get(layout, "english_us")
+        if name not in names:
+            names.append(name)
+        positions.append(names.index(name))
+    return names[:8], [min(position, 7) for position in positions]
+
+
+def keyboard_apply() -> None:
+    pairs, current = host_layouts()
+    if not pairs or not session_running():
+        return
+    names, positions = android_layouts(pairs)
+    try:
+        quiet("pkexec", KEYBOARD, "layouts", str(positions[current]), *names, timeout=60)
+    except subprocess.TimeoutExpired:
+        pass
+
+
+def keyboard_follow() -> int:
+    keyboard_apply()
+    monitor = subprocess.Popen(["gdbus", "monitor", "--session", "--dest", "org.kde.keyboard", "--object-path", "/Layouts"],
+                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    for line in monitor.stdout:
+        if re.search(r"\.layout(List)?Changed \(", line):
+            keyboard_apply()
+    return 0
+
+
+def read_state(name: str) -> dict[str, str]:
+    try:
+        lines = (STATE / name).read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return {}
+    return dict(line.split("=", 1) for line in lines if "=" in line)
+
+
+def wait_for_click(notification: int, command: list[str]) -> None:
+    if not notification:
+        return
+    monitor = subprocess.Popen(["gdbus", "monitor", "--session", "--dest", "org.freedesktop.Notifications",
+                                "--object-path", "/org/freedesktop/Notifications"],
+                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    try:
+        for line in monitor.stdout:
+            if f"(uint32 {notification}, 'default')" in line and "ActionInvoked" in line:
+                quiet("systemd-run", "--user", "--collect", "--quiet", "--", *command, timeout=30)
+                break
+            if f"NotificationClosed (uint32 {notification}," in line:
+                break
+    finally:
+        monitor.terminate()
+
+
+def wayland_running() -> bool:
+    values = dict(line.split("=", 1) for line in quiet("systemctl", "--user", "show-environment").stdout.splitlines() if "=" in line)
+    folder = values.get("XDG_RUNTIME_DIR") or os.environ.get("XDG_RUNTIME_DIR", "")
+    return pathlib.Path(folder, values.get("WAYLAND_DISPLAY") or "wayland-0").exists()
+
+
+def offer_wayland() -> int:
+    with open(pathlib.Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "kernora-android-wayland"), "w", encoding="utf-8") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            return 0
+        wait_for_click(notify("wayland", 0, clickable=True), [sys.argv[0], "--use-wayland"])
+    return 0
+
+
+def use_wayland() -> int:
+    quiet("pkexec", REFRESH, "wayland")
+    return quiet("gdbus", "call", "--session", "--dest", "org.kde.LogoutPrompt", "--object-path", "/LogoutPrompt",
+                 "--method", "org.kde.LogoutPrompt.promptLogout").returncode
+
+
+def needs_wayland() -> bool:
+    if session_running() or wayland_running():
+        return False
+    quiet("systemd-run", "--user", "--collect", "--quiet", "--", sys.argv[0], "--offer-wayland")
+    return True
+
+
+def fully_ready(since: float | None) -> bool:
+    if since is None or not booted():
+        return False
+    log = quiet("journalctl", "--user", "-u", UNIT, "--since", f"@{int(since) - 1}", "-o", "cat", "--no-pager").stdout
+    if "is ready" in log:
+        return True
+    if android_prop("sys.user.0.ce_available") != "true":
+        return False
+    if not UNLOCKED_AT:
+        UNLOCKED_AT.append(time.monotonic())
+    return time.monotonic() - UNLOCKED_AT[0] >= 60
+
+
+def warm_up(kind: str, stamp: str) -> None:
+    try:
+        if WARMED.read_text(encoding="utf-8").strip() == stamp:
+            return
+    except OSError:
+        pass
+    WARMING.touch()
+    try:
+        if needs_wayland():
+            return
+        if not session_running() and not start_unit():
+            return
+        since = session_started()
+        deadline = time.monotonic() + WAIT * 2
+        while not fully_ready(since):
+            if time.monotonic() > deadline or unit_failed():
+                return
+            if not session_running():
+                return
+            time.sleep(2)
+        time.sleep(SETTLE.get(kind, 15))
+        sync()
+        WARMED.parent.mkdir(parents=True, exist_ok=True)
+        WARMED.write_text(stamp + "\n", encoding="utf-8")
+    finally:
+        WARMING.unlink(missing_ok=True)
+
+
+def setup_done() -> int:
+    done = read_state("done")
+    stamp = done.get("time", "")
+    seen = pathlib.Path(os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))) / "kernora" / "android-done"
+    try:
+        if seen.read_text(encoding="utf-8").strip() == stamp:
+            return 0
+    except OSError:
+        pass
+    seen.parent.mkdir(parents=True, exist_ok=True)
+    seen.write_text(stamp + "\n", encoding="utf-8")
+    if done.get("status") == "ready":
+        key = "ready-gapps" if done.get("kind") == "gapps" else "ready-vanilla"
+        warm_up(done.get("kind", ""), stamp)
+    elif done.get("status") == "failed":
+        key = "setup-failed"
+    else:
+        return 0
+    wait_for_click(notify(key, 0, clickable=True), ["kernora-settings", "android"])
+    return 0
+
+
+def google() -> int:
+    if needs_wayland():
+        return 1
+    if not session_running() and not start_unit():
+        return 1
+    since = session_started()
+    deadline = time.monotonic() + WAIT
+    while time.monotonic() < deadline:
+        if booted() and unlocked(since):
+            sync()
+            if read_state("google").get("android_id"):
+                return 0
+            time.sleep(8)
+        else:
+            time.sleep(2)
+    return 1
+
+
+def main() -> int:
+    if len(sys.argv) > 1 and sys.argv[1] == "--sync":
+        return sync()
+    if len(sys.argv) > 1 and sys.argv[1] == "--sync-after-boot":
+        return sync_after_boot()
+    if len(sys.argv) > 1 and sys.argv[1] == "--done":
+        return setup_done()
+    if len(sys.argv) > 1 and sys.argv[1] == "--google":
+        return google()
+    if len(sys.argv) > 1 and sys.argv[1] in ("--prepare", "--screens"):
+        return prepare()
+    if len(sys.argv) > 1 and sys.argv[1] == "--keyboard-follow":
+        return keyboard_follow()
+    if len(sys.argv) > 1 and sys.argv[1] == "--offer-wayland":
+        return offer_wayland()
+    if len(sys.argv) > 1 and sys.argv[1] == "--use-wayland":
+        return use_wayland()
+    if session_running() and booted() and unlocked(session_started()):
+        return 0
+    if needs_wayland():
+        return 1
+    notification = notify("starting", 0)
+    if not session_running() and not start_unit():
+        close(notification)
+        notify("failed", 8000)
+        return 1
+    since = session_started()
+    deadline = time.monotonic() + WAIT
+    while time.monotonic() < deadline:
+        if booted() and unlocked(since):
+            close(notification)
+            return 0
+        if unit_failed():
+            break
+        if not session_running():
+            UNLOCKED_AT.clear()
+            if not start_unit():
+                break
+            since = session_started()
+        time.sleep(1)
+    close(notification)
+    notify("failed", 8000)
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

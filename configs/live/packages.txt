@@ -22,11 +22,11 @@ kwin-x11
 xserver-xorg
 libpam-fprintd
 
-kernora-desktop=1.4.69.2
-kernora-calamares=1.4.69.2
-kernora-apps=1.1.80.2
+kernora-desktop=1.4.74
+kernora-calamares=1.4.74
+kernora-apps=1.1.86
 kernora-quickshare=1.0.2
-polkit-kde-agent-1=4:6.3.6-1kernora1
+polkit-kde-agent-1=4:6.3.6-1kernora2
 plymouth
 plymouth-label
 fonts-roboto-unhinted

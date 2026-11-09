@@ -16,16 +16,18 @@ SYMBOLS = TOOLS.parent / "data" / "symbols"
 
 THEME = "kernora" + design.COLOUR_SLUG + ("" if design.GENERATION == "md3" else f"-{design.GENERATION}")
 
-TITLE = 30
-TITLE_EDGE = 4
+TITLE = 32
+TITLE_EDGE = 0
 RADIUS = design.corner("window")
 PAD_SIDE = 28
 PAD_TOP = 18
 PAD_BOTTOM = 38
-BUTTON = 30
+BUTTON = 32
 GLYPH = 18
-BUTTON_SPACING = 4
-EDGE = 8
+HIGHLIGHT = 13
+ICON = 20
+BUTTON_SPACING = 0
+EDGE = 6
 ANIMATION = 150
 
 SHADOW_ACTIVE = 0.50
@@ -200,21 +202,16 @@ def glyph(name: str, x: float, y: float, colour: str, opacity: float = 1.0) -> s
 
 def circle(x: float, y: float, colour: str, opacity: float = 1.0) -> str:
     alpha = f' fill-opacity="{opacity:.3f}"' if opacity < 1 else ""
-    return f'<circle cx="{fmt(x + BUTTON / 2)}" cy="{fmt(y + BUTTON / 2)}" r="{fmt(BUTTON / 2)}" fill="{colour}"{alpha}/>'
+    return f'<circle cx="{fmt(x + BUTTON / 2)}" cy="{fmt(y + BUTTON / 2)}" r="{fmt(HIGHLIGHT)}" fill="{colour}"{alpha}/>'
 
 
-def button(roles: dict[str, str], symbol: str, close: bool) -> str:
+def button(roles: dict[str, str], symbol: str) -> str:
     doc = Doc()
     ink = roles["onSurfaceVariant"]
     strong = roles["onSurface"]
     states: list[tuple[str, str]] = []
-    if close:
-        hover = circle(0, 0, roles["errorContainer"]) + glyph(symbol, 0, 0, roles["onErrorContainer"])
-        pressed = (circle(0, 0, roles["errorContainer"]) + circle(0, 0, roles["onErrorContainer"], 0.14)
-                   + glyph(symbol, 0, 0, roles["onErrorContainer"]))
-    else:
-        hover = circle(0, 0, strong, 0.10) + glyph(symbol, 0, 0, strong)
-        pressed = circle(0, 0, strong, 0.18) + glyph(symbol, 0, 0, strong)
+    hover = circle(0, 0, strong, 0.10) + glyph(symbol, 0, 0, strong)
+    pressed = circle(0, 0, strong, 0.18) + glyph(symbol, 0, 0, strong)
     states = [
         ("active", glyph(symbol, 0, 0, ink)),
         ("hover", hover),
@@ -232,15 +229,15 @@ def button(roles: dict[str, str], symbol: str, close: bool) -> str:
 
 
 BUTTONS = {
-    "close": ("close", True),
-    "maximize": ("crop_square", False),
-    "restore": ("filter_none", False),
-    "minimize": ("remove", False),
-    "alldesktops": ("keep", False),
-    "keepabove": ("arrow_upward", False),
-    "keepbelow": ("arrow_downward", False),
-    "shade": ("expand_less", False),
-    "help": ("help", False),
+    "close": "close",
+    "maximize": "crop_square",
+    "restore": "filter_none",
+    "minimize": "remove",
+    "alldesktops": "keep",
+    "keepabove": "arrow_upward",
+    "keepbelow": "arrow_downward",
+    "shade": "expand_less",
+    "help": "help",
 }
 
 
@@ -250,7 +247,7 @@ def rc(roles: dict[str, str]) -> str:
         "[General]",
         f"ActiveTextColor={kde(roles['onSurface'])}",
         f"InactiveTextColor={kde(roles['onSurfaceVariant'])}",
-        "TitleAlignment=Center",
+        "TitleAlignment=Left",
         "TitleVerticalAlignment=Center",
         f"Animation={ANIMATION}",
         "Shadow=true",
@@ -267,15 +264,16 @@ def rc(roles: dict[str, str]) -> str:
         f"TitleEdgeBottomMaximized={TITLE_EDGE}",
         f"TitleEdgeLeftMaximized={EDGE}",
         f"TitleEdgeRightMaximized={EDGE}",
-        "TitleBorderLeft=8",
-        "TitleBorderRight=8",
+        "TitleBorderLeft=4",
+        "TitleBorderRight=4",
         f"TitleHeight={TITLE}",
         f"ButtonWidth={BUTTON}",
         f"ButtonHeight={BUTTON}",
         f"ButtonSpacing={BUTTON_SPACING}",
+        f"ButtonWidthMenu={ICON}",
         "ButtonMarginTop=0",
         "ButtonMarginTopMaximized=0",
-        "ExplicitButtonSpacer=8",
+        "ExplicitButtonSpacer=0",
         f"PaddingLeft={PAD_SIDE}",
         f"PaddingRight={PAD_SIDE}",
         f"PaddingTop={PAD_TOP}",
@@ -313,8 +311,8 @@ def main(argv: list[str]) -> int:
             METADATA.format(name=name, name_ru=name_ru, plugin=plugin), encoding="utf-8")
         (output / f"{plugin}rc").write_text(rc(roles), encoding="utf-8")
         (output / "decoration.svg").write_text(decoration(roles), encoding="utf-8")
-        for button_name, (symbol, close) in BUTTONS.items():
-            (output / f"{button_name}.svg").write_text(button(roles, symbol, close), encoding="utf-8")
+        for button_name, symbol in BUTTONS.items():
+            (output / f"{button_name}.svg").write_text(button(roles, symbol), encoding="utf-8")
         print(f"aurorae theme: {output}")
     return 0
 

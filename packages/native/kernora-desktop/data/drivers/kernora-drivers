@@ -6,12 +6,14 @@ state_file=$state_dir/state
 config=/etc/kernora/drivers.conf
 ready=/run/kernora-driver-ready
 keyring=/usr/share/kernora/nvidia-archive-keyring.gpg
+job_tool=/usr/libexec/kernora-driver-job
 nvidia_url=https://developer.download.nvidia.com/compute/cuda/repos/debian13/x86_64/
 nvidia_sources=/etc/apt/sources.list.d/kernora-nvidia.sources
 nvidia_preferences=/etc/apt/preferences.d/kernora-nvidia.pref
 debian_sources=/etc/apt/sources.list.d/kernora-nvidia-debian.sources
 modprobe_options=/etc/modprobe.d/kernora-nvidia.conf
 driver_packages=(nvidia-open nvidia-driver nvidia-kernel-open-dkms nvidia-kernel-dkms)
+leftover_names='^(nvidia-|libnvidia-|libglx-nvidia|libegl-nvidia|libgles-nvidia|libgl1-nvidia|libcuda|libnvcuvid|libnvoptix|libxnvctrl|xserver-xorg-video-nvidia)'
 
 device=
 family=none
@@ -134,7 +136,8 @@ EOF
 }
 
 remove_sources() {
-  rm -f "$nvidia_sources" "$nvidia_preferences" "$debian_sources"
+  rm -f "$nvidia_sources" "$nvidia_preferences"
+  "$job_tool" needs-non-free || rm -f "$debian_sources"
 }
 
 module_built() {
@@ -147,11 +150,18 @@ module_built() {
   (( built == 1 ))
 }
 
+driver_leftovers() {
+  dpkg-query -W -f='${db:Status-Abbrev} ${binary:Package}\n' 2>/dev/null \
+    | awk -v names="$leftover_names" '$1 ~ /^i/ && $2 ~ names { print $2 }'
+}
+
 purge_driver() {
   local installed=() package
   for package in "${driver_packages[@]}"; do
     dpkg-query -W -f='${db:Status-Abbrev}\n' "$package" 2>/dev/null | grep -q '^i' && installed+=("$package")
   done
+  (( ${#installed[@]} == 0 )) || apt_get purge --autoremove "${installed[@]}"
+  mapfile -t installed < <(driver_leftovers)
   (( ${#installed[@]} == 0 )) || apt_get purge --autoremove "${installed[@]}"
   rm -f "$modprobe_options"
   remove_sources
@@ -269,6 +279,7 @@ case ${1:-} in
     ;;
   auto)
     require_root
+    "$job_tool" scan
     with_lock nowait automatic_install
     ;;
   install)
@@ -285,6 +296,7 @@ case ${1:-} in
     require_root
     case ${2:-} in
       install | remove) systemctl start --no-block "kernora-drivers@${2}.service" ;;
+      add | drop | flash) exec "$job_tool" request "$2" "${3:-}" ;;
       *) exit 2 ;;
     esac
     ;;
@@ -298,7 +310,7 @@ case ${1:-} in
     esac
     ;;
   *)
-    echo "usage: kernora-drivers status|auto|install [--target]|remove|request install|remove|set-automatic on|off" >&2
+    echo "usage: kernora-drivers status|auto|install [--target]|remove|request install|remove|add ID|drop ID|flash DEVICE|set-automatic on|off" >&2
     exit 2
     ;;
 esac

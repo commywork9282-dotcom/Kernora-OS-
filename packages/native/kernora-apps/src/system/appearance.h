@@ -47,8 +47,19 @@ private:
     struct Switch;
     void writeTerminalColours(const QString &colour, bool dark) const;
     void applyTheme(const QString &colour, const QString &generation, bool dark, const QJSValue &callback);
+    QString wantedColour() const;
+    QString wantedGeneration() const;
+    bool wantedDark() const;
     void runStep(const std::shared_ptr<Switch> &state, int index);
 
     KConfigWatcher::Ptr m_watcher;
     bool m_busy = false;
+    bool m_pending = false;
+    QString m_targetColour;
+    QString m_targetGeneration;
+    bool m_targetDark = true;
+    QString m_pendingColour;
+    QString m_pendingGeneration;
+    bool m_pendingDark = true;
+    QJSValue m_pendingCallback;
 };

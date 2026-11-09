@@ -1,0 +1,192 @@
+{
+  "items": [
+    {
+      "id": "broadcom-wl",
+      "icon": "network-wireless",
+      "name": {"en": "Broadcom Wi-Fi", "ru": "Wi-Fi Broadcom"},
+      "text": {"en": "Gets the Wi-Fi card in this computer working", "ru": "Включает Wi-Fi-карту этого компьютера"},
+      "marker": "broadcom-sta-dkms",
+      "packages": ["linux-image-amd64", "linux-headers-amd64", "broadcom-sta-dkms"],
+      "source": "non-free",
+      "module": "wl",
+      "restart": true,
+      "match": {
+        "pci": [
+          "14e4:0576", "14e4:4311", "14e4:4312", "14e4:4315", "14e4:4328",
+          "14e4:4329", "14e4:432a", "14e4:432b", "14e4:432c", "14e4:432d",
+          "14e4:4331", "14e4:4353", "14e4:4357", "14e4:4358", "14e4:4359",
+          "14e4:4360", "14e4:4365", "14e4:43a0", "14e4:43b1", "14e4:4727"
+        ],
+        "wifi": false
+      },
+      "recommend": {}
+    },
+    {
+      "id": "vm-qemu",
+      "icon": "computer",
+      "name": {"en": "Virtual machine tools", "ru": "Инструменты виртуальной машины"},
+      "text": {"en": "Helps Kernora work with QEMU and KVM", "ru": "Помогают Kernora работать с QEMU и KVM"},
+      "marker": "qemu-guest-agent",
+      "packages": ["qemu-guest-agent", "spice-vdagent"],
+      "match": {"virt": ["kvm", "qemu"]},
+      "recommend": {}
+    },
+    {
+      "id": "vm-vmware",
+      "icon": "computer",
+      "name": {"en": "Virtual machine tools", "ru": "Инструменты виртуальной машины"},
+      "text": {"en": "Helps Kernora work with VMware", "ru": "Помогают Kernora работать с VMware"},
+      "marker": "open-vm-tools",
+      "packages": ["open-vm-tools", "open-vm-tools-desktop"],
+      "restart": true,
+      "match": {"virt": ["vmware"]},
+      "recommend": {}
+    },
+    {
+      "id": "vm-hyperv",
+      "icon": "computer",
+      "name": {"en": "Virtual machine tools", "ru": "Инструменты виртуальной машины"},
+      "text": {"en": "Helps Kernora work with Hyper-V", "ru": "Помогают Kernora работать с Hyper-V"},
+      "marker": "hyperv-daemons",
+      "packages": ["hyperv-daemons"],
+      "match": {"virt": ["microsoft"]},
+      "recommend": {}
+    },
+    {
+      "id": "printing",
+      "icon": "printer",
+      "name": {"en": "Printers and scanners", "ru": "Принтеры и сканеры"},
+      "text": {"en": "Print and scan over USB and your network", "ru": "Печать и сканирование по USB и по сети"},
+      "marker": "cups",
+      "packages": [
+        "cups", "cups-browsed", "ipp-usb", "print-manager", "printer-driver-all",
+        "hplip", "sane-airscan", "sane-utils", "skanpage"
+      ],
+      "open": "kcm_printer_manager",
+      "groups": ["lpadmin"],
+      "match": {},
+      "recommend": {"usb": ["07"]}
+    },
+    {
+      "id": "firmware-updates",
+      "icon": "system-software-update",
+      "name": {"en": "Firmware updates", "ru": "Обновления прошивки"},
+      "text": {"en": "Updates for the BIOS and built-in devices", "ru": "Обновления BIOS и встроенных устройств"},
+      "marker": "fwupd",
+      "packages": ["fwupd"],
+      "match": {"virt": ["none"]},
+      "recommend": {}
+    },
+    {
+      "id": "intel-video",
+      "icon": "video-card",
+      "name": {"en": "Intel video encoding", "ru": "Кодирование видео Intel"},
+      "text": {"en": "Faster video export and screen recording", "ru": "Быстрее экспорт видео и запись экрана"},
+      "marker": "intel-media-va-driver-non-free",
+      "packages": ["intel-media-va-driver-non-free"],
+      "replaces": ["intel-media-va-driver"],
+      "source": "non-free",
+      "match": {"pciVendor": ["8086"], "pciClass": ["03"]}
+    },
+    {
+      "id": "opencl",
+      "icon": "cpu",
+      "name": {"en": "Graphics card computing", "ru": "Вычисления на видеокарте"},
+      "text": {"en": "OpenCL for apps like Blender and darktable", "ru": "OpenCL для Blender, darktable и других программ"},
+      "marker": "mesa-opencl-icd",
+      "packages": ["mesa-opencl-icd"],
+      "match": {"pciVendor": ["8086", "1002"], "pciClass": ["03"]}
+    }
+  ],
+  "firmware": [
+    ["iwlwifi-", "firmware-iwlwifi"],
+    ["intel/ibt-", "firmware-iwlwifi"],
+    ["intel/sof", "firmware-sof-signed"],
+    ["intel/avs/", "firmware-intel-sound"],
+    ["intel/catpt/", "firmware-intel-sound"],
+    ["intel/dsp", "firmware-intel-sound"],
+    ["intel/fw", "firmware-intel-sound"],
+    ["intel/ipu", "firmware-intel-graphics"],
+    ["intel/vsc/", "firmware-intel-graphics"],
+    ["intel/ice/", "firmware-intel-misc"],
+    ["intel/ish/", "firmware-intel-misc"],
+    ["intel/vpu/", "firmware-intel-misc"],
+    ["i915/", "firmware-intel-graphics"],
+    ["xe/", "firmware-intel-graphics"],
+    ["amdgpu/", "firmware-amd-graphics"],
+    ["radeon/", "firmware-amd-graphics"],
+    ["nvidia/", "firmware-nvidia-graphics"],
+    ["rtl_nic/", "firmware-realtek"],
+    ["rtl_bt/", "firmware-realtek"],
+    ["rtlwifi/", "firmware-realtek"],
+    ["rtw88/", "firmware-realtek"],
+    ["rtw89/", "firmware-realtek"],
+    ["ath10k/", "firmware-atheros"],
+    ["ath11k/", "firmware-atheros"],
+    ["ath12k/", "firmware-atheros"],
+    ["ath6k/", "firmware-atheros"],
+    ["ar3k/", "firmware-atheros"],
+    ["qca/", "firmware-atheros"],
+    ["ath9k_htc/", "firmware-ath9k-htc"],
+    ["brcm/", "firmware-brcm80211"],
+    ["cypress/", "firmware-brcm80211"],
+    ["mediatek/", "firmware-mediatek"],
+    ["mt7", "firmware-mediatek"],
+    ["rt2", "firmware-mediatek"],
+    ["rt3", "firmware-mediatek"],
+    ["rt7", "firmware-mediatek"],
+    ["bnx2/", "firmware-bnx2"],
+    ["bnx2x/", "firmware-bnx2x"],
+    ["qlogic/", "firmware-qlogic"],
+    ["qed/", "firmware-qlogic"],
+    ["ql2", "firmware-qlogic"],
+    ["netronome/", "firmware-netronome"],
+    ["libertas/", "firmware-libertas"],
+    ["mrvl/pcie", "firmware-libertas"],
+    ["mrvl/sd", "firmware-libertas"],
+    ["mrvl/usb", "firmware-libertas"],
+    ["mwl8k/", "firmware-libertas"],
+    ["ti-connectivity/", "firmware-ti-connectivity"],
+    ["cirrus/", "firmware-cirrus"],
+    ["ipw", "firmware-ipw2x00"],
+    ["zd1211/", "firmware-zd1211"],
+    ["myri", "firmware-myricom"],
+    ["cavium/", "firmware-cavium"],
+    ["liquidio/", "firmware-cavium"],
+    ["phanfw", "firmware-netxen"],
+    ["qcom/", "firmware-qcom-soc"],
+    ["carl9170", "firmware-carl9170"]
+  ],
+  "updates": [
+    {
+      "id": "nvidia",
+      "icon": "video-card",
+      "name": {"en": "NVIDIA driver", "ru": "Драйвер NVIDIA"},
+      "pattern": "^(nvidia|libnvidia|libcuda|libnvcuvid|libnvoptix|libxnvctrl|xserver-xorg-video-nvidia)"
+    },
+    {
+      "id": "kernel",
+      "icon": "cpu",
+      "name": {"en": "Linux kernel", "ru": "Ядро Linux"},
+      "pattern": "^linux-(image|headers|modules|kbuild|libc-dev|compiler)"
+    },
+    {
+      "id": "graphics",
+      "icon": "video-card",
+      "name": {"en": "Graphics drivers", "ru": "Драйверы видеокарт"},
+      "pattern": "^(mesa-|libgl1-mesa|libglx-mesa|libegl-mesa|libgbm|libdrm|libvulkan|intel-media|i965-va|xserver-xorg-video-)"
+    },
+    {
+      "id": "firmware",
+      "icon": "system-software-update",
+      "name": {"en": "Device firmware", "ru": "Прошивки устройств"},
+      "pattern": "^(firmware-|bluez-firmware|amd64-microcode|intel-microcode)"
+    },
+    {
+      "id": "dkms",
+      "icon": "network-wireless",
+      "name": {"en": "Other drivers", "ru": "Другие драйверы"},
+      "pattern": "(-dkms$|^dkms$|^cups|^hplip|^printer-driver-|^ipp-usb$|^sane-|^fwupd)"
+    }
+  ]
+}

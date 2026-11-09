@@ -1,0 +1,8 @@
+[Unit]
+Description=Tell when Android apps are set up
+
+[Path]
+PathChanged=/var/lib/kernora/android/done
+
+[Install]
+WantedBy=default.target

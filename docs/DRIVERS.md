@@ -65,6 +65,61 @@ State lives in `/var/lib/kernora/drivers/state`: `installing`, `installed`,
 `failed`, `offline`, `secureboot`, `removing` or `removed`, plus the device,
 its name from `pci.ids` and the time.
 
+## The Drivers app
+
+`kernora-drivers` (the app, `/usr/bin`) has three pages: Drivers, Devices and
+Updates. Settings › System › Drivers opens it. It needs three tools from
+`kernora-desktop`:
+
+* `/usr/libexec/kernora-hardware` runs as the user and prints JSON: every PCI
+  and USB device with its name, driver, module and status, the CPU, the
+  computer, what the catalog offers here and the NVIDIA status. `report` prints
+  the same as text without serial numbers, MAC addresses or the host name, so
+  people can paste it in a chat.
+* `/usr/share/kernora/hardware/catalog.json` lists what can be installed. Only
+  ids from this file can be requested, so a request can never name an
+  arbitrary package.
+* `/usr/libexec/kernora-driver-job` does the root work. `kernora-drivers request
+  add|drop|flash NAME` runs through the same polkit action as before, writes
+  `/run/kernora-drivers/job.json` and starts `kernora-driver-job.service`, so
+  closing the app does not stop the job. The app reads the JSON for progress.
+
+Nothing here installs by itself. Only the NVIDIA driver is automatic, as above.
+
+| Item | Offered when | Notes |
+| --- | --- | --- |
+| Broadcom Wi-Fi | a listed `14e4` card has no working Wi-Fi | Needs `non-free`, DKMS, a restart, and Secure Boot off |
+| Firmware for a device | the kernel failed to load a file and the package isn't installed | From the `firmware` table in the catalog |
+| Printers and scanners | always, recommended with a USB printer | Open goes to the Plasma printer settings |
+| Firmware updates | on real hardware | `fwupd`, then the Updates page lists LVFS releases |
+| Virtual machine tools | QEMU/KVM, VMware or Hyper-V | Recommended there |
+| Intel video encoding | Intel graphics | Needs `non-free`, replaces `intel-media-va-driver` |
+| Graphics card computing | Intel or AMD graphics | `mesa-opencl-icd` |
+
+Safety rules of the job: it simulates first and stops if apt wants to remove
+anything the catalog doesn't name in `replaces`. If the install fails it purges
+what it added, restores what it replaced and takes the source back. Removing
+only touches packages the job installed (`/var/lib/kernora/drivers/items/`),
+keeps packages another item or the NVIDIA driver still uses, and stops if a
+manually installed package would go with them. The `non-free` source stays
+while a tracked item or the legacy NVIDIA driver needs it.
+
+`groups` in the catalog are for tools that check a Unix group. CUPS only lets
+members of `lpadmin` add printers and otherwise asks for a root password, which
+a Kernora user doesn't have. So the job adds everyone in `sudo` when the item is
+installed and again on each scan, for accounts made later. cupsd reads the
+group itself, so it works right away without logging out.
+
+Missing firmware comes from `kernora-driver-job scan`, which reads the kernel
+log as root (`Direct firmware load for X failed with error -2`) on the driver
+timer and after each job, and writes
+`/var/lib/kernora/drivers/firmware-missing.json`. A file is ignored when a file
+with the same stem exists, because drivers ask for the newest version first and
+fall back.
+
+Driver updates are the normal PackageKit updates, filtered with the `updates`
+patterns in the catalog, and `Updates.install(names)` installs just those.
+
 ## Testing without the hardware
 
 QEMU has no NVIDIA card, so a test VM shows the tool a fake device:
@@ -79,6 +134,10 @@ mount --bind /tmp/fakepci /sys/bus/pci/devices
 
 The driver installs and DKMS builds the module. The system still boots
 normally, because without the card the module never loads.
+
+The same trick works for the catalog, for example vendor `0x14e4`, device
+`0x43b1`, class `0x028000` offers Broadcom Wi-Fi. `tests/test-kernora-desktop-source.sh`
+runs the scanner over a fake `/sys` with `kernora-hardware --root DIR`.
 
 ## VLC on NVIDIA
 

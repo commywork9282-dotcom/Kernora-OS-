@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.80.2" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.86" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -61,9 +61,35 @@ grep -Fq '!SystemInfo.live && Updates.available' "$package_root/apps/settings/qm
   || fail "Settings downloads updates in the live session"
 [[ "$(grep -c 'Default Applications' "$package_root/src/system/defaultapps.cpp")" -ge 2 ]] \
   || fail "Settings shows a stale default app after choosing one"
-[[ -s "$package_root/apps/settings/qml/pages/DriversPage.qml" ]] \
-  && grep -Fq 'page.open("DriversPage.qml"' "$package_root/apps/settings/qml/pages/SystemPage.qml" \
-  || fail "Settings has no Drivers page"
+[[ ! -e "$package_root/apps/settings/qml/pages/DriversPage.qml" ]] \
+  && grep -Fq 'Process.launchApplication("org.kernora.drivers.desktop")' "$package_root/apps/settings/qml/pages/SystemPage.qml" \
+  && grep -Fq '"org.kernora.drivers.desktop"' "$package_root/apps/settings/qml/components/Catalog.qml" \
+  || fail "Settings does not open the Drivers app"
+for page in Main DriversPage DevicesPage DevicePage NvidiaPage UpdatesPage JobBar; do
+  [[ -s "$package_root/apps/drivers/qml/$page.qml" ]] || fail "Drivers has no $page"
+done
+[[ -s "$package_root/src/apps/drivers.cpp" && -s "$package_root/po/ru/kernora-drivers.po" ]] \
+  && grep -Fq 'Icon=org.kernora.drivers' "$package_root/apps/drivers/org.kernora.drivers.desktop" \
+  && grep -Eq 'set\(KERNORA_APPS .* drivers ' "$package_root/CMakeLists.txt" \
+  && grep -Fq 'kernora-desktop (>= 1.4.74)' "$package_root/debian/control" \
+  || fail "the Drivers app is not packaged"
+python3 - "$package_root" <<'PY' || fail "a Drivers string has no translation"
+import re
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+po = (root / "po/ru/kernora-drivers.po").read_text()
+known = set(re.findall(r'^msgid "(.*)"$', po, re.MULTILINE))
+strings = set()
+for page in (root / "apps/drivers/qml").glob("*.qml"):
+    text = page.read_text()
+    strings.update(re.findall(r'\bi18np?\(\s*"((?:[^"\\]|\\.)*)"', text))
+    strings.update(re.findall(r'\bi18nc\(\s*"(?:[^"\\]|\\.)*",\s*"((?:[^"\\]|\\.)*)"', text))
+missing = sorted(strings - known)
+if missing:
+    sys.exit(f"untranslated: {missing}")
+PY
 grep -Fq 'driverReady' "$package_root/src/updatenotifier/main.cpp" \
   && grep -Fxq '[Event/driverReady]' "$package_root/data/knotifications/kernora-updates.notifyrc" \
   || fail "nobody is told to restart after a driver install"
@@ -135,7 +161,7 @@ grep -Fq 'Procs.ApplicationDataModel {' "$package_root/apps/taskmanager/qml/Main
   || fail "Task Manager can't list, end or chart"
 grep -Fxq 'X-KDE-Shortcuts=Ctrl+Shift+Esc,Ctrl+Esc' "$package_root/apps/taskmanager/org.kernora.taskmanager.desktop" \
   && grep -Fq 'DESTINATION ${KDE_INSTALL_DATADIR}/kglobalaccel' "$package_root/CMakeLists.txt" \
-  && grep -q 'share taskmanager)' "$package_root/src/apps/CMakeLists.txt" \
+  && grep -q 'share taskmanager drivers apkinstaller appsplash androiddialog)' "$package_root/src/apps/CMakeLists.txt" \
   || fail "Task Manager has no shortcut or is not built"
 for dependency in ksystemstats libksysguard-bin qml6-module-org-kde-ksysguard qml6-module-org-kde-kitemmodels qml6-module-org-kde-quickcharts; do
   grep -Eq "^ $dependency,?$" "$package_root/debian/control" || fail "Task Manager needs $dependency"
@@ -197,5 +223,87 @@ grep -Fq 'readonly property string versionText: SystemInfo.osVersion' "$package_
   || fail "About still glues the codename onto the version"
 grep -Fq 'indeterminate: Updates.progress <= 0 || Updates.progress >= 100' "$package_root/apps/settings/qml/pages/UpdatesPage.qml" \
   || fail "the update bar flashes full while packagekit reports 100%"
+
+grep -Fq '{ id: "android", title: i18n("Android apps")' "$package_root/apps/settings/qml/components/Catalog.qml" \
+  && grep -Fq 'readonly property string tool: "/usr/libexec/kernora-android"' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq 'page.request(page.choice === "gapps" ? "setup-gapps" : "setup-vanilla")' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  || fail "Settings cannot turn Android on"
+grep -Fxq 'MimeType=application/vnd.android.package-archive;' "$package_root/apps/apkinstaller/org.kernora.apkinstaller.desktop" \
+  && grep -Fq 'Android.inspect(url)' "$package_root/apps/apkinstaller/qml/Main.qml" \
+  && grep -Fq 'Android.install(app.file, app.apk.package' "$package_root/apps/apkinstaller/qml/Main.qml" \
+  && grep -q 'taskmanager drivers apkinstaller appsplash androiddialog)' "$package_root/src/apps/CMakeLists.txt" \
+  || fail "the APK installer is missing"
+grep -Fq 'adaptive-icon' "$package_root/src/system/apk.cpp" \
+  && grep -Fq 'QSvgRenderer renderer(vectorToSvg(elements));' "$package_root/src/system/apk.cpp" \
+  && grep -Fq 'KF6::Archive' "$package_root/src/system/CMakeLists.txt" \
+  || fail "the APK reader cannot draw app icons"
+for dependency in libkf6archive-dev qt6-svg-dev qt6-image-formats-plugins; do
+  grep -Eq "^ $dependency,?$" "$package_root/debian/control" || fail "the APK reader needs $dependency"
+done
+msgfmt --check -o /dev/null "$package_root/po/ru/kernora-apkinstaller.po" || fail "the APK installer translation is broken"
+grep -Fq 'QGuiApplication::setDesktopFileName(QStringLiteral("waydroid.") + argument);' "$package_root/src/apps/appsplash.cpp" \
+  && grep -Fq 'MLoadingIndicator {' "$package_root/apps/appsplash/qml/Main.qml" \
+  && msgfmt --check -o /dev/null "$package_root/po/ru/kernora-appsplash.po" \
+  || fail "Android apps open without their splash"
+grep -Fq 'flags: Qt.Dialog | Qt.FramelessWindowHint' "$package_root/apps/apkinstaller/qml/Main.qml" \
+  && grep -Fq 'app.startSystemMove();' "$package_root/apps/apkinstaller/qml/Main.qml" \
+  || fail "the APK installer is not a Material dialog"
+grep -Fq 'android: ["apk"]' "$package_root/apps/files/qml/kinds.js" \
+  && grep -Fq 'Android.iconOf(fileUrl' "$package_root/apps/files/qml/FileItem.qml" \
+  && grep -Fq 'void Android::iconOf(' "$package_root/src/system/android.cpp" \
+  || fail "Files does not show the icons of APK files"
+! grep -Fq 'Android.openSettings()' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq '"kernora-android.service"' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  || fail "Settings still opens Android's own settings or has no faster start"
+grep -Fq 'msgid "Android apps"' "$package_root/po/ru/kernora-settings.po" \
+  || fail "the Android page is not translated"
+grep -Fq 'info.remaining' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fxq 'msgstr "Осталось меньше минуты"' "$package_root/po/ru/kernora-settings.po" \
+  && grep -Fq '"id": "2026-10-31-1"' "$package_root/data/whatsnew.json" \
+  || fail "Settings does not show how long the Android apps download takes"
+grep -Fq 'property string choice: "gapps"' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq 'recommended: true' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fxq 'msgstr "Google Play и APK-файлы"' "$package_root/po/ru/kernora-settings.po" \
+  && ! grep -Fq 'MShape' "$package_root/apps/apkinstaller/qml/Main.qml" \
+  && grep -Fq 'readonly property string step' "$package_root/apps/apkinstaller/qml/Main.qml" \
+  && grep -Fq 'waitForPackage(package, callback, InstallChecks)' "$package_root/src/system/android.cpp" \
+  && grep -Fxq 'msgstr "Установить приложение?"' "$package_root/po/ru/kernora-apkinstaller.po" \
+  && grep -Fq '"id": "2026-10-31-2"' "$package_root/data/whatsnew.json" \
+  || fail "Google Play is not the recommended choice or the installer does not follow Android's"
+! grep -Fq 'registerWithGoogle' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq 'Open Google Play and sign in with your Google account.' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq 'info.bytes_total' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fxq 'msgstr "Завершите настройку Google Play"' "$package_root/po/ru/kernora-settings.po" \
+  && grep -Fq '"id": "2026-10-31-3"' "$package_root/data/whatsnew.json" \
+  || fail "Settings does not walk through Google Play or show the whole setup progress"
+grep -Fq '"id": "2026-10-31-4"' "$package_root/data/whatsnew.json" \
+  || fail "What's new does not mention the Android keyboard and setup changes"
+grep -Fq '"id": "2026-11-01-1"' "$package_root/data/whatsnew.json" \
+  || fail "What's new does not mention keyboard layouts in Android apps"
+grep -Fq 'readonly property bool runs: apk.compatible || android.arm !== "unsupported"' "$package_root/apps/apkinstaller/qml/Main.qml" \
+  && grep -Fq 'msgstr "Почти готово"' "$package_root/po/ru/kernora-apkinstaller.po" \
+  && grep -Fq '"id": "2026-11-01-2"' "$package_root/data/whatsnew.json" \
+  || fail "The installer still refuses apps made for ARM processors"
+grep -Fq 'Process.run("pkexec", ["/usr/libexec/kernora-android-report"]' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq 'msgstr "Сообщить о проблеме"' "$package_root/po/ru/kernora-settings.po" \
+  && grep -Fq '"id": "2026-11-01-3"' "$package_root/data/whatsnew.json" \
+  && grep -Fq '"id": "2026-11-01-4"' "$package_root/data/whatsnew.json" \
+  && grep -Fq '"id": "2026-11-02-1"' "$package_root/data/whatsnew.json" \
+  || fail "Settings cannot save a report about Android apps"
+
+! grep -Fq 'Files.remove' "$package_root/apps/appsplash/qml/Main.qml" \
+  || fail "the app splash deletes its ready file with a visible job"
+grep -Fq 'readonly property bool warming: info.warming === "yes"' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq '"kernora-android-done.path", "kernora-android-sync.path"' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq 'Needs about 4 GB of space' "$package_root/apps/settings/qml/pages/AndroidPage.qml" \
+  && grep -Fq 'msgstr "Android запускается в первый раз.' "$package_root/po/ru/kernora-settings.po" \
+  || fail "Settings does not show Android's first start"
+grep -Fq 'themeFinished.enabled = true;' "$package_root/apps/settings/qml/Main.qml" \
+  && grep -Fq 'm_pending = true;' "$package_root/src/system/appearance.cpp" \
+  || fail "closing Settings can leave a theme half applied"
+grep -Fq 'm_recheck = true;' "$package_root/src/updatenotifier/main.cpp" \
+  && grep -Fq 'IconRetries' "$package_root/src/system/android.cpp" \
+  && grep -Fq '"id": "2026-11-08-1"' "$package_root/data/whatsnew.json" \
+  || fail "an app fix from 1.1.86 is missing"
 
 printf 'kernora-apps source test: OK\n'

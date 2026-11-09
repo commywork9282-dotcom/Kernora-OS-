@@ -1,0 +1,47 @@
+#!/bin/bash
+real=/usr/bin/waydroid.waydroid
+
+if [[ ! -x $real ]]; then
+  echo "waydroid: Android apps are not set up; set them up in Settings > Android apps" >&2
+  exit 1
+fi
+
+if (( EUID != 0 )); then
+  case "${1:-} ${2:-}" in
+    "app launch")
+      if [[ -z ${KERNORA_ANDROID_QUIET:-} ]] && command -v kernora-appsplash > /dev/null \
+          && ! busctl --user status id.waydro.Session > /dev/null 2>&1; then
+        ready="${XDG_RUNTIME_DIR:-/tmp}/kernora-app-$$"
+        rm -f "$ready"
+        kernora-appsplash "${3:-}" "$ready" > /dev/null 2>&1 &
+        if ! KERNORA_ANDROID_SPLASH=1 /usr/libexec/kernora-android-session; then
+          : > "$ready"
+          (sleep 10; rm -f "$ready") > /dev/null 2>&1 &
+          exit 1
+        fi
+        "$real" "$@"
+        status=$?
+        sleep 1.5
+        : > "$ready"
+        (sleep 10; rm -f "$ready") > /dev/null 2>&1 &
+        exit "$status"
+      fi
+      /usr/libexec/kernora-android-session || exit 1
+      ;;
+    "app install" | "app intent" | "app remove")
+      /usr/libexec/kernora-android-session || exit 1
+      ;;
+    "app list" | "session stop" | "status "* | "log "* | "-h "* | "--help "* | "-V "* | "--version "*)
+      ;;
+    "show-full-ui "* | "first-launch "*)
+      echo "waydroid: Full UI mode is disabled for system stability. Android apps open in their own windows." >&2
+      exit 1
+      ;;
+    *)
+      echo "waydroid: this command is not available. Android apps are managed in Settings > Android apps." >&2
+      exit 1
+      ;;
+  esac
+fi
+
+exec "$real" "$@"

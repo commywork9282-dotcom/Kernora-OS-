@@ -11,3 +11,4 @@ image/webp=org.kernora.photos.desktop;
 application/json=org.kernora.editor.desktop;
 application/xml=org.kernora.editor.desktop;
 text/xml=org.kernora.editor.desktop;
+application/vnd.android.package-archive=org.kernora.apkinstaller.desktop;

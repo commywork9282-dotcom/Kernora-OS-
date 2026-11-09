@@ -1,0 +1,501 @@
+# Android apps
+
+Kernora runs Android apps with [Waydroid](https://waydro.id): a full Android
+system (LineageOS 20, Android 13) in an LXC container that draws its windows
+straight onto the Plasma Wayland session. Every Android app gets its own
+window, sits in the launcher with the other apps and shows its icon in the
+dock. This is a demo feature: it is published to the `ember-demo` channel
+only.
+
+## Turning it on
+
+Nothing Android is installed until the user asks for it in
+**Settings › Android apps**. The page offers two images as a radio list;
+Google Play comes first, is marked as recommended and is picked by default:
+
+| Choice | Image | Download | On disk |
+| --- | --- | --- | --- |
+| Google Play and APK files (recommended) | `GAPPS` | about 1.4 GB | about 3 GB |
+| APK files only | `VANILLA` | about 1 GB | about 2.3 GB |
+
+`Set up` runs `pkexec /usr/libexec/kernora-android request setup-vanilla`
+(or `setup-gapps`; polkit action `org.kernora.android`). The request starts
+`kernora-android@setup-vanilla.service`, which runs as root:
+
+1. adds `/etc/apt/sources.list.d/kernora-android.sources` with Debian's
+   `trixie-backports` (Waydroid, libgbinder, libglibutil and python3-gbinder
+   are not in trixie itself; backports are pinned at 100 by Debian, so only
+   packages that exist nowhere else come from there);
+2. refreshes that source on its own, so a broken unrelated source does not
+   stop the setup, and installs `waydroid` without recommends (with them
+   `lxc` drags in distrobuilder, qemu-utils and some 40 more packages);
+3. downloads the system and vendor images with
+   `/usr/libexec/kernora-android-fetch setup VANILLA|GAPPS` (below), then runs
+   `waydroid init -f -s VANILLA|GAPPS`, which finds them already in place;
+4. sets `persist.waydroid.multi_windows=true` in `waydroid.cfg` and runs
+   `waydroid upgrade -o`, so apps open in separate windows;
+5. enables `waydroid-container.service`.
+
+Waydroid's own download takes one SourceForge mirror and stays on it; a slow
+mirror made the setup take hours. `kernora-android-fetch` reads the same OTA
+channel (`ota.waydro.id`, or `/usr/share/waydroid-extra/channels.cfg`), asks
+SourceForge for a mirror a dozen times to collect up to six of them, and
+downloads the zip in 4 MiB parts over two connections per mirror. A
+connection that is idle takes over the rest of a part from a slower or silent
+one (silent for 3 s counts as stuck), a mirror eight times slower than the
+best one stops taking parts, and dead mirrors are dropped and looked up
+again. The zip has to match the SHA-256 from the channel; then `system.img`
+and `vendor.img` are unpacked into `/var/lib/waydroid/images` and the channel
+URLs and image dates go into `waydroid.cfg`. Since `waydroid init` keeps the
+dates when the channel URL is the same and only downloads newer images, it
+downloads nothing. If the quick download fails, `waydroid init` downloads the
+images itself as before. It prints `progress DONE TOTAL SECONDS_LEFT`, which
+Settings shows as the time left.
+
+Progress goes to `/var/lib/kernora/android/state`
+(`status`, `kind`, `progress`, `remaining`, `bytes`, `bytes_total`, `time`),
+and `kernora-android status` prints it together with what is installed, the
+image size, whether a job runs and the Google state (below). The percentage
+covers the whole setup, so it moves from the first second: Waydroid's own
+packages 0–12 % (apt's `APT::Status-Fd` download and install progress), the
+images 12–92 %, unpacking and the first `waydroid init` up to 100 %. The
+download can be cancelled (`request cancel`); a cancelled or failed download
+leaves no image behind. The live session refuses the setup.
+
+When the setup ends, `kernora-android` writes `/var/lib/kernora/android/done`
+(`status`, `kind`, `time`). The user path unit `kernora-android-done.path`
+runs `kernora-android-session --done`, which shows a notification once per
+setup ("Android apps are ready", or that it failed) and opens
+**Settings › Android apps** when it is clicked.
+
+`Remove Android` (`request remove`) stops the container, purges `waydroid`
+with the packages it brought, deletes `/var/lib/waydroid` and, for every
+user, `~/.local/share/waydroid` and the `waydroid.*.desktop` entries. That
+data belongs to Android's own users, so a normal user cannot delete it.
+
+The Debian kernel has binder as a module (`binder_linux`, no binderfs).
+Waydroid loads it with its own device names (`anbox-binder` and so on) and
+remembers them in `waydroid.cfg`; Kernora does not set module options, so the
+names never disagree after a reboot.
+
+## Opening an app
+
+Users see apps, not a second system: nothing in the interface names
+Waydroid, nothing "starts Android", and Android's own launcher and settings
+are not offered. Nothing is locked either: the `waydroid` command keeps
+working in a terminal.
+
+The Android runtime starts the first time an Android app is opened (or at
+sign-in with **Open apps faster**, which enables the user unit) and runs
+until the user logs out.
+
+kernora-desktop diverts `/usr/bin/waydroid` to `/usr/bin/waydroid.waydroid`
+and puts a wrapper in its place. For `app launch`, `app install`,
+`app intent`, `app remove` and `show-full-ui` the wrapper first runs
+`/usr/libexec/kernora-android-session`, which:
+
+- starts the user service `kernora-android.service`
+  (`waydroid session start`, `Type=dbus`, `BusName=id.waydro.Session`,
+  part of `graphical-session.target`);
+- waits until `sys.boot_completed` is `1` and the session has logged
+  "Android with user 0 is ready" (the launch is lost in the two seconds
+  between them), at most five minutes. Waydroid does not always get the
+  unlock event (it missed it on a first boot with Google Play), so three
+  seconds after `sys.user.0.ce_available` turns `true` count as ready too.
+
+When an app is opened while the runtime is not up, the wrapper shows
+`kernora-appsplash`: a frameless card with the app's own icon and name and
+the Expressive loading indicator. The splash takes the app's desktop file
+name (`waydroid.<package>`), so the dock shows the app's icon from the
+first moment; it fades out 1.5 seconds after the launch.
+
+Waydroid writes `~/.local/share/applications/waydroid.<package>.desktop`
+for each app with a launcher activity while the session runs, and hides
+LineageOS' own apps. Its own `Waydroid.desktop`, its APK handler and its
+`market://` handler are diverted; Kernora ships hidden entries without the
+Waydroid name in their place, plus hidden entries with the Kernora icon for
+the windows Android opens by itself (permissions, the package installer,
+Google sign-in, system dialogs).
+
+## Looking like Kernora
+
+`tools/gen-android-overlay` builds `KernoraCaption.apk` when the package is
+built: a static resource overlay for `android`, written without aapt (its
+own binary XML and resource table) and signed (APK v1, `openssl smime`)
+with AOSP's public platform test key, which the Waydroid images are signed
+with (`userdebug/test-keys`). The platform signature lets it replace any
+framework resource. It gives the caption that Android draws over every app
+window the Kernora title bar: the Material surface container colour,
+Material Symbols Rounded for back, minimise, maximise and close, and the
+pressed circles of the Kernora decoration (Waydroid takes the pointer over
+the caption to move the window, so there is no hover). The setup and every
+package update copy it to
+`/var/lib/waydroid/overlay/system/product/overlay/KernoraCaption/`.
+
+`/usr/libexec/kernora-android-sync` (polkit `org.kernora.android.sync`,
+allowed for the active user without a password) runs inside Android with
+`waydroid shell`:
+
+- `settings put secure theme_customization_overlay_packages` with the
+  Kernora seed (`seed=` in `/usr/share/kernora/palettes/<colour>.conf`) as
+  a preset Material You palette, so Android's system colours and every
+  Material You app take the Kernora colour; Grey uses `SPRITZ`, the rest
+  `TONAL_SPOT`;
+- `cmd uimode night yes|no` from the light or dark Kernora scheme (the
+  `ui_night_mode` setting alone is only read at boot);
+- writes `pm list packages -s` to
+  `/var/lib/kernora/android/system-packages`; the user side then hides the
+  desktop entries of those packages, except the Play Store;
+- disables `org.lineageos.waydroidupdater`, whose notifications would talk
+  about Waydroid.
+
+It runs from `kernora-android.service` once Android is up, and from the user
+path unit `kernora-android-sync.path` whenever `kdeglobals`, `kernorarc` or
+`kwinoutputconfig.json` change.
+
+Scale and size: the sync also sets Android's density to 160 × the scale of
+the main screen (`kscreen-doctor -j`), so Android apps are as big as the rest
+of Kernora. Android 13 gives a new freeform window a phone-sized default
+(412×732 dp), which made apps look like phone apps on the desktop.
+Windows keep the size Android gives them. Resizing a window after the app
+started (1.4.58–1.4.62 widened every new window to about 72 % of the
+screen) is a configuration change: Unity games lost their surface
+("Timeout while trying detaching primary window") and died, logins reset
+and windows jumped through several sizes. Android remembers the size per
+app when the user resizes a window. `kernora-android-windows` (root
+through the polkit action `org.kernora.android.windows`, started after
+boot) now only runs with more than one monitor: a new window that Android
+put across two monitors is moved, at its size, onto the main monitor
+(`am task resize` with the same width and height; a pure move does not
+restart the app). A window that fits on any monitor is left alone.
+
+Only apps: the sync also turns off Android's built-in on-screen keyboard
+apps (`pm disable-user` for every system package in `ime list -s -a`, plus
+`show_ime_with_hard_keyboard 0`), so the physical keyboard types into the
+app and no "InputMethod" window opens. `ime disable` alone was not enough:
+Android turns a system keyboard back on whenever none is enabled, after
+every restart of its system. Keyboards the user installs are left alone.
+It also hides
+nothing about Android's "isn't responding" dialog (`hide_error_dialogs 0`:
+with 1, Android killed an app at once on every ANR, and right after boot
+Google Play, the Google app and others hit ANRs and vanished; instead
+`ro.hw_timeout_multiplier=3` gives slow computers and virtual machines
+three times Android's usual ANR timeouts, as Android's emulators do);
+and keeps the device set up (`device_provisioned`, `user_setup_complete`)
+with Google's and LineageOS's setup wizards and the LineageOS updater
+disabled, so nothing asks to finish setting up the device. Windows of
+Android's keyboard, Settings search, setup and speech services get hidden
+desktop entries with the Kernora icon.
+
+Keyboard layouts: Waydroid hands Android raw key codes, so Android typed
+with its own US English layout whatever Kernora used. Once Android is up,
+`kernora-android-session --keyboard-follow` reads Plasma's layouts
+(`org.kde.keyboard`), maps the current one to Android's (`us` →
+`english_us`, `ru` → `russian`, … with a few variants) and has
+`kernora-android-keyboard` (root through polkit
+`org.kernora.android.keyboard`) set it for Waydroid's keyboard
+(`vendor:1,product:1`) through the input service: `service call input 18`
+is `setCurrentKeyboardLayoutForInputDevice` and `21` is
+`removeKeyboardLayoutForInputDevice` in Android 13's `IInputManager`, so
+the helper does nothing on another SDK. Android keeps only the current
+layout, so Ctrl+Space inside an app has nothing to switch to. It runs again
+on every `layoutChanged`/`layoutListChanged`. Ctrl+Space through
+`/dev/input/wl_keyboard_events` is not used: Android answers it with a
+toast window, and a toast while Android's graphics are down (Waydroid's
+composer aborts when KWin stalls for a few seconds) brings down
+system_server.
+
+ARM apps: most apps on Google Play ship native code only for ARM, and
+Android refused them (`INSTALL_FAILED_NO_MATCHING_ABIS`; Play hides them).
+`kernora-android-device arm-download` fetches a translator for the
+processor from pinned archives of the supremegamers mirrors (the same ones
+waydroid_script uses), checked by SHA-256: Google's `libndk_translation`
+from ChromeOS (zork) on AMD and Hygon, whose licence limits it to AMD
+processors, and Intel's `libhoudini` 14 from Google Play Games on Intel.
+Both are proprietary. `arm-install` copies `prebuilts/` into
+`/var/lib/waydroid/overlay/system` without `etc/init` and
+`etc/binfmt_misc`: the container shares the host's binfmt_misc, so those
+rules would take over ARM executables on the host (qemu-user, docker
+buildx). Apps load ARM libraries through the native bridge; an app that
+executes a bare ARM program still fails. With the translator installed the
+helper adds `ro.product.cpu.abilist*`, `ro.dalvik.vm.isa.arm*` and
+`ro.dalvik.vm.native.bridge` to `waydroid.cfg`; Waydroid's prop file
+overrides the system `build.prop` here, no resetprop needed. The setup
+downloads it after the image (progress 93–96 %); Android apps that are
+already set up get it from `kernora-android-update.service`, and it is
+installed while Android is stopped. `kernora-android status` reports
+`arm=yes|no|unsupported`, and the APK installer takes ARM-only APKs when it
+is `yes`.
+
+Graphics: Waydroid skips NVIDIA render nodes and uses the first other one,
+and only when `init`/`upgrade` runs. With the screen on an NVIDIA card and
+an integrated GPU in the machine, Android drew on the integrated GPU and
+KWin on the NVIDIA card showed black windows; a computer set up before
+Kernora installed the NVIDIA driver kept pointing at the nouveau node.
+`kernora-android-device` treats the card with `boot_vga=1` (or else the one
+with a connected output) as the screen's card. If its driver is nvidia or
+nouveau, or there is no other render node (a `virtio_gpu` without the virgl
+bit in its virtio `features` counts as none; with virtio-vga the DRM device
+is the PCI device, driver `virtio-pci`, and the bit is in
+`device/virtio*/features`), Android draws in software:
+`ro.hardware.gralloc=default`, `ro.hardware.egl=swiftshader`,
+`ro.hardware.vulkan=pastel`. Before every start of Android,
+`kernora-android.service` runs `kernora-android-refresh` (polkit
+`org.kernora.android.refresh`, allowed for the active user), which installs
+a downloaded translator, writes the properties and runs `waydroid upgrade
+-o` when they differ from `waydroid_base.prop`. The keys Kernora set are
+kept in `/var/lib/kernora/android/properties` (updated only after a
+successful upgrade), so keys that no longer apply are taken out again and
+keys the user added stay.
+
+## Windows
+
+Android apps work the way they do on a Chromebook: Android runs the app, the
+desktop owns the window.
+
+Waydroid's hwcomposer is a Wayland client. Each Android task is one
+see-through toplevel the size of the whole Android screen, every Android
+layer is a subsurface at its Android position, and solid colour layers are
+dropped. Left alone that gives an Android title bar drawn over the app,
+windows that can only move inside Android, and see-through holes.
+
+`kernora-android-display` (user service, Python, about 1% of one core while a
+video plays) sits between the hwcomposer and KWin. `waydroid session start`
+runs with `WAYLAND_DISPLAY=kernora-android-0`, so the hwcomposer connects to
+it, and it translates every object id on the way to the real socket; that is
+why it needs `wayland-protocols.json`, the message signatures of the
+protocols the hwcomposer uses. On top of plain forwarding it:
+
+- asks KWin for server-side decorations, so the title bar, buttons, shadow,
+  snapping and the move itself are KWin's. Android does not hear about moves.
+- sets the window geometry to the rectangle the app's layers cover, so KWin
+  sees a window of the app's size, not of the Android screen.
+- puts an opaque black surface under the app, in place of the layers the
+  hwcomposer drops.
+- holds back the first buffer until the app has a layer and
+  `kernora-android-windows` has given the app its size, so KWin places a
+  window of the right size and an empty frame never appears. The helper says
+  so on the `kernora-android-ready` pipe; without it the window shows after
+  2.5 s.
+- answers KWin's size changes itself and passes 0x0 to the hwcomposer, which
+  would otherwise treat them as a new Android screen size. While the mouse
+  is down the frame follows at once; on release one line goes to the
+  `kernora-android-resize` pipe.
+- pings the hwcomposer twice a second and drops the pong. `window::create()`
+  waits in `wl_display_roundtrip()` while `hwc_wayland_thread` dispatches the
+  same queue. If that thread takes the reply first, the roundtrip sleeps in
+  `poll()` until the next Wayland event. With nothing on screen moving there
+  is none, SurfaceFlinger waits on the hwcomposer, and after a minute the
+  watchdog restarts `system_server` and every app is gone. Any event wakes it;
+  moving the mouse over an Android window did. The hang is rare and could not
+  be triggered on demand.
+- holds a new window until the app's `.desktop` file exists and the menu
+  database (`ksycoca6_*`) is newer than it, for up to 8 s. The panel looks an
+  app up once, when its window appears. It never looks again, and every window
+  with no entry shares the display service's process, so they all became one
+  panel button with a W. If the entry comes after the 8 s, the app id is set
+  again and `taskmanagerrulesrc` touched: the icons correct themselves, but
+  a panel button that already holds two windows stays shared until one closes.
+
+- keeps the desktop window when the hwcomposer closes it. An activity that
+  restarts on a size change can leave a task with no drawable layer for a
+  moment, and the hwcomposer closes a window with no layers. The next window
+  was a new KWin window, so fullscreen, maximize and position were gone. Now
+  the destroy of the toplevel, xdg_surface, root surface and viewport is
+  answered with `delete_id` and not forwarded. The layers stay too, so the last
+  frame stays on screen. When a toplevel with the same app id appears, its
+  new server objects are destroyed and its client ids point at the old ones,
+  with a made-up configure so `window::create()` can go on. The frozen layers
+  go when the first new frame arrives. The window is dropped after 10 s, at
+  once after a user close, or when `kernora-android-windows` sends `gone` for
+  a task that was removed or moved to the back. A restart took 4.4 s in the VM.
+- scales the app's layers to the frame during a resize and for 2 s after it,
+  until Android has drawn the new size. Subsurfaces aren't clipped to the
+  window, so without this a shrinking window showed the old frame sticking
+  out past its edges, over the wallpaper. Scaled layers take wrong clicks, so
+  the scale never stays on for long.
+
+Android's own window chrome is switched off in three places.
+`persist.wm.debug.caption_on_shell=true` removes the caption apps draw inside
+their window, which also pushed Unity's surface out of place. `KernoraShell.apk`,
+a static overlay on SystemUI, makes the shell's caption 1 px tall and its
+resize handles zero wide. Zero height is not an option: the caption window
+then gets a touchable region as large as the task and swallows every click.
+The handles matter because their corner squares reached 22 dp into the app
+and ate clicks there. Esc is Android's Back, which replaces the caption's
+back arrow.
+
+Video needs help in two places. Waydroid's framework only names a SurfaceView
+layer `TID:<task>#...` when the view's context is an `Activity`. YouTube, Google
+Photos and NewPipe use a wrapped context, so their video layer has no task, and
+the hwcomposer drops layers without one: the app runs and plays sound over a
+black hole. VLC isn't affected, because it draws through OpenGL in its own
+window. `libkernora-android-layers.so` fixes this without touching the image.
+`zz-kernora-composer.rc` in `overlay/system/etc/init` overrides the composer
+service (the name sorts after `init.waydroid.rc`, and an override in `/vendor`
+is ignored) and preloads the library. It replaces three functions the
+hwcomposer calls through its PLT:
+
+- `split_layer_names_helper::split_layer_name`: remembers which task each
+  `pkg/Activity` belongs to from layers that have a `TID:`, and adds that task
+  to layers that don't.
+- `create_shm_wl_buffer`: video from software decoders is RGB_565, and the shm
+  path only knows 32-bit formats. Those buffers are created as RGBX.
+- `GraphicBufferMapper::lock`: hands the hwcomposer's copy loop a 32-bit
+  version of the frame. Hardware graphics import RGB_565 directly and never get
+  here.
+
+The library has no libc++ or NDK dependency: it reads libc++ strings by hand
+and is built by gcc with `-nostdlib`, so nothing it needs is resolved until
+bionic loads it.
+
+Android's own input order needs help too. `layoutAndAssignWindowLayersIfNeeded`
+skips assigning layers when focus changed, on the assumption that the focus
+change did it, but that only happens when an IME window exists, and Kernora has
+none. WindowManager's order changes and SurfaceFlinger's doesn't, so the input
+dispatcher keeps the launch order. Tasks overlap on Android's screen, so every
+click went to the app opened last. `kernora-android-windows` watches
+`wm_focused_root_task` and calls `resizeTask` with the task's own bounds and
+`RESIZE_MODE_USER_FORCED`, which reaches that function with focus unchanged, then
+`syncInputTransactions(true)` to wait for the result. Neither call touches the
+app. The transaction numbers are for Android 13 only, so the helper checks the
+SDK. Other ways of doing this fail: `am start` pauses and resumes the app and
+clears `singleTask` stacks, and `startActivityFromRecents` raises home and
+closes every other window. A task move or a resize that only changes position
+doesn't assign layers.
+
+`kernora-android-display` keeps input in step with that:
+
+- a press or wheel event on a window Android doesn't have on top sends a
+  `wl_keyboard.enter` for it, which the hwcomposer turns into `setFocusedTask`;
+- input waits until the helper answers `fronted`, for at most 0.5 s, and a held
+  press and release stay 60 ms apart, because Android loses a click delivered
+  in one go;
+- a key press moves Android back to the window KWin has active;
+- pointer motion over a window that isn't on top is held back, so it can't
+  reach the app in front, and is sent with the next press;
+- `wl_pointer.enter` is followed by a made-up `motion`: the hwcomposer ignores
+  the position in `enter`, and KWin sends no motion for a pointer that stands
+  still while a window appears under it.
+
+`kernora-android-windows` (root, started after boot) applies the rest:
+
+- `arrange()` keeps every task's top-left corner off every other task.
+  SurfaceFlinger leaves a fully covered layer out, and the hwcomposer closes a
+  window with no layers, so a maximized app used to close whatever was behind
+  it. Tasks sit on a small diagonal, smallest first, which is why the Android
+  screen is 64 px larger than the largest monitor. Android positions have no
+  meaning on the desktop. It runs again after every resize and orientation
+  change, and whenever the display service reports that a window went away.
+- `resize()` turns requests from the pipe into `am task resize`. Tasks are found
+  by the packages of their activities: the `A=` name in `dumpsys` is the task
+  affinity, and Settings' is `com.android.settings.root`.
+- `open_large()` gives a resizable app with no fixed orientation a tablet-sized
+  window the first time it opens, before it has laid itself out. Apps pick
+  their layout when they start, and YouTube kept its phone layout, stretched,
+  when it was maximized later. Android remembers the size from then on, in
+  `/data/system_ce/0/launch_params`.
+- `reshape()` turns a window round when an app asks for the other orientation.
+  In a window of the wrong shape Android letterboxes it into a flat strip.
+
+Permission questions are Kernora windows. Only a dump from the permission
+controller counts, and only one question is open at a time. When
+`GrantPermissionsActivity` resumes, `kernora-android-windows` tells the display service to hold the app:
+every layer much smaller than the app's largest one moves off screen. It then
+reads the question with `uiautomator dump`, which needs `EXTERNAL_STORAGE` set
+in `waydroid shell`, and passes the text and button labels to
+`kernora-androiddialog`. The dialog's exit code is 10 plus the chosen button,
+or 10 for Esc, so a crash is never an answer: the hold is released and
+Android's own dialog shows. An answer becomes `input tap` on the real button.
+If `GrantPermissionsActivity` still has focus afterwards, the next question is
+read the same way.
+
+`force_resizable_activities=1`, set by `kernora-android-sync`, keeps every app
+in a freeform window. Without it Android gives an app with
+`resizeableActivity=false` that isn't portrait-only a `fullscreen` task. That
+task hides all the others, Android stops them, and their windows close. Android
+remembers the mode in `launch_params`, so those files are cleared once, before
+Android starts (marker `windows-reset-2`). The resize mode Android reports does
+not change, so `open_large()` still leaves those apps at their own size.
+
+Android's screen is sized by `kernora-android-device` from the outputs in
+`/var/lib/kernora/android/screens` (from `kscreen-doctor -j`, written by
+`kernora-android-session --prepare`). A window can go to any monitor because
+KWin moves it.
+
+KWin's first configure is often 1 px off the app's size, so differences of
+2 px or less are not treated as a resize.
+
+## Updates
+
+The `waydroid` package and its libraries update with the system from
+trixie-backports. The image updates itself: `kernora-android-update.timer`
+runs `kernora-android update` daily; when Waydroid's OTA channel has a newer
+system or vendor image, `kernora-android-fetch download` gets it the same
+quick way into `/var/lib/waydroid/cache_http` even while apps are open. Once
+no app is open, `kernora-android-fetch install` puts it in place and
+`waydroid upgrade -o` finishes the job (the properties in `waydroid.cfg` and
+the overlay stay); Settings shows "Updating…" meanwhile. A downloaded image
+waits for the next run if an app is open, and is not downloaded again.
+Setting up or removing Android apps stops a running update first.
+
+## Installing an app
+
+`.apk` files open in **Android App Installer** (`kernora-apkinstaller`,
+`application/vnd.android.package-archive` in `/etc/xdg/mimeapps.list`), a
+frameless dialog laid out like Android's own installer: the current step on
+top ("Install this app?", "Installing…", "App installed"), the app icon, name
+and version in the middle, a short reason only when something is wrong, and
+a tonal and a filled button at the end. Files shows each APK with the
+app's own icon (`Android.iconOf`, read in a worker thread and cached). The
+installer reads the file itself (`src/system/apk.cpp`) before anything is installed:
+
+- the ZIP central directory, so APK signature blocks do not get in the way
+  (KZip reads entries in order and stops at the signing block);
+- the binary `AndroidManifest.xml` for the package name, version and
+  `minSdkVersion`;
+- `resources.arsc` for the label in the user's language and the icon;
+- the icon: an adaptive icon is drawn in a circle from its layers (colours,
+  bitmaps, `inset`, `layer-list`, `shape` and vector drawables, which are
+  turned into SVG with their gradients), otherwise the best bitmap;
+- `lib/<abi>` folders: an app with native code only for ARM cannot run on
+  the x86_64 image, so the installer says so instead of failing.
+
+The installer then starts Android if needed and runs `waydroid app install`.
+It checks `waydroid app list` afterwards, because the command exits 0 even
+when Android refuses the package. The command also returns before Android
+has finished installing, so the installer asks again every 2 seconds for up
+to a minute; a big app like Termux takes several seconds.
+
+Settings lists the user's Android apps and opens them. Uninstalling goes
+through Android's own dialog
+(`waydroid app intent android.intent.action.DELETE package:<name>`):
+`waydroid app remove` fails with code -3 on the LineageOS 20 image and still
+exits 0. The list follows the `waydroid.*.desktop` files, which Waydroid
+deletes when the package goes. With the
+Google Play image it shows two steps until a Google account is signed in.
+"Register this computer" uses the Google Services device ID that the sync
+keeps in `/var/lib/kernora/android/google` (with the number of Google
+accounts); if there is none yet, `kernora-android-session --google` starts
+Android and waits for it. Settings copies the ID and opens
+`google.com/android/uncertified`. "Sign in to Google Play" restarts Android
+once after registering, so Google Play sees the change, and opens the Play
+Store.
+
+## What does not work
+
+- Fixed-size games show black bars when their window is made larger than
+  the game, and Unity games restart when their window changes size.
+- Dialogs inside apps are still drawn by Android. Only permission questions
+  are Kernora windows.
+- Plasma on X11. Waydroid needs a Wayland compositor, so `waydroid session
+  start` exits at once and no Android app opens. `kernora-android-session`
+  notices this before starting the session, shows a notification, and on a
+  click sets SDDM's last session to Plasma on Wayland and asks to sign out.
+  Settings and the APK installer say the same thing.
+- Apps that check for a certified device: banking apps, some streaming apps,
+  games with anti-cheat.
+- Apps with Google Play's automatic protection (`libpairipcore.so`), such as
+  DevCheck. They crash at start in the x86_64 and in the ARM build, at the same
+  integrity check, so it isn't a translation problem.
+- App bundles (`.xapk`, `.apks`, `.aab`); only single APK files install.

@@ -1,0 +1,649 @@
+#!/bin/bash
+set -u
+
+state_dir=/var/lib/kernora/android
+state_file=$state_dir/state
+done_file=$state_dir/done
+work=/var/lib/waydroid
+config=$work/waydroid.cfg
+images=$work/images
+overlay_source=/usr/share/kernora/android/KernoraCaption.apk
+overlay_target=$work/overlay/system/product/overlay/KernoraCaption
+shell_overlay_source=/usr/share/kernora/android/KernoraShell.apk
+shell_overlay_target=$work/overlay/system/product/overlay/KernoraShell
+layers_source=/usr/share/kernora/android/libkernora-android-layers.so
+layers_target=$work/overlay/vendor/lib64
+composer_source=/usr/share/kernora/android/zz-kernora-composer.rc
+composer_target=$work/overlay/system/etc/init
+sources=/etc/apt/sources.list.d/kernora-android.sources
+template=/usr/share/kernora/apt/kernora-android.sources
+real=/usr/bin/waydroid.waydroid
+fetch=/usr/libexec/kernora-android-fetch
+device=/usr/libexec/kernora-android-device
+
+kind=
+progress=0
+remaining=
+bytes=
+bytes_total=
+
+read_state() {
+  sed -n "s/^$1=//p" "$state_file" 2>/dev/null | head -n 1
+}
+
+record() {
+  mkdir -p "$state_dir"
+  printf 'status=%s\nkind=%s\nprogress=%s\nremaining=%s\nbytes=%s\nbytes_total=%s\ntime=%s\n' \
+    "$1" "$kind" "$progress" "$remaining" "$bytes" "$bytes_total" "$(date +%s)" > "$state_file.new"
+  mv "$state_file.new" "$state_file"
+}
+
+finish() {
+  record "$1"
+  printf 'status=%s\nkind=%s\ntime=%s\n' "$1" "$kind" "$(date +%s)" > "$done_file.new"
+  chmod 0644 "$done_file.new"
+  mv "$done_file.new" "$done_file"
+}
+
+installed() {
+  dpkg-query -W -f='${db:Status-Abbrev}\n' waydroid 2>/dev/null | grep -q '^ii'
+}
+
+initialized() {
+  [[ -s $config && -s $images/system.img && -s $images/vendor.img ]]
+}
+
+current_kind() {
+  case $(sed -n 's/^system_ota *= *//p' "$config" 2>/dev/null) in
+    */GAPPS.json) echo gapps ;;
+    */VANILLA.json) echo vanilla ;;
+  esac
+}
+
+live_session() {
+  [[ -e /run/live/medium ]]
+}
+
+online() {
+  getent ahosts deb.debian.org > /dev/null 2>&1 && getent ahosts ota.waydro.id > /dev/null 2>&1
+}
+
+apt_get() {
+  DEBIAN_FRONTEND=noninteractive apt-get -q -y \
+    -o DPkg::Lock::Timeout=900 \
+    -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold "$@"
+}
+
+apt_progress() {
+  local kind item share rest
+  while IFS=: read -r kind item share rest; do
+    [[ $share =~ ^[0-9]+ ]] || continue
+    case $kind in
+      dlstatus) progress=$(( 3 + BASH_REMATCH[0] * 6 / 100 )) ;;
+      pmstatus) progress=$(( 9 + BASH_REMATCH[0] * 3 / 100 )) ;;
+      *) continue ;;
+    esac
+    record installing
+  done
+}
+
+install_packages() {
+  install -m 0644 "$template" "$sources"
+  installed && return 0
+  apt_get update || true
+  progress=2
+  record installing
+  apt_get update -o Dir::Etc::SourceList="$sources" -o Dir::Etc::SourceParts=- -o APT::Get::List-Cleanup=0 || return 1
+  progress=3
+  record installing
+  apt_get -o APT::Status-Fd=3 install --no-install-recommends waydroid wl-clipboard 3>&1 1>&2 | apt_progress
+  local code=${PIPESTATUS[0]}
+  apt_get clean || true
+  return "$code"
+}
+
+fetch_images() {
+  PYTHONUNBUFFERED=1 "$fetch" setup "$1" 2>&1 | {
+    local line word done total left
+    while IFS= read -r line; do
+      read -r word done total left <<< "$line"
+      case $word in
+        progress)
+          [[ $done =~ ^[0-9]+$ && $total =~ ^[0-9]+$ && $left =~ ^-?[0-9]+$ ]] && (( total > 0 )) || continue
+          progress=$(( 12 + done * 80 / total ))
+          remaining=
+          (( left >= 0 )) && remaining=$left
+          bytes=$done
+          bytes_total=$total
+          record downloading
+          ;;
+        verifying | unpacking)
+          progress=93
+          remaining=
+          record unpacking
+          ;;
+        *)
+          printf '%s\n' "$line"
+          ;;
+      esac
+    done
+  }
+  return "${PIPESTATUS[0]}"
+}
+
+download_images() {
+  local type=VANILLA
+  [[ $kind == gapps ]] && type=GAPPS
+  if ! fetch_images "$type"; then
+    echo "kernora-android: the quick download did not work, Waydroid downloads the image itself" >&2
+    progress=12
+    bytes=
+    bytes_total=
+    record downloading
+  fi
+  PYTHONUNBUFFERED=1 "$real" init -f -s "$type" 2>&1 | stdbuf -oL tr '\r' '\n' | {
+    local line part=system shown=-1 done total share
+    while IFS= read -r line; do
+      case $line in
+        *'[Downloading]'*)
+          if [[ $line =~ ([0-9]+)(\.[0-9]+)?\ MB/([0-9]+)(\.[0-9]+)?\ MB ]]; then
+            done=${BASH_REMATCH[1]}
+            total=${BASH_REMATCH[3]}
+            (( total > 0 )) || continue
+            share=$(( done * 100 / total ))
+            if [[ $part == system ]]; then
+              progress=$(( 12 + share * 68 / 100 ))
+            else
+              progress=$(( 82 + share * 10 / 100 ))
+            fi
+            if (( progress != shown )); then
+              shown=$progress
+              record downloading
+            fi
+          fi
+          continue
+          ;;
+        *Downloading\ http*vendor*)
+          part=vendor
+          ;;
+        *Validating* | *Extracting*)
+          progress=93
+          [[ $part == system ]] && progress=81
+          record unpacking
+          ;;
+      esac
+      printf '%s\n' "$line"
+    done
+  }
+  local status=("${PIPESTATUS[@]}")
+  (( status[0] == 0 )) && initialized
+}
+
+discard_images() {
+  rm -rf --one-file-system "$images" "$work/cache_http" "$config"
+}
+
+device_model() {
+  case $(hostnamectl chassis 2>/dev/null) in
+    laptop | convertible | tablet | handset) echo "Kernora Laptop" ;;
+    *) echo "Kernora PC" ;;
+  esac
+}
+
+write_properties() {
+  "$device" properties "$(device_model)"
+}
+
+configure() {
+  write_properties > /dev/null
+  "$real" upgrade -o && "$device" applied
+  install_overlay
+}
+
+install_overlay() {
+  [[ -s $overlay_source ]] || return 0
+  install -d -m 0755 "$overlay_target"
+  install -m 0644 "$overlay_source" "$overlay_target/KernoraCaption.apk"
+  [[ -s $shell_overlay_source ]] || return 0
+  install -d -m 0755 "$shell_overlay_target"
+  install -m 0644 "$shell_overlay_source" "$shell_overlay_target/KernoraShell.apk"
+  [[ -s $layers_source && -s $composer_source ]] || return 0
+  install -d -m 0755 "$layers_target" "$composer_target"
+  install -m 0644 "$layers_source" "$layers_target/libkernora-android-layers.so"
+  install -m 0644 "$composer_source" "$composer_target/zz-kernora-composer.rc"
+}
+
+setup_android() {
+  kind=$1
+  progress=0
+  if live_session; then
+    record live
+    return 1
+  fi
+  if initialized && [[ $(current_kind) == "$kind" ]]; then
+    progress=100
+    record ready
+    return 0
+  fi
+  if ! online; then
+    record offline
+    return 1
+  fi
+  echo "kernora-android: setting up Android ($kind)"
+  progress=1
+  record installing
+  if ! install_packages; then
+    echo "kernora-android: Waydroid could not be installed" >&2
+    finish failed
+    return 1
+  fi
+  progress=12
+  record downloading
+  if ! download_images; then
+    echo "kernora-android: the Android image could not be downloaded" >&2
+    discard_images
+    finish failed
+    return 1
+  fi
+  rm -rf "$work/cache_http"
+  arm_translation
+  progress=97
+  bytes=
+  bytes_total=
+  record unpacking
+  configure
+  systemctl enable --now waydroid-container.service
+  progress=100
+  finish ready
+  echo "kernora-android: Android is ready"
+}
+
+arm_translation() {
+  PYTHONUNBUFFERED=1 "$device" arm-download 2>&1 | {
+    local word done total left
+    while read -r word done total left; do
+      if [[ $word == progress && $done =~ ^[0-9]+$ && $total =~ ^[0-9]+$ && $left =~ ^-?[0-9]+$ ]] && (( total > 0 )); then
+        progress=$(( 93 + done * 3 / total ))
+        remaining=
+        (( left >= 0 )) && remaining=$left
+        bytes=$done
+        bytes_total=$total
+        record downloading
+      else
+        printf '%s\n' "$word $done $total $left"
+      fi
+    done
+  }
+  (( PIPESTATUS[0] == 0 )) || echo "kernora-android: apps made for ARM processors are set up later" >&2
+  "$device" arm-install || true
+  remaining=
+  bytes=
+  bytes_total=
+}
+
+session_active() {
+  pgrep -f '^python3 /usr/bin/waydroid.waydroid session start' > /dev/null && return 0
+  "$real" status 2>/dev/null | grep -q 'Session:.*RUNNING'
+}
+
+apply_properties() {
+  if [[ $(write_properties) == pending ]] && ! session_active; then
+    echo "kernora-android: applying the device properties"
+    "$real" upgrade -o > /dev/null && "$device" applied && install_overlay
+  fi
+}
+
+copy_screens() {
+  local uid=${PKEXEC_UID:-} home source line lines=()
+  [[ $uid =~ ^[0-9]+$ ]] && (( uid >= 1000 )) || return 0
+  home=$(getent passwd "$uid" | cut -d: -f6)
+  source=$home/.cache/kernora/android-screens
+  if [[ -n $home && -f $source && ! -L $source ]]; then
+    while IFS= read -r line; do
+      [[ $line =~ ^-?[0-9]{1,5},-?[0-9]{1,5},[0-9]{1,5},[0-9]{1,5}$ ]] && lines+=("$line")
+    done < <(head -n 8 "$source")
+  fi
+  if (( ${#lines[@]} > 0 )); then
+    printf '%s\n' "${lines[@]}" > "$state_dir/screens.new" && mv "$state_dir/screens.new" "$state_dir/screens"
+  else
+    rm -f "$state_dir/screens"
+  fi
+  if [[ -n $home && ! -e $state_dir/windows-reset-2 ]] && ! session_active; then
+    rm -f "$home/.local/share/waydroid/data/system_ce/0/launch_params/"*.xml
+    : > "$state_dir/windows-reset-2"
+  fi
+  if [[ -n $home && -f $home/.cache/kernora/android-ready ]]; then
+    "$device" suspend-action freeze
+  else
+    "$device" suspend-action stop
+  fi
+  if [[ -n $home && -d $home/.local/share/waydroid/data ]]; then
+    timeout 20 du -sb --apparent-size "$home/.local/share/waydroid/data" 2>/dev/null | cut -f1 > "$state_dir/data-size.new" \
+      && mv "$state_dir/data-size.new" "$state_dir/data-size"
+  fi
+}
+
+refresh_android() {
+  initialized || return 0
+  live_session && return 0
+  install_overlay
+  copy_screens
+  session_active || "$device" arm-install > /dev/null 2>&1 || true
+  apply_properties
+  if [[ $("$device" arm-status) == no ]]; then
+    systemctl start --no-block kernora-android-update.service 2>/dev/null || true
+  fi
+}
+
+update_android() {
+  initialized || return 0
+  live_session && return 0
+  if online && "$device" arm-download > /dev/null; then
+    session_active || "$device" arm-install || true
+  fi
+  apply_properties
+  online || return 0
+  PYTHONUNBUFFERED=1 "$fetch" download 2>&1 | grep -v '^progress '
+  (( PIPESTATUS[0] == 0 )) || return 0
+  if session_active; then
+    echo "kernora-android: a newer image is downloaded; it is installed once no app is open"
+    return 0
+  fi
+  kind=$(current_kind)
+  progress=0
+  record updating
+  echo "kernora-android: updating the image"
+  if "$fetch" install && "$real" upgrade -o; then
+    install_overlay
+    echo "kernora-android: the image is up to date"
+  else
+    echo "kernora-android: the image could not be updated" >&2
+  fi
+  progress=100
+  record ready
+}
+
+use_wayland() {
+  local state=/var/lib/sddm/state.conf
+  [[ -f $state ]] || return 0
+  sed -i 's|^Session=.*|Session=/usr/share/wayland-sessions/plasma.desktop|' "$state"
+}
+
+user_homes() {
+  getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 { print $6 }'
+}
+
+remove_android() {
+  kind=$(current_kind)
+  progress=0
+  record removing
+  systemctl disable --now waydroid-container.service 2>/dev/null || true
+  local home
+  while IFS= read -r home; do
+    [[ -n $home && -d $home ]] || continue
+    rm -rf --one-file-system "$home/.local/share/waydroid"
+    rm -f "$home"/.local/share/applications/waydroid.*.desktop
+  done < <(user_homes)
+  if installed; then
+    apt_get purge --autoremove waydroid
+  fi
+  rm -rf --one-file-system "$work"
+  "$device" arm-remove
+  rm -f "$state_dir/properties" "$state_dir/properties.next" "$state_dir/screens" "$state_dir/graphics-software" "$state_dir/data-size"
+  rm -f "$sources"
+  apt_get update > /dev/null 2>&1 || true
+  kind=
+  record removed
+}
+
+cancel_setup() {
+  case $(read_state status) in
+    downloading | unpacking) ;;
+    *) return 1 ;;
+  esac
+  systemctl stop 'kernora-android@setup-*.service' 2>/dev/null || true
+  discard_images
+  kind=$(read_state kind)
+  progress=0
+  record cancelled
+}
+
+print_status() {
+  local status installed_flag=no ready=no size=0 data= container=inactive job=no
+  installed && installed_flag=yes
+  systemctl list-units --no-legend --state=activating,active 'kernora-android@*' 2>/dev/null | grep -q . && job=yes
+  initialized && ready=yes
+  if [[ $ready == yes ]]; then
+    size=$(du -sbc --apparent-size "$images" "$work/overlay" 2>/dev/null | tail -n 1 | cut -f1)
+    data=$(head -c 20 "$state_dir/data-size" 2>/dev/null)
+    [[ $data =~ ^[0-9]+$ && $size =~ ^[0-9]+$ ]] && size=$(( size + data ))
+    container=$(systemctl is-active waydroid-container.service 2>/dev/null)
+  fi
+  status=$(read_state status)
+  printf 'installed=%s\nready=%s\nkind=%s\nstatus=%s\nprogress=%s\nremaining=%s\nbytes=%s\nbytes_total=%s\ntime=%s\nsize=%s\ncontainer=%s\njob=%s\nlive=%s\n' \
+    "$installed_flag" "$ready" "$(current_kind)" "${status:-}" "$(read_state progress)" "$(read_state remaining)" \
+    "$(read_state bytes)" "$(read_state bytes_total)" "$(read_state time)" \
+    "${size:-0}" "${container:-inactive}" "$job" "$(live_session && echo yes || echo no)"
+  printf 'arm=%s\ndisplay=%s\n' "$("$device" arm-status)" "${XDG_SESSION_TYPE:-}"
+  printf 'warming=%s\n' "$([[ -n ${XDG_RUNTIME_DIR:-} && -e ${XDG_RUNTIME_DIR}/kernora-android-warming ]] && echo yes || echo no)"
+  printf 'google_id=%s\ngoogle_accounts=%s\n' \
+    "$(sed -n 's/^android_id=//p' "$state_dir/google" 2>/dev/null)" "$(sed -n 's/^accounts=//p' "$state_dir/google" 2>/dev/null)"
+}
+
+print_android_id() {
+  initialized || return 1
+  "$real" shell -- sqlite3 -cmd ".timeout 8000" /data/data/com.google.android.gsf/databases/gservices.db \
+    "select value from main where name = 'android_id';" 2>/dev/null | tr -cd '0-9'
+  echo
+}
+
+android_shell() {
+  timeout 30 "$real" shell -- "$@" < /dev/null 2>&1 | cat
+}
+
+section() {
+  printf '\n== %s ==\n' "$1"
+}
+
+collect_report() {
+  local home=$1 uid card node folder file flag
+  uid=$(stat -c %u "$home")
+  section Kernora
+  date -R
+  uname -srm
+  dpkg-query -W -f='${Package} ${Version}\n' kernora-desktop kernora-apps waydroid 2>/dev/null
+  section Status
+  print_status | grep -v '^google_id='
+  section Processor
+  grep -m 2 -E '^(vendor_id|model name)' /proc/cpuinfo
+  printf 'cores=%s memory=%s\n' "$(nproc)" "$(awk '/^MemTotal/ {print int($2 / 1024) " MB"}' /proc/meminfo)"
+  printf 'flags:'
+  for flag in ssse3 sse4_2 avx avx2 fma bmi2; do
+    grep -qm 1 -E "^flags.* $flag( |$)" /proc/cpuinfo && printf ' %s' "$flag"
+  done
+  echo
+  section Desktop
+  loginctl list-sessions --no-legend 2>/dev/null | while read -r id _; do
+    loginctl show-session "$id" -p Name -p Type -p Class -p Desktop -p State --value 2>/dev/null | xargs
+  done
+  ls "/run/user/$uid"/wayland-* 2>/dev/null | grep -v lock
+  section Graphics
+  for card in /sys/class/drm/card*; do
+    [[ ${card##*/} =~ ^card[0-9]+$ ]] || continue
+    printf '%s driver=%s boot_vga=%s connected=%s\n' "${card##*/}" "$(basename "$(readlink "$card/device/driver")")" \
+      "$(cat "$card/device/boot_vga" 2>/dev/null)" "$(grep -lx connected "$card"-*/status 2>/dev/null | awk -F/ '{print $(NF-1)}' | xargs)"
+  done
+  for node in /sys/class/drm/renderD*; do
+    [[ -e $node ]] && printf '%s driver=%s\n' "${node##*/}" "$(basename "$(readlink "$node/device/driver")")"
+  done
+  printf 'android draws with: %s\n' "$("$device" graphics)"
+  section 'Android properties'
+  sed -n '/^\[properties\]/,$p' "$config" 2>/dev/null
+  cat "$work/waydroid_base.prop" 2>/dev/null
+  section Session
+  "$real" status 2>&1
+  if session_active; then
+    section Android
+    android_shell getprop | grep -E 'cpu\.abilist|native\.bridge|ro\.hardware\.|fingerprint|boot_completed|waydroid'
+    printf 'screen_off_timeout=%s private_dns_mode=%s\n' "$(android_shell settings get system screen_off_timeout)" \
+      "$(android_shell settings get global private_dns_mode)"
+    section Network
+    android_shell dumpsys connectivity | grep -E '^ *NetworkAgentInfo|PrivateDns|Private DNS' | cut -c1-900 | head -n 12
+    android_shell ping -c 2 -W 3 8.8.8.8
+    android_shell ping -c 1 -W 3 play.googleapis.com
+    section 'Open apps'
+    android_shell dumpsys activity activities | grep -E '^  \* Task\{.*type=standard|^    mBounds=|^ *\* Hist' | cut -c1-140 | head -n 40
+    section 'App exits'
+    for package in com.android.vending $(android_shell pm list packages -3 | sed -n 's/^package://p' | tr -d '\r' | head -n 40); do
+      android_shell dumpsys activity exit-info "$package" | grep -E 'process=|timestamp=|description=' | cut -c1-160 | head -n 9
+    done
+    section 'App events'
+    android_shell logcat -d -b events | grep -E ' (am_proc_died|am_kill|am_crash|am_anr|am_low_memory|wm_create_task|wm_task_removed|wm_task_to_front|system_server_start)' | cut -c1-160 | tail -n 80
+    section 'Crash log'
+    android_shell logcat -d -b crash | tail -n 400
+    section 'Errors'
+    android_shell logcat -d | grep -E ' [EF] |FATAL|AndroidRuntime|houdini|ndk_translation|nativebridge|UnsatisfiedLink|pairip' | tail -n 400
+  fi
+  folder=$home/.local/share/waydroid/data/system/dropbox
+  if [[ -d $folder ]]; then
+    section 'Android restarts'
+    ls -t "$folder" 2>/dev/null | grep -E '^system_server_(watchdog|crash|native_crash)' | head -n 8
+    section 'Recent app crashes'
+    for file in $(ls -t "$folder" 2>/dev/null | grep -E '^(data_app_crash|data_app_native_crash|data_app_anr|system_app_crash)' | head -n 6); do
+      printf -- '-- %s\n' "$file"
+      zcat -f "$folder/$file" 2>/dev/null | head -n 80
+    done
+  fi
+  folder=$home/.local/share/waydroid/data/tombstones
+  if [[ -d $folder ]]; then
+    section 'Native crashes'
+    for file in $(ls -t "$folder" 2>/dev/null | grep -v '\.pb$' | head -n 3); do
+      printf -- '-- %s\n' "$file"
+      head -n 40 "$folder/$file" 2>/dev/null
+    done
+  fi
+  section 'Android service'
+  journalctl -b --no-pager -n 80 -o short-iso _SYSTEMD_USER_UNIT=kernora-android.service + USER_UNIT=kernora-android.service 2>&1 | cut -c1-300
+  section 'Container service'
+  journalctl -b --no-pager -n 30 -o short-iso -u waydroid-container.service 2>&1 | cut -c1-300
+  section 'Kernel'
+  journalctl -k -b --no-pager -o short-iso 2>/dev/null | grep -v ' audit: ' \
+    | grep -iE 'invalid opcode|segfault|general protection|GPU HANG|oom-kill|Out of memory|binder.*(fail|error)' | tail -n 40 | cut -c1-300
+  section 'Waydroid log'
+  cat "$work/waydroid.log.1" "$work/waydroid.log" 2>/dev/null | tail -n 120
+}
+
+save_report() {
+  local uid=${PKEXEC_UID:-} user home folder target
+  if [[ ! $uid =~ ^[0-9]+$ ]] || (( uid < 1000 )); then
+    collect_report "$(getent passwd "$(logname 2>/dev/null || echo root)" | cut -d: -f6)"
+    return 0
+  fi
+  user=$(getent passwd "$uid" | cut -d: -f1)
+  home=$(getent passwd "$uid" | cut -d: -f6)
+  [[ -n $user && -d $home ]] || return 1
+  folder=$(sed -n 's/^XDG_DOWNLOAD_DIR="\(.*\)"$/\1/p' "$home/.config/user-dirs.dirs" 2>/dev/null)
+  folder=${folder//\$HOME/$home}
+  [[ -d $folder && $(stat -c %u "$folder") == "$uid" ]] || folder=$home
+  target=$folder/Android-apps-report-$(date +%Y%m%d-%H%M%S).txt
+  collect_report "$home" | runuser -u "$user" -- tee "$target" > /dev/null || return 1
+  printf '%s\n' "$target"
+}
+
+with_lock() {
+  mkdir -p "$state_dir"
+  exec 9> "$state_dir/lock" || { echo "kernora-android: cannot open $state_dir/lock" >&2; exit 1; }
+  flock -w 3600 9 || { echo "kernora-android: another Android job did not finish" >&2; exit 1; }
+  "$@"
+}
+
+try_lock() {
+  mkdir -p "$state_dir"
+  exec 9> "$state_dir/lock" || return 0
+  flock -w 60 9 || return 0
+  "$@"
+}
+
+graphics_check() {
+  local first second
+  session_active || return 0
+  [[ $(android_shell getprop sys.boot_completed | tr -d '\r') == 1 ]] && return 0
+  [[ $("$device" graphics) == software ]] && return 0
+  first=$(android_shell getprop init.svc_debug_pid.surfaceflinger | tr -d '\r')
+  sleep 8
+  second=$(android_shell getprop init.svc_debug_pid.surfaceflinger | tr -d '\r')
+  [[ $first =~ ^[0-9]+$ && $second =~ ^[0-9]+$ && $first != "$second" ]] || return 0
+  [[ $(android_shell getprop sys.boot_completed | tr -d '\r') == 1 ]] && return 0
+  echo "kernora-android: Android's display server keeps crashing here, Android draws in software from now on"
+  "$device" graphics-fallback
+  return 75
+}
+
+require_root() {
+  (( EUID == 0 )) || { echo "kernora-android: run as root" >&2; exit 1; }
+}
+
+case ${1:-} in
+  status)
+    print_status
+    ;;
+  setup-vanilla | setup-gapps)
+    require_root
+    with_lock setup_android "${1#setup-}"
+    ;;
+  remove)
+    require_root
+    with_lock remove_android
+    ;;
+  android-id)
+    require_root
+    print_android_id
+    ;;
+  refresh)
+    require_root
+    try_lock refresh_android
+    ;;
+  graphics-check)
+    require_root
+    graphics_check
+    ;;
+  use-wayland)
+    require_root
+    use_wayland
+    ;;
+  update)
+    require_root
+    with_lock update_android
+    ;;
+  report)
+    require_root
+    save_report
+    ;;
+  request)
+    require_root
+    case ${2:-} in
+      setup-vanilla | setup-gapps)
+        kind=${2#setup-}
+        if live_session; then
+          record live
+          exit 0
+        fi
+        systemctl stop kernora-android-update.service 2>/dev/null || true
+        record installing
+        systemctl start --no-block "kernora-android@${2}.service"
+        ;;
+      remove)
+        systemctl stop kernora-android-update.service 2>/dev/null || true
+        systemctl start --no-block kernora-android@remove.service
+        ;;
+      cancel)
+        cancel_setup
+        ;;
+      *) exit 2 ;;
+    esac
+    ;;
+  *)
+    echo "usage: kernora-android status|setup-vanilla|setup-gapps|remove|android-id|refresh|graphics-check|update|report|request setup-vanilla|setup-gapps|remove|cancel" >&2
+    exit 2
+    ;;
+esac

@@ -11,7 +11,8 @@ const groups = {
     document: ["pdf", "odt", "ods", "odp", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "rtf", "epub", "djvu"],
     code: ["c", "h", "cpp", "hpp", "cc", "py", "js", "ts", "qml", "rs", "go", "java", "kt", "sh", "bash", "zsh", "rb", "php", "pl", "lua", "css", "scss", "html", "htm", "xml", "json", "yaml", "yml", "toml", "ini", "conf", "cmake", "mk", "sql", "desktop", "service"],
     text: ["txt", "md", "markdown", "log", "csv", "tsv", "rst", "tex", "srt", "nfo", "readme"],
-    program: ["appimage", "run", "bin", "exe", "msi", "flatpakref"]
+    program: ["appimage", "run", "bin", "exe", "msi", "flatpakref"],
+    android: ["apk"]
 };
 
 const icons = {
@@ -24,6 +25,7 @@ const icons = {
     code: "text-x-script",
     text: "text-x-generic",
     program: "application-x-executable",
+    android: "application-vnd.android.package-archive",
     other: "text-x-generic"
 };
 
@@ -37,6 +39,7 @@ const accents = {
     code: 2,
     text: 0,
     program: 2,
+    android: 2,
     other: -1
 };
 

@@ -137,19 +137,34 @@ void Appearance::writeTerminalColours(const QString &colour, bool dark) const
     }
 }
 
+QString Appearance::wantedColour() const
+{
+    return m_pending ? m_pendingColour : m_busy ? m_targetColour : colour();
+}
+
+QString Appearance::wantedGeneration() const
+{
+    return m_pending ? m_pendingGeneration : m_busy ? m_targetGeneration : generation();
+}
+
+bool Appearance::wantedDark() const
+{
+    return m_pending ? m_pendingDark : m_busy ? m_targetDark : dark();
+}
+
 void Appearance::setDark(bool enable, const QJSValue &callback)
 {
-    applyTheme(colour(), generation(), enable, callback);
+    applyTheme(wantedColour(), wantedGeneration(), enable, callback);
 }
 
 void Appearance::setGeneration(const QString &generation, const QJSValue &callback)
 {
-    applyTheme(colour(), generation, dark(), callback);
+    applyTheme(wantedColour(), generation, wantedDark(), callback);
 }
 
 void Appearance::setColour(const QString &colour, const QJSValue &callback)
 {
-    applyTheme(colour, generation(), dark(), callback);
+    applyTheme(colour, wantedGeneration(), wantedDark(), callback);
 }
 
 void Appearance::apply(const QString &generation, bool enable, const QJSValue &callback)
@@ -160,9 +175,17 @@ void Appearance::apply(const QString &generation, bool enable, const QJSValue &c
 void Appearance::applyTheme(const QString &requestedColour, const QString &requested, bool enable, const QJSValue &callback)
 {
     if (m_busy) {
+        m_pending = true;
+        m_pendingColour = requestedColour;
+        m_pendingGeneration = requested;
+        m_pendingDark = enable;
+        m_pendingCallback = callback;
         return;
     }
     m_busy = true;
+    m_targetColour = requestedColour;
+    m_targetGeneration = requested;
+    m_targetDark = enable;
     Q_EMIT busyChanged();
 
     const QString colour = requestedColour == QLatin1String("kernora") || !paletteFile(requestedColour).isEmpty() ? requestedColour : QStringLiteral("kernora");
@@ -245,12 +268,19 @@ void Appearance::runStep(const std::shared_ptr<Switch> &state, int index)
         style.setArguments({2, 0});
         QDBusConnection::sessionBus().send(style);
         m_busy = false;
-        Q_EMIT busyChanged();
         Q_EMIT darkChanged();
         if (state->callback.isCallable()) {
             QJSValue function = state->callback;
             function.call({QJSValue(state->ok)});
         }
+        if (m_pending) {
+            m_pending = false;
+            const QJSValue pendingCallback = m_pendingCallback;
+            m_pendingCallback = QJSValue();
+            applyTheme(m_pendingColour, m_pendingGeneration, m_pendingDark, pendingCallback);
+            return;
+        }
+        Q_EMIT busyChanged();
         return;
     }
     auto *process = new QProcess(this);

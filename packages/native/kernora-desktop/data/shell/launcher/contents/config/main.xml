@@ -15,5 +15,8 @@
     <entry name="panelOpacityRequest" type="String">
       <default></default>
     </entry>
+    <entry name="reclaimShortcuts" type="Bool">
+      <default>false</default>
+    </entry>
   </group>
 </kcfg>

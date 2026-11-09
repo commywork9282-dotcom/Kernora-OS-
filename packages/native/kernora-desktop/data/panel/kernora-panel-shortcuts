@@ -1,0 +1,94 @@
+#!/usr/bin/python3
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+import ast
+import os
+import re
+import subprocess
+import sys
+
+KEYS = {"Alt+Space", "Meta+A", "Meta+V", "Meta+."}
+ENTRY = re.compile(r"^activate widget (\d+)=([^,]*),", re.MULTILINE)
+SECTION = re.compile(r"^\[plasmashell\]\n(.*?)(?=^\[|\Z)", re.MULTILINE | re.DOTALL)
+LIVE = """
+var ids = [];
+panels().concat(desktops()).forEach(function (holder) {
+    holder.widgets().forEach(function (widget) {
+        ids.push(widget.id);
+    });
+});
+print(ids.join(" "));
+"""
+ASSIGN = """
+var wanted = [
+    ["org.kernora.launcher", false, "Alt+Space"],
+    ["org.kernora.quicksettings", false, "Meta+A"],
+    ["org.kernora.clipboard", false, "Meta+V"],
+    ["org.kernora.clipboard", true, "Meta+."]
+];
+var widgets = [];
+panels().forEach(function (panel) {
+    widgets = widgets.concat(panel.widgets());
+});
+function showsEmoji(widget) {
+    widget.currentConfigGroup = ["General"];
+    return widget.readConfig("startPage") === "emoji";
+}
+wanted.forEach(function (item) {
+    var held = widgets.some(function (widget) {
+        return String(widget.globalShortcut) === item[2];
+    });
+    var free = widgets.filter(function (widget) {
+        return widget.type === item[0] && !String(widget.globalShortcut) && showsEmoji(widget) === item[1];
+    });
+    if (!held && free.length > 0) {
+        free[0].globalShortcut = item[2];
+    }
+});
+"""
+
+
+def call(*arguments: str) -> str:
+    try:
+        return subprocess.run(["gdbus", "call", "--session", *arguments], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                              stderr=subprocess.DEVNULL, text=True, timeout=20, check=False).stdout
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+
+
+def evaluate(script: str) -> str:
+    reply = call("--dest", "org.kde.plasmashell", "--object-path", "/PlasmaShell", "--method",
+                 "org.kde.PlasmaShell.evaluateScript", script)
+    try:
+        return str(ast.literal_eval(reply.strip())[0])
+    except (SyntaxError, ValueError, IndexError):
+        return ""
+
+
+def stale(config: str, live: set[str]) -> list[str]:
+    section = SECTION.search(config)
+    if section is None:
+        return []
+    return [f"activate widget {number}" for number, keys in ENTRY.findall(section.group(1)) if keys in KEYS and number not in live]
+
+
+def main() -> int:
+    home = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+    live = set(evaluate(LIVE).split())
+    if not live:
+        return 1
+    try:
+        with open(os.path.join(home, "kglobalshortcutsrc"), encoding="utf-8") as handle:
+            config = handle.read()
+    except OSError:
+        return 1
+    for name in stale(config, live):
+        call("--dest", "org.kde.kglobalaccel", "--object-path", "/kglobalaccel", "--method",
+             "org.kde.KGlobalAccel.unregister", "plasmashell", name)
+    evaluate(ASSIGN)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

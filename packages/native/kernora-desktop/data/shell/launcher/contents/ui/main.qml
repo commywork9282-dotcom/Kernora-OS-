@@ -9,6 +9,7 @@ import QtQuick.Window
 import org.kde.coreaddons as KCoreAddons
 import org.kde.kcmutils as KCMUtils
 import org.kde.plasma.core as PlasmaCore
+import org.kde.plasma.plasma5support as P5Support
 import org.kde.plasma.plasmoid
 import org.kde.plasma.private.kicker as Kicker
 import org.kde.plasma.private.sessions as Sessions
@@ -59,6 +60,26 @@ PlasmoidItem {
         const view = root.Window.window;
         if (mode >= 0 && mode <= 2 && view && view.opacityMode !== undefined) {
             view.opacityMode = mode;
+        }
+    }
+
+    P5Support.DataSource {
+        id: executable
+        engine: "executable"
+        onNewData: source => disconnectSource(source)
+    }
+
+    Timer {
+        property bool again: false
+        interval: again ? 70000 : 3000
+        repeat: true
+        running: Plasmoid.configuration.reclaimShortcuts
+        onTriggered: {
+            executable.connectSource("/usr/libexec/kernora-panel-shortcuts");
+            if (again) {
+                Plasmoid.configuration.reclaimShortcuts = false;
+            }
+            again = true;
         }
     }
 

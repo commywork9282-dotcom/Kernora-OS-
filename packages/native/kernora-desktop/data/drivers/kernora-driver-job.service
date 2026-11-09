@@ -1,0 +1,7 @@
+[Unit]
+Description=Install or remove a driver
+ConditionPathExists=!/run/live/medium
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/kernora-driver-job run

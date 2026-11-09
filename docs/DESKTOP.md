@@ -244,7 +244,20 @@ to the inactive side when the active part is too short), a stop indicator, and
 a value bubble while held. It shows its own value until the backend catches up,
 so a slow audio or backlight service never makes the handle jump back.
 
-### Panel (`look-and-feel/.../org.kde.plasma.desktop-layout.js`)
+### Panel (`data/panel/layout.js`)
+
+The panel is Plasma's `org.kde.plasma.desktop.defaultPanel` template, diverted,
+so Add Panel → Default Panel gives the same panel as the first login, where
+the look-and-feel layout loads it with `loadTemplate`.
+
+A second panel gets no shortcuts, because the first one keeps them. KGlobalAccel
+also keeps the keys of a deleted widget: `activate widget N` stays registered
+and the key can't go to a new widget. When a shortcut is missing, the template
+sets `reclaimShortcuts` on the launcher, which runs `kernora-panel-shortcuts`
+3 seconds later and once more after 70 seconds, when a deleted panel's Undo has
+run out. The helper unregisters those entries one by one and gives the keys
+back. `Component.cleanUp` is not an option: with no tray loaded it would also
+drop the entry that keeps Klipper off Meta+V.
 
 One floating, full-width panel: launcher, centred tasks, the system tray, the
 notifications bell and the quick settings chip, plus the clipboard applet,

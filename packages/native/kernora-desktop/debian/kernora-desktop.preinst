@@ -18,6 +18,7 @@ if [ "$1" = install ] || [ "$1" = upgrade ]; then
             "$folder/ConfigLocation.qml" "$folder/ConfigIcons.qml" "$folder/ConfigFilter.qml" \
             "$folder/ConfigOverlay.qml" "$folder/FolderView.qml" \
             /usr/share/plasma/plasmoids/org.kde.plasma.panelspacer/contents/ui/main.qml \
+            /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js \
             "$notifications/main.qml" "$tasks/Badge.qml" "$tasks/ToolTipInstance.qml" "$tasks/AudioStream.qml" \
             "$tasks/ContextMenu.qml" "$tasks/Task.qml" \
             /usr/share/plasma/plasmoids/org.kde.plasma.systemmonitor/contents/ui/main.qml \
@@ -41,6 +42,12 @@ if [ "$1" = install ] || [ "$1" = upgrade ]; then
             /usr/bin/kvantummanager /usr/share/applications/kvantummanager.desktop; do
         dpkg-divert --package kernora-desktop --add --rename \
             --divert "$file.kde" "$file"
+    done
+    for file in /usr/bin/waydroid /usr/share/applications/Waydroid.desktop \
+            /usr/share/applications/waydroid.app.install.desktop \
+            /usr/share/applications/waydroid.market.desktop; do
+        dpkg-divert --package kernora-desktop --add --rename \
+            --divert "$file.waydroid" "$file"
     done
 fi
 

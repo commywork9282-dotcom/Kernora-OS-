@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Android apps
+Name[ru]=Android-приложения
+Icon=org.kernora.android
+Exec=kernora-appsplash
+NoDisplay=true

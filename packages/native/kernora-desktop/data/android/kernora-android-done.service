@@ -1,0 +1,6 @@
+[Unit]
+Description=Tell when Android apps are set up
+
+[Service]
+Type=exec
+ExecStart=/usr/libexec/kernora-android-session --done

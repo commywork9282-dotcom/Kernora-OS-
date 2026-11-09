@@ -46,7 +46,7 @@ public:
     bool available() const;
 
     Q_INVOKABLE void check();
-    Q_INVOKABLE void install();
+    Q_INVOKABLE void install(const QStringList &names = {});
 
 Q_SIGNALS:
     void stateChanged();

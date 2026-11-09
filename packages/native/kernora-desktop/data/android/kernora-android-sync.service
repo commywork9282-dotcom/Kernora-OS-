@@ -1,0 +1,7 @@
+[Unit]
+Description=Give Android the Kernora colour and theme
+ConditionPathExists=/var/lib/waydroid/waydroid.cfg
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/kernora-android-session --sync

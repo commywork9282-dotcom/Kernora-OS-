@@ -1,48 +1,350 @@
-kernora-desktop (1.4.69.2) UNRELEASED; urgency=medium
+kernora-desktop (1.4.74) UNRELEASED; urgency=medium
+
+  * Android apps start once right after setup, before "ready" is announced:
+    Google Play and the app menu entries are there, and the first sign-in is
+    no longer cut off by Google Play services finishing their own setup.
+  * Text copied on the desktop can be pasted into Android apps.
+  * Android windows that grow on their own move back onto the screen.
+    Permission questions stay above other windows and out of the panel.
+  * Answers to permission questions reach the app that asked, also when
+    another Android window covers it.
+  * Bringing an Android window forward only reorders Android when it really
+    has another window on top, so the first click isn't swallowed.
+  * Opening an app no longer leaves a "Deleting (Failed)" notification.
+  * Android apps use the language chosen in Kernora.
+  * The time left while downloading Android is steadier.
+  * The size of Android apps counts their data. The package cache is cleaned
+    after setup.
+  * Saving an Android report asks for the password with its own message.
+  * Logging in starts with an empty desktop, as Settings says, instead of
+    reopening the apps of the last session.
+  * After a desktop update, restarting is offered.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 08 Nov 2026 10:00:00 -0800
+
+kernora-desktop (1.4.73) UNRELEASED; urgency=medium
 
   * The panel's widget list no longer offers Kernora's desktop widgets.
   * A desktop widget that is on a panel anyway shows as an icon that opens its
     card, instead of squeezing the card into the panel.
 
- -- Kernora Developers <developers@kernora.invalid>  Sat, 07 Nov 2026 12:45:00 -0800
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 07 Nov 2026 12:30:00 -0800
 
-kernora-desktop (1.4.69.1) UNRELEASED; urgency=medium
+kernora-desktop (1.4.72) UNRELEASED; urgency=medium
+
+  * Drivers: a catalog of optional drivers, a hardware scanner and a root job
+    that installs and removes them with progress and rollback.
+  * Finds firmware the kernel asked for and could not load.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 20:00:00 -0800
+
+kernora-desktop (1.4.71) UNRELEASED; urgency=medium
+
+  * Add Panel, Default Panel adds the Kernora panel instead of KDE's.
+  * A panel added after deleting the old one gets the launcher, quick
+    settings, clipboard and emoji shortcuts back.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 16:30:00 -0800
+
+kernora-desktop (1.4.70) UNRELEASED; urgency=medium
+
+  * Android windows survive an app restarting its screen: fullscreen,
+    maximize and position stay, and the last frame stays on screen meanwhile.
+  * Android apps scale to the window frame while it is being resized.
+  * Fullscreen, maximize and resize work for apps whose task has its own
+    affinity name.
+  * Only real permission questions become Kernora dialogs, one at a time.
+  * Video shows in apps that play through a wrapped context, like YouTube and
+    Google Photos: a small library in the composer gives those layers their
+    task, and software graphics can show the 16-bit video buffers.
+  * Clicks and the mouse wheel reach the Android window under the pointer:
+    Android's input order now follows focus, and a press waits for it.
+  * A window that appears under a still pointer knows where the pointer is.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 14:00:00 -0800
+
+kernora-desktop (1.4.69.2) UNRELEASED; urgency=medium
 
   * Keep stable and demo contents separated and use versions above the
     briefly published intermediate packages so all systems can update.
-  * Preserve the existing stable desktop contents and install the matching
+  * Preserve the existing demo desktop contents and install the matching
     desktop revision alongside the Files update.
 
  -- Kernora Developers <developers@kernora.invalid>  Fri, 06 Nov 2026 12:00:00 -0800
 
-kernora-desktop (1.4.55.3) UNRELEASED; urgency=medium
+kernora-desktop (1.4.69) UNRELEASED; urgency=medium
 
-  * Restore the full locale catalog instead of limiting Live images to
-    English and Russian locale definitions.
-  * Ensure every locale selected by Calamares is generated,
-    including Philippine English, Filipino and Tagalog.
-  * Repair missing configured system and Plasma user locales on upgrade
-    without changing the selected languages or regional formats.
+  * Android apps that can't be resized open as normal windows instead of
+    covering the whole Android screen and closing every other window.
+  * The display helper wakes the Android compositor twice a second, so a new
+    window can't leave it waiting forever and restart Android.
+  * A new Android window waits for its menu entry, so it gets the right icon
+    and its own panel button instead of sharing one marked W.
+  * Android windows are placed again when an app changes orientation or a
+    window goes away, and their backing surfaces are released on close.
+  * Android reports list open apps, why apps closed and Android restarts.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 05 Nov 2026 19:00:00 -0800
+
+kernora-desktop (1.4.68) UNRELEASED; urgency=medium
+
+  * Windows look like Chrome OS: a thin title bar with the icon and title on
+    the left and quiet buttons.
+  * Android permission questions open as Kernora dialogs. The Android dialog
+    is hidden and the answer is passed back to Android.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 04 Nov 2026 22:00:00 -0800
+
+kernora-desktop (1.4.67) UNRELEASED; urgency=medium
+
+  * Android apps: explain that they need a Wayland session instead of
+    failing silently under X11, and offer to sign out into Wayland.
+  * Android apps use the computer's time zone.
+  * Android apps open in real Kernora windows: kernora-android-display sits
+    between Android and the desktop, the desktop draws the frame, and moving
+    a window no longer goes through Android. Apps get their whole window,
+    with no Android title bar over their buttons and no see-through areas.
+  * Resizing happens in one step when the mouse is released.
+  * Windows stay open when another Android window covers them.
+  * Apps that can resize open large, and windows follow an app that asks for
+    the other orientation.
+  * Opening an app while Android is stopping no longer waits five minutes.
+  * Report a problem: add the session type, processor features, service
+    journals, kernel messages, native crashes and the rotated Waydroid log.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 04 Nov 2026 17:00:00 -0800
+
+kernora-desktop (1.4.66.1) UNRELEASED; urgency=medium
+
+  * Backport stable locale catalog restoration, installer preparation and
+    repair of missing configured locales to demo installations.
 
  -- Kernora Developers <developers@kernora.invalid>  Wed, 04 Nov 2026 20:15:00 -0800
 
-kernora-desktop (1.4.55.2) UNRELEASED; urgency=medium
+kernora-desktop (1.4.66) UNRELEASED; urgency=medium
 
-  * Preserve antialiased alpha edges in avatar masks in Settings, the
-    launcher, sign-in, lock and logout screens.
-  * Preserve soft mask edges for press effects on rounded controls.
-  * Bind ripple texture sources when their rendering layers become active.
+  * Backport the stable smoothing fix for account pictures and rounded
+    press effects, including active ripple texture initialization.
+  * Retain all existing demo features.
 
  -- Kernora Developers <developers@kernora.invalid>  Tue, 03 Nov 2026 20:45:00 -0800
 
-kernora-desktop (1.4.55.1) UNRELEASED; urgency=medium
+kernora-desktop (1.4.65) UNRELEASED; urgency=medium
 
-  * Add the CPU temperature widget, its menu preview and English/Russian labels.
-  * Show hottest or average CPU readings, two-minute history and session peak;
-    save Celsius/Fahrenheit and reading-mode preferences.
-  * Use KDE CPU sensors and show unavailable when no valid reading exists.
+  * Bring the stable CPU temperature widget and its menu preview to demo
+    systems, retaining the existing Android features.
+  * Include CPU sensor dependencies and English/Russian translations.
 
- -- Kernora Developers <developers@kernora.invalid>  Tue, 03 Nov 2026 12:00:00 -0800
+ -- Kernora Developers <developers@kernora.invalid>  Tue, 03 Nov 2026 19:00:00 -0800
+
+kernora-desktop (1.4.64) UNRELEASED; urgency=medium
+
+  * Android windows are no longer resized after an app starts. Widening
+    every new window was a configuration change: Unity games such as
+    Toca Boca World lost their surface and died, logins reset and windows
+    jumped through several sizes. Android remembers a size the user picks.
+    kernora-android-windows only runs with several monitors and moves a
+    new window that lands across two of them onto the main one, without
+    changing its size.
+  * Only apps: the sync turns off Android's phone apps that nothing on a
+    computer needs and that kept running in the background (the Google
+    app, Messages, Contacts, Clock, IMS, Seedvault, calendar sync, Android
+    Auto), about 500 MB less memory in a GAPPS image.
+  * Android stops completely 30 minutes after its last window closed and
+    gives all its memory back (suspend_action stop); with "Open apps
+    faster" on it is frozen instead, as before. Android's screensaver is
+    off: Waydroid reports a charging battery, so Android wanted to start a
+    dream at the timeout and never slept. The window helper keeps Android
+    awake (screen_off_timeout at the maximum) while any app window is open
+    and sets 30 minutes when the last one closes.
+  * The waydroid command lets users run app commands only; show-full-ui
+    and first-launch say that Full UI mode is disabled.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 22:00:00 -0700
+
+kernora-desktop (1.4.63) UNRELEASED; urgency=medium
+
+  * Android started in no virtual machine with a virtio GPU without 3D:
+    the GPU's DRM device is the PCI device (driver virtio-pci), not
+    virtio_gpu, so the check for virgl never ran, Waydroid chose Mesa and
+    SurfaceFlinger aborted every five seconds ("output buffer not gpu
+    writeable"). Windows stayed see-through and nothing opened. The check
+    now reads device/virtio*/features as well.
+  * Any computer where SurfaceFlinger keeps crashing gets the same way
+    out: 40 seconds after Android starts without booting, the session asks
+    kernora-android graphics-check (through kernora-android-refresh), which
+    samples SurfaceFlinger's pid twice. If it changed, Android draws in
+    software on this computer from then on (kept with the list of DRM
+    devices) and restarts once.
+  * Android's "isn't responding" dialog is back (hide_error_dialogs 0):
+    with it hidden Android killed the app on every ANR, and right after
+    boot Google Play and others vanished that way. Android's ANR timeouts
+    are three times longer instead (ro.hw_timeout_multiplier=3).
+  * The update service no longer installs or restarts the container while
+    Android is starting (a running "waydroid session start" counts as
+    active), and the refresh before a start waits for a running update
+    instead of skipping it.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 20:00:00 -0700
+
+kernora-desktop (1.4.62) UNRELEASED; urgency=medium
+
+  * Android apps move between monitors. Waydroid has a single Android
+    screen and every Android window is a see-through window of that size,
+    so a window could not leave the first monitor. With more than one
+    monitor, kernora-android-session --screens records the layout before
+    Android starts, the refresh puts persist.waydroid.width/height for
+    the whole desktop into waydroid.cfg, and a KWin rule (kernora-android
+    in the user's kwinrulesrc) keeps Android's windows at the desktop's
+    corner. New windows open on the main monitor. Android's own maximize
+    then covers every monitor.
+  * kernora-android report saves what Android apps logged, recent crash
+    reports, the graphics and network state and the Waydroid log in the
+    user's Downloads, for Kernora's developers.
+  * Android sleeps 30 minutes after its last window closes instead of one
+    (screen_off_timeout): Waydroid freezes it then, which stopped Google
+    Play downloads. Private DNS is off; the computer resolves names.
+  * A virtio GPU without 3D counts as no GPU, so Android in a virtual
+    machine draws in software instead of showing black windows.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 12:00:00 -0700
+
+kernora-desktop (1.4.61) UNRELEASED; urgency=medium
+
+  * Android apps run apps built only for ARM, which is most of Google Play.
+    kernora-android-device downloads an ARM translator for the processor
+    (Google's libndk_translation on AMD, Intel's libhoudini on Intel, from
+    pinned archives checked by SHA-256), copies it into Waydroid's system
+    overlay and adds the ARM ABIs and the native bridge to waydroid.cfg.
+    It comes with the setup; Android apps that are already set up get it
+    from the update service. The binfmt_misc rules are left out, since
+    registering them in the container would take over ARM executables on
+    the host.
+  * Android apps no longer open as black windows when the screen runs on
+    an NVIDIA card: if the boot VGA card is driven by nvidia or nouveau,
+    or no other render node exists, Android draws in software (gralloc
+    default, SwiftShader, Vulkan pastel). Waydroid picked the integrated
+    GPU there, whose buffers KWin on the NVIDIA card cannot show.
+  * The choice is checked before every start of Android
+    (kernora-android-refresh through polkit org.kernora.android.refresh),
+    so a new driver or card is picked up; Kernora keeps track of the
+    properties it set and takes them back out when they no longer apply.
+  * The window helper remembers apps by install (package and first
+    install time), so an app that is removed and installed again opens in
+    a computer-sized window again instead of the phone size.
+  * Apps that start with a see-through trampoline activity (VLC's
+    StartActivity, many splash screens) were skipped for good when opened
+    while Android ran; the helper now looks at a new task again for a few
+    seconds until its real window is up.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 03:00:00 -0700
+
+kernora-desktop (1.4.60) UNRELEASED; urgency=medium
+
+  * Android apps type in the keyboard layout chosen in Kernora. Waydroid
+    hands Android raw key codes, so Android always used US English and
+    Russian typed as Latin letters. Once Android is up, and on every
+    layout switch in Plasma, kernora-android-keyboard sets the same layout
+    for Waydroid's keyboard through Android's input service (no toast, no
+    key presses), and Android keeps only that one.
+  * The sync turns off the system on-screen keyboard app itself instead
+    of only its input method: Android enabled it again after every
+    restart of its system, and it then opened as an "InputMethod" window.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 01 Nov 2026 01:00:00 -0700
+
+kernora-desktop (1.4.59) UNRELEASED; urgency=medium
+
+  * Android apps keep to apps: the sync turns off Android's on-screen
+    keyboards (the physical keyboard types straight into the app, and the
+    keyboard no longer opens as a big window of its own), hides Android's
+    "isn't responding" and "has stopped" dialogs (hide_error_dialogs),
+    marks the device as set up and turns off Google's and LineageOS's
+    setup wizards, so nothing asks to finish setting up the device.
+  * Hidden entries with the Kernora icon for more Android windows: the
+    keyboard, Settings search, the setup wizard, device provisioning and
+    speech services.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 23:00:00 -0700
+
+kernora-desktop (1.4.58) UNRELEASED; urgency=medium
+
+  * Android apps open in computer-sized windows: the new
+    /usr/libexec/kernora-android-windows (started through polkit once
+    Android has booted) follows Android's wm_create_task events and gives
+    every app's first window a landscape size of about three quarters of
+    the screen. Apps that ask for portrait only, see-through windows and
+    Android's own dialogs keep their size, and a window that ends up
+    letterboxed goes back. Android remembers the size per app afterwards.
+  * Android uses Kernora's scale: the sync sets the density to 160 times
+    the scale of the main screen and follows scale changes.
+  * Android calls this computer "Kernora Laptop" or "Kernora PC" (from
+    the chassis) instead of "WayDroid x86_64 Device", in Google Play too,
+    and apps see a Wi-Fi connection so downloads and updates are not
+    held back. Existing setups get this once no app is open.
+  * Setting up shows one progress from the start, including Waydroid's
+    own packages, and the bytes downloaded. When the setup ends, a
+    notification says so and opens Settings.
+  * The sync keeps the Google device ID and whether a Google account is
+    signed in in /var/lib/kernora/android/google for the Google Play
+    steps in Settings; "kernora-android-session --google" starts Android
+    and waits for the ID.
+  * Waiting for Android also counts three seconds after
+    sys.user.0.ce_available as ready: Waydroid missed the unlock event on
+    a first boot with Google Play, so nothing after boot ran.
+  * The download shows the time left only after five seconds of data.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 20:00:00 -0700
+
+kernora-desktop (1.4.57) UNRELEASED; urgency=medium
+
+  * Android apps download their image much faster: the new
+    /usr/libexec/kernora-android-fetch finds several SourceForge mirrors,
+    fetches the image in parts from all of them at once, lets fast mirrors
+    take over the rest of a slow or stuck one, checks the SHA-256 from the
+    Waydroid OTA channel and puts system.img and vendor.img in place with
+    their dates in waydroid.cfg, so "waydroid init" does not download them
+    again. Waydroid's own single-mirror download stays as the fallback.
+  * The state file and "kernora-android status" report the time left.
+  * Daily image updates use the same download, keep a downloaded image
+    until no app is open and install it with "waydroid upgrade -o".
+    Setting up or removing Android apps stops a running update first.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 31 Oct 2026 12:00:00 -0700
+
+kernora-desktop (1.4.56) UNRELEASED; urgency=medium
+
+  * Android apps, first demo: /usr/libexec/kernora-android sets Android up
+    on request from Settings. It adds Debian's trixie-backports for
+    Waydroid only, installs Waydroid without recommends, downloads the
+    LineageOS 20 image the user picked (plain or with Google Play) with
+    progress in /var/lib/kernora/android/state, turns on separate windows
+    for every app and starts the container. It can cancel the download,
+    print the Google device ID and remove Android with every user's data.
+  * /usr/bin/waydroid is diverted to a wrapper: launching, installing or
+    removing an app first starts the kernora-android user service and
+    waits until Android has finished booting, with a "Starting Android"
+    notification, so an app opens on the first try from anywhere.
+  * Waydroid's own launcher entry and APK handler are diverted; .apk files
+    open in Kernora's installer.
+  * Icon theme: Android, APK, APK installer and Google Play symbols.
+  * Android app windows wear the Kernora title bar: a static overlay,
+    KernoraCaption, built by tools/gen-android-overlay (own binary XML and
+    resource table, signed with AOSP's public platform test key that the
+    image uses) gives Android's caption the Material surface colours and
+    Material Symbols with Kernora's pressed circles.
+  * kernora-android-sync (no password for the active user) hands Android
+    the Kernora colour as its Material You seed and the light or dark
+    theme, lists Android's own packages so their entries stay out of the
+    launcher, and turns off the image's own updater. It runs when Android
+    has booted and whenever kdeglobals or kernorarc change.
+  * kernora-android-update.timer installs a new image once a day when one
+    is out and no app is open.
+  * Hidden entries give Android's permission, installer and Google
+    windows the Kernora icon; the market:// handler no longer says
+    Waydroid.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 30 Oct 2026 20:00:00 -0700
 
 kernora-desktop (1.4.55) UNRELEASED; urgency=medium
 

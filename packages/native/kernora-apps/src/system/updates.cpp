@@ -135,22 +135,33 @@ void Updates::fetchUpdates()
     });
 }
 
-void Updates::install()
+void Updates::install(const QStringList &names)
 {
-    if (m_ids.isEmpty() || m_state == Installing) {
+    QStringList ids;
+    for (const QString &id : std::as_const(m_ids)) {
+        if (names.isEmpty() || names.contains(Daemon::packageName(id))) {
+            ids.append(id);
+        }
+    }
+    if (ids.isEmpty() || m_state == Installing) {
         return;
     }
     m_error.clear();
     m_progress = 0;
     setState(Installing);
-    Transaction *update = Daemon::updatePackages(m_ids, Transaction::TransactionFlagOnlyTrusted);
+    Transaction *update = Daemon::updatePackages(ids, Transaction::TransactionFlagOnlyTrusted);
     track(update);
-    connect(update, &Transaction::finished, this, [this](Transaction::Exit exit) {
+    connect(update, &Transaction::finished, this, [this, ids](Transaction::Exit exit) {
         if (exit == Transaction::ExitSuccess) {
-            m_ids.clear();
-            m_packages.clear();
+            for (const QString &id : ids) {
+                const qsizetype at = m_ids.indexOf(id);
+                if (at >= 0) {
+                    m_ids.removeAt(at);
+                    m_packages.removeAt(at);
+                }
+            }
             Q_EMIT packagesChanged();
-            setState(Installed);
+            setState(m_ids.isEmpty() ? Installed : UpdatesAvailable);
         } else if (exit == Transaction::ExitCancelled || exit == Transaction::ExitEulaRequired) {
             setState(UpdatesAvailable);
         } else {

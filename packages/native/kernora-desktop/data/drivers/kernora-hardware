@@ -1,0 +1,482 @@
+#!/usr/bin/python3
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+SECURE_BOOT = "SecureBoot-8be4df61-93ca-11d2-aa0d-00e098032b8c"
+ORDER = ("graphics", "wifi", "network", "bluetooth", "audio", "camera", "printer", "storage",
+         "input", "usb", "processor", "other", "system")
+ESSENTIAL = {"graphics", "wifi", "network", "bluetooth", "audio", "storage"}
+PCI_CLASSES = (
+    ("03", "graphics"), ("0280", "wifi"), ("02", "network"), ("0d11", "bluetooth"), ("0d", "wifi"),
+    ("0401", "audio"), ("0403", "audio"), ("0400", "camera"), ("01", "storage"), ("0c03", "usb"),
+    ("04", "other"), ("07", "other"), ("09", "input"),
+)
+VENDORS = {"Advanced Micro Devices": "AMD", "Hewlett-Packard": "HP", "Hewlett Packard": "HP",
+           "MEDIATEK": "MediaTek", "Logitech": "Logitech"}
+VENDOR_NOISE = re.compile(
+    r"\[[^]]*\]|,?\s+(Inc|Corporation|Corp|Co|Ltd|Limited|LLC|GmbH|Semiconductor|Technology|"
+    r"Technologies|Electronics|International|and subsidiaries)\b\.?,?",
+    re.IGNORECASE)
+BRACKET = re.compile(r"\[([^]]+)\]")
+HEADINGS = {"wifi": "Wi-Fi", "usb": "USB"}
+
+
+def read(path, default=""):
+    try:
+        return path.read_text(errors="replace").strip()
+    except OSError:
+        return default
+
+
+def link(path):
+    try:
+        return os.path.basename(os.readlink(path))
+    except OSError:
+        return ""
+
+
+def load_json(path, default):
+    try:
+        return json.loads(path.read_text())
+    except (OSError, ValueError):
+        return default
+
+
+def lookup(path, wanted):
+    vendors = {vendor for vendor, _ in wanted}
+    vendor_names = {}
+    device_names = {}
+    vendor = ""
+    try:
+        stream = open(path, encoding="utf-8", errors="replace")
+    except OSError:
+        return vendor_names, device_names
+    with stream:
+        for line in stream:
+            if line.startswith("C "):
+                break
+            if line.startswith("#") or len(line) < 6:
+                continue
+            if line[0] != "\t":
+                vendor = line[:4]
+                if vendor in vendors:
+                    vendor_names[vendor] = line[4:].strip()
+            elif line[1] != "\t" and (vendor, line[1:5]) in wanted:
+                device_names[(vendor, line[1:5])] = line[5:].strip()
+    return vendor_names, device_names
+
+
+def short_vendor(name):
+    for full, short in VENDORS.items():
+        if name.startswith(full):
+            return short
+    return " ".join(VENDOR_NOISE.sub("", name).split()).strip(" ,")
+
+
+def device_label(category, vendor, text):
+    bracket = BRACKET.search(text)
+    if category == "graphics" and bracket:
+        text = bracket.group(1)
+    else:
+        text = " ".join(BRACKET.sub("", text).split())
+    if not text:
+        return vendor
+    if not vendor or text.lower().startswith(vendor.split()[0].lower()):
+        return text
+    return f"{vendor} {text}"
+
+
+def pci_category(code):
+    for prefix, category in PCI_CLASSES:
+        if code.startswith(prefix):
+            return category
+    return "system"
+
+
+def module_of(device):
+    return link(device / "driver" / "module")
+
+
+def version_of(root, module, kernel):
+    if not module:
+        return kernel
+    return read(root / "sys/module" / module / "version") or kernel
+
+
+def has_wifi(device, depth=3):
+    try:
+        entries = list(device.iterdir())
+    except OSError:
+        return False
+    for entry in entries:
+        if entry.name == "phy80211":
+            return True
+        if depth > 0 and not entry.is_symlink() and entry.is_dir() and entry.name != "subsystem":
+            if has_wifi(entry, depth - 1):
+                return True
+    return False
+
+
+def scan_pci(root, kernel):
+    devices = []
+    base = root / "sys/bus/pci/devices"
+    if not base.is_dir():
+        return devices
+    for path in sorted(base.iterdir()):
+        vendor = read(path / "vendor").removeprefix("0x")
+        device = read(path / "device").removeprefix("0x")
+        code = read(path / "class").removeprefix("0x")
+        if not vendor or not device:
+            continue
+        category = pci_category(code)
+        driver = link(path / "driver")
+        module = module_of(path)
+        devices.append({
+            "id": f"pci:{path.name}", "bus": "pci", "address": path.name, "category": category,
+            "vendorId": vendor, "deviceId": device, "classId": code[:4], "driver": driver,
+            "module": module, "version": version_of(root, module, kernel) if driver else "",
+            "wifi": has_wifi(path),
+        })
+    return devices
+
+
+def usb_category(interfaces):
+    classes = {(item["class"], item["subclass"], item["protocol"]) for item in interfaces}
+    codes = {item["class"] for item in interfaces}
+    if any(item["wifi"] for item in interfaces):
+        return "wifi"
+    if "07" in codes:
+        return "printer"
+    if "0e" in codes:
+        return "camera"
+    if ("e0", "01", "01") in classes:
+        return "bluetooth"
+    if "01" in codes:
+        return "audio"
+    if "08" in codes:
+        return "storage"
+    if "03" in codes:
+        return "input"
+    if "06" in codes:
+        return "camera"
+    if "02" in codes or "0a" in codes:
+        return "network"
+    return "other"
+
+
+def scan_usb(root, kernel):
+    devices = []
+    base = root / "sys/bus/usb/devices"
+    if not base.is_dir():
+        return devices
+    for path in sorted(base.iterdir()):
+        if ":" in path.name or path.name.startswith("usb"):
+            continue
+        vendor = read(path / "idVendor")
+        product = read(path / "idProduct")
+        if not vendor or not product or read(path / "bDeviceClass") == "09":
+            continue
+        interfaces = []
+        for entry in sorted(path.iterdir()):
+            if ":" not in entry.name or not (entry / "bInterfaceClass").exists():
+                continue
+            interfaces.append({
+                "class": read(entry / "bInterfaceClass"),
+                "subclass": read(entry / "bInterfaceSubClass"),
+                "protocol": read(entry / "bInterfaceProtocol"),
+                "driver": link(entry / "driver"),
+                "module": module_of(entry),
+                "wifi": has_wifi(entry),
+            })
+        if interfaces and all(item["class"] == "09" for item in interfaces):
+            continue
+        drivers = list(dict.fromkeys(item["driver"] for item in interfaces if item["driver"]))
+        modules = list(dict.fromkeys(item["module"] for item in interfaces if item["module"]))
+        module = modules[0] if modules else ""
+        devices.append({
+            "id": f"usb:{path.name}", "bus": "usb", "address": path.name,
+            "category": usb_category(interfaces), "vendorId": vendor, "deviceId": product,
+            "classId": "", "driver": ", ".join(drivers), "module": module,
+            "version": version_of(root, module, kernel) if drivers else "",
+            "wifi": any(item["wifi"] for item in interfaces),
+            "usbClasses": sorted({item["class"] for item in interfaces}),
+            "speed": read(path / "speed"),
+            "product": read(path / "product"),
+            "manufacturer": read(path / "manufacturer"),
+        })
+    return devices
+
+
+def clean_cpu(model):
+    model = re.sub(r"\((R|TM)\)|\s+CPU\s+@.*$|\s+@.*$", "", model)
+    return " ".join(model.split())
+
+
+def scan_cpu(root):
+    model = ""
+    for line in read(root / "proc/cpuinfo").splitlines():
+        if line.startswith("model name"):
+            model = line.split(":", 1)[1].strip()
+            break
+    if not model:
+        return []
+    microcode = read(root / "sys/devices/system/cpu/cpu0/microcode/version")
+    return [{
+        "id": "cpu:0", "bus": "cpu", "address": "", "category": "processor", "vendorId": "",
+        "deviceId": "", "classId": "", "driver": "", "module": "", "version": "",
+        "microcode": microcode, "wifi": False, "name": clean_cpu(model),
+    }]
+
+
+def name_devices(root, devices):
+    for bus, table in (("pci", "usr/share/misc/pci.ids"), ("usb", "usr/share/misc/usb.ids")):
+        members = [device for device in devices if device["bus"] == bus]
+        wanted = {(device["vendorId"], device["deviceId"]) for device in members}
+        vendors, names = lookup(root / table, wanted)
+        for device in members:
+            key = (device["vendorId"], device["deviceId"])
+            vendor = short_vendor(vendors.get(key[0], "") or device.get("manufacturer", ""))
+            text = names.get(key, "") or device.get("product", "")
+            device["vendor"] = vendor
+            device["name"] = device_label(device["category"], vendor, text)
+            device.pop("manufacturer", None)
+            device.pop("product", None)
+
+
+def missing_firmware(root):
+    return load_json(root / "var/lib/kernora/drivers/firmware-missing.json", [])
+
+
+def owner_of(root, entry):
+    device = entry.get("device", "")
+    if device.startswith("hci"):
+        target = os.path.realpath(root / "sys/class/bluetooth" / device / "device")
+        return f"usb:{os.path.basename(target).split(':')[0]}"
+    return f"pci:{device}"
+
+
+def firmware_package(catalog, file):
+    best = ""
+    package = ""
+    for prefix, candidate in catalog.get("firmware", []):
+        if file.startswith(prefix) and len(prefix) > len(best):
+            best = prefix
+            package = candidate
+    return package
+
+
+def installed_packages(names):
+    if not names or not shutil.which("dpkg-query"):
+        return set()
+    done = subprocess.run(["dpkg-query", "-W", "-f=${Package} ${db:Status-Abbrev}\n", *sorted(names)],
+                          capture_output=True, text=True, check=False)
+    return {line.split()[0] for line in done.stdout.splitlines()
+            if len(line.split()) > 1 and line.split()[1].startswith("ii")}
+
+
+def virtualization():
+    if not shutil.which("systemd-detect-virt"):
+        return "none"
+    done = subprocess.run(["systemd-detect-virt"], capture_output=True, text=True, check=False)
+    return done.stdout.strip() or "none"
+
+
+def secure_boot(root):
+    try:
+        return (root / "sys/firmware/efi/efivars" / SECURE_BOOT).read_bytes()[-1:] == b"\x01"
+    except OSError:
+        return False
+
+
+def machine_info(root, kernel):
+    dmi = root / "sys/class/dmi/id"
+    release = read(root / "etc/os-release")
+    pretty = re.search(r'^PRETTY_NAME="?([^"\n]*)', release, re.MULTILINE)
+    return {
+        "vendor": read(dmi / "sys_vendor"), "product": read(dmi / "product_name"),
+        "bios": read(dmi / "bios_version"), "kernel": kernel, "virt": virtualization(),
+        "os": pretty.group(1) if pretty else "", "secureBoot": secure_boot(root),
+        "live": (root / "run/live/medium").exists(),
+    }
+
+
+def matches(rule, devices, machine):
+    pci = [device for device in devices if device["bus"] == "pci"]
+    if "virt" in rule and machine["virt"] not in rule["virt"]:
+        return False
+    if "usb" in rule:
+        usb = {code for device in devices for code in device.get("usbClasses", [])}
+        if not usb.intersection(rule["usb"]):
+            return False
+    device_rules = {"pci", "pciVendor", "pciClass"} & rule.keys()
+    if not device_rules:
+        return True
+    for device in pci:
+        pair = f"{device['vendorId']}:{device['deviceId']}"
+        if "pci" in rule and pair not in rule["pci"]:
+            continue
+        if "pciVendor" in rule and device["vendorId"] not in rule["pciVendor"]:
+            continue
+        if "pciClass" in rule and not device["classId"].startswith(tuple(rule["pciClass"])):
+            continue
+        if rule.get("wifi") is False and device["wifi"]:
+            continue
+        return True
+    return False
+
+
+def describe(item, state, machine, tracked, recommended):
+    blocked = ""
+    if machine["live"]:
+        blocked = "live"
+    elif item.get("module") and machine["secureBoot"]:
+        blocked = "secureboot"
+    return {
+        "id": item["id"], "icon": item.get("icon", "cpu"), "name": item["name"], "text": item["text"],
+        "state": state, "recommended": recommended, "blocked": blocked, "removable": tracked,
+        "restart": bool(item.get("restart")), "nonFree": item.get("source") == "non-free",
+        "open": item.get("open", ""),
+    }
+
+
+def firmware_items(root, catalog, devices, machine, installed):
+    groups = {}
+    known = {device["id"]: device for device in devices}
+    for entry in missing_firmware(root):
+        package = firmware_package(catalog, entry.get("file", ""))
+        if not package or package in installed:
+            continue
+        owner = known.get(owner_of(root, entry))
+        group = groups.setdefault(package, {"owner": owner, "files": []})
+        group["files"].append(entry["file"])
+        if owner:
+            owner["status"] = "firmware"
+            owner.setdefault("firmware", []).append(entry["file"])
+    items = []
+    for package, group in sorted(groups.items()):
+        label = group["owner"]["name"] if group["owner"] and group["owner"]["name"] else ""
+        item = {
+            "id": f"firmware:{package}", "icon": "system-software-update", "restart": True,
+            "name": {"en": "Device firmware", "ru": "Прошивка устройства"},
+            "text": {"en": f"{label} needs it to work" if label else "A device needs it to work",
+                     "ru": f"Нужна для работы: {label}" if label else "Нужна для работы устройства"},
+        }
+        items.append(describe(item, "available", machine, False, True))
+    return items
+
+
+def catalog_items(root, catalog, devices, machine, installed):
+    items = []
+    tracked = root / "var/lib/kernora/drivers/items"
+    for item in catalog.get("items", []):
+        ours = (tracked / f"{item['id']}.json").exists()
+        if item["marker"] in installed:
+            items.append(describe(item, "installed", machine, ours, False))
+        elif matches(item.get("match", {}), devices, machine):
+            recommended = "recommend" in item and matches(item["recommend"], devices, machine)
+            items.append(describe(item, "available", machine, False, recommended))
+    return items
+
+
+def mark_offers(catalog, devices, items, nvidia):
+    available = {item["id"] for item in items if item["state"] == "available"}
+    pairs = {pair: item["id"] for item in catalog.get("items", []) if item["id"] in available
+             for pair in item.get("match", {}).get("pci", [])}
+    wanted = nvidia.get("family") in ("open", "legacy") and nvidia.get("installed") != "yes"
+    for device in devices:
+        offer = pairs.get(f"{device['vendorId']}:{device['deviceId']}", "")
+        if wanted and device["vendorId"] == "10de" and device["category"] == "graphics":
+            offer = "nvidia"
+        device["offer"] = offer
+
+
+def nvidia_status(root):
+    tool = root / "usr/libexec/kernora-drivers"
+    if not os.access(tool, os.X_OK):
+        return {}
+    done = subprocess.run([str(tool), "status"], capture_output=True, text=True, check=False)
+    return dict(line.split("=", 1) for line in done.stdout.splitlines() if "=" in line)
+
+
+def scan(root):
+    catalog = load_json(root / "usr/share/kernora/hardware/catalog.json", {})
+    kernel = read(root / "proc/sys/kernel/osrelease")
+    machine = machine_info(root, kernel)
+    devices = scan_pci(root, kernel) + scan_usb(root, kernel)
+    name_devices(root, devices)
+    devices += scan_cpu(root)
+    for device in devices:
+        if device["bus"] == "cpu" or device["driver"]:
+            device["status"] = "ok"
+        elif device["category"] in ESSENTIAL:
+            device["status"] = "none"
+        else:
+            device["status"] = "idle"
+    names = {item["marker"] for item in catalog.get("items", [])}
+    names.update(package for _, package in catalog.get("firmware", []))
+    installed = installed_packages(names)
+    items = firmware_items(root, catalog, devices, machine, installed)
+    items += catalog_items(root, catalog, devices, machine, installed)
+    nvidia = nvidia_status(root)
+    mark_offers(catalog, devices, items, nvidia)
+    devices.sort(key=lambda device: (ORDER.index(device["category"]), device["name"].lower()))
+    return {"machine": machine, "devices": devices, "items": items, "nvidia": nvidia,
+            "updates": catalog.get("updates", [])}
+
+
+def report(data):
+    machine = data["machine"]
+    computer = " ".join(part for part in (machine["vendor"], machine["product"]) if part)
+    lines = [
+        "Kernora hardware report", "",
+        f"System: {machine['os']}", f"Kernel: {machine['kernel']}",
+        f"Computer: {computer or 'unknown'}", f"BIOS: {machine['bios'] or 'unknown'}",
+        f"Virtual machine: {machine['virt']}",
+        f"Secure Boot: {'on' if machine['secureBoot'] else 'off'}",
+    ]
+    category = ""
+    for device in data["devices"]:
+        if device["category"] != category:
+            category = device["category"]
+            lines += ["", HEADINGS.get(category, category.capitalize())]
+        ids = f" [{device['vendorId']}:{device['deviceId']}]" if device["vendorId"] else ""
+        state = device["driver"] or ("no driver" if device["status"] == "none" else "-")
+        if device.get("version") and device["version"] != machine["kernel"]:
+            state += f" {device['version']}"
+        lines.append(f"  {device['name'] or 'Unknown device'}{ids}: {state}")
+        lines += [f"    missing firmware: {file}" for file in device.get("firmware", [])]
+    installed = [item["id"] for item in data["items"] if item["state"] == "installed"]
+    if data["nvidia"].get("installed") == "yes":
+        installed.insert(0, f"nvidia {data['nvidia'].get('version', '')}".strip())
+    lines += ["", f"Installed from Drivers: {', '.join(installed) or 'nothing'}", ""]
+    return "\n".join(lines)
+
+
+def main():
+    arguments = sys.argv[1:]
+    root = Path("/")
+    if arguments[:1] == ["--root"]:
+        root = Path(arguments[1])
+        arguments = arguments[2:]
+    command = arguments[0] if arguments else "scan"
+    if command == "scan":
+        json.dump(scan(root), sys.stdout, ensure_ascii=False)
+        print()
+    elif command == "report":
+        print(report(scan(root)), end="")
+    else:
+        print("usage: kernora-hardware [--root DIR] scan|report", file=sys.stderr)
+        return 2
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

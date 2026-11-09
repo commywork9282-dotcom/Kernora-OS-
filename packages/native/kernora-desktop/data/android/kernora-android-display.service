@@ -1,0 +1,10 @@
+[Unit]
+Description=Android apps display
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStart=/usr/libexec/kernora-android-display
+Restart=on-failure

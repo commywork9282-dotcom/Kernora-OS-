@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Android apps
+Name[ru]=Android-приложения
+Comment=Opens app store links
+Comment[ru]=Открывает ссылки на магазин приложений
+Icon=org.kernora.android
+Exec=waydroid app intent android.intent.action.VIEW %u
+MimeType=x-scheme-handler/market;
+NoDisplay=true
