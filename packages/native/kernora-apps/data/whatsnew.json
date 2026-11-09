@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-11-08-2",
+    "date": "2026-11-08",
+    "items": [
+      {
+        "icon": "kernora-dock",
+        "title": {
+          "en": "Status bar at the top",
+          "ru": "Строка состояния сверху"
+        },
+        "text": {
+          "en": "The time and date now sit at the top left, and notifications, the network, the battery and what is playing sit at the top right. Quick settings and notifications drop down from the top, and the clock opens a calendar. Over the wallpaper the bar is clear, and it turns solid when a window reaches it.",
+          "ru": "Время и дата теперь слева вверху, а уведомления, сеть, батарея и то, что сейчас играет, — справа вверху. Быстрые настройки и уведомления выпадают сверху, а по нажатию на часы открывается календарь. Над обоями строка прозрачная, а когда к ней подходит окно, становится сплошной."
+        }
+      },
+      {
+        "icon": "window-maximize",
+        "title": {
+          "en": "A square taskbar",
+          "ru": "Прямоугольная панель задач"
+        },
+        "text": {
+          "en": "The bottom panel runs from edge to edge without rounded corners, and the apps button is square. The rounded panel and the layout with everything at the bottom are one tap away in Settings, Wallpaper and style, Panel.",
+          "ru": "Нижняя панель идёт от края до края без скруглённых углов, а кнопка приложений стала квадратной. Закруглённую панель и раскладку, где всё внизу, можно вернуть в Настройках: «Обои и стиль» → «Панель»."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-08-1",
     "date": "2026-11-08",
     "items": [

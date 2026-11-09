@@ -16,6 +16,7 @@ Item {
 
     required property QtObject backend
     property real progress: 1
+    property bool fromTop: false
 
     readonly property alias handleArea: handleArea
 
@@ -62,9 +63,10 @@ Item {
         id: handleArea
         anchors.left: parent.left
         anchors.right: parent.right
-        height: 28
+        height: root.fromTop ? 16 : 28
 
         Rectangle {
+            visible: !root.fromTop
             anchors.horizontalCenter: parent.horizontalCenter
             y: 12
             width: 32

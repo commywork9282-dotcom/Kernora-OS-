@@ -4077,3 +4077,42 @@ msgstr "Android запускается в первый раз. Это займё
 #: apps/settings/qml/pages/AndroidPage.qml:323
 msgid "Needs about 4 GB of space. Banking apps and games with anti-cheat don't work here."
 msgstr "Нужно около 4 ГБ места. Банковские приложения и игры с античитом здесь не работают."
+
+msgid "Layout"
+msgstr "Расположение"
+
+msgid "Status bar at the top"
+msgstr "Строка состояния сверху"
+
+msgid "Time and quick settings at the top"
+msgstr "Время и быстрые настройки сверху"
+
+msgid "Everything at the bottom"
+msgstr "Всё в нижней панели"
+
+msgid "Time and quick settings at the bottom right"
+msgstr "Время и быстрые настройки внизу справа"
+
+msgid "Panel shape"
+msgstr "Форма панели"
+
+msgid "Square"
+msgstr "Квадратная"
+
+msgid "Edge to edge, without rounded corners"
+msgstr "От края до края, без скруглённых углов"
+
+msgid "Rounded"
+msgstr "Закруглённая"
+
+msgid "Floating above the edge, with round ends"
+msgstr "Парит над краем экрана, с круглыми концами"
+
+msgid "Apps button"
+msgstr "Кнопка приложений"
+
+msgid "Round"
+msgstr "Круглая"
+
+msgid "The panel could not be changed."
+msgstr "Не удалось изменить панель."

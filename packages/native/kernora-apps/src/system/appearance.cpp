@@ -236,7 +236,9 @@ void Appearance::applyTheme(const QString &requestedColour, const QString &reque
 
     QDBusMessage panels = QDBusMessage::createMethodCall(QStringLiteral("org.kde.plasmashell"), QStringLiteral("/PlasmaShell"),
                                                          QStringLiteral("org.kde.PlasmaShell"), QStringLiteral("evaluateScript"));
-    panels.setArguments({QStringLiteral("panels().forEach(function (panel) { panel.floating = %1; });")
+    panels.setArguments({QStringLiteral("panels().forEach(function (panel) { if (panel.widgets('org.kernora.datetime').length > 0) { return; } "
+                                        "var square = panel.widgets('org.kernora.launcher').some(function (launcher) { launcher.currentConfigGroup = ['General']; "
+                                        "return String(launcher.readConfig('panelShape')) !== 'round'; }); panel.floating = square ? false : %1; });")
                              .arg(generation == QLatin1String("md1") ? QStringLiteral("false") : QStringLiteral("true"))});
     QDBusConnection::sessionBus().send(panels);
 

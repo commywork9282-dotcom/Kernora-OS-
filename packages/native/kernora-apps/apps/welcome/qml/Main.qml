@@ -515,7 +515,7 @@ AppWindow {
                 }
                 ListItem {
                     Layout.fillWidth: true
-                    title: i18n("Quick settings are on the right of the panel")
+                    title: i18n("Network and battery icons open quick settings")
                     subtitle: i18n("Wi-Fi, sound, brightness, Do Not Disturb and more")
                     icon: "preferences-desktop"
                     accent: 1

@@ -1,0 +1,148 @@
+#!/usr/bin/python3
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+import ast
+import configparser
+import fcntl
+import os
+import subprocess
+import sys
+import time
+
+SCRIPTS = "/usr/share/kernora/panel"
+SHORTCUTS = "/usr/libexec/kernora-panel-shortcuts"
+STYLES = ("statusbar", "classic")
+SHAPES = ("square", "round")
+STATUS = """
+var style = String(ConfigFile("kernora-shellrc", "Layout").readEntry("style")) === "classic" ? "classic" : "statusbar";
+var shape = "square";
+var panelShape = "square";
+var bar = false;
+var dock = false;
+panels().forEach(function (panel) {
+    bar = bar || panel.widgets("org.kernora.datetime").length > 0;
+    panel.widgets("org.kernora.launcher").forEach(function (launcher) {
+        dock = true;
+        launcher.currentConfigGroup = ["General"];
+        shape = String(launcher.readConfig("buttonShape")) === "round" ? "round" : "square";
+        panelShape = String(launcher.readConfig("panelShape")) === "round" ? "round" : "square";
+    });
+});
+print("style=" + style + " shape=" + shape + " panel=" + panelShape + " bar=" + (bar ? "yes" : "no") + " dock=" + (dock ? "yes" : "no"));
+"""
+SHAPE = """
+panels().forEach(function (panel) {
+    panel.widgets("org.kernora.launcher").forEach(function (launcher) {
+        launcher.currentConfigGroup = ["General"];
+        launcher.writeConfig("%s", "%s");
+        launcher.reloadConfig();
+    });
+});
+print("done");
+"""
+FLOATING = """
+panels().forEach(function (panel) {
+    if (panel.widgets("org.kernora.launcher").length > 0) {
+        panel.floating = %s;
+    }
+});
+print("done");
+"""
+
+
+def evaluate(script: str) -> str | None:
+    try:
+        reply = subprocess.run(["gdbus", "call", "--session", "--dest", "org.kde.plasmashell", "--object-path",
+                                "/PlasmaShell", "--method", "org.kde.PlasmaShell.evaluateScript", script],
+                               stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                               text=True, timeout=30, check=False)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if reply.returncode != 0:
+        return None
+    try:
+        return str(ast.literal_eval(reply.stdout.strip())[0])
+    except (SyntaxError, ValueError, IndexError):
+        return None
+
+
+def status() -> int:
+    result = evaluate(STATUS)
+    if result is None:
+        return 1
+    print("\n".join(result.split()))
+    return 0
+
+
+def style(name: str) -> int:
+    try:
+        with open(f"{SCRIPTS}/{name}.js", encoding="utf-8") as handle:
+            script = handle.read()
+    except OSError:
+        return 1
+    if name == "statusbar":
+        script = 'ConfigFile("kernora-shellrc", "Layout").writeEntry("style", "statusbar");\n' + script
+    if evaluate(script + '\nprint("done");\n') != "done":
+        return 1
+    subprocess.run([SHORTCUTS], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                   timeout=60, check=False)
+    return status()
+
+
+def setting(name: str, group: str, key: str, fallback: str) -> str:
+    path = os.path.join(os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config"), name)
+    config = configparser.ConfigParser(interpolation=None, strict=False)
+    try:
+        config.read(path, encoding="utf-8")
+    except (OSError, configparser.Error):
+        return fallback
+    return config.get(group, key, fallback=fallback)
+
+
+def generation() -> str:
+    return setting("kernorarc", "Style", "generation", "md3")
+
+
+def migrate() -> int:
+    runtime = os.environ.get("XDG_RUNTIME_DIR") or "/tmp"
+    with open(os.path.join(runtime, "kernora-panel-layout.lock"), "w", encoding="utf-8") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        if setting("kernora-shellrc", "Layout", "style", ""):
+            return 0
+        for _attempt in range(45):
+            result = evaluate(STATUS)
+            if result is not None and "dock=yes" in result.split():
+                return style("statusbar")
+            time.sleep(2)
+        return 1
+
+
+def shape(key: str, name: str) -> int:
+    if evaluate(SHAPE % (key, name)) != "done":
+        return 1
+    if key == "panelShape":
+        floating = "true" if name == "round" and generation() != "md1" else "false"
+        if evaluate(FLOATING % floating) != "done":
+            return 1
+    return status()
+
+
+def main() -> int:
+    if len(sys.argv) == 2 and sys.argv[1] == "status":
+        return status()
+    if len(sys.argv) == 2 and sys.argv[1] == "migrate":
+        return migrate()
+    if len(sys.argv) == 3 and sys.argv[1] == "style" and sys.argv[2] in STYLES:
+        return style(sys.argv[2])
+    if len(sys.argv) == 3 and sys.argv[1] == "shape" and sys.argv[2] in SHAPES:
+        return shape("buttonShape", sys.argv[2])
+    if len(sys.argv) == 3 and sys.argv[1] == "panel" and sys.argv[2] in SHAPES:
+        return shape("panelShape", sys.argv[2])
+    print("usage: kernora-panel-layout status | migrate | style statusbar|classic | shape square|round | panel square|round",
+          file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

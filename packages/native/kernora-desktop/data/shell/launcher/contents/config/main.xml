@@ -18,5 +18,11 @@
     <entry name="reclaimShortcuts" type="Bool">
       <default>false</default>
     </entry>
+    <entry name="buttonShape" type="String">
+      <default>square</default>
+    </entry>
+    <entry name="panelShape" type="String">
+      <default>square</default>
+    </entry>
   </group>
 </kcfg>

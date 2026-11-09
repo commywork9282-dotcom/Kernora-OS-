@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Panel layout
+Name[ru]=Раскладка панелей
+Icon=preferences-desktop
+Exec=/usr/libexec/kernora-panel-layout migrate
+NoDisplay=true
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=2

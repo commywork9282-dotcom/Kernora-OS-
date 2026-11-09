@@ -1,6 +1,7 @@
+var statusBar = String(ConfigFile("kernora-shellrc", "Layout").readEntry("style")) !== "classic";
 var panel = new Panel;
 panel.height = 56;
-panel.floating = true;
+panel.floating = false;
 panel.lengthMode = "fill";
 panel.hiding = "none";
 panel.opacity = "translucent";
@@ -31,8 +32,8 @@ panel.addWidget("org.kde.plasma.panelspacer");
 panel.addWidget("org.kde.plasma.icontasks");
 panel.addWidget("org.kde.plasma.panelspacer");
 
-var tray = panel.addWidget("org.kde.plasma.systemtray");
-var trayContainmentId = tray.readConfig("SystrayContainmentId");
+var tray = statusBar ? null : panel.addWidget("org.kde.plasma.systemtray");
+var trayContainmentId = tray ? tray.readConfig("SystrayContainmentId") : 0;
 if (trayContainmentId) {
     var trayContainment = desktopById(trayContainmentId);
     trayContainment.currentConfigGroup = ["General"];
@@ -58,9 +59,10 @@ if (trayContainmentId) {
     trayContainment.writeConfig("scaleIconsToFit", false);
 }
 
-panel.addWidget("org.kde.plasma.notifications");
-
-addWidget("org.kernora.quicksettings", "Meta+A");
+if (!statusBar) {
+    panel.addWidget("org.kde.plasma.notifications");
+    addWidget("org.kernora.quicksettings", "Meta+A");
+}
 
 addWidget("org.kernora.clipboard", "Meta+V");
 var emoji = addWidget("org.kernora.clipboard", "Meta+.");

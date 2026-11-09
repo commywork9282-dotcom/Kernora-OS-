@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/LayoutTemplate",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "",
+        "Description": "Status bar at the top with the time, notifications and quick settings",
+        "Description[ru]": "Строка состояния сверху со временем, уведомлениями и быстрыми настройками",
+        "EnabledByDefault": true,
+        "Id": "org.kernora.desktop.statusBar",
+        "License": "GPL-2.0+",
+        "Name": "Status Bar",
+        "Name[ru]": "Строка состояния"
+    },
+    "X-Plasma-ContainmentCategories": [
+        "panel"
+    ],
+    "X-Plasma-Shell": "plasmashell"
+}

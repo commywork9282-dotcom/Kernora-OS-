@@ -267,3 +267,47 @@ msgstr "Один и тот же файл выбран несколько раз.
 
 msgid "Select either a folder or its contents for this transfer."
 msgstr "Выберите для передачи папку или её содержимое."
+
+msgctxt "@title name of a group of apps"
+msgid "Games"
+msgstr "Игры"
+
+msgctxt "@title name of a group of apps"
+msgid "Media"
+msgstr "Медиа"
+
+msgctxt "@title name of a group of apps"
+msgid "Creativity"
+msgstr "Творчество"
+
+msgctxt "@title name of a group of apps"
+msgid "Productivity"
+msgstr "Работа"
+
+msgctxt "@title name of a group of apps"
+msgid "Internet"
+msgstr "Интернет"
+
+msgctxt "@title name of a group of apps"
+msgid "Development"
+msgstr "Разработка"
+
+msgctxt "@title name of a group of apps"
+msgid "Education"
+msgstr "Образование"
+
+msgctxt "@title name of a group of apps"
+msgid "Settings"
+msgstr "Настройки"
+
+msgctxt "@title name of a group of apps"
+msgid "System"
+msgstr "Система"
+
+msgctxt "@title name of a group of apps"
+msgid "Tools"
+msgstr "Инструменты"
+
+msgctxt "@title name of a group of apps"
+msgid "Apps"
+msgstr "Приложения"

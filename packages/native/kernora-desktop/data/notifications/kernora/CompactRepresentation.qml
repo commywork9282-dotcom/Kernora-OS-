@@ -31,6 +31,10 @@ MouseArea {
 
     property bool inhibited: false
 
+    readonly property bool bar: Plasmoid.location === PlasmaCore.Types.TopEdge
+    readonly property bool clear: bar && !(Plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentPrefersOpaqueBackground)
+    readonly property color ink: root.expanded ? (bar ? M3.primaryContent : M3.secondaryContainerContent) : clear ? "#ffffff" : M3.surfaceContent
+
     property bool wasExpanded: false
     onPressed: wasExpanded = root.expanded
     onClicked: mouse => {
@@ -46,10 +50,10 @@ MouseArea {
     Rectangle {
         id: container
         anchors.centerIn: parent
-        width: Math.min(40, compactRoot.width, compactRoot.height)
+        width: Math.min(compactRoot.bar ? 28 : 40, compactRoot.width, compactRoot.height)
         height: width
         radius: width / 2
-        color: root.expanded ? M3.secondaryContainer : "transparent"
+        color: root.expanded ? (compactRoot.bar ? M3.primary : M3.secondaryContainer) : "transparent"
         Behavior on color {
             ColorAnimation {
                 duration: M3.durationMedium1
@@ -60,7 +64,7 @@ MouseArea {
 
         MStateLayer {
             radius: container.radius
-            color: M3.surfaceContent
+            color: compactRoot.ink
             hovered: compactRoot.containsMouse
             pressed: compactRoot.pressed
             pressPoint: Qt.point(compactRoot.mouseX - container.x, compactRoot.mouseY - container.y)
@@ -122,9 +126,11 @@ MouseArea {
     MIcon {
         id: bell
         anchors.centerIn: container
-        size: compactRoot.jobsCount > 0 ? 18 : 24
-        color: root.expanded ? M3.secondaryContainerContent : M3.surfaceContent
-        source: compactRoot.inhibited ? "notifications-disabled" : "notification-inactive"
+        size: compactRoot.jobsCount > 0 ? (compactRoot.bar ? 14 : 18) : (compactRoot.bar ? 18 : 24)
+        color: compactRoot.ink
+        source: compactRoot.bar
+            ? (compactRoot.inhibited ? "kernora-bar-notifications-off" : "kernora-bar-notifications")
+            : (compactRoot.inhibited ? "notifications-disabled" : "notification-inactive")
         Behavior on size {
             NumberAnimation {
                 duration: M3.durationMedium2

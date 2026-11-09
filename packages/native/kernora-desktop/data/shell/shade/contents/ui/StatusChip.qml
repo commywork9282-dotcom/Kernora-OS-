@@ -5,6 +5,7 @@
 
 import QtQuick
 import QtQuick.Layouts
+import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import "m3"
@@ -17,6 +18,36 @@ Item {
 
     readonly property bool active: controller.opening
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    readonly property bool bar: Plasmoid.location === PlasmaCore.Types.TopEdge && !vertical
+    readonly property bool clear: bar && !(Plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentPrefersOpaqueBackground)
+    readonly property bool showMedia: bar && backend.mediaActive && backend.mediaTrack.length > 0
+    readonly property real mediaSpace: showMedia ? nowPlaying.width + 6 : 0
+    readonly property string barNetworkIcon: {
+        const name = backend.networkIcon;
+        if (backend.network && backend.network.wiredConnected) {
+            return "kernora-bar-ethernet";
+        }
+        if (!name.startsWith("network-wireless") || name.includes("offline") || name.includes("disabled")
+                || name.includes("disconnected")) {
+            return "kernora-bar-wifi-off";
+        }
+        if (name.includes("excellent") || name.includes("-100")) {
+            return "kernora-bar-wifi-4";
+        }
+        if (name.includes("good") || name.includes("-75")) {
+            return "kernora-bar-wifi-3";
+        }
+        if (name.includes("ok") || name.includes("-50")) {
+            return "kernora-bar-wifi-2";
+        }
+        if (name.includes("weak") || name.includes("-25")) {
+            return "kernora-bar-wifi-1";
+        }
+        if (name.includes("none") || name.includes("-00") || name.includes("acquiring")) {
+            return "kernora-bar-wifi-0";
+        }
+        return "kernora-bar-wifi-4";
+    }
     readonly property bool twelveHour: !backend.timeFormat.includes("H")
     readonly property string hourText: {
         const hour = backend.now.getHours();
@@ -31,7 +62,7 @@ Item {
     Layout.maximumHeight: vertical ? implicitHeight : Number.POSITIVE_INFINITY
     Layout.fillHeight: !vertical
     Layout.fillWidth: vertical
-    implicitWidth: vertical ? 40 : content.implicitWidth + 32
+    implicitWidth: vertical ? 40 : bar ? mediaSpace + barContent.implicitWidth + 20 : content.implicitWidth + 32
     implicitHeight: vertical ? column.implicitHeight + 28 : 40
 
     Accessible.role: Accessible.Button
@@ -40,12 +71,12 @@ Item {
 
     Rectangle {
         id: pill
-        x: root.vertical ? Math.round((parent.width - width) / 2) : 0
+        x: root.vertical ? Math.round((parent.width - width) / 2) : root.mediaSpace
         y: root.vertical ? 0 : Math.round((parent.height - height) / 2)
-        width: root.vertical ? Math.min(parent.width, 40) : parent.width
-        height: root.vertical ? parent.height : Math.min(parent.height, 40)
+        width: root.vertical ? Math.min(parent.width, 40) : parent.width - root.mediaSpace
+        height: root.vertical ? parent.height : Math.min(parent.height, root.bar ? 28 : 40)
         radius: Math.min(width, height) / 2
-        color: root.active ? M3.secondaryContainer : M3.surfaceContainerHighest
+        color: root.bar ? (root.active ? M3.primary : "transparent") : root.active ? M3.secondaryContainer : M3.surfaceContainerHighest
 
         Behavior on color {
             ColorAnimation {
@@ -55,13 +86,16 @@ Item {
             }
         }
 
-        readonly property color ink: root.active ? M3.secondaryContainerContent : M3.surfaceContent
+        readonly property color ink: root.bar
+            ? (root.active ? M3.primaryContent : root.clear ? "#ffffff" : M3.surfaceContent)
+            : root.active ? M3.secondaryContainerContent : M3.surfaceContent
+        readonly property color knockout: root.bar && !root.active && root.clear ? "#1b1b1f" : root.active ? M3.primary : M3.surface
 
         RowLayout {
             id: content
             anchors.centerIn: parent
             spacing: 8
-            visible: !root.vertical
+            visible: !root.vertical && !root.bar
 
             MIcon {
                 size: 20
@@ -84,6 +118,39 @@ Item {
                 role: "labelLarge"
                 text: root.backend.timeText
                 color: pill.ink
+            }
+        }
+
+        RowLayout {
+            id: barContent
+            anchors.centerIn: parent
+            spacing: 6
+            visible: root.bar
+
+            MIcon {
+                size: 18
+                visible: root.backend.dndOn
+                source: "kernora-bar-dnd"
+                color: pill.ink
+            }
+            MIcon {
+                size: 18
+                visible: root.backend.soundMuted && root.backend.soundAvailable
+                source: "kernora-bar-volume-off"
+                color: pill.ink
+            }
+            MIcon {
+                size: 18
+                source: root.barNetworkIcon
+                color: pill.ink
+            }
+            BatteryPill {
+                Layout.leftMargin: 2
+                visible: root.backend.hasBattery
+                percent: root.backend.batteryPercent
+                charging: root.backend.charging
+                ink: pill.ink
+                knockout: pill.knockout
             }
         }
 
@@ -134,9 +201,68 @@ Item {
         MStateLayer {
             radius: pill.radius
             color: pill.ink
-            hovered: mouse.containsMouse
-            pressed: mouse.pressed && !root.controller.dragging
+            hovered: mouse.containsMouse && mouse.mouseX >= root.mediaSpace
+            pressed: mouse.pressed && !root.controller.dragging && mouse.mouseX >= root.mediaSpace
             pressPoint: Qt.point(mouse.mouseX - pill.x, mouse.mouseY - pill.y)
+        }
+    }
+
+    Rectangle {
+        id: nowPlaying
+        visible: root.showMedia
+        anchors.verticalCenter: parent.verticalCenter
+        width: Math.min(220, mediaRow.implicitWidth + 20)
+        height: 28
+        radius: 14
+        color: root.clear ? Qt.rgba(0, 0, 0, 0.32) : M3.surfaceContainerHighest
+        border.width: root.clear ? 1 : 0
+        border.color: Qt.rgba(1, 1, 1, 0.16)
+
+        readonly property color ink: root.clear ? "#ffffff" : M3.surfaceContent
+
+        MStateLayer {
+            radius: nowPlaying.radius
+            color: nowPlaying.ink
+            hovered: mouse.containsMouse && mouse.mouseX < nowPlaying.width
+            pressed: mouse.pressed && mouse.mouseX < nowPlaying.width
+        }
+
+        RowLayout {
+            id: mediaRow
+            anchors.left: parent.left
+            anchors.leftMargin: 6
+            anchors.right: parent.right
+            anchors.rightMargin: 12
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 8
+
+            Rectangle {
+                Layout.preferredWidth: 20
+                Layout.preferredHeight: 20
+                radius: 10
+                color: playToggle.containsMouse ? M3.primary : "transparent"
+
+                Kirigami.Icon {
+                    anchors.fill: parent
+                    visible: !playToggle.containsMouse
+                    source: root.backend.mediaIconName || "audio-x-generic"
+                }
+                MIcon {
+                    anchors.centerIn: parent
+                    visible: playToggle.containsMouse
+                    size: 16
+                    source: root.backend.mediaPlaying ? "media-playback-pause" : "media-playback-start"
+                    color: M3.primaryContent
+                }
+            }
+            MText {
+                Layout.fillWidth: true
+                Layout.maximumWidth: 160
+                role: "labelLarge"
+                color: nowPlaying.ink
+                elide: Text.ElideRight
+                text: root.backend.mediaTrack
+            }
         }
     }
 
@@ -182,6 +308,18 @@ Item {
                 root.controller.cancelDrag();
             }
         }
+    }
+
+    MouseArea {
+        id: playToggle
+        visible: root.showMedia && root.backend.mediaCanPlayPause
+        x: nowPlaying.x + 2
+        y: nowPlaying.y + 2
+        width: 28
+        height: nowPlaying.height - 4
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: root.backend.mediaPlayPause()
     }
 
     WheelHandler {

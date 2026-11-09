@@ -13,7 +13,7 @@ THEME_APPS = generated/icon-theme/scalable/apps
 
 TOOLS = tools
 SYMBOLS = data/symbols
-APPLETS = launcher:org.kernora.launcher shade:org.kernora.quicksettings clipboard:org.kernora.clipboard
+APPLETS = launcher:org.kernora.launcher shade:org.kernora.quicksettings clipboard:org.kernora.clipboard datetime:org.kernora.datetime
 WIDGETS = clock glance weather battery cputemperature calendar media photo note
 COLOURS := $(shell cd $(TOOLS) && python3 -c 'import kernora_design as d; print(" ".join(d.COLOURS))')
 EXTRA_COLOURS := $(filter-out kernora,$(COLOURS))

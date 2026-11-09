@@ -148,6 +148,21 @@ FocusScope {
         return urls.length > 0 && urls.every(url => /^file:\/\/.*\/applications\/[^\/]+\.desktop$/.test(String(url)));
     }
 
+    function quoted(text) {
+        return "'" + String(text).replace(/'/g, "'\\''") + "'";
+    }
+
+    function groupDrop(item, mimeData) {
+        const targetUrl = item && !item.isDir ? String(item.itemUrl || "") : "";
+        const urls = mimeData && mimeData.urls ? Array.from(mimeData.urls).map(String) : [];
+        if (!main.keepsLaunchers || !targetUrl.endsWith(".desktop") || urls.length === 0
+                || !urls.every(url => url.endsWith(".desktop")) || urls.includes(targetUrl)) {
+            return false;
+        }
+        launcherHelper.connectSource("/usr/bin/kernora-appgroup drop " + [targetUrl].concat(urls).map(main.quoted).join(" "));
+        return true;
+    }
+
     function drop(target, event, pos) {
         var dropPos = mapToItem(gridView.contentItem, pos.x, pos.y);
         var dropIndex = gridView.indexAt(dropPos.x, dropPos.y);
@@ -156,6 +171,9 @@ FocusScope {
 
         if (listener.dragX === -1 || dragIndex !== dropIndex) {
             var row = dropItemAt(dropPos);
+            if (row !== -1 && main.groupDrop(gridView.itemAt(dropPos.x, dropPos.y), event.mimeData)) {
+                return;
+            }
             if (main.keepsLaunchers && row === -1 && main.onlyLaunchers(event.mimeData)) {
                 launcherDrop.mimeData = event.mimeData;
                 launcherDrop.x = event.x;
@@ -732,7 +750,11 @@ FocusScope {
         FocusScope {
             id: scrollArea
 
+            readonly property bool underStatusBar: root.isContainment && main.isRootView
+                && !!root.availableScreenRect && root.availableScreenRect.y > 0
+
             anchors.fill: parent
+            anchors.topMargin: underStatusBar ? 20 : 0
 
             focus: true
 
@@ -831,6 +853,7 @@ FocusScope {
                 }
 
                 delegate: FolderItemDelegate {
+                    readonly property string itemUrl: model.blank ? "" : String(model.url)
                     width: gridView.cellWidth
                     height: gridView.cellHeight
                 }

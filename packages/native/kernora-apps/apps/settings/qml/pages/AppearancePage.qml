@@ -84,6 +84,52 @@ SettingsPage {
     Component.onCompleted: {
         readWallpaper();
         updatePanelOpacity("");
+        readLayout();
+    }
+
+    readonly property string layoutTool: "/usr/libexec/kernora-panel-layout"
+    property bool layoutBusy: false
+    property bool layoutAvailable: false
+    property string layoutStyle: "statusbar"
+    property string panelShape: "square"
+    property string buttonShape: "square"
+
+    function readLayoutOutput(code: int, output: string): void {
+        const values = {};
+        for (const line of String(output).split("\n")) {
+            const at = line.indexOf("=");
+            if (at > 0) {
+                values[line.slice(0, at).trim()] = line.slice(at + 1).trim();
+            }
+        }
+        page.layoutAvailable = code === 0 && values.dock === "yes";
+        if (page.layoutAvailable) {
+            page.layoutStyle = values.style === "classic" ? "classic" : "statusbar";
+            page.panelShape = values.panel === "round" ? "round" : "square";
+            page.buttonShape = values.shape === "round" ? "round" : "square";
+        }
+    }
+
+    function readLayout(): void {
+        if (layoutBusy) {
+            return;
+        }
+        Process.run(layoutTool, ["status"], (code, output) => page.readLayoutOutput(code, output));
+    }
+
+    function changeLayout(arguments_: var): void {
+        if (layoutBusy) {
+            return;
+        }
+        layoutBusy = true;
+        Process.run(layoutTool, arguments_, (code, output) => {
+            page.layoutBusy = false;
+            page.readLayoutOutput(code, output);
+            if (code !== 0) {
+                page.notify(i18n("The panel could not be changed."));
+            }
+            page.updatePanelOpacity("");
+        });
     }
 
     property bool panelBusy: false
@@ -141,6 +187,16 @@ SettingsPage {
     onVisibleChanged: {
         if (visible) {
             updatePanelOpacity("");
+            readLayout();
+        }
+    }
+
+    Connections {
+        target: Qt.application
+        function onStateChanged(): void {
+            if (Qt.application.state === Qt.ApplicationActive && page.visible) {
+                page.readLayout();
+            }
         }
     }
 
@@ -330,6 +386,60 @@ SettingsPage {
     Group {
         title: i18n("Panel")
         note: i18n("Applies to all panels. The shape and colour follow the system style.")
+
+        ChoiceItem {
+            title: i18n("Layout")
+            icon: "kernora-dock"
+            iconStyle: "plain"
+            enabled: page.layoutAvailable && !page.layoutBusy && !Appearance.busy
+            options: [
+                { value: "statusbar", label: i18n("Status bar at the top"), description: i18n("Time and quick settings at the top") },
+                { value: "classic", label: i18n("Everything at the bottom"), description: i18n("Time and quick settings at the bottom right") }
+            ]
+            currentValue: page.layoutStyle
+            subtitle: {
+                if (page.layoutBusy) {
+                    return i18n("Applying…");
+                }
+                const option = options.find(o => o.value === currentValue);
+                return option ? option.label : "";
+            }
+            onSelected: value => page.changeLayout(["style", value])
+        }
+
+        ChoiceItem {
+            title: i18n("Panel shape")
+            icon: "window-maximize"
+            iconStyle: "plain"
+            enabled: page.layoutAvailable && !page.layoutBusy && !Appearance.busy
+            options: [
+                { value: "square", label: i18n("Square"), description: i18n("Edge to edge, without rounded corners") },
+                { value: "round", label: i18n("Rounded"), description: i18n("Floating above the edge, with round ends") }
+            ]
+            currentValue: page.panelShape
+            subtitle: {
+                const option = options.find(o => o.value === currentValue);
+                return option ? option.label : "";
+            }
+            onSelected: value => page.changeLayout(["panel", value])
+        }
+
+        ChoiceItem {
+            title: i18n("Apps button")
+            icon: "view-app-grid"
+            iconStyle: "plain"
+            enabled: page.layoutAvailable && !page.layoutBusy && !Appearance.busy
+            options: [
+                { value: "square", label: i18n("Square") },
+                { value: "round", label: i18n("Round") }
+            ]
+            currentValue: page.buttonShape
+            subtitle: {
+                const option = options.find(o => o.value === currentValue);
+                return option ? option.label : "";
+            }
+            onSelected: value => page.changeLayout(["shape", value])
+        }
 
         ListItem {
             title: i18n("Transparent panel")

@@ -142,8 +142,8 @@ msgid "Start typing to find apps, files and settings"
 msgstr "Начните печатать, чтобы найти приложения, файлы и настройки"
 
 #: apps/welcome/qml/Main.qml:405
-msgid "Quick settings are on the right of the panel"
-msgstr "Быстрые настройки — справа на панели"
+msgid "Network and battery icons open quick settings"
+msgstr "Значки сети и батареи открывают быстрые настройки"
 
 #: apps/welcome/qml/Main.qml:406
 msgid "Wi-Fi, sound, brightness, Do Not Disturb and more"

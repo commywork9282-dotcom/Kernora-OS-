@@ -1483,6 +1483,70 @@ grep -Fxq 'data/panel/layout.js usr/share/plasma/layout-templates/org.kde.plasma
   || fail "Add Panel does not offer the Kernora panel"
 ! grep -Eq 'kickoff|pager|digitalclock|showdesktop' "$data_root/panel/layout.js" \
   || fail "the default panel still has KDE's widgets"
+grep -Fxq 'data/panel/kernora-panel-layout usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'data/panel/Panel.qml usr/share/plasma/shells/org.kde.plasma.desktop/contents/views' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'generated/plasmoids/org.kernora.datetime usr/share/plasma/plasmoids' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'data/panel/statusbar/contents/layout.js usr/share/plasma/layout-templates/org.kernora.desktop.statusBar/contents' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq 'datetime:org.kernora.datetime' "$package_root/debian/rules" \
+  && grep -Fq '"$shell/views/Panel.qml"' "$package_root/debian/kernora-desktop.preinst" \
+  && grep -Fq '"$shell/views/Panel.qml"' "$package_root/debian/kernora-desktop.postrm" \
+  && grep -Fq '"Id": "org.kernora.desktop.statusBar"' "$data_root/panel/statusbar/metadata.json" \
+  && grep -Fq 'loadTemplate("org.kernora.desktop.statusBar")' "$data_root/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
+  && grep -Fq 'bar.addWidget("org.kernora.datetime")' "$data_root/panel/statusbar/contents/layout.js" \
+  && grep -Fq 'bar.location = "top"' "$data_root/panel/statusbar/contents/layout.js" \
+  || fail "the status bar is not installed"
+grep -Fq 'applet.pluginName === "org.kernora.datetime"' "$data_root/panel/Panel.qml" \
+  && grep -Fq 'Kirigami.Theme.textColor: root.statusBarClear ? "#ffffff" : undefined' "$data_root/panel/Panel.qml" \
+  && grep -Fq 'return root.statusBar ? PlasmaCore.Types.NoBackground' "$data_root/panel/Panel.qml" \
+  && grep -Fq 'panel.thickness = 36' "$data_root/panel/Panel.qml" \
+  && grep -Fq 'if (statusBar) {' "$data_root/panel/Panel.qml" \
+  && grep -Fq 'squarePanel ? ["square", pre, ""] : [pre, ""]' "$data_root/panel/Panel.qml" \
+  && grep -Fq 'launcherApplet.configuration?.panelShape' "$data_root/panel/Panel.qml" \
+  || fail "the status bar does not draw like a status bar"
+grep -Fq 'ConfigFile("kernora-shellrc", "Layout")' "$data_root/panel/layout.js" \
+  && grep -Fq 'panel.floating = false;' "$data_root/panel/layout.js" \
+  && [[ $(grep -c 'panel.addWidget("org.kde.plasma.panelspacer");' "$data_root/panel/layout.js") -eq 2 ]] \
+  && ! grep -Fq 'lengthMode = "fit"' "$data_root/panel/layout.js" "$data_root/panel/statusbar.js" "$data_root/panel/classic.js" \
+  && grep -Fq '["org.kde.plasma.systemtray", "org.kde.plasma.notifications", "org.kernora.quicksettings"]' "$data_root/panel/statusbar.js" \
+  && grep -Fq 'dock.floating = false;' "$data_root/panel/statusbar.js" \
+  && grep -Fq 'layoutConfig.writeEntry("style", "classic");' "$data_root/panel/classic.js" \
+  && grep -Fq 'quick.globalShortcut = "Meta+A";' "$data_root/panel/classic.js" \
+  && [[ -x "$data_root/panel/kernora-panel-layout" ]] \
+  && python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' "$data_root/panel/kernora-panel-layout" \
+  && grep -Fq 'usage: kernora-panel-layout status | migrate | style statusbar|classic | shape square|round | panel square|round' "$data_root/panel/kernora-panel-layout" \
+  && grep -Fq 'fcntl.flock(lock, fcntl.LOCK_EX)' "$data_root/panel/kernora-panel-layout" \
+  && grep -Fxq 'data/panel/org.kernora.panel-layout.desktop etc/xdg/autostart' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'Exec=/usr/libexec/kernora-panel-layout migrate' "$data_root/panel/org.kernora.panel-layout.desktop" \
+  && grep -Fxq 'X-KDE-autostart-phase=2' "$data_root/panel/org.kernora.panel-layout.desktop" \
+  && ! grep -rq 'kernora_status_bar' "$package_root/debian" \
+  && grep -Fq 'panel.floating = false;' "$data_root/panel/Panel.qml" \
+  || fail "the bottom panel does not keep its full width when the status bar moves up"
+theme_out=$(mktemp -d)
+(cd "$package_root/tools" && python3 gen-plasma-theme ../data/symbols "$theme_out/kernora") >/dev/null
+grep -Fq 'id="square-center"' "$theme_out/kernora/widgets/panel-background.svg" \
+  && grep -Fq 'id="mask-square-center"' "$theme_out/kernora/widgets/panel-background.svg" \
+  && grep -Fq 'id="square-center"' "$theme_out/kernora/solid/widgets/panel-background.svg" \
+  || fail "the theme has no square panel"
+rm -rf "$theme_out"
+grep -Fq '"kernora-bar-notifications"' "$package_root/tools/symbols_map.py" \
+  && grep -Fq '"kernora-bar-ethernet"' "$package_root/tools/symbols_map.py" \
+  && grep -Fq '"kernora-bar-wifi-4"' "$package_root/tools/symbols_map.py" \
+  && grep -Fq 'BatteryPill {' "$package_root/data/shell/shade/contents/ui/StatusChip.qml" \
+  && grep -Fq 'return "kernora-bar-wifi-off";' "$package_root/data/shell/shade/contents/ui/StatusChip.qml" \
+  && grep -Fq 'source: root.backend.mediaIconName || "audio-x-generic"' "$package_root/data/shell/shade/contents/ui/StatusChip.qml" \
+  && grep -Fq '"kernora-bar-notifications"' "$data_root/notifications/kernora/CompactRepresentation.qml" \
+  && grep -Fq 'fromTop: root.fromTop' "$package_root/data/shell/shade/contents/ui/ShadeWindow.qml" \
+  && grep -Fq 'Qt.locale().amText, Qt.locale().pmText' "$package_root/data/shell/datetime/contents/ui/main.qml" \
+  && grep -Fq 'msgid "Time and Date"' "$package_root/data/shell/po/plasma_applet_org.kernora.datetime.ru.po" \
+  && grep -Fq 'entry name="panelShape"' "$package_root/data/shell/launcher/contents/config/main.xml" \
+  && grep -Fq 'square: Plasmoid.configuration.buttonShape !== "round"' "$package_root/data/shell/launcher/contents/ui/main.qml" \
+  && grep -Fq 'anchors.topMargin: underStatusBar ? 20 : 0' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'root.availableScreenRect.y > 0' "$data_root/folderview/FolderView.qml" \
+  || fail "the status bar does not look like Googlebook"
+grep -Fq 'readonly property string itemUrl: model.blank ? "" : String(model.url)' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'launcherHelper.connectSource("/usr/bin/kernora-appgroup drop "' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'if (row !== -1 && main.groupDrop(gridView.itemAt(dropPos.x, dropPos.y), event.mimeData)) {' "$data_root/folderview/FolderView.qml" \
+  || fail "dropping an app onto another app does not make a group"
 grep -Fq 'taken.indexOf(shortcut) < 0' "$data_root/panel/layout.js" \
   && grep -Fq 'launcher.writeConfig("reclaimShortcuts", true)' "$data_root/panel/layout.js" \
   && grep -Fq 'launcher.reloadConfig()' "$data_root/panel/layout.js" \

@@ -1,6 +1,6 @@
 [General]
-count=1
-rules=org.kernora.filechooser
+count=2
+rules=org.kernora.filechooser,org.kernora.appgroup
 
 [org.kernora.filechooser]
 Description=Kernora file chooser
@@ -13,4 +13,19 @@ skippagerrule=2
 above=true
 aboverule=2
 placement=5
+placementrule=2
+
+[org.kernora.appgroup]
+Description=Kernora app group
+wmclass=org.kernora.appgroup
+wmclassmatch=1
+skiptaskbar=true
+skiptaskbarrule=2
+skippager=true
+skippagerrule=2
+skipswitcher=true
+skipswitcherrule=2
+above=true
+aboverule=2
+placement=7
 placementrule=2

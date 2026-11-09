@@ -11,6 +11,7 @@ Item {
     id: root
 
     property bool active: false
+    property bool square: true
 
     signal clicked()
 
@@ -29,7 +30,7 @@ Item {
         anchors.centerIn: parent
         width: 40
         height: 40
-        radius: 20 - 8 * pressMorph.value
+        radius: root.square ? M3.shapeMedium + 4 * pressMorph.value : 20 - 8 * pressMorph.value
         color: root.active ? M3.primary : M3.surfaceContainerHighest
 
         MMorph { id: pressMorph; active: mouse.pressed && !M3.classic }

@@ -161,7 +161,7 @@ grep -Fq 'Procs.ApplicationDataModel {' "$package_root/apps/taskmanager/qml/Main
   || fail "Task Manager can't list, end or chart"
 grep -Fxq 'X-KDE-Shortcuts=Ctrl+Shift+Esc,Ctrl+Esc' "$package_root/apps/taskmanager/org.kernora.taskmanager.desktop" \
   && grep -Fq 'DESTINATION ${KDE_INSTALL_DATADIR}/kglobalaccel' "$package_root/CMakeLists.txt" \
-  && grep -q 'share taskmanager drivers apkinstaller appsplash androiddialog)' "$package_root/src/apps/CMakeLists.txt" \
+  && grep -q 'share taskmanager drivers apkinstaller appsplash androiddialog appgroup)' "$package_root/src/apps/CMakeLists.txt" \
   || fail "Task Manager has no shortcut or is not built"
 for dependency in ksystemstats libksysguard-bin qml6-module-org-kde-ksysguard qml6-module-org-kde-kitemmodels qml6-module-org-kde-quickcharts; do
   grep -Eq "^ $dependency,?$" "$package_root/debian/control" || fail "Task Manager needs $dependency"
@@ -231,7 +231,7 @@ grep -Fq '{ id: "android", title: i18n("Android apps")' "$package_root/apps/sett
 grep -Fxq 'MimeType=application/vnd.android.package-archive;' "$package_root/apps/apkinstaller/org.kernora.apkinstaller.desktop" \
   && grep -Fq 'Android.inspect(url)' "$package_root/apps/apkinstaller/qml/Main.qml" \
   && grep -Fq 'Android.install(app.file, app.apk.package' "$package_root/apps/apkinstaller/qml/Main.qml" \
-  && grep -q 'taskmanager drivers apkinstaller appsplash androiddialog)' "$package_root/src/apps/CMakeLists.txt" \
+  && grep -q 'taskmanager drivers apkinstaller appsplash androiddialog appgroup)' "$package_root/src/apps/CMakeLists.txt" \
   || fail "the APK installer is missing"
 grep -Fq 'adaptive-icon' "$package_root/src/system/apk.cpp" \
   && grep -Fq 'QSvgRenderer renderer(vectorToSvg(elements));' "$package_root/src/system/apk.cpp" \
@@ -306,4 +306,24 @@ grep -Fq 'm_recheck = true;' "$package_root/src/updatenotifier/main.cpp" \
   && grep -Fq '"id": "2026-11-08-1"' "$package_root/data/whatsnew.json" \
   || fail "an app fix from 1.1.86 is missing"
 
+grep -Fq 'readonly property string layoutTool: "/usr/libexec/kernora-panel-layout"' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
+  && grep -Fq 'page.changeLayout(["style", value])' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
+  && grep -Fq 'page.changeLayout(["panel", value])' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
+  && grep -Fq 'page.changeLayout(["shape", value])' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
+  && grep -Fq 'msgid "Status bar at the top"' "$package_root/po/ru/kernora-settings.po" \
+  && grep -Fq "readConfig('panelShape')" "$package_root/src/system/appearance.cpp" \
+  && grep -Fq "panel.widgets('org.kernora.datetime').length > 0" "$package_root/src/system/appearance.cpp" \
+  || fail "Settings cannot switch the status bar and the panel shape"
+grep -Fq 'appgroups.cpp appgroups.h' "$package_root/src/system/CMakeLists.txt" \
+  && grep -Fq 'Q_INVOKABLE bool drop(const QString &target, const QStringList &sources);' "$package_root/src/system/appgroups.h" \
+  && grep -Fq 'entry.writeEntry("Exec", QStringLiteral("kernora-appgroup open %k"));' "$package_root/src/system/appgroups.cpp" \
+  && grep -Fq 'const bool fromDesktop' "$package_root/src/system/appgroups.cpp" \
+  && grep -Fq 'AppGroups.drop(args[1], args.slice(2));' "$package_root/apps/appgroup/qml/Main.qml" \
+  && grep -Fq 'AppGroups.takeOut(window.file, menu.app);' "$package_root/apps/appgroup/qml/Main.qml" \
+  && grep -Fxq 'NoDisplay=true' "$package_root/apps/appgroup/org.kernora.appgroup.desktop" \
+  && grep -Fq 'rules=org.kernora.filechooser,org.kernora.appgroup' "$package_root/src/filechooser/kwinrulesrc" \
+  && grep -Fq 'placement=7' "$package_root/src/filechooser/kwinrulesrc" \
+  && grep -Fq 'msgid "Remove from group"' "$package_root/po/ru/kernora-appgroup.po" \
+  && grep -Fq 'msgid "Productivity"' "$package_root/po/ru/kernora-system.po" \
+  || fail "apps cannot be grouped on the desktop"
 printf 'kernora-apps source test: OK\n'

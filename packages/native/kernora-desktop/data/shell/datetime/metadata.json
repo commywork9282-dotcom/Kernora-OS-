@@ -1,0 +1,19 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Date and Time",
+        "Description": "Time and date for the status bar, with a calendar",
+        "Description[ru]": "Время и дата для строки состояния, с календарём",
+        "Icon": "preferences-system-time",
+        "Id": "org.kernora.datetime",
+        "License": "GPL-2.0+",
+        "Name": "Kernora Time and Date",
+        "Name[ru]": "Время и дата Kernora"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

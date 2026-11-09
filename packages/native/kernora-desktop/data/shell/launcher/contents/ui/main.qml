@@ -115,6 +115,7 @@ PlasmoidItem {
 
     compactRepresentation: LauncherButton {
         active: root.expanded
+        square: Plasmoid.configuration.buttonShape !== "round"
         onClicked: root.expanded = !root.expanded
     }
 

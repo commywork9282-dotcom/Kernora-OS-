@@ -4,3 +4,6 @@ for (var i = 0; i < desktops.length; i++) {
 }
 
 loadTemplate("org.kde.plasma.desktop.defaultPanel");
+if (String(ConfigFile("kernora-shellrc", "Layout").readEntry("style")) !== "classic") {
+    loadTemplate("org.kernora.desktop.statusBar");
+}

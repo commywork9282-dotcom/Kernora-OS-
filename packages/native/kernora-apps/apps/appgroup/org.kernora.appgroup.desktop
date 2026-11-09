@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=App Group
+Name[ru]=Группа приложений
+Icon=view-app-grid
+Exec=kernora-appgroup open %f
+Categories=Qt;System;
+NoDisplay=true

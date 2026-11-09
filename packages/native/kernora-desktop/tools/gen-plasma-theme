@@ -19,6 +19,7 @@ import symbols_map
 PANEL_THICKNESS = 56
 CLASSIC = design.GENERATION != "md3"
 PANEL_RADIUS = max(design.corner("panel"), 1) if CLASSIC else PANEL_THICKNESS // 2
+SQUARE_PANEL_RADIUS = 0
 PANEL_PADDING = 8
 PANEL_FLOAT_GAP = 8
 PANEL_OPACITY = 0.82
@@ -371,6 +372,8 @@ def panel_background(opacity: float = PANEL_OPACITY) -> str:
           margins=PANEL_PADDING)
     frame(sheet, "floating-", PANEL_RADIUS, "ColorScheme-Background", opacity,
           margins=PANEL_FLOAT_GAP)
+    frame(sheet, "square-", SQUARE_PANEL_RADIUS, "ColorScheme-Background", opacity,
+          margins=PANEL_PADDING, insets=0, mask=True)
     shadow(sheet, SHADOW_PANEL[0], PANEL_RADIUS, SHADOW_PANEL[1], "panel-shadow", cutout=True)
     return sheet.render()
 

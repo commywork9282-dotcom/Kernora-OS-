@@ -8,6 +8,7 @@ target_sources(kernorasystem PRIVATE
     android.cpp android.h
     apk.cpp apk.h
     appearance.cpp appearance.h
+    appgroups.cpp appgroups.h
     autostart.cpp autostart.h
     bluetoothdiscovery.cpp bluetoothdiscovery.h
     config.cpp config.h

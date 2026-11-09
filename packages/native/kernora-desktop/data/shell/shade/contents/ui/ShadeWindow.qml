@@ -119,6 +119,7 @@ PlasmaCore.Dialog {
 
             backend: root.backend
             progress: root.controller.progress
+            fromTop: root.fromTop
             width: Math.min(implicitWidth, stage.width - 2 * root.edgeGap)
             height: Math.min(implicitHeight, stage.room)
 
