@@ -1,3 +1,10 @@
+kernora-apps (1.1.87) UNRELEASED; urgency=medium
+
+  * Settings: Wallpaper and style has Layout, Panel shape and Apps button.
+  * What's new: the status bar.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 09 Nov 2026 17:00:00 -0800
+
 kernora-apps (1.1.86) UNRELEASED; urgency=medium
 
   * Settings: Android apps says "Almost ready" while Android starts for the
