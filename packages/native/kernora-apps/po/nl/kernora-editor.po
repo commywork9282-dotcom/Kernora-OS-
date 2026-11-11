@@ -1,0 +1,191 @@
+# Dutch translation of Kernora Editor.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-editor\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-31 13:44+0100\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/editor/qml/FindBar.qml:106
+msgid "Find"
+msgstr "Zoeken"
+
+#: apps/editor/qml/FindBar.qml:125
+msgid "%1 match"
+msgid_plural "%1 matches"
+msgstr[0] "%1 overeenkomst"
+msgstr[1] "%1 overeenkomsten"
+
+#: apps/editor/qml/FindBar.qml:127
+msgid "Previous"
+msgstr "Vorige"
+
+#: apps/editor/qml/FindBar.qml:128
+msgid "Next"
+msgstr "Volgende"
+
+#: apps/editor/qml/FindBar.qml:131
+msgid "Match case"
+msgstr "Hoofdlettergevoelig"
+
+#: apps/editor/qml/FindBar.qml:135 apps/editor/qml/FindBar.qml:151
+msgid "Replace"
+msgstr "Vervangen"
+
+#: apps/editor/qml/FindBar.qml:136
+msgid "Close"
+msgstr "Sluiten"
+
+#: apps/editor/qml/FindBar.qml:147
+msgid "Replace with"
+msgstr "Vervangen door"
+
+#: apps/editor/qml/FindBar.qml:152
+msgid "Replace all"
+msgstr "Alles vervangen"
+
+#: apps/editor/qml/Main.qml:30 apps/editor/qml/Main.qml:351
+msgid "Untitled"
+msgstr "Naamloos"
+
+#: apps/editor/qml/Main.qml:43
+msgid "The file could not be opened."
+msgstr "Het bestand kon niet worden geopend."
+
+#: apps/editor/qml/Main.qml:66 apps/editor/qml/Main.qml:307
+msgid "Save as…"
+msgstr "Opslaan als…"
+
+#: apps/editor/qml/Main.qml:66
+msgid "The file could not be saved. You may not have permission to write there."
+msgstr "Het bestand kon niet worden opgeslagen. Misschien heb je geen toestemming om daar te schrijven."
+
+#: apps/editor/qml/Main.qml:137
+msgid "New window"
+msgstr "Nieuw venster"
+
+#: apps/editor/qml/Main.qml:138
+msgid "Open"
+msgstr "Openen"
+
+#: apps/editor/qml/Main.qml:139 apps/editor/qml/Main.qml:365
+msgid "Save"
+msgstr "Opslaan"
+
+#: apps/editor/qml/Main.qml:154
+msgid "Edited"
+msgstr "Bewerkt"
+
+#: apps/editor/qml/Main.qml:159
+msgid "Undo"
+msgstr "Ongedaan maken"
+
+#: apps/editor/qml/Main.qml:160
+msgid "Redo"
+msgstr "Opnieuw"
+
+#: apps/editor/qml/Main.qml:161
+msgid "Find and replace"
+msgstr "Zoeken en vervangen"
+
+#: apps/editor/qml/Main.qml:165
+msgid "More"
+msgstr "Meer"
+
+#: apps/editor/qml/Main.qml:281
+msgid "Line %1, column %2"
+msgstr "Regel %1, kolom %2"
+
+#: apps/editor/qml/Main.qml:286 apps/editor/qml/Main.qml:321
+msgid "Plain text"
+msgstr "Platte tekst"
+
+#: apps/editor/qml/Main.qml:292
+msgid "%1 line"
+msgid_plural "%1 lines"
+msgstr[0] "%1 regel"
+msgstr[1] "%1 regels"
+
+#: apps/editor/qml/Main.qml:309
+msgid "Show in Files"
+msgstr "Tonen in Bestanden"
+
+#: apps/editor/qml/Main.qml:315
+msgid "Wrap long lines"
+msgstr "Lange regels afbreken"
+
+#: apps/editor/qml/Main.qml:316
+msgid "Line numbers"
+msgstr "Regelnummers"
+
+#: apps/editor/qml/Main.qml:317
+msgid "Go to line…"
+msgstr "Naar regel…"
+
+#: apps/editor/qml/Main.qml:320
+msgid "Highlighting"
+msgstr "Markering"
+
+#: apps/editor/qml/Main.qml:334
+msgid "Bigger text"
+msgstr "Grotere tekst"
+
+#: apps/editor/qml/Main.qml:335
+msgid "Smaller text"
+msgstr "Kleinere tekst"
+
+#: apps/editor/qml/Main.qml:340
+msgid "Open a text file"
+msgstr "Een tekstbestand openen"
+
+#: apps/editor/qml/Main.qml:348
+msgid "Save as"
+msgstr "Opslaan als"
+
+#: apps/editor/qml/Main.qml:363
+msgid "Save changes to “%1”?"
+msgstr "Wijzigingen in “%1” opslaan?"
+
+#: apps/editor/qml/Main.qml:364
+msgid "Your changes are lost if you don't save them."
+msgstr "Je wijzigingen gaan verloren als je ze niet opslaat."
+
+#: apps/editor/qml/Main.qml:366
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: apps/editor/qml/Main.qml:371
+msgid "Don't save"
+msgstr "Niet opslaan"
+
+#: apps/editor/qml/Main.qml:386
+msgid "Go to line"
+msgstr "Naar regel"
+
+#: apps/editor/qml/Main.qml:387
+msgid "Go"
+msgstr "Ga"
+
+#: apps/editor/qml/Main.qml:405
+msgid "Line (1–%1)"
+msgstr "Regel (1–%1)"
+
+#: src/apps/editor.cpp:8
+msgctxt "@title application name"
+msgid "Text Editor"
+msgstr "Teksteditor"
+
+#: src/apps/host.cpp:59
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:67
+msgid "Files or pages to open."
+msgstr "Bestanden of pagina's om te openen."

@@ -1,0 +1,350 @@
+# Dutch translation of Kernora Share.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Dutch translations for kernora-share package.
+# Copyright (C) 2026 THE kernora-share'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-share package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-share\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-31 13:44+0100\n"
+"PO-Revision-Date: 2026-10-31 13:44+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/share/qml/Main.qml:25 apps/share/qml/Main.qml:560
+msgid "Quick Share"
+msgstr "Quick Share"
+
+#: apps/share/qml/Main.qml:75
+msgid "%1 min"
+msgstr "%1 min"
+
+#: apps/share/qml/Main.qml:75
+msgid "%1 sec"
+msgstr "%1 sec"
+
+#: apps/share/qml/Main.qml:80 apps/share/qml/Main.qml:748
+msgid "Quick Share is off"
+msgstr "Quick Share staat uit"
+
+#: apps/share/qml/Main.qml:83
+msgid "Visible to everyone"
+msgstr "Zichtbaar voor iedereen"
+
+#: apps/share/qml/Main.qml:86
+msgid "Temporarily visible to everyone"
+msgstr "Tijdelijk zichtbaar voor iedereen"
+
+#: apps/share/qml/Main.qml:88 apps/share/qml/Main.qml:1294
+msgid "Hidden"
+msgstr "Verborgen"
+
+#: apps/share/qml/Main.qml:92
+msgid "%1 left"
+msgstr "nog %1"
+
+#: apps/share/qml/Main.qml:110
+msgid "a link"
+msgstr "een link"
+
+#: apps/share/qml/Main.qml:112
+msgid "text"
+msgstr "tekst"
+
+#: apps/share/qml/Main.qml:114
+msgid "a Wi-Fi network"
+msgstr "een wifi-netwerk"
+
+#: apps/share/qml/Main.qml:116
+msgid "%1 file"
+msgid_plural "%1 files"
+msgstr[0] "%1 bestand"
+msgstr[1] "%1 bestanden"
+
+#: apps/share/qml/Main.qml:144
+msgid "Could not send to %1"
+msgstr "Kon niet versturen naar %1"
+
+#: apps/share/qml/Main.qml:398 apps/share/qml/Main.qml:982
+msgid "%1 Files"
+msgstr "%1 Bestanden"
+
+#: apps/share/qml/Main.qml:458
+msgid "Computer"
+msgstr "Computer"
+
+#: apps/share/qml/Main.qml:458
+msgid "Phone"
+msgstr "Telefoon"
+
+#: apps/share/qml/Main.qml:458
+msgid "Tablet"
+msgstr "Tablet"
+
+#: apps/share/qml/Main.qml:565
+msgid "Quick Share settings"
+msgstr "Instellingen van Quick Share"
+
+#: apps/share/qml/Main.qml:594
+msgid "You'll appear as"
+msgstr "Je verschijnt als"
+
+#: apps/share/qml/Main.qml:617 apps/share/qml/Main.qml:1306
+msgid "Rename"
+msgstr "Naam wijzigen"
+
+#: apps/share/qml/Main.qml:677 apps/share/qml/Main.qml:1289
+msgid "Device visibility"
+msgstr "Zichtbaarheid van apparaat"
+
+#: apps/share/qml/Main.qml:708
+msgid "Sharing with you"
+msgstr "Deelt met jou"
+
+#: apps/share/qml/Main.qml:746
+msgid "Quick Share isn't running"
+msgstr "Quick Share draait niet"
+
+#: apps/share/qml/Main.qml:750
+msgid "%1 wants to share"
+msgstr "%1 wil delen"
+
+#: apps/share/qml/Main.qml:750
+msgid "A device nearby"
+msgstr "Een apparaat in de buurt"
+
+#: apps/share/qml/Main.qml:752
+msgid "Receiving from %1"
+msgstr "Ontvangen van %1"
+
+#: apps/share/qml/Main.qml:752 apps/share/qml/Main.qml:754
+msgid "a device nearby"
+msgstr "een apparaat in de buurt"
+
+#: apps/share/qml/Main.qml:754
+msgid "Received from %1"
+msgstr "Ontvangen van %1"
+
+#: apps/share/qml/Main.qml:756
+msgid "You're hidden"
+msgstr "Je bent verborgen"
+
+#: apps/share/qml/Main.qml:758
+msgid "Ready to receive"
+msgstr "Klaar om te ontvangen"
+
+#: apps/share/qml/Main.qml:771
+msgid "Restart your computer to start Quick Share again."
+msgstr "Start je computer opnieuw op om Quick Share weer te starten."
+
+#: apps/share/qml/Main.qml:773
+msgid "Turn it on to share with phones and computers nearby."
+msgstr "Zet het aan om te delen met telefoons en computers in de buurt."
+
+#: apps/share/qml/Main.qml:776
+msgid "%1 · Secure connection ID: %2"
+msgstr "%1 · ID van beveiligde verbinding: %2"
+
+#: apps/share/qml/Main.qml:779
+msgid "%1 · %2%"
+msgstr "%1 · %2%"
+
+#: apps/share/qml/Main.qml:783
+msgid "Nobody nearby can see this computer. Become visible to receive."
+msgstr "Niemand in de buurt kan deze computer zien. Word zichtbaar om te ontvangen."
+
+#: apps/share/qml/Main.qml:785
+msgid "Keep this computer unlocked. Phones nearby will see %1."
+msgstr "Houd deze computer ontgrendeld. Telefoons in de buurt zien %1."
+
+#: apps/share/qml/Main.qml:808
+msgid "Decline"
+msgstr "Weigeren"
+
+#: apps/share/qml/Main.qml:814
+msgid "Accept"
+msgstr "Accepteren"
+
+#: apps/share/qml/Main.qml:820 apps/share/qml/Main.qml:1100
+#: apps/share/qml/Main.qml:1236
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: apps/share/qml/Main.qml:827
+msgid "Open folder"
+msgstr "Map openen"
+
+#: apps/share/qml/Main.qml:833 apps/share/qml/Main.qml:1252
+msgid "Done"
+msgstr "Klaar"
+
+#: apps/share/qml/Main.qml:839 apps/share/qml/Main.qml:1083
+msgid "Turn on"
+msgstr "Aanzetten"
+
+#: apps/share/qml/Main.qml:846
+msgid "Visible for 10 min"
+msgstr "10 min zichtbaar"
+
+#: apps/share/qml/Main.qml:899
+msgid "Share with devices nearby"
+msgstr "Delen met apparaten in de buurt"
+
+#: apps/share/qml/Main.qml:907
+msgid "Choose files or drop them here. You can also right-click a file in Files and pick Send with Quick Share."
+msgstr "Kies bestanden of sleep ze hierheen. Je kunt ook in Bestanden met rechts op een bestand klikken en Versturen met Quick Share kiezen."
+
+#: apps/share/qml/Main.qml:914
+msgid "Choose files"
+msgstr "Bestanden kiezen"
+
+#: apps/share/qml/Main.qml:924
+msgid "Turn on Quick Share first."
+msgstr "Zet eerst Quick Share aan."
+
+#: apps/share/qml/Main.qml:988
+msgid "Ready to send"
+msgstr "Klaar om te versturen"
+
+#: apps/share/qml/Main.qml:993
+msgid "Change"
+msgstr "Wijzigen"
+
+#: apps/share/qml/Main.qml:1008
+msgid "Quick Share is turned off"
+msgstr "Quick Share is uitgezet"
+
+#: apps/share/qml/Main.qml:1008
+msgid "Select the device you'd like to share files with"
+msgstr "Kies het apparaat waarmee je bestanden wilt delen"
+
+#: apps/share/qml/Main.qml:1068
+msgid "Looking for nearby devices…"
+msgstr "Zoeken naar apparaten in de buurt…"
+
+#: apps/share/qml/Main.qml:1068
+msgid "Turn on Quick Share to see devices nearby."
+msgstr "Zet Quick Share aan om apparaten in de buurt te zien."
+
+#: apps/share/qml/Main.qml:1077
+msgid "Make sure both devices are unlocked, close together and on the same Wi-Fi. If a phone isn't listed, open Quick Share on it and choose Everyone."
+msgstr "Zorg dat beide apparaten ontgrendeld zijn, dicht bij elkaar staan en op hetzelfde wifi-netwerk zitten. Staat een telefoon er niet bij, open dan Quick Share op die telefoon en kies Iedereen."
+
+#: apps/share/qml/Main.qml:1106
+msgid "Next"
+msgstr "Volgende"
+
+#: apps/share/qml/Main.qml:1125
+msgid "Can't share"
+msgstr "Kan niet delen"
+
+#: apps/share/qml/Main.qml:1126
+msgid "Sent"
+msgstr "Verstuurd"
+
+#: apps/share/qml/Main.qml:1127
+msgid "Sending…"
+msgstr "Versturen…"
+
+#: apps/share/qml/Main.qml:1128
+msgid "Share with this device?"
+msgstr "Delen met dit apparaat?"
+
+#: apps/share/qml/Main.qml:1199
+msgid "Secure connection ID: %1"
+msgstr "ID van beveiligde verbinding: %1"
+
+#: apps/share/qml/Main.qml:1207
+msgid "The device you're trying to share with did not accept"
+msgstr "Het apparaat waarmee je probeert te delen heeft niet geaccepteerd"
+
+#: apps/share/qml/Main.qml:1208
+msgid "Something went wrong. Please try again."
+msgstr "Er ging iets mis. Probeer het opnieuw."
+
+#: apps/share/qml/Main.qml:1209
+msgid "%1 got your files."
+msgstr "%1 heeft je bestanden ontvangen."
+
+#: apps/share/qml/Main.qml:1210
+msgid "%1%"
+msgstr "%1%"
+
+#: apps/share/qml/Main.qml:1211
+msgid "Waiting for %1 to accept…"
+msgstr "Wachten tot %1 accepteert…"
+
+#: apps/share/qml/Main.qml:1212
+msgid "Connecting…"
+msgstr "Verbinden…"
+
+#: apps/share/qml/Main.qml:1236
+msgid "Close"
+msgstr "Sluiten"
+
+#: apps/share/qml/Main.qml:1242
+msgid "Try again"
+msgstr "Opnieuw proberen"
+
+#: apps/share/qml/Main.qml:1275
+msgid "Receive"
+msgstr "Ontvangen"
+
+#: apps/share/qml/Main.qml:1281
+msgid "Send"
+msgstr "Versturen"
+
+#: apps/share/qml/Main.qml:1292
+msgid "Any device nearby can share with you"
+msgstr "Elk apparaat in de buurt kan met je delen"
+
+#: apps/share/qml/Main.qml:1292
+msgid "Everyone"
+msgstr "Iedereen"
+
+#: apps/share/qml/Main.qml:1293
+msgid "Everyone for 10 minutes"
+msgstr "10 minuten lang iedereen"
+
+#: apps/share/qml/Main.qml:1293
+msgid "Then you're hidden again"
+msgstr "Daarna ben je weer verborgen"
+
+#: apps/share/qml/Main.qml:1294
+msgid "No one can share with you"
+msgstr "Niemand kan met je delen"
+
+#: apps/share/qml/Main.qml:1304 apps/share/qml/Main.qml:1316
+msgid "Device name"
+msgstr "Apparaatnaam"
+
+#: apps/share/qml/Main.qml:1305
+msgid "How your device appears to others in Quick Share."
+msgstr "Hoe je apparaat voor anderen verschijnt in Quick Share."
+
+#: apps/share/qml/Main.qml:1327
+msgid "Choose files to send"
+msgstr "Bestanden kiezen om te versturen"
+
+#: src/apps/host.cpp:59
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:67
+msgid "Files or pages to open."
+msgstr "Bestanden of pagina's om te openen."
+
+#: src/apps/share.cpp:8
+msgctxt "@title application name"
+msgid "Quick Share"
+msgstr "Quick Share"

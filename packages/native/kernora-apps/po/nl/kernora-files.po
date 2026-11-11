@@ -1,0 +1,395 @@
+# Dutch translation of Kernora Files.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-files\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-31 13:44+0100\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/files/qml/Main.qml:37 apps/files/qml/PathBar.qml:52
+msgid "Computer"
+msgstr "Computer"
+
+#: apps/files/qml/Main.qml:37 apps/files/qml/Main.qml:834
+#: apps/files/qml/PathBar.qml:48
+msgid "Home"
+msgstr "Persoonlijke map"
+
+#: apps/files/qml/Main.qml:37 apps/files/qml/Main.qml:838
+#: apps/files/qml/PathBar.qml:42
+msgid "Trash"
+msgstr "Prullenbak"
+
+#: apps/files/qml/Main.qml:182
+msgid "Only files can be sent. Compress a folder to ZIP first."
+msgstr "Alleen bestanden kunnen worden verstuurd. Comprimeer een map eerst tot een ZIP-bestand."
+
+#: apps/files/qml/Main.qml:223 apps/files/qml/Main.qml:683
+#: apps/files/qml/Main.qml:792
+msgid "Restore"
+msgstr "Terugzetten"
+
+#: apps/files/qml/Main.qml:223
+msgid "Restore the file to open it."
+msgstr "Zet het bestand terug om het te openen."
+
+#: apps/files/qml/Main.qml:245
+msgid "%1 item will be moved"
+msgid_plural "%1 items will be moved"
+msgstr[0] "%1 item wordt verplaatst"
+msgstr[1] "%1 items worden verplaatst"
+
+#: apps/files/qml/Main.qml:246
+msgid "%1 item copied"
+msgid_plural "%1 items copied"
+msgstr[0] "%1 item gekopieerd"
+msgstr[1] "%1 items gekopieerd"
+
+#: apps/files/qml/Main.qml:303
+msgid "%1 item moved to the trash"
+msgid_plural "%1 items moved to the trash"
+msgstr[0] "%1 item naar de prullenbak verplaatst"
+msgstr[1] "%1 items naar de prullenbak verplaatst"
+
+#: apps/files/qml/Main.qml:321
+msgid "Restored"
+msgstr "Teruggezet"
+
+#: apps/files/qml/Main.qml:395
+msgid "Back"
+msgstr "Terug"
+
+#: apps/files/qml/Main.qml:396
+msgid "Forward"
+msgstr "Vooruit"
+
+#: apps/files/qml/Main.qml:397
+msgid "Up"
+msgstr "Omhoog"
+
+#: apps/files/qml/Main.qml:411
+msgid "Find in this folder"
+msgstr "Zoeken in deze map"
+
+#: apps/files/qml/Main.qml:424
+msgid "Show as grid"
+msgstr "Als raster tonen"
+
+#: apps/files/qml/Main.qml:424
+msgid "Show as list"
+msgstr "Als lijst tonen"
+
+#: apps/files/qml/Main.qml:430 apps/files/qml/Main.qml:718
+msgid "More"
+msgstr "Meer"
+
+#: apps/files/qml/Main.qml:457
+msgid "Files in the trash can be restored until the trash is emptied."
+msgstr "Bestanden in de prullenbak kunnen worden teruggezet tot de prullenbak wordt geleegd."
+
+#: apps/files/qml/Main.qml:458 apps/files/qml/Main.qml:810
+msgid "Empty the trash"
+msgstr "Prullenbak legen"
+
+#: apps/files/qml/Main.qml:473
+msgid "Find in “%1”"
+msgstr "Zoeken in “%1”"
+
+#: apps/files/qml/Main.qml:559 apps/files/qml/Main.qml:560
+#: apps/files/qml/Main.qml:995
+msgid "%1 item"
+msgid_plural "%1 items"
+msgstr[0] "%1 item"
+msgstr[1] "%1 items"
+
+#: apps/files/qml/Main.qml:559
+msgid "%1 selected"
+msgid_plural "%1 selected"
+msgstr[0] "%1 geselecteerd"
+msgstr[1] "%1 geselecteerd"
+
+#: apps/files/qml/Main.qml:569
+msgid "Nothing found"
+msgstr "Niets gevonden"
+
+#: apps/files/qml/Main.qml:569
+msgid "The trash is empty"
+msgstr "De prullenbak is leeg"
+
+#: apps/files/qml/Main.qml:569
+msgid "This folder is empty"
+msgstr "Deze map is leeg"
+
+#: apps/files/qml/Main.qml:570
+msgid "No names contain “%1”."
+msgstr "Geen namen bevatten “%1”."
+
+#: apps/files/qml/Main.qml:625 apps/files/qml/Main.qml:647
+#: apps/files/qml/Main.qml:655 apps/files/qml/Main.qml:800
+#: apps/files/qml/Main.qml:816 apps/files/qml/Main.qml:846
+#: apps/files/qml/Main.qml:850
+msgid "New folder"
+msgstr "Nieuwe map"
+
+#: apps/files/qml/Main.qml:671
+msgid "Clear selection"
+msgstr "Selectie wissen"
+
+#: apps/files/qml/Main.qml:689 apps/files/qml/Main.qml:764
+msgid "Cut"
+msgstr "Knippen"
+
+#: apps/files/qml/Main.qml:695 apps/files/qml/Main.qml:765
+msgid "Copy"
+msgstr "Kopiëren"
+
+#: apps/files/qml/Main.qml:701 apps/files/qml/Main.qml:762
+msgid "Send with Quick Share"
+msgstr "Versturen met Quick Share"
+
+#: apps/files/qml/Main.qml:707 apps/files/qml/Main.qml:766
+#: apps/files/qml/Main.qml:871 apps/files/qml/Main.qml:872
+msgid "Rename"
+msgstr "Naam wijzigen"
+
+#: apps/files/qml/Main.qml:712 apps/files/qml/Main.qml:785
+#: apps/files/qml/Main.qml:793
+msgid "Delete forever"
+msgstr "Definitief verwijderen"
+
+#: apps/files/qml/Main.qml:712 apps/files/qml/Main.qml:784
+msgid "Move to trash"
+msgstr "Naar prullenbak"
+
+#: apps/files/qml/Main.qml:745
+msgid "Open"
+msgstr "Openen"
+
+#: apps/files/qml/Main.qml:748
+msgid "Open with"
+msgstr "Openen met"
+
+#: apps/files/qml/Main.qml:767
+msgid "Compress to ZIP"
+msgstr "Comprimeren tot ZIP"
+
+#: apps/files/qml/Main.qml:769
+msgid "Extract here"
+msgstr "Hier uitpakken"
+
+#: apps/files/qml/Main.qml:775
+msgid "Set as wallpaper"
+msgstr "Als achtergrond instellen"
+
+#: apps/files/qml/Main.qml:780
+msgid "Wallpaper changed"
+msgstr "Achtergrond gewijzigd"
+
+#: apps/files/qml/Main.qml:787 apps/files/qml/Main.qml:795
+#: apps/files/qml/Main.qml:811
+msgid "Properties"
+msgstr "Eigenschappen"
+
+#: apps/files/qml/Main.qml:802 apps/files/qml/Main.qml:817
+msgid "Paste"
+msgstr "Plakken"
+
+#: apps/files/qml/Main.qml:807
+msgid "Select all"
+msgstr "Alles selecteren"
+
+#: apps/files/qml/Main.qml:809 apps/files/qml/Main.qml:840
+msgid "Open terminal here"
+msgstr "Terminal hier openen"
+
+#: apps/files/qml/Main.qml:820
+msgid "Sort by"
+msgstr "Sorteren op"
+
+#: apps/files/qml/Main.qml:821 apps/files/qml/Main.qml:858
+msgid "Name"
+msgstr "Naam"
+
+#: apps/files/qml/Main.qml:822
+msgid "Date modified"
+msgstr "Gewijzigd op"
+
+#: apps/files/qml/Main.qml:823 apps/files/qml/Main.qml:1008
+msgid "Size"
+msgstr "Grootte"
+
+#: apps/files/qml/Main.qml:824 apps/files/qml/Main.qml:1006
+msgid "Type"
+msgstr "Type"
+
+#: apps/files/qml/Main.qml:826
+msgid "Reverse order"
+msgstr "Omgekeerde volgorde"
+
+#: apps/files/qml/Main.qml:828
+msgid "Show hidden files"
+msgstr "Verborgen bestanden tonen"
+
+#: apps/files/qml/Main.qml:831
+msgid "Places"
+msgstr "Locaties"
+
+#: apps/files/qml/Main.qml:835
+msgid "Documents"
+msgstr "Documenten"
+
+#: apps/files/qml/Main.qml:836
+msgid "Downloads"
+msgstr "Downloads"
+
+#: apps/files/qml/Main.qml:837
+msgid "Pictures"
+msgstr "Afbeeldingen"
+
+#: apps/files/qml/Main.qml:847
+msgid "Create"
+msgstr "Maken"
+
+#: apps/files/qml/Main.qml:885
+msgid "New name"
+msgstr "Nieuwe naam"
+
+#: apps/files/qml/Main.qml:886
+msgid "A name cannot contain “/”."
+msgstr "Een naam mag geen “/” bevatten."
+
+#: apps/files/qml/Main.qml:899
+msgid "Delete %1 item forever?"
+msgid_plural "Delete %1 items forever?"
+msgstr[0] "%1 item definitief verwijderen?"
+msgstr[1] "%1 items definitief verwijderen?"
+
+#: apps/files/qml/Main.qml:900
+msgid "This cannot be undone."
+msgstr "Dit kan niet ongedaan worden gemaakt."
+
+#: apps/files/qml/Main.qml:901
+msgid "Delete"
+msgstr "Verwijderen"
+
+#: apps/files/qml/Main.qml:913
+msgid "Extract “%1”?"
+msgstr "“%1” uitpakken?"
+
+#: apps/files/qml/Main.qml:914
+msgid "The contents go into a new folder next to the archive."
+msgstr "De inhoud komt in een nieuwe map naast het archief."
+
+#: apps/files/qml/Main.qml:915
+msgid "Extract"
+msgstr "Uitpakken"
+
+#: apps/files/qml/Main.qml:934
+msgid "“%1” is already here"
+msgstr "“%1” staat hier al"
+
+#: apps/files/qml/Main.qml:935
+msgid "%1 item is already here"
+msgid_plural "%1 items are already here"
+msgstr[0] "%1 item staat hier al"
+msgstr[1] "%1 items staan hier al"
+
+#: apps/files/qml/Main.qml:936
+msgid "Choose what to do with the files that have the same names."
+msgstr "Kies wat er moet gebeuren met de bestanden die dezelfde naam hebben."
+
+#: apps/files/qml/Main.qml:941
+msgid "Replace"
+msgstr "Vervangen"
+
+#: apps/files/qml/Main.qml:942
+msgid "The files here are overwritten"
+msgstr "De bestanden hier worden overschreven"
+
+#: apps/files/qml/Main.qml:949
+msgid "Keep both"
+msgstr "Allebei houden"
+
+#: apps/files/qml/Main.qml:950
+msgid "The new files get a number in their name"
+msgstr "De nieuwe bestanden krijgen een nummer in hun naam"
+
+#: apps/files/qml/Main.qml:957
+msgid "Skip"
+msgstr "Overslaan"
+
+#: apps/files/qml/Main.qml:958
+msgid "Nothing is copied"
+msgstr "Er wordt niets gekopieerd"
+
+#: apps/files/qml/Main.qml:958
+msgid "Only the other files are copied"
+msgstr "Alleen de andere bestanden worden gekopieerd"
+
+#: apps/files/qml/Main.qml:968
+msgid "Empty the trash?"
+msgstr "Prullenbak legen?"
+
+#: apps/files/qml/Main.qml:969
+msgid "Everything in the trash is deleted forever."
+msgstr "Alles in de prullenbak wordt definitief verwijderd."
+
+#: apps/files/qml/Main.qml:970
+msgid "Empty"
+msgstr "Legen"
+
+#: apps/files/qml/Main.qml:984
+msgid "Trash emptied"
+msgstr "Prullenbak geleegd"
+
+#: apps/files/qml/Main.qml:997
+msgid "Close"
+msgstr "Sluiten"
+
+#: apps/files/qml/Main.qml:1007
+msgid "Folder"
+msgstr "Map"
+
+#: apps/files/qml/Main.qml:1010
+msgid "Location"
+msgstr "Locatie"
+
+#: apps/files/qml/Main.qml:1012
+msgid "Modified"
+msgstr "Gewijzigd"
+
+#: apps/files/qml/Main.qml:1014
+msgid "From"
+msgstr "Van"
+
+#: apps/files/qml/PathBar.qml:149
+msgid "There is no folder “%1”."
+msgstr "Er is geen map “%1”."
+
+#: apps/files/qml/Sidebar.qml:76
+msgid "Devices"
+msgstr "Apparaten"
+
+#: apps/files/qml/Sidebar.qml:105
+msgid "Eject"
+msgstr "Uitwerpen"
+
+#: src/apps/files.cpp:8
+msgctxt "@title application name"
+msgid "Files"
+msgstr "Bestanden"
+
+#: src/apps/host.cpp:59
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:67
+msgid "Files or pages to open."
+msgstr "Bestanden of pagina's om te openen."
