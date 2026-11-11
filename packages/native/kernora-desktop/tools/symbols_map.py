@@ -327,6 +327,8 @@ ICONS: list[tuple[str, bool, str, list[str]]] = [
     ("settings_ethernet", False, "status", ["kernora-bar-ethernet"]),
     ("do_not_disturb_on", True, "status", ["kernora-bar-dnd"]),
     ("volume_off", True, "status", ["kernora-bar-volume-off"]),
+    ("mic", True, "status", ["kernora-bar-mic"]),
+    ("videocam", True, "status", ["kernora-bar-camera"]),
     ("signal_wifi_4_bar", False, "status", ["kernora-bar-wifi-4"]),
     ("network_wifi_3_bar", False, "status", ["kernora-bar-wifi-3"]),
     ("network_wifi_2_bar", False, "status", ["kernora-bar-wifi-2"]),

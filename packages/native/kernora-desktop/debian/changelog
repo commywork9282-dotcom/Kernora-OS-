@@ -6,6 +6,8 @@ kernora-desktop (1.4.75) UNRELEASED; urgency=medium
     wallpaper under it: dark over a light wallpaper, white over a dark one,
     with a soft shade at the top when white needs it.
   * Meta+N opens notifications and Meta+Q quick settings, like on Googlebook.
+  * A green pill shows when an app uses the camera or the microphone, and
+    shrinks to a dot after a few seconds.
   * The notification panel under the status bar has no title and fits its
     notifications. Silent ones get their own section, Clear all and the
     settings button sit at the bottom, and a card shows its close and

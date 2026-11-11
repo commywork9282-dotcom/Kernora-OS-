@@ -9,6 +9,8 @@ import QtQuick.Window
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
+import org.kde.pipewire.monitor as Monitor
+import org.kde.plasma.private.volume as PA
 import org.kernora.bartint
 import "m3"
 
@@ -24,7 +26,10 @@ Item {
     readonly property bool clear: bar && !(Plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentPrefersOpaqueBackground)
     readonly property bool darkInk: clear && BarTint.darkInk(Screen.name, "right")
     readonly property bool showMedia: bar && backend.mediaActive && backend.mediaTrack.length > 0
-    readonly property real mediaSpace: showMedia ? nowPlaying.width + 6 : 0
+    readonly property bool micInUse: bar && recording.count > 0
+    readonly property bool cameraInUse: bar && cameras.runningCount > 0
+    readonly property bool showPrivacy: micInUse || cameraInUse
+    readonly property real mediaSpace: (showMedia ? nowPlaying.width + 6 : 0) + (showPrivacy ? privacy.width + 6 : 0)
     readonly property string barNetworkIcon: {
         const name = backend.networkIcon;
         if (backend.network && backend.network.wiredConnected) {
@@ -265,6 +270,79 @@ Item {
                 color: nowPlaying.ink
                 elide: Text.ElideRight
                 text: root.backend.mediaTrack
+            }
+        }
+    }
+
+    PA.PulseObjectFilterModel {
+        id: recording
+        filters: [{ role: "VirtualStream", value: false }]
+        sourceModel: PA.SourceOutputModel {}
+    }
+
+    Monitor.MediaMonitor {
+        id: cameras
+        role: Monitor.MediaRole.Camera
+    }
+
+    onMicInUseChanged: privacy.reveal()
+    onCameraInUseChanged: privacy.reveal()
+
+    Rectangle {
+        id: privacy
+
+        property bool open: true
+
+        function reveal(): void {
+            open = true;
+            collapse.restart();
+        }
+
+        visible: root.showPrivacy
+        x: root.showMedia ? nowPlaying.width + 6 : 0
+        anchors.verticalCenter: parent.verticalCenter
+        width: open ? privacyRow.implicitWidth + 20 : 10
+        height: open ? 28 : 10
+        radius: height / 2
+        color: "#3ddc84"
+
+        Accessible.name: [root.cameraInUse ? i18n("Camera in use") : "", root.micInUse ? i18n("Microphone in use") : ""]
+            .filter(part => part.length > 0).join(", ")
+
+        Behavior on width {
+            NumberAnimation { duration: M3.durationMedium2; easing.type: Easing.OutCubic }
+        }
+        Behavior on height {
+            NumberAnimation { duration: M3.durationMedium2; easing.type: Easing.OutCubic }
+        }
+
+        Timer {
+            id: collapse
+            interval: 5000
+            onTriggered: privacy.open = false
+        }
+
+        Row {
+            id: privacyRow
+            anchors.centerIn: parent
+            spacing: 4
+            opacity: privacy.open ? 1 : 0
+
+            Behavior on opacity {
+                NumberAnimation { duration: M3.durationShort4 }
+            }
+
+            MIcon {
+                visible: root.cameraInUse
+                size: 18
+                source: "kernora-bar-camera"
+                color: "#00210b"
+            }
+            MIcon {
+                visible: root.micInUse
+                size: 18
+                source: "kernora-bar-mic"
+                color: "#00210b"
             }
         }
     }

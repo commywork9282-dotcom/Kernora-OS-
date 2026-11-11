@@ -1582,6 +1582,13 @@ grep -Fq 'readonly property bool bar: Plasmoid.location === PlasmaCore.Types.Top
   && grep -Fq 'silentModel.clear(NotificationManager.Notifications.ClearExpired);' "$data_root/notifications/main.qml" \
   && grep -Fq 'msgid "Silent"' "$package_root/data/shell/po/kernora-notifications.ru.po" \
   || fail "the status bar's notification panel does not look like Googlebook"
+grep -Fq 'role: Monitor.MediaRole.Camera' "$package_root/data/shell/shade/contents/ui/StatusChip.qml" \
+  && grep -Fq 'filters: [{ role: "VirtualStream", value: false }]' "$package_root/data/shell/shade/contents/ui/StatusChip.qml" \
+  && grep -Fq 'source: "kernora-bar-mic"' "$package_root/data/shell/shade/contents/ui/StatusChip.qml" \
+  && grep -Fq 'source: "kernora-bar-camera"' "$package_root/data/shell/shade/contents/ui/StatusChip.qml" \
+  && grep -Fq '("mic", True, "status", ["kernora-bar-mic"])' "$package_root/tools/symbols_map.py" \
+  && grep -Fq '("videocam", True, "status", ["kernora-bar-camera"])' "$package_root/tools/symbols_map.py" \
+  || fail "the status bar does not show when the camera or microphone is in use"
 timeout 60 python3 -I - "$data_root/panel/kernora-panel-shortcuts" <<'EOF' \
   || fail "the panel shortcut helper removes the wrong entries"
 import importlib.machinery
