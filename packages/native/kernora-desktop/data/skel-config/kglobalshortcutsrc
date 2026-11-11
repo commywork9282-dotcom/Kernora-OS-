@@ -1,2 +1,3 @@
 [plasmashell]
 show-on-mouse-pos=none,Meta+V,Show Clipboard Items at Mouse Position
+manage activities=none,Meta+Q,Show Activity Switcher

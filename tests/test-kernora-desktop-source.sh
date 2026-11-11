@@ -1566,6 +1566,13 @@ grep -Fq 'taken.indexOf(shortcut) < 0' "$data_root/panel/layout.js" \
   && grep -Fq 'entry name="reclaimShortcuts"' "$package_root/data/shell/launcher/contents/config/main.xml" \
   && grep -Fq '/usr/libexec/kernora-panel-shortcuts' "$package_root/data/shell/launcher/contents/ui/main.qml" \
   || fail "a new panel does not get its shortcuts back"
+grep -Fq 'bell.globalShortcut = "Meta+N";' "$data_root/panel/statusbar/contents/layout.js" \
+  && grep -Fq 'quick.globalShortcut = "Meta+Q";' "$data_root/panel/statusbar/contents/layout.js" \
+  && grep -Fq '["org.kernora.quicksettings", false, bar ? "Meta+Q" : "Meta+A", bar ? "Meta+A" : "Meta+Q"]' "$data_root/panel/kernora-panel-shortcuts" \
+  && grep -Fq 'wanted.push(["org.kde.plasma.notifications", false, "Meta+N", ""]);' "$data_root/panel/kernora-panel-shortcuts" \
+  && grep -Fq '"org.kde.KGlobalAccel.setForeignShortcut", ACTIVITIES, "@ai []"' "$data_root/panel/kernora-panel-shortcuts" \
+  && grep -Fxq 'manage activities=none,Meta+Q,Show Activity Switcher' "$data_root/skel-config/kglobalshortcutsrc" \
+  || fail "the status bar has no Googlebook shortcuts"
 timeout 60 python3 -I - "$data_root/panel/kernora-panel-shortcuts" <<'EOF' \
   || fail "the panel shortcut helper removes the wrong entries"
 import importlib.machinery

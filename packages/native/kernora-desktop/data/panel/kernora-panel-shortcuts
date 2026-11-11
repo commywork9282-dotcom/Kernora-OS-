@@ -8,7 +8,9 @@ import re
 import subprocess
 import sys
 
-KEYS = {"Alt+Space", "Meta+A", "Meta+V", "Meta+."}
+KEYS = {"Alt+Space", "Meta+A", "Meta+Q", "Meta+N", "Meta+V", "Meta+."}
+ACTIVITIES = "['plasmashell', 'manage activities', '', '']"
+META_Q = 0x10000000 | 0x51
 ENTRY = re.compile(r"^activate widget (\d+)=([^,]*),", re.MULTILINE)
 SECTION = re.compile(r"^\[plasmashell\]\n(.*?)(?=^\[|\Z)", re.MULTILINE | re.DOTALL)
 LIVE = """
@@ -21,12 +23,18 @@ panels().concat(desktops()).forEach(function (holder) {
 print(ids.join(" "));
 """
 ASSIGN = """
+var bar = panels().some(function (panel) {
+    return panel.widgets("org.kernora.datetime").length > 0;
+});
 var wanted = [
-    ["org.kernora.launcher", false, "Alt+Space"],
-    ["org.kernora.quicksettings", false, "Meta+A"],
-    ["org.kernora.clipboard", false, "Meta+V"],
-    ["org.kernora.clipboard", true, "Meta+."]
+    ["org.kernora.launcher", false, "Alt+Space", ""],
+    ["org.kernora.quicksettings", false, bar ? "Meta+Q" : "Meta+A", bar ? "Meta+A" : "Meta+Q"],
+    ["org.kernora.clipboard", false, "Meta+V", ""],
+    ["org.kernora.clipboard", true, "Meta+.", ""]
 ];
+if (bar) {
+    wanted.push(["org.kde.plasma.notifications", false, "Meta+N", ""]);
+}
 var widgets = [];
 panels().forEach(function (panel) {
     widgets = widgets.concat(panel.widgets());
@@ -40,7 +48,8 @@ wanted.forEach(function (item) {
         return String(widget.globalShortcut) === item[2];
     });
     var free = widgets.filter(function (widget) {
-        return widget.type === item[0] && !String(widget.globalShortcut) && showsEmoji(widget) === item[1];
+        var key = String(widget.globalShortcut);
+        return widget.type === item[0] && (!key || (item[3] && key === item[3])) && showsEmoji(widget) === item[1];
     });
     if (!held && free.length > 0) {
         free[0].globalShortcut = item[2];
@@ -86,6 +95,11 @@ def main() -> int:
     for name in stale(config, live):
         call("--dest", "org.kde.kglobalaccel", "--object-path", "/kglobalaccel", "--method",
              "org.kde.KGlobalAccel.unregister", "plasmashell", name)
+    held = call("--dest", "org.kde.kglobalaccel", "--object-path", "/kglobalaccel", "--method",
+                "org.kde.KGlobalAccel.shortcut", ACTIVITIES)
+    if str(META_Q) in held:
+        call("--dest", "org.kde.kglobalaccel", "--object-path", "/kglobalaccel", "--method",
+             "org.kde.KGlobalAccel.setForeignShortcut", ACTIVITIES, "@ai []")
     evaluate(ASSIGN)
     return 0
 
