@@ -20,6 +20,7 @@ QtObject {
 
     property bool inGroup: false
     property bool inHistory: false
+    property bool revealButtons: true
 
     property var applicationIconSource
     property string applicationName

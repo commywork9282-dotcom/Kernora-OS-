@@ -38,6 +38,11 @@ RowLayout {
     }
 
     spacing: 0
+    opacity: modelInterface.revealButtons ? 1 : 0
+
+    Behavior on opacity {
+        NumberAnimation { duration: 150 }
+    }
 
     Component.onCompleted: updateAgoText()
 

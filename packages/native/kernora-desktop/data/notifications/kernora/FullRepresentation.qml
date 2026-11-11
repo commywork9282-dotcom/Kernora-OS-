@@ -28,16 +28,22 @@ import "delegates" as Delegates
 import "components" as Components
 
 PlasmaExtras.Representation {
+    id: fullRep
+
+    readonly property bool bar: Plasmoid.location === PlasmaCore.Types.TopEdge
+    readonly property int fittedHeight: (header ? header.implicitHeight : 0)
+        + (list.count > 0 || silentModel.count > 0 ? list.contentHeight + 8 : 200)
+        + (footer ? footer.implicitHeight : 0)
     readonly property int dndMorningHour: 6
     readonly property int dndEveningHour: 20
     readonly property var appletInterface: root
 
     Layout.minimumWidth: 360
-    Layout.minimumHeight: 320
+    Layout.minimumHeight: bar ? Math.min(fittedHeight, 560) : 320
     Layout.preferredWidth: 408
-    Layout.preferredHeight: 560
+    Layout.preferredHeight: bar ? Math.min(fittedHeight, 560) : 560
     Layout.maximumWidth: Kirigami.Units.gridUnit * 80
-    Layout.maximumHeight: Kirigami.Units.gridUnit * 40
+    Layout.maximumHeight: bar ? Math.min(fittedHeight, 560) : Kirigami.Units.gridUnit * 40
 
     Layout.fillHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical
 
@@ -56,9 +62,10 @@ PlasmaExtras.Representation {
     }
 
     header: Item {
-        implicitHeight: 64
+        implicitHeight: fullRep.bar ? 12 : 64
 
         RowLayout {
+            visible: !fullRep.bar
             anchors {
                 fill: parent
                 leftMargin: 24
@@ -162,17 +169,19 @@ PlasmaExtras.Representation {
     footer: Item {
         implicitHeight: footerRow.visible ? footerRow.implicitHeight + 24 : 12
 
-        RowLayout {
+        GridLayout {
             id: footerRow
             anchors {
                 left: parent.left
                 right: parent.right
                 verticalCenter: parent.verticalCenter
-                leftMargin: 24
-                rightMargin: 16
+                leftMargin: fullRep.bar ? 12 : 24
+                rightMargin: fullRep.bar ? 12 : 16
             }
-            spacing: 12
-            visible: dndStatus.text !== "" || root.clearHistoryAction.visible
+            columns: fullRep.bar ? 1 : 3
+            columnSpacing: 12
+            rowSpacing: 12
+            visible: fullRep.bar || dndStatus.text !== "" || root.clearHistoryAction.visible
 
             MText {
                 id: dndStatus
@@ -225,19 +234,40 @@ PlasmaExtras.Representation {
                 return sections.join(" · ");
             }
                 visible: text !== ""
+                Layout.leftMargin: fullRep.bar ? 12 : 0
             }
 
             Item {
+                visible: !fullRep.bar
                 Layout.fillWidth: dndStatus.text === ""
             }
 
-            MButton {
-                id: clearAllButton
-                variant: "tonal"
-                icon: "edit-clear-history"
-                text: i18nd("kernora-notifications", "Clear all")
-                visible: root.clearHistoryAction.visible
-                onClicked: root.clearHistoryAction.trigger()
+            RowLayout {
+                Layout.fillWidth: fullRep.bar
+                spacing: 8
+
+                MButton {
+                    id: clearAllButton
+                    Layout.fillWidth: fullRep.bar
+                    variant: "tonal"
+                    icon: fullRep.bar ? "" : "edit-clear-history"
+                    text: i18nd("kernora-notifications", "Clear all")
+                    visible: root.clearHistoryAction.visible
+                    onClicked: root.clearHistoryAction.trigger()
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    visible: fullRep.bar && !clearAllButton.visible
+                }
+
+                MIconButton {
+                    variant: "tonal"
+                    icon: "configure"
+                    text: i18nd("plasma_applet_org.kde.plasma.notifications", "Configure")
+                    visible: fullRep.bar && KConfig.KAuthorized.authorizeControlModule("kcm_notifications")
+                    onClicked: KCMUtils.KCMLauncher.openSystemSettings("kcm_notifications")
+                }
             }
         }
     }
@@ -333,6 +363,89 @@ PlasmaExtras.Representation {
                 criteria: ViewSection.FullString
             }
 
+            footer: Column {
+                width: ListView.view.width
+                visible: fullRep.bar && silentModel.count > 0
+                height: visible ? implicitHeight : 0
+                spacing: 2
+
+                Item {
+                    width: parent.width
+                    height: list.count > 0 ? 48 : 36
+
+                    MText {
+                        anchors {
+                            left: parent.left
+                            leftMargin: 12
+                            bottom: parent.bottom
+                            bottomMargin: 10
+                        }
+                        role: "titleSmall"
+                        color: M3.surfaceContent
+                        text: i18nd("kernora-notifications", "Silent")
+                    }
+                }
+
+                Repeater {
+                    model: fullRep.bar && root.expanded ? silentModel : null
+
+                    Rectangle {
+                        id: silentCard
+
+                        required property int index
+                        required property var model
+
+                        width: parent.width
+                        height: silentDelegate.implicitHeight + 32
+                        color: M3.surfaceContainerHigh
+                        topLeftRadius: index === 0 ? M3.cornerCard : M3.cornerCardInner
+                        topRightRadius: topLeftRadius
+                        bottomLeftRadius: index === silentModel.count - 1 ? M3.cornerCard : M3.cornerCardInner
+                        bottomRightRadius: bottomLeftRadius
+
+                        HoverHandler {
+                            id: silentHover
+                        }
+
+                        Delegates.DelegateHistory {
+                            id: silentDelegate
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                                top: parent.top
+                                leftMargin: 16
+                                rightMargin: 12
+                                topMargin: 16
+                            }
+                            modelInterface: Components.ModelInterface {
+                                notificationType: silentCard.model.type
+                                inHistory: true
+                                revealButtons: silentHover.hovered
+                                applicationName: silentCard.model.applicationName
+                                applicationIconSource: silentCard.model.applicationIconName
+                                originName: silentCard.model.originName || ""
+                                time: silentCard.model.updated || silentCard.model.created
+                                configurable: silentCard.model.configurable
+                                closable: silentCard.model.closable
+                                summary: silentCard.model.summary
+                                body: silentCard.model.body || ""
+                                icon: silentCard.model.image || silentCard.model.iconName
+                                iconName: silentCard.model.iconName || ""
+                                urls: silentCard.model.urls || []
+                                configureActionLabel: silentCard.model.configureActionLabel || ""
+                                actionNames: silentCard.model.actionNames || []
+                                actionLabels: silentCard.model.actionLabels || []
+
+                                onCloseClicked: silentModel.close(silentModel.index(silentCard.index, 0))
+                                onConfigureClicked: silentModel.configure(silentModel.index(silentCard.index, 0))
+                                onActionInvoked: actionName => silentModel.invokeAction(silentModel.index(silentCard.index, 0), actionName)
+                                onOpenUrl: url => Qt.openUrlExternally(url)
+                            }
+                        }
+                    }
+                }
+            }
+
             delegate: DraggableDelegate {
                 id: delegate
                 width: ListView.view.width
@@ -340,6 +453,10 @@ PlasmaExtras.Representation {
 
                 required property int index
                 required property var model
+
+                HoverHandler {
+                    id: cardHover
+                }
 
                 property real oldY: -1
                 property int oldListCount: -1
@@ -423,6 +540,7 @@ PlasmaExtras.Representation {
 
                         inGroup: model.isInGroup
                         inHistory: true
+                        revealButtons: !fullRep.bar || cardHover.hovered
 
                         applicationName: model.applicationName
                         applicationIconSource: model.applicationIconName
@@ -526,6 +644,7 @@ PlasmaExtras.Representation {
 
                                 configurable: model.configurable
                                 closable: model.closable
+                                revealButtons: delegateLoader.modelInterface.revealButtons
 
                                 onCloseClicked: historyModel.close(historyModel.index(index, 0));
                                 onConfigureClicked: historyModel.configure(historyModel.index(index, 0))
@@ -570,7 +689,7 @@ PlasmaExtras.Representation {
                 anchors.centerIn: parent
                 width: parent.width - 48
 
-                active: list.count === 0
+                active: list.count === 0 && !(fullRep.bar && silentModel.count > 0)
                 visible: active
                 asynchronous: true
 

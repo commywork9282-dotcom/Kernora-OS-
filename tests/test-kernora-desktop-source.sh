@@ -1573,6 +1573,15 @@ grep -Fq 'bell.globalShortcut = "Meta+N";' "$data_root/panel/statusbar/contents/
   && grep -Fq '"org.kde.KGlobalAccel.setForeignShortcut", ACTIVITIES, "@ai []"' "$data_root/panel/kernora-panel-shortcuts" \
   && grep -Fxq 'manage activities=none,Meta+Q,Show Activity Switcher' "$data_root/skel-config/kglobalshortcutsrc" \
   || fail "the status bar has no Googlebook shortcuts"
+grep -Fq 'readonly property bool bar: Plasmoid.location === PlasmaCore.Types.TopEdge' "$data_root/notifications/kernora/FullRepresentation.qml" \
+  && grep -Fq 'model: fullRep.bar && root.expanded ? silentModel : null' "$data_root/notifications/kernora/FullRepresentation.qml" \
+  && grep -Fq 'revealButtons: !fullRep.bar || cardHover.hovered' "$data_root/notifications/kernora/FullRepresentation.qml" \
+  && grep -Fq 'Layout.maximumHeight: bar ? Math.min(fittedHeight, 560)' "$data_root/notifications/kernora/FullRepresentation.qml" \
+  && grep -Fq 'opacity: modelInterface.revealButtons ? 1 : 0' "$data_root/notifications/kernora/components/HeadingButtons.qml" \
+  && grep -Fq 'id: silentModel' "$data_root/notifications/main.qml" \
+  && grep -Fq 'silentModel.clear(NotificationManager.Notifications.ClearExpired);' "$data_root/notifications/main.qml" \
+  && grep -Fq 'msgid "Silent"' "$package_root/data/shell/po/kernora-notifications.ru.po" \
+  || fail "the status bar's notification panel does not look like Googlebook"
 timeout 60 python3 -I - "$data_root/panel/kernora-panel-shortcuts" <<'EOF' \
   || fail "the panel shortcut helper removes the wrong entries"
 import importlib.machinery

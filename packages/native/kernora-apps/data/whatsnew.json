@@ -10,8 +10,8 @@
           "ru": "Строка состояния сверху"
         },
         "text": {
-          "en": "The time and date now sit at the top left, and notifications, the network, the battery and what is playing sit at the top right. Quick settings and notifications drop down from the top, and the clock opens a calendar. The bar is always clear, and its text and icons turn dark over a light wallpaper and white over a dark one.",
-          "ru": "Время и дата теперь слева вверху, а уведомления, сеть, батарея и то, что сейчас играет, — справа вверху. Быстрые настройки и уведомления выпадают сверху, а по нажатию на часы открывается календарь. Строка всегда прозрачная, а текст и значки на ней сами становятся тёмными на светлых обоях и белыми на тёмных."
+          "en": "The time and date now sit at the top left, and notifications, the network, the battery and what is playing sit at the top right. Quick settings and notifications drop down from the top, and the clock opens a calendar. The bar is always clear, and its text and icons turn dark over a light wallpaper and white over a dark one. Meta+N opens notifications and Meta+Q opens quick settings.",
+          "ru": "Время и дата теперь слева вверху, а уведомления, сеть, батарея и то, что сейчас играет, — справа вверху. Быстрые настройки и уведомления выпадают сверху, а по нажатию на часы открывается календарь. Строка всегда прозрачная, а текст и значки на ней сами становятся тёмными на светлых обоях и белыми на тёмных. Meta+N открывает уведомления, а Meta+Q — быстрые настройки."
         }
       },
       {

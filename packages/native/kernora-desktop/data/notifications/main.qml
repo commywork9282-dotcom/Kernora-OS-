@@ -163,7 +163,7 @@ PlasmoidItem {
         urgencies: {
             var urgencies = NotificationManager.Notifications.CriticalUrgency
                           | NotificationManager.Notifications.NormalUrgency;
-            if (notificationSettings.lowPriorityHistory) {
+            if (notificationSettings.lowPriorityHistory && Plasmoid.location !== PlasmaCore.Types.TopEdge) {
                 urgencies |= NotificationManager.Notifications.LowUrgency;
             }
             return urgencies;
@@ -174,6 +174,19 @@ PlasmoidItem {
                 closePlasmoid();
             }
         }
+    }
+
+    NotificationManager.Notifications {
+        id: silentModel
+        showExpired: true
+        showDismissed: true
+        showJobs: false
+        showNotifications: Plasmoid.location === PlasmaCore.Types.TopEdge
+        sortMode: NotificationManager.Notifications.SortByDate
+        groupMode: NotificationManager.Notifications.GroupDisabled
+        blacklistedDesktopEntries: notificationSettings.historyBlacklistedApplications
+        blacklistedNotifyRcNames: notificationSettings.historyBlacklistedServices
+        urgencies: NotificationManager.Notifications.LowUrgency
     }
 
     Notifications.JobAggregator {
@@ -214,13 +227,14 @@ PlasmoidItem {
             id: clearHistory
             text: i18n("Clear All Notifications")
             icon.name: "edit-clear-history"
-            visible: historyModel.expiredNotificationsCount > 0
+            visible: historyModel.expiredNotificationsCount > 0 || silentModel.expiredNotificationsCount > 0
             onTriggered: {
+                silentModel.clear(NotificationManager.Notifications.ClearExpired);
                 historyModel.clear(NotificationManager.Notifications.ClearExpired);
                 historyModel.countChanged.connect(closeWhenCleared)
             }
             function closeWhenCleared() {
-                if (historyModel.count === 0) {
+                if (historyModel.count === 0 && silentModel.count === 0) {
                     closePlasmoid();
                 }
                 historyModel.countChanged.disconnect(closeWhenCleared)
