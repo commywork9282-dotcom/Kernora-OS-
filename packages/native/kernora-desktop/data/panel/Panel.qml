@@ -8,7 +8,6 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Layouts 1.1
-import QtQuick.Effects
 import QtQml 2.15
 
 import org.kde.plasma.core as PlasmaCore
@@ -19,6 +18,7 @@ import org.kde.kirigami 2.20 as Kirigami
 import org.kde.plasma.shell.panel 0.1 as Panel
 
 import org.kde.plasma.plasmoid 2.0
+import org.kernora.bartint
 
 Item {
     id: root
@@ -29,7 +29,7 @@ Item {
     readonly property bool verticalPanel: containment?.plasmoid?.formFactor === PlasmaCore.Types.Vertical
     readonly property bool statusBar: containment?.plasmoid?.location === PlasmaCore.Types.TopEdge
         && (containment?.plasmoid?.applets ?? []).some(applet => applet.pluginName === "org.kernora.datetime")
-    readonly property bool statusBarClear: statusBar && panelOpacity < 0.5
+    readonly property color statusBarInk: BarTint.ink(Screen.name, "right")
     readonly property string backgroundPath: statusBar || containment?.plasmoid?.backgroundHints === PlasmaCore.Types.NoBackground ? "" : "widgets/panel-background"
     readonly property string solidBackgroundPath: backgroundPath ? "solid/widgets/panel-background" : ""
     readonly property var launcherApplet: (containment?.plasmoid?.applets ?? []).find(applet => applet.pluginName === "org.kernora.launcher") ?? null
@@ -196,14 +196,6 @@ Item {
         anchors.fill: floatingTranslucentItem
         imagePath: root.solidBackgroundPath
     }
-    Rectangle {
-        visible: root.statusBar && panelOpacity !== 0
-        opacity: panelOpacity
-        anchors.fill: floatingTranslucentItem
-        Kirigami.Theme.colorSet: Kirigami.Theme.Window
-        Kirigami.Theme.inherit: false
-        color: Kirigami.Theme.backgroundColor
-    }
     KSvg.FrameSvgItem {
         id: opaqueItem
         visible: panelOpacity !== 0 && floatingness === 0
@@ -249,6 +241,9 @@ Item {
             panelOpacity = 0
         }
         if (statusBar) {
+            panelOpacity = 0
+            opaqueApplets = false
+            floatingnessTarget = 0
             floatingApplets = true
         }
         // Not using panelOpacity to check as it has a NumberAnimation, and it will thus
@@ -395,16 +390,7 @@ Item {
     }
     Item {
         id: containmentParent
-        Kirigami.Theme.textColor: root.statusBarClear ? "#ffffff" : undefined
-        layer.enabled: root.statusBarClear
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowColor: "#000000"
-            shadowOpacity: 0.55
-            shadowBlur: 0.35
-            shadowVerticalOffset: 1
-            blurMax: 12
-        }
+        Kirigami.Theme.textColor: root.statusBar ? root.statusBarInk : undefined
         anchors.centerIn: isOpaque ? floatingOpaqueItem : floatingTranslucentItem
         width: root.verticalPanel ? panel.thickness : root.width - fixedLeftFloatingPadding - fixedRightFloatingPadding
         height: root.verticalPanel ? root.height - fixedBottomFloatingPadding - fixedTopFloatingPadding : panel.thickness

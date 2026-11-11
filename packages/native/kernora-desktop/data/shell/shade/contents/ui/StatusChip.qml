@@ -5,9 +5,11 @@
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Window
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
+import org.kernora.bartint
 import "m3"
 
 Item {
@@ -20,6 +22,7 @@ Item {
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool bar: Plasmoid.location === PlasmaCore.Types.TopEdge && !vertical
     readonly property bool clear: bar && !(Plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentPrefersOpaqueBackground)
+    readonly property bool darkInk: clear && BarTint.darkInk(Screen.name, "right")
     readonly property bool showMedia: bar && backend.mediaActive && backend.mediaTrack.length > 0
     readonly property real mediaSpace: showMedia ? nowPlaying.width + 6 : 0
     readonly property string barNetworkIcon: {
@@ -87,9 +90,9 @@ Item {
         }
 
         readonly property color ink: root.bar
-            ? (root.active ? M3.primaryContent : root.clear ? "#ffffff" : M3.surfaceContent)
+            ? (root.active ? M3.primaryContent : root.clear ? BarTint.ink(Screen.name, "right") : M3.surfaceContent)
             : root.active ? M3.secondaryContainerContent : M3.surfaceContent
-        readonly property color knockout: root.bar && !root.active && root.clear ? "#1b1b1f" : root.active ? M3.primary : M3.surface
+        readonly property color knockout: root.bar && !root.active && root.clear ? (root.darkInk ? BarTint.light : "#1b1b1f") : root.active ? M3.primary : M3.surface
 
         RowLayout {
             id: content
@@ -214,9 +217,9 @@ Item {
         width: Math.min(220, mediaRow.implicitWidth + 20)
         height: 28
         radius: 14
-        color: root.clear ? Qt.rgba(0, 0, 0, 0.32) : M3.surfaceContainerHighest
+        color: root.clear ? Qt.rgba(0.07, 0.07, 0.08, 0.9) : M3.surfaceContainerHighest
         border.width: root.clear ? 1 : 0
-        border.color: Qt.rgba(1, 1, 1, 0.16)
+        border.color: Qt.rgba(1, 1, 1, 0.18)
 
         readonly property color ink: root.clear ? "#ffffff" : M3.surfaceContent
 

@@ -1487,6 +1487,13 @@ FocusScope {
         }
     }
 
+    StatusBarProbe {
+        active: root.isContainment && main.isRootView
+        wallpaper: root.wallpaper ?? null
+        desktop: root
+        strip: root.availableScreenRect ? root.availableScreenRect.y : 0
+    }
+
     Component.onCompleted: {
         if (backButton === null && root.useListViewMode) {
             backButton = makeBackButton();

@@ -2,6 +2,9 @@ kernora-desktop (1.4.75) UNRELEASED; urgency=medium
 
   * Status bar at the top: time and date on the left, notifications, network,
     battery and what is playing on the right, over the wallpaper.
+  * The status bar never gets a background. Its text and icons follow the
+    wallpaper under it: dark over a light wallpaper, white over a dark one,
+    with a soft shade at the top when white needs it.
   * The bottom panel and the apps button are square by default.
   * Settings can switch back to everything at the bottom and to the rounded
     panel.

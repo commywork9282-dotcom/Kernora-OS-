@@ -5,8 +5,10 @@
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Window
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
+import org.kernora.bartint
 import "m3"
 
 PlasmoidItem {
@@ -15,7 +17,7 @@ PlasmoidItem {
     property date now: new Date()
     readonly property bool clear: Plasmoid.location === PlasmaCore.Types.TopEdge
         && !(Plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentPrefersOpaqueBackground)
-    readonly property color ink: expanded ? M3.primaryContent : clear ? "#ffffff" : M3.surfaceContent
+    readonly property color ink: expanded ? M3.primaryContent : clear ? BarTint.ink(Screen.name, "left") : M3.surfaceContent
     readonly property string timeFormat: Qt.locale().timeFormat(Locale.ShortFormat)
         .replace(/[.:]?s+/g, "").replace(/\s+t$/, "").trim()
     readonly property bool dayFirst: {

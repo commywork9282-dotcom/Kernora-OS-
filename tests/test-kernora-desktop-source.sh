@@ -1496,13 +1496,26 @@ grep -Fxq 'data/panel/kernora-panel-layout usr/libexec' "$package_root/debian/ke
   && grep -Fq 'bar.location = "top"' "$data_root/panel/statusbar/contents/layout.js" \
   || fail "the status bar is not installed"
 grep -Fq 'applet.pluginName === "org.kernora.datetime"' "$data_root/panel/Panel.qml" \
-  && grep -Fq 'Kirigami.Theme.textColor: root.statusBarClear ? "#ffffff" : undefined' "$data_root/panel/Panel.qml" \
+  && grep -Fq 'Kirigami.Theme.textColor: root.statusBar ? root.statusBarInk : undefined' "$data_root/panel/Panel.qml" \
+  && ! grep -Fq 'color: Kirigami.Theme.backgroundColor' "$data_root/panel/Panel.qml" \
+  && ! grep -Fq 'MultiEffect' "$data_root/panel/Panel.qml" \
   && grep -Fq 'return root.statusBar ? PlasmaCore.Types.NoBackground' "$data_root/panel/Panel.qml" \
   && grep -Fq 'panel.thickness = 36' "$data_root/panel/Panel.qml" \
   && grep -Fq 'if (statusBar) {' "$data_root/panel/Panel.qml" \
   && grep -Fq 'squarePanel ? ["square", pre, ""] : [pre, ""]' "$data_root/panel/Panel.qml" \
   && grep -Fq 'launcherApplet.configuration?.panelShape' "$data_root/panel/Panel.qml" \
   || fail "the status bar does not draw like a status bar"
+grep -Fxq 'module org.kernora.bartint' "$package_root/data/shell/bartint/qmldir" \
+  && grep -Fxq 'singleton BarTint 1.0 BarTint.qml' "$package_root/data/shell/bartint/qmldir" \
+  && grep -Fq 'cp -a data/shell/bartint generated/style/org/kernora/bartint' "$package_root/debian/rules" \
+  && grep -Fxq 'data/folderview/StatusBarProbe.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq 'wallpaper: root.wallpaper ?? null' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'mean > 0.7 && darkPixels <= count * 0.05' "$data_root/folderview/StatusBarProbe.qml" \
+  && grep -Fq 'BarTint.report(Screen.name, left.dark, right.dark);' "$data_root/folderview/StatusBarProbe.qml" \
+  && grep -Fq 'BarTint.ink(Screen.name, "left")' "$package_root/data/shell/datetime/contents/ui/main.qml" \
+  && grep -Fq 'BarTint.ink(Screen.name, "right")' "$package_root/data/shell/shade/contents/ui/StatusChip.qml" \
+  && grep -Fq 'BarTint.ink(Screen.name, "right")' "$data_root/notifications/kernora/CompactRepresentation.qml" \
+  || fail "the status bar does not follow the wallpaper under it"
 grep -Fq 'ConfigFile("kernora-shellrc", "Layout")' "$data_root/panel/layout.js" \
   && grep -Fq 'panel.floating = false;' "$data_root/panel/layout.js" \
   && [[ $(grep -c 'panel.addWidget("org.kde.plasma.panelspacer");' "$data_root/panel/layout.js") -eq 2 ]] \

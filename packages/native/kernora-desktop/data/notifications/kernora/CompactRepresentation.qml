@@ -7,11 +7,13 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
+import QtQuick.Window
 
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 
 import org.kernora.m3
+import org.kernora.bartint
 
 import "global"
 
@@ -33,7 +35,7 @@ MouseArea {
 
     readonly property bool bar: Plasmoid.location === PlasmaCore.Types.TopEdge
     readonly property bool clear: bar && !(Plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentPrefersOpaqueBackground)
-    readonly property color ink: root.expanded ? (bar ? M3.primaryContent : M3.secondaryContainerContent) : clear ? "#ffffff" : M3.surfaceContent
+    readonly property color ink: root.expanded ? (bar ? M3.primaryContent : M3.secondaryContainerContent) : clear ? BarTint.ink(Screen.name, "right") : M3.surfaceContent
 
     property bool wasExpanded: false
     onPressed: wasExpanded = root.expanded

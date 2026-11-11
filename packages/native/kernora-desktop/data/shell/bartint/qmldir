@@ -1,0 +1,2 @@
+module org.kernora.bartint
+singleton BarTint 1.0 BarTint.qml
