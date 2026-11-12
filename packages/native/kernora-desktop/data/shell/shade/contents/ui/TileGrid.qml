@@ -16,8 +16,14 @@ Item {
     required property var tiles
     required property var names
     property bool editing: false
+    property bool googlebook: false
+    property string category: "Tiles"
+    property var history: []
+    readonly property bool canUndo: history.length > 0
 
-    readonly property var defaultLayout: [
+    onEditingChanged: if (!editing) history = []
+
+    property var defaultLayout: [
         ["internet", 2], ["bluetooth", 2], ["sound", 2], ["dark", 2], ["dnd", 2], ["night", 2],
         ["quickshare", 2], ["mic", 1], ["airplane", 1], ["awake", 1], ["screenshot", 1]
     ]
@@ -37,7 +43,7 @@ Item {
     Settings {
         id: store
         location: StandardPaths.writableLocation(StandardPaths.GenericConfigLocation) + "/kernora-quicksettingsrc"
-        category: "Tiles"
+        category: grid.category
         property string layout: ""
     }
 
@@ -63,18 +69,40 @@ Item {
         }
     }
 
+    function remember(): void {
+        grid.history = grid.history.concat([String(store.layout)]);
+    }
+
+    function undo(): void {
+        if (grid.history.length === 0) {
+            return;
+        }
+        const previous = grid.history[grid.history.length - 1];
+        grid.history = grid.history.slice(0, -1);
+        store.layout = previous;
+        store.sync();
+        load();
+    }
+
     function save(): void {
         const entries = [];
         for (let i = 0; i < visual.items.count; ++i) {
             const item = visual.items.get(i).model;
             entries.push(item.tileId + ":" + item.span);
         }
-        store.layout = entries.join(",");
+        const next = entries.join(",");
+        if (next !== String(store.layout)) {
+            remember();
+        }
+        store.layout = next;
         store.sync();
         load();
     }
 
     function reset(): void {
+        if (String(store.layout).length > 0) {
+            remember();
+        }
         store.layout = "";
         store.sync();
         load();
@@ -134,7 +162,12 @@ Item {
                     anchors.fill: parent
                     sourceComponent: grid.tiles[slot.tileId]
                     enabled: !grid.editing
-                    onLoaded: item.compact = Qt.binding(() => slot.span === 1)
+                    onLoaded: {
+                        item.compact = Qt.binding(() => slot.span === 1);
+                        if (grid.googlebook) {
+                            item.googlebook = true;
+                        }
+                    }
                 }
 
                 MouseArea {

@@ -284,3 +284,72 @@ msgstr "Камера используется"
 
 msgid "Microphone in use"
 msgstr "Микрофон используется"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Sign out"
+msgstr "Выйти"
+
+msgid "Power off"
+msgstr "Выключить"
+
+msgid "Undo"
+msgstr "Отменить"
+
+msgid "Sound devices"
+msgstr "Устройства звука"
+
+msgid "Reset tiles to the default order and size?"
+msgstr "Вернуть плитки в исходный порядок и размер?"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "OK"
+msgstr "ОК"
+
+msgid "Screen capture"
+msgstr "Снимок экрана"
+
+msgid "Mic access"
+msgstr "Доступ к микрофону"
+
+msgctxt "microphone state"
+msgid "Available"
+msgstr "Доступен"
+
+msgctxt "microphone state"
+msgid "Blocked"
+msgstr "Заблокирован"
+
+msgid "Dark theme"
+msgstr "Тёмная тема"
+
+msgid "Keyboard"
+msgstr "Клавиатура"
+
+msgid "Output"
+msgstr "Вывод"
+
+msgid "Input"
+msgstr "Ввод"
+
+msgid "No speakers or headphones found."
+msgstr "Динамики и наушники не найдены."
+
+msgid "In use"
+msgstr "Используется"
+
+msgid "No microphones found."
+msgstr "Микрофоны не найдены."
+
+msgid "Sound settings"
+msgstr "Настройки звука"
+
+msgid "Keyboard settings"
+msgstr "Настройки клавиатуры"
+
+msgctxt "system name and build"
+msgid "%1 (%2)"
+msgstr "%1 (%2)"

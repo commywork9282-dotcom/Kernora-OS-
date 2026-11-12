@@ -26,6 +26,17 @@
         }
       },
       {
+        "icon": "preferences-desktop",
+        "title": {
+          "en": "New quick settings",
+          "ru": "Новые быстрые настройки"
+        },
+        "text": {
+          "en": "Quick settings look like Googlebook: thick sliders with a Night Light button next to brightness and a sound devices button next to volume, and two columns of tiles. Click a tile's icon to turn it on or off and its name for details. The power button opens Lock, Sleep, Sign out, Restart and Power off. Click the Now playing pill to control music.",
+          "ru": "Быстрые настройки теперь как в Googlebook: толстые ползунки с кнопкой «Ночной свет» у яркости и выбором устройств звука у громкости, плитки в два столбца. Клик по значку плитки включает или выключает её, клик по названию открывает подробности. Кнопка питания открывает «Заблокировать», «Сон», «Выйти», «Перезагрузить» и «Выключить». Музыкой можно управлять, нажав на «пилюлю» «Сейчас играет»."
+        }
+      },
+      {
         "icon": "preferences-desktop-theme",
         "title": {
           "en": "Light theme like Googlebook",

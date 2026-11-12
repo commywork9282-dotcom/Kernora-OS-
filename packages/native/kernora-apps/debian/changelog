@@ -11,7 +11,8 @@ kernora-apps (1.1.87) UNRELEASED; urgency=medium
     not part of Kernora or Plasma.
   * org.kernora.shell: WindowBlur asks KWin to blur a rounded area behind
     a shell window (used by the apps menu in the light theme).
-  * What's new: the status bar, the new apps menu and the light theme.
+  * What's new: the status bar, the new apps menu, the light theme and the
+    new quick settings.
 
  -- Kernora Developers <developers@kernora.invalid>  Mon, 09 Nov 2026 17:00:00 -0800
 

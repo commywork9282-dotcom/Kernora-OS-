@@ -31,7 +31,16 @@ PlasmoidItem {
         id: chip
         controller: shadeController
         backend: shadeBackend
-        Component.onCompleted: shade.anchorItem = chip
+        Component.onCompleted: {
+            shade.anchorItem = chip;
+            mediaPopup.anchor = chip.mediaPill;
+        }
+        onMediaRequested: mediaPopup.toggle()
+    }
+
+    MediaPopup {
+        id: mediaPopup
+        backend: shadeBackend
     }
 
     ShadeWindow {

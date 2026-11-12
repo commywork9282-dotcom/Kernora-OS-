@@ -1505,6 +1505,24 @@ grep -Fq 'applet.pluginName === "org.kernora.datetime"' "$data_root/panel/Panel.
   && grep -Fq 'squarePanel ? ["square", pre, ""] : [pre, ""]' "$data_root/panel/Panel.qml" \
   && grep -Fq 'launcherApplet.configuration?.panelShape' "$data_root/panel/Panel.qml" \
   || fail "the status bar does not draw like a status bar"
+shade_ui="$package_root/data/shell/shade/contents/ui"
+grep -Fq 'readonly property bool googlebook: fromTop' "$shade_ui/ShadeSheet.qml" \
+  && grep -Fq 'sourceComponent: QuickPanel {' "$shade_ui/ShadeSheet.qml" \
+  && grep -Fq 'category: "GooglebookTiles"' "$shade_ui/QuickPanel.qml" \
+  && grep -Fq '["quickshare", 2], ["mic", 2], ["dark", 2], ["keyboard", 2]' "$shade_ui/QuickPanel.qml" \
+  && grep -Fq 'icon: "kernora-tiles-edit"' "$shade_ui/QuickPanel.qml" \
+  && grep -Fq 'text: i18n("Power off")' "$shade_ui/QuickPanel.qml" \
+  && grep -Fq 'onIconClicked: panel.backend.toggleMute()' "$shade_ui/QuickPanel.qml" \
+  && grep -Fq 'onClicked: panel.sheet.detail = "audio"' "$shade_ui/QuickPanel.qml" \
+  && grep -Fq 'Keyboards.KeyboardLayout' "$shade_ui/KeyboardPanel.qml" \
+  && grep -Fq 'model.PulseObject.default = true' "$shade_ui/AudioPanel.qml" \
+  && grep -Fq 'function undo(): void' "$shade_ui/TileGrid.qml" \
+  && grep -Fq 'onMediaRequested: mediaPopup.toggle()' "$shade_ui/main.qml" \
+  && grep -Fq 'property bool googlebook: false' "$package_root/data/shell/m3/MTile.qml" \
+  && grep -Fq 'signal iconClicked()' "$package_root/data/shell/m3/MSlider.qml" \
+  && grep -Fq '("kernora_tiles_edit", False, "actions", ["kernora-tiles-edit"])' "$package_root/tools/symbols_map.py" \
+  && grep -Fq 'msgstr "Доступ к микрофону"' "$package_root/data/shell/po/plasma_applet_org.kernora.quicksettings.ru.po" \
+  || fail "the Googlebook quick settings are incomplete"
 launcher_ui="$package_root/data/shell/launcher/contents/ui"
 grep -Fxq 'singleton LauncherState 1.0 LauncherState.qml' "$package_root/data/shell/bartint/qmldir" \
   && grep -Fq 'entry name="menuStyle"' "$package_root/data/shell/launcher/contents/config/main.xml" \

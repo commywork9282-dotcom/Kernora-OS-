@@ -18,7 +18,9 @@ Item {
     property var formatValue: v => Math.round(100 * (v - from) / Math.max(to - from, 1e-9)) + "%"
 
     property int trackHeight: 40
-    readonly property int outerRadius: Math.min(12, trackHeight / 2)
+    property bool googlebook: false
+    property bool iconClickable: false
+    readonly property int outerRadius: googlebook ? trackHeight / 2 : Math.min(12, trackHeight / 2)
     readonly property int innerRadius: 2
     readonly property int gap: trackHeight >= 32 ? 6 : 4
     readonly property bool iconInTrack: trackHeight >= 32
@@ -26,6 +28,7 @@ Item {
     readonly property bool pressed: mouse.pressed
 
     signal moved(real value)
+    signal iconClicked()
 
     implicitWidth: 280
     implicitHeight: M3.classic ? 40 : trackHeight + (trackHeight >= 32 ? 12 : 20)
@@ -193,7 +196,7 @@ Item {
             width: root.inactiveWidth
             height: parent.height
             visible: width > 0.5
-            color: M3.secondaryContainer
+            color: root.googlebook ? (M3.dark ? M3.surfaceContainer : M3.surfaceContainerLowest) : M3.secondaryContainer
             topLeftRadius: Math.min(root.innerRadius, width / 2)
             bottomLeftRadius: Math.min(root.innerRadius, width / 2)
             topRightRadius: Math.min(root.outerRadius, width / 2)
@@ -207,7 +210,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 8
                 color: M3.primary
-                visible: parent.width > 24
+                visible: parent.width > 24 && !root.googlebook
             }
         }
 
@@ -218,7 +221,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             source: root.icon
             color: M3.primaryContent
-            visible: root.icon.length > 0 && root.iconInTrack
+            visible: root.icon.length > 0 && root.iconInTrack && !root.googlebook
             opacity: trackArea.iconOnActive ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: M3.durationShort3 } }
         }
@@ -227,9 +230,17 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             source: root.icon
             color: M3.secondaryContainerContent
-            visible: root.icon.length > 0 && root.iconInTrack && root.inactiveWidth >= root.iconRoom
+            visible: root.icon.length > 0 && root.iconInTrack && root.inactiveWidth >= root.iconRoom && !root.googlebook
             opacity: trackArea.iconOnActive ? 0 : 1
             Behavior on opacity { NumberAnimation { duration: M3.durationShort3 } }
+        }
+        MIcon {
+            id: endIcon
+            x: trackArea.width - 14 - width
+            anchors.verticalCenter: parent.verticalCenter
+            source: root.icon
+            visible: root.googlebook && root.icon.length > 0
+            color: root.handleX > x + width / 2 ? M3.primaryContent : M3.surfaceVariantContent
         }
     }
 
@@ -376,5 +387,14 @@ Item {
                 root.nudge(-1);
             }
         }
+    }
+
+    MouseArea {
+        visible: root.googlebook && root.iconClickable
+        x: root.width - 52
+        width: 52
+        height: root.height
+        cursorShape: Qt.PointingHandCursor
+        onClicked: root.iconClicked()
     }
 }

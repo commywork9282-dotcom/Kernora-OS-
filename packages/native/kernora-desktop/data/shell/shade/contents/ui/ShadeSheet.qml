@@ -28,6 +28,7 @@ Item {
     readonly property bool scrollable: scroller.interactive
     property string detail: ""
     property bool editing: false
+    readonly property bool googlebook: fromTop
 
     onProgressChanged: {
         if (progress <= 0) {
@@ -40,7 +41,7 @@ Item {
         scroller.contentY = 0;
     }
 
-    implicitWidth: 412
+    implicitWidth: googlebook ? 448 : 412
     implicitHeight: handleArea.height + content.implicitHeight + 16
 
     function stage(start: real): real {
@@ -52,8 +53,8 @@ Item {
         id: surface
         anchors.fill: parent
         readonly property var shadowSpec: M3.elevationOf("sheet")
-        radius: M3.cornerSheet
-        color: M3.surfaceContainer
+        radius: root.googlebook ? 28 : M3.cornerSheet
+        color: root.googlebook ? M3.surfaceContainerHigh : M3.surfaceContainer
         shadow.size: shadowSpec.blur
         shadow.yOffset: shadowSpec.offset
         shadow.color: Qt.rgba(0, 0, 0, shadowSpec.opacity)
@@ -114,12 +115,24 @@ Item {
                 active: root.detail.length > 0
                 visible: active
                 opacity: active ? 1 : 0
-                sourceComponent: root.detail === "internet" ? internetPanel : root.detail === "bluetooth" ? bluetoothPanel : root.detail === "quickshare" ? quickSharePanel : null
+                sourceComponent: root.detail === "internet" ? internetPanel : root.detail === "bluetooth" ? bluetoothPanel
+                    : root.detail === "quickshare" ? quickSharePanel : root.detail === "audio" ? audioPanel
+                    : root.detail === "keyboard" ? keyboardPanel : null
+            }
+
+            Loader {
+                Layout.fillWidth: true
+                active: root.googlebook
+                visible: active && root.detail.length === 0
+                sourceComponent: QuickPanel {
+                    backend: root.backend
+                    sheet: root
+                }
             }
 
             ColumnLayout {
             Layout.fillWidth: true
-            visible: root.detail.length === 0
+            visible: root.detail.length === 0 && !root.googlebook
             spacing: 16
 
             RowLayout {
@@ -388,6 +401,22 @@ Item {
     Component {
         id: bluetoothPanel
         BluetoothPanel {
+            backend: root.backend
+            onBack: root.detail = ""
+            onRequestClose: root.requestClose()
+        }
+    }
+    Component {
+        id: audioPanel
+        AudioPanel {
+            backend: root.backend
+            onBack: root.detail = ""
+            onRequestClose: root.requestClose()
+        }
+    }
+    Component {
+        id: keyboardPanel
+        KeyboardPanel {
             backend: root.backend
             onBack: root.detail = ""
             onRequestClose: root.requestClose()

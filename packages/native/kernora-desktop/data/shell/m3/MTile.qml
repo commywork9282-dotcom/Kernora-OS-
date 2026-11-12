@@ -17,6 +17,7 @@ Item {
     property bool available: true
     property bool hasDetails: false
     property bool compact: false
+    property bool googlebook: false
 
     signal toggled()
     signal detailsRequested()
@@ -121,20 +122,26 @@ Item {
     MMorph { id: iconPress; active: mouse.pressed && mouse.onIcon }
 
     readonly property bool split: hasDetails && !compact && available
-    readonly property color bodyColor: compact ? (on ? M3.primary : M3.surfaceContainerHighest)
+    readonly property color offColor: M3.dark ? M3.surfaceContainer : M3.surfaceContainerLowest
+    readonly property bool filled: on && (compact || !split)
+    readonly property color bodyColor: googlebook ? (filled ? M3.primary : offColor)
+                                     : compact ? (on ? M3.primary : M3.surfaceContainerHighest)
                                                : (on ? M3.primaryContainer : M3.surfaceContainerHighest)
-    readonly property color bodyContent: compact ? (on ? M3.primaryContent : M3.surfaceContent)
+    readonly property color bodyContent: googlebook ? (filled ? M3.primaryContent : M3.surfaceContent)
+                                       : compact ? (on ? M3.primaryContent : M3.surfaceContent)
                                                  : (on ? M3.primaryContainerContent : M3.surfaceContent)
-    readonly property color bodySupporting: on ? bodyContent : M3.surfaceVariantContent
-    readonly property color iconBoxColor: on ? M3.primary : M3.withAlpha(M3.surfaceContent, 0.1)
-    readonly property color iconColor: compact ? bodyContent : on ? M3.primaryContent : M3.surfaceContent
+    readonly property color bodySupporting: googlebook ? (filled ? M3.withAlpha(M3.primaryContent, 0.8) : M3.surfaceVariantContent)
+                                          : on ? bodyContent : M3.surfaceVariantContent
+    readonly property color iconBoxColor: on ? M3.primary : M3.withAlpha(M3.surfaceContent, googlebook ? 0.12 : 0.1)
+    readonly property color iconColor: compact ? bodyContent : googlebook ? (filled || (on && split) ? M3.primaryContent : M3.surfaceContent)
+                                                 : on ? M3.primaryContent : M3.surfaceContent
 
     Rectangle {
         id: container
 
         visible: !M3.classic
         anchors.fill: parent
-        readonly property real rest: height / 2 + (20 - height / 2) * onMorph.value
+        readonly property real rest: root.googlebook ? height / 2 : height / 2 + (20 - height / 2) * onMorph.value
         radius: Math.max(0, rest + (14 - rest) * bodyPress.value)
         color: root.bodyColor
         opacity: root.available ? 1 : 0.5
@@ -158,12 +165,12 @@ Item {
 
         Rectangle {
             id: iconBox
-            visible: !root.compact
-            x: 12
+            visible: !root.compact && (!root.googlebook || root.split)
+            x: root.googlebook ? 8 : 12
             anchors.verticalCenter: parent.verticalCenter
-            width: 40
-            height: 40
-            readonly property real rest: 20 + (12 - 20) * onMorph.value
+            width: root.googlebook ? 48 : 40
+            height: width
+            readonly property real rest: width / 2 + ((root.googlebook ? 14 : 12) - width / 2) * onMorph.value
             radius: Math.max(0, rest + (8 - rest) * iconPress.value)
             color: root.iconBoxColor
             Behavior on color { ColorAnimation { duration: M3.durationMedium2 } }
@@ -210,11 +217,31 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             spacing: 0
 
-            MText {
+            Item {
+                id: titleClip
                 width: parent.width
-                role: "titleSmall"
-                text: root.title
-                color: root.bodyContent
+                height: titleText.implicitHeight
+                clip: root.googlebook
+                readonly property real overflow: Math.max(0, titleText.implicitWidth - width)
+
+                MText {
+                    id: titleText
+                    width: root.googlebook ? implicitWidth : parent.width
+                    role: "titleSmall"
+                    text: root.title
+                    color: root.bodyContent
+                    elide: root.googlebook ? Text.ElideNone : Text.ElideRight
+
+                    SequentialAnimation on x {
+                        running: root.googlebook && titleClip.overflow > 0 && mouse.containsMouse
+                        loops: Animation.Infinite
+                        onRunningChanged: if (!running) titleText.x = 0
+                        PauseAnimation { duration: 600 }
+                        NumberAnimation { to: -titleClip.overflow; duration: titleClip.overflow * 25; easing.type: Easing.InOutSine }
+                        PauseAnimation { duration: 900 }
+                        NumberAnimation { to: 0; duration: titleClip.overflow * 25; easing.type: Easing.InOutSine }
+                    }
+                }
             }
             MText {
                 width: parent.width
@@ -232,7 +259,7 @@ Item {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             width: 36
-            visible: root.split
+            visible: root.split && !root.googlebook
 
             MIcon {
                 anchors.centerIn: parent

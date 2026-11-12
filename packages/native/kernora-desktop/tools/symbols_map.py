@@ -329,6 +329,9 @@ ICONS: list[tuple[str, bool, str, list[str]]] = [
     ("volume_off", True, "status", ["kernora-bar-volume-off"]),
     ("mic", True, "status", ["kernora-bar-mic"]),
     ("videocam", True, "status", ["kernora-bar-camera"]),
+    ("screen_record", False, "actions", ["kernora-screen-capture"]),
+    ("brightness_7", False, "status", ["kernora-brightness"]),
+    ("kernora_tiles_edit", False, "actions", ["kernora-tiles-edit"]),
     ("signal_wifi_4_bar", False, "status", ["kernora-bar-wifi-4"]),
     ("network_wifi_3_bar", False, "status", ["kernora-bar-wifi-3"]),
     ("network_wifi_2_bar", False, "status", ["kernora-bar-wifi-2"]),
@@ -506,7 +509,7 @@ def contexts() -> list[str]:
     return sorted(seen)
 
 
-OWN = {"kernora_quick_share"}
+OWN = {"kernora_quick_share", "kernora_tiles_edit"}
 
 
 def credit(symbol: str) -> str:

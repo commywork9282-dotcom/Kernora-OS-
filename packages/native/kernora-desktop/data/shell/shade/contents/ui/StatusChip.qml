@@ -20,6 +20,10 @@ Item {
     required property QtObject controller
     required property QtObject backend
 
+    readonly property alias mediaPill: nowPlaying
+
+    signal mediaRequested()
+
     readonly property bool active: controller.opening
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool bar: Plasmoid.location === PlasmaCore.Types.TopEdge && !vertical
@@ -379,6 +383,8 @@ Item {
             if (draggingShade) {
                 draggingShade = false;
                 root.controller.endDrag();
+            } else if (root.showMedia && mouseX < nowPlaying.x + nowPlaying.width) {
+                root.mediaRequested();
             } else {
                 root.controller.toggle();
             }

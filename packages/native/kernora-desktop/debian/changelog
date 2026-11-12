@@ -28,6 +28,15 @@ kernora-desktop (1.4.75) UNRELEASED; urgency=medium
   * A two-finger swipe up on the desktop opens the menu, a two-finger
     swipe down at the top of the list closes it.
   * The layout with everything at the bottom keeps the previous menu.
+  * Quick settings like Googlebook: edit tiles, Settings and a Power menu
+    (Lock, Sleep, Sign out, Restart, Power off) at the top, thick sliders
+    with Night Light next to brightness and sound devices next to volume,
+    two columns of pill tiles (Wi-Fi, Bluetooth, Screen capture, Do Not
+    Disturb, Quick Share, Mic access, Dark theme, Keyboard), the Kernora
+    version at the bottom. Edit mode adds Undo and asks before Reset.
+  * New detail views for sound devices and keyboard layouts.
+  * The Now playing pill opens its own media card; it left quick settings.
+  * The classic layout keeps the previous quick settings.
   * Light theme like Googlebook: the taskbar is white, nothing dims behind
     the apps menu and quick settings, and the apps menu is frosted glass
     over a blurred wallpaper with a white search pill. The dark theme keeps
