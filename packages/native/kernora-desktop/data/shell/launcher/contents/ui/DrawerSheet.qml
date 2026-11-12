@@ -15,6 +15,7 @@ FocusScope {
     property QtObject launcher: null
     property var appsModel: null
     property real reveal: 1
+    property bool frosted: false
 
     readonly property alias query: input.text
     readonly property string trimmedQuery: query.trim()
@@ -166,8 +167,10 @@ FocusScope {
     Kirigami.ShadowedRectangle {
         anchors.fill: parent
         radius: 28
-        color: M3.surfaceContainerHighest
-        shadow.size: 28
+        color: sheet.frosted ? M3.withAlpha(M3.surfaceContainerHigh, 0.62) : M3.surfaceContainerHighest
+        border.width: sheet.frosted ? 1 : 0
+        border.color: M3.withAlpha(M3.surfaceContainerLowest, 0.45)
+        shadow.size: sheet.frosted ? 0 : 28
         shadow.yOffset: 8
         shadow.color: Qt.rgba(0, 0, 0, M3.dark ? 0.4 : 0.2)
     }
@@ -179,7 +182,7 @@ FocusScope {
         width: parent.width - 56
         height: 48
         radius: 24
-        color: M3.surfaceContainer
+        color: M3.dark ? M3.surfaceContainer : M3.withAlpha(M3.surfaceContainerLowest, sheet.frosted ? 0.9 : 1)
 
         Kirigami.Icon {
             id: browserIcon

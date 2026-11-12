@@ -4,6 +4,7 @@
 */
 
 import QtQuick
+import QtQuick.Window
 import org.kernora.bartint
 import "m3"
 
@@ -18,12 +19,27 @@ FocusScope {
     property real areaWidth: width
     property real areaHeight: height
 
-    readonly property real scrimOpacity: 0.55
+    readonly property real scrimOpacity: M3.dark ? 0.55 : 0
+    property QtObject blur: null
+    readonly property bool frosted: !M3.dark && blur !== null && blur.available
 
     signal requestClose()
     signal leftScreen()
     signal dragStarted()
     signal dragFinished()
+
+    Component.onCompleted: {
+        try {
+            blur = Qt.createQmlObject("import org.kernora.shell\nWindowBlur { radius: 28 }", scene, "DrawerBlur");
+        } catch (error) {
+            blur = null;
+        }
+        if (blur) {
+            blur.window = Qt.binding(() => scene.Window.window);
+            blur.rect = Qt.binding(() => Qt.rect(sheet.x, sheet.y, sheet.width, sheet.height));
+            blur.enabled = Qt.binding(() => !M3.dark && scene.windowShown && scene.reveal > 0.02 && scene.width > 1);
+        }
+    }
 
     function enter(byKey: bool): void {
         leaving.stop();
@@ -106,6 +122,7 @@ FocusScope {
         launcher: scene.launcher
         appsModel: scene.appsModel
         reveal: scene.reveal
+        frosted: scene.frosted
 
         onRequestClose: scene.requestClose()
         onDragStarted: {

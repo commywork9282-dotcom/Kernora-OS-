@@ -28,6 +28,10 @@ kernora-desktop (1.4.75) UNRELEASED; urgency=medium
   * A two-finger swipe up on the desktop opens the menu, a two-finger
     swipe down at the top of the list closes it.
   * The layout with everything at the bottom keeps the previous menu.
+  * Light theme like Googlebook: the taskbar is white, nothing dims behind
+    the apps menu and quick settings, and the apps menu is frosted glass
+    over a blurred wallpaper with a white search pill. The dark theme keeps
+    the dimmed background.
   * Settings can switch back to everything at the bottom and to the rounded
     panel.
 

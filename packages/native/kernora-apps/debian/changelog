@@ -9,7 +9,9 @@ kernora-apps (1.1.87) UNRELEASED; urgency=medium
     finds an installed app by its desktop file. Apps the catalog does not
     know get a simple page with Open, and Uninstall when the package is
     not part of Kernora or Plasma.
-  * What's new: the status bar and the new apps menu.
+  * org.kernora.shell: WindowBlur asks KWin to blur a rounded area behind
+    a shell window (used by the apps menu in the light theme).
+  * What's new: the status bar, the new apps menu and the light theme.
 
  -- Kernora Developers <developers@kernora.invalid>  Mon, 09 Nov 2026 17:00:00 -0800
 

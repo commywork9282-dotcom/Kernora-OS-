@@ -6,6 +6,7 @@
 */
 
 import QtQuick 2.15
+import QtQuick.Effects
 import QtQuick.Window 2.15
 import QtQuick.Layouts 1.1
 import QtQml 2.15
@@ -19,6 +20,7 @@ import org.kde.plasma.shell.panel 0.1 as Panel
 
 import org.kde.plasma.plasmoid 2.0
 import org.kernora.bartint
+import org.kernora.m3
 
 Item {
     id: root
@@ -34,6 +36,8 @@ Item {
     readonly property string solidBackgroundPath: backgroundPath ? "solid/widgets/panel-background" : ""
     readonly property var launcherApplet: (containment?.plasmoid?.applets ?? []).find(applet => applet.pluginName === "org.kernora.launcher") ?? null
     readonly property bool squarePanel: launcherApplet !== null && String(launcherApplet.configuration?.panelShape ?? "square") !== "round"
+    readonly property bool whiteDock: !statusBar && !M3.dark && launcherApplet !== null
+        && String(launcherApplet.configuration?.menuStyle ?? "googlebook") !== "classic"
     onSquarePanelChanged: adjustPrefix()
 
     readonly property bool needsFit: (statusBar && (panel.thickness < 28 || panel.thickness > 48))
@@ -195,6 +199,10 @@ Item {
         opacity: panelOpacity
         anchors.fill: floatingTranslucentItem
         imagePath: root.solidBackgroundPath
+        layer.enabled: root.whiteDock
+        layer.effect: MultiEffect {
+            brightness: 1
+        }
     }
     KSvg.FrameSvgItem {
         id: opaqueItem
@@ -203,6 +211,10 @@ Item {
         enabledBorders: panel.enabledBorders
         anchors.fill: floatingTranslucentItem
         imagePath: root.solidBackgroundPath
+        layer.enabled: root.whiteDock
+        layer.effect: MultiEffect {
+            brightness: 1
+        }
     }
 
     Keys.onEscapePressed: {
@@ -215,7 +227,7 @@ Item {
     property bool floating: panel.floating
     property bool hasCompositing: KWindowSystem.isPlatformX11 ? KX11Extras.compositingActive : true
     readonly property bool screenCovered: touchingWindow && panel.visibilityMode == Panel.Global.NormalPanel
-    property var stateTriggers: [floating, screenCovered, isOpaque, isAdaptive, isTransparent, hasCompositing, containment, statusBar]
+    property var stateTriggers: [floating, screenCovered, isOpaque, isAdaptive, isTransparent, hasCompositing, containment, statusBar, whiteDock]
     onStateTriggersChanged: {
         let opaqueApplets = false
         let floatingApplets = false
@@ -239,6 +251,10 @@ Item {
         if (!KWindowSystem.isPlatformWayland && !KX11Extras.compositingActive) {
             opaqueApplets = false
             panelOpacity = 0
+        }
+        if (whiteDock) {
+            panelOpacity = 1
+            opaqueApplets = true
         }
         if (statusBar) {
             panelOpacity = 0

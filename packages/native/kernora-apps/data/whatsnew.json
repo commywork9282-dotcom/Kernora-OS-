@@ -26,6 +26,17 @@
         }
       },
       {
+        "icon": "preferences-desktop-theme",
+        "title": {
+          "en": "Light theme like Googlebook",
+          "ru": "Светлая тема как в Googlebook"
+        },
+        "text": {
+          "en": "In the light theme the taskbar is white, the apps menu looks like frosted glass over your wallpaper, and the screen no longer dims behind the apps menu and quick settings.",
+          "ru": "В светлой теме панель задач белая, меню приложений похоже на матовое стекло поверх обоев, а экран больше не темнеет за меню приложений и быстрыми настройками."
+        }
+      },
+      {
         "icon": "window-maximize",
         "title": {
           "en": "A square taskbar",

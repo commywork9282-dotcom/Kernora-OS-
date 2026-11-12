@@ -33,7 +33,7 @@ Item {
         bottomLeftRadius: root.last ? 20 : 4
         bottomRightRadius: root.last ? 20 : 4
         color: {
-            const base = root.current ? M3.secondaryContainer : M3.surfaceContainer;
+            const base = root.current ? M3.secondaryContainer : M3.dark ? M3.surfaceContainer : M3.withAlpha(M3.surfaceContainerLowest, 0.85);
             const ink = root.current ? M3.secondaryContainerContent : M3.surfaceContent;
             const layer = mouse.pressed ? M3.statePressed : mouse.containsMouse ? M3.stateHover : 0;
             return layer > 0 ? Qt.tint(base, M3.withAlpha(ink, layer)) : base;

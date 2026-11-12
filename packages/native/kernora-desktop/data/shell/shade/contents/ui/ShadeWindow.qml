@@ -99,7 +99,7 @@ PlasmaCore.Dialog {
         Rectangle {
             anchors.fill: parent
             color: M3.scrim
-            opacity: 0.32 * Math.max(0, Math.min(1, root.controller.progress))
+            opacity: (root.fromTop && !M3.dark ? 0 : 0.32) * Math.max(0, Math.min(1, root.controller.progress))
         }
 
         MouseArea {

@@ -336,5 +336,7 @@ grep -Fq 'Q_CLASSINFO("D-Bus Interface", "org.kde.krunner1")' "$package_root/src
   && grep -Fq 'QString Store::openInstalled(const QString &desktopId)' "$package_root/src/store/store.cpp" \
   && grep -Fq 'visible: page.installed && page.info.removable !== false' "$package_root/apps/store/qml/AppPage.qml" \
   && grep -Fq 'visible: page.layoutStyle === "classic"' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
+  && grep -Fq 'KWindowEffects::enableBlurBehind(m_window, true, roundedRegion(' "$package_root/src/shell/windowblur.cpp" \
+  && grep -Fq 'windowblur.cpp windowblur.h' "$package_root/src/shell/CMakeLists.txt" \
   || fail "the apps menu cannot find Settings pages or open Store pages"
 printf 'kernora-apps source test: OK\n'

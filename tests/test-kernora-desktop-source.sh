@@ -1498,7 +1498,7 @@ grep -Fxq 'data/panel/kernora-panel-layout usr/libexec' "$package_root/debian/ke
 grep -Fq 'applet.pluginName === "org.kernora.datetime"' "$data_root/panel/Panel.qml" \
   && grep -Fq 'Kirigami.Theme.textColor: root.statusBar ? root.statusBarInk : undefined' "$data_root/panel/Panel.qml" \
   && ! grep -Fq 'color: Kirigami.Theme.backgroundColor' "$data_root/panel/Panel.qml" \
-  && ! grep -Fq 'MultiEffect' "$data_root/panel/Panel.qml" \
+  && ! grep -Fq 'shadowEnabled' "$data_root/panel/Panel.qml" \
   && grep -Fq 'return root.statusBar ? PlasmaCore.Types.NoBackground' "$data_root/panel/Panel.qml" \
   && grep -Fq 'panel.thickness = 36' "$data_root/panel/Panel.qml" \
   && grep -Fq 'if (statusBar) {' "$data_root/panel/Panel.qml" \
@@ -1510,7 +1510,11 @@ grep -Fxq 'singleton LauncherState 1.0 LauncherState.qml' "$package_root/data/sh
   && grep -Fq 'entry name="menuStyle"' "$package_root/data/shell/launcher/contents/config/main.xml" \
   && grep -Fq 'preferredRepresentation: googlebook ? fullRepresentation : compactRepresentation' "$launcher_ui/main.qml" \
   && grep -Fq 'backgroundHints: PlasmaCore.Dialog.NoBackground' "$launcher_ui/DrawerWindow.qml" \
-  && grep -Fq 'readonly property real scrimOpacity: 0.55' "$launcher_ui/DrawerScene.qml" \
+  && grep -Fq 'readonly property real scrimOpacity: M3.dark ? 0.55 : 0' "$launcher_ui/DrawerScene.qml" \
+  && grep -Fq 'import org.kernora.shell\nWindowBlur { radius: 28 }' "$launcher_ui/DrawerScene.qml" \
+  && grep -Fq 'M3.withAlpha(M3.surfaceContainerHigh, 0.62)' "$launcher_ui/DrawerSheet.qml" \
+  && grep -Fq 'layer.enabled: root.whiteDock' "$data_root/panel/Panel.qml" \
+  && grep -Fq '(root.fromTop && !M3.dark ? 0 : 0.32)' "$package_root/data/shell/shade/contents/ui/ShadeWindow.qml" \
   && grep -Fq 'property: "scrim"' "$launcher_ui/DrawerScene.qml" \
   && grep -Fq 'width: Math.min(668, scene.areaWidth - 32)' "$launcher_ui/DrawerScene.qml" \
   && grep -Fq 'i18n("Search web and more")' "$launcher_ui/DrawerSheet.qml" \
