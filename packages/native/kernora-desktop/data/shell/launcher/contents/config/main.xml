@@ -24,5 +24,8 @@
     <entry name="panelShape" type="String">
       <default>square</default>
     </entry>
+    <entry name="menuStyle" type="String">
+      <default>googlebook</default>
+    </entry>
   </group>
 </kcfg>

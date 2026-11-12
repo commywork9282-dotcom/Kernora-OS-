@@ -388,6 +388,12 @@ Item {
             return prefix;
         }
     }
+    Rectangle {
+        anchors.fill: parent
+        visible: root.statusBar && opacity > 0
+        color: "black"
+        opacity: root.statusBar && LauncherState.screen === Screen.name ? LauncherState.scrim : 0
+    }
     Item {
         id: containmentParent
         Kirigami.Theme.textColor: root.statusBar ? root.statusBarInk : undefined

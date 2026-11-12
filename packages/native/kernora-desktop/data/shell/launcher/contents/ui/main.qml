@@ -13,15 +13,19 @@ import org.kde.plasma.plasma5support as P5Support
 import org.kde.plasma.plasmoid
 import org.kde.plasma.private.kicker as Kicker
 import org.kde.plasma.private.sessions as Sessions
+import org.kernora.bartint
 import "m3"
 
 PlasmoidItem {
     id: root
 
+    readonly property bool googlebook: Plasmoid.configuration.menuStyle !== "classic"
+
     Plasmoid.icon: "start-here-kde"
     Plasmoid.title: i18n("Applications")
-    preferredRepresentation: compactRepresentation
+    preferredRepresentation: googlebook ? fullRepresentation : compactRepresentation
     hideOnWindowDeactivate: true
+    activationTogglesExpanded: true
     toolTipMainText: ""
     toolTipSubText: ""
 
@@ -96,7 +100,7 @@ PlasmoidItem {
         appletInterface: root
         mergeResults: true
         favoritesModel: rootModel.favoritesModel
-        query: root.fullRepresentationItem ? root.fullRepresentationItem.query : ""
+        query: !root.googlebook && root.fullRepresentationItem ? root.fullRepresentationItem.query : ""
     }
 
     Sessions.SessionManagement {
@@ -119,60 +123,170 @@ PlasmoidItem {
         onClicked: root.expanded = !root.expanded
     }
 
+    function quoted(text: string): string {
+        return "'" + text.replace(/'/g, "'\\''") + "'";
+    }
+
+    function runDetached(command: string): void {
+        executable.connectSource(command + " >/dev/null 2>&1 &");
+    }
+
+    function searchWeb(text: string): void {
+        runDetached("librewolf --search " + quoted(text));
+    }
+
+    function searchStore(text: string): void {
+        runDetached("kernora-store " + quoted("search:" + text));
+    }
+
+    function showAppInfo(storageId: string): void {
+        const id = storageId.replace(/\.desktop$/, "");
+        if (id.startsWith("waydroid.")) {
+            runDetached("kernora-settings android");
+        } else if (id.length > 0) {
+            runDetached("kernora-store " + quoted("appstream:" + id));
+        }
+    }
+
+    function taskManager(): var {
+        let top = root;
+        while (top.parent) {
+            top = top.parent;
+        }
+        const pending = [top];
+        while (pending.length > 0) {
+            const item = pending.shift();
+            if (item !== root && typeof item.hasLauncher === "function"
+                    && typeof item.addLauncher === "function" && typeof item.removeLauncher === "function") {
+                return item;
+            }
+            for (const child of item.children) {
+                pending.push(child);
+            }
+        }
+        return null;
+    }
+
+    property bool acceptActivations: false
+    Timer {
+        id: settle
+        interval: 2000
+        running: true
+        onTriggered: root.acceptActivations = true
+    }
+    onGooglebookChanged: {
+        root.acceptActivations = false;
+        settle.restart();
+    }
+    readonly property bool arranging: (Plasmoid.containment?.corona?.editMode ?? false) || (Plasmoid.containment?.userConfiguring ?? false)
+    onExpandedChanged: {
+        if (root.googlebook && root.acceptActivations && !root.arranging && drawer.item) {
+            drawer.item.toggle(true);
+        }
+    }
+
+    Connections {
+        target: LauncherState
+        enabled: root.googlebook
+        function onOpenRequested(screen: string): void {
+            if (drawer.item && screen === drawer.item.screenName && !drawer.item.visible) {
+                drawer.item.toggle(false);
+            }
+        }
+        function onCloseRequested(): void {
+            if (drawer.item && drawer.item.visible) {
+                drawer.item.dismiss();
+            }
+        }
+    }
+
+    Loader {
+        id: drawer
+        active: root.googlebook
+        sourceComponent: DrawerWindow {
+            launcher: root
+            appsModel: root.appsModel
+        }
+    }
+
     fullRepresentation: Item {
         id: full
 
-        readonly property string query: view.query
+        readonly property string query: classic.item ? classic.item.query : ""
 
-        Layout.preferredWidth: 760
-        Layout.preferredHeight: Math.max(Layout.minimumHeight, Math.min(680, Math.ceil(view.idealHeight)))
-        Layout.minimumWidth: 520
-        Layout.minimumHeight: 440
+        Layout.minimumWidth: root.googlebook ? pill.implicitWidth : 520
+        Layout.preferredWidth: root.googlebook ? pill.implicitWidth : 760
+        Layout.maximumWidth: root.googlebook ? pill.implicitWidth : Number.POSITIVE_INFINITY
+        Layout.minimumHeight: root.googlebook ? pill.implicitHeight : 440
+        Layout.preferredHeight: root.googlebook ? pill.implicitHeight
+            : Math.max(440, Math.min(680, Math.ceil(classic.item ? classic.item.idealHeight : 640)))
+        Layout.fillHeight: root.googlebook
 
-        LauncherView {
-            id: view
+        DrawerButton {
+            id: pill
             anchors.fill: parent
+            visible: root.googlebook
+            active: drawer.item ? drawer.item.shown : false
+            onPressed: {
+                if (drawer.item) {
+                    drawer.item.notePress();
+                }
+            }
+            onClicked: {
+                if (drawer.item) {
+                    drawer.item.clickToggle();
+                }
+            }
+        }
+
+        Loader {
+            id: classic
+            anchors.fill: parent
+            active: !root.googlebook
             focus: true
+            sourceComponent: LauncherView {
+                focus: true
 
-            appsModel: root.appsModel
-            pinnedModel: rootModel.favoritesModel
-            resultsModel: runnerModel.count > 0 ? runnerModel.modelForRow(0) : null
+                appsModel: root.appsModel
+                pinnedModel: rootModel.favoritesModel
+                resultsModel: runnerModel.count > 0 ? runnerModel.modelForRow(0) : null
 
-            userName: user.fullName.length > 0 ? user.fullName : user.loginName
-            userFace: user.faceIconUrl
-            canLock: session.canLock
-            canLogout: session.canLogout
-            canShutdown: session.canShutdown
+                userName: user.fullName.length > 0 ? user.fullName : user.loginName
+                userFace: user.faceIconUrl
+                canLock: session.canLock
+                canLogout: session.canLogout
+                canShutdown: session.canShutdown
 
-            onLaunch: (model, index) => root.launch(model, index)
-            onRequestClose: root.expanded = false
-            onOpenSettings: {
-                root.expanded = false;
-                KCMUtils.KCMLauncher.openSystemSettings("kcm_landingpage");
-            }
-            onLockScreen: {
-                root.expanded = false;
-                session.lock();
-            }
-            onLogOut: {
-                root.expanded = false;
-                session.requestLogout();
-            }
-            onShutDown: {
-                root.expanded = false;
-                session.requestShutdown();
-            }
-            onRestart: {
-                root.expanded = false;
-                session.requestReboot();
+                onLaunch: (model, index) => root.launch(model, index)
+                onRequestClose: root.expanded = false
+                onOpenSettings: {
+                    root.expanded = false;
+                    KCMUtils.KCMLauncher.openSystemSettings("kcm_landingpage");
+                }
+                onLockScreen: {
+                    root.expanded = false;
+                    session.lock();
+                }
+                onLogOut: {
+                    root.expanded = false;
+                    session.requestLogout();
+                }
+                onShutDown: {
+                    root.expanded = false;
+                    session.requestShutdown();
+                }
+                onRestart: {
+                    root.expanded = false;
+                    session.requestReboot();
+                }
             }
         }
 
         Connections {
             target: root
             function onExpandedChanged(): void {
-                if (root.expanded) {
-                    view.reset();
+                if (root.expanded && classic.item) {
+                    classic.item.reset();
                 }
             }
         }

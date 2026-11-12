@@ -24,6 +24,9 @@ QtObject {
     }
 
     function darkInk(screen: string, side: string): bool {
+        if (LauncherState.screen === screen && LauncherState.scrim > 0.25) {
+            return false;
+        }
         const entry = screens[screen];
         return !!entry && !!entry[side];
     }

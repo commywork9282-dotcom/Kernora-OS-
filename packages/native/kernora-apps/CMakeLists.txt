@@ -38,6 +38,7 @@ add_subdirectory(src/store)
 add_subdirectory(src/apps)
 add_subdirectory(src/filechooser)
 add_subdirectory(src/updatenotifier)
+add_subdirectory(src/settingsrunner)
 
 set(KERNORA_APPS settings files welcome editor photos player calculator screenshot store share taskmanager drivers apkinstaller appsplash androiddialog appgroup)
 foreach(app ${KERNORA_APPS})

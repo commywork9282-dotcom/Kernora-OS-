@@ -278,7 +278,7 @@ Item {
                         Layout.preferredWidth: page.compact ? implicitWidth : Math.max(implicitWidth, 160)
                         variant: "outlined"
                         text: i18n("Uninstall")
-                        visible: page.installed
+                        visible: page.installed && page.info.removable !== false
                         onClicked: removeDialog.open()
                     }
                     MButton {

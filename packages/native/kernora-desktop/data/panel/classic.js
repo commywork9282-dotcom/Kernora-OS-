@@ -61,3 +61,10 @@ panels().forEach(function (dock) {
     dock.lengthMode = "fill";
 });
 layoutConfig.writeEntry("style", "classic");
+panels().forEach(function (panel) {
+    panel.widgets("org.kernora.launcher").forEach(function (launcher) {
+        launcher.currentConfigGroup = ["General"];
+        launcher.writeConfig("menuStyle", "classic");
+        launcher.reloadConfig();
+    });
+});

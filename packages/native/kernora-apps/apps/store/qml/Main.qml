@@ -94,6 +94,10 @@ AppWindow {
             if (text.startsWith("-")) {
                 continue;
             }
+            if (text.startsWith("search:")) {
+                search.text = text.slice(7).trim();
+                return;
+            }
             const id = Store.openUrl(text);
             if (id.length > 0) {
                 openApp(id);

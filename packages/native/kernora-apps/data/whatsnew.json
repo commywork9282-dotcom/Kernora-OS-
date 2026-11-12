@@ -15,14 +15,25 @@
         }
       },
       {
+        "icon": "view-app-grid",
+        "title": {
+          "en": "New apps menu",
+          "ru": "Новое меню приложений"
+        },
+        "text": {
+          "en": "The apps menu opens in the middle of the screen above the taskbar and dims everything behind it. All apps are in one list from A to Z, and dragging the scrollbar shows the letter you are at. Start typing to find apps, Kernora settings, files and quick answers, or search the web with LibreWolf. Right-click an app to add it to the taskbar or the Home screen. With a touchpad, swipe up with two fingers on the desktop to open the menu.",
+          "ru": "Меню приложений открывается по центру экрана над панелью задач, а всё за ним затемняется. Все приложения в одном списке от А до Я, а если тянуть полосу прокрутки, видно, на какой вы букве. Начните печатать, чтобы найти приложения, разделы Настроек, файлы и быстрые ответы или поискать в интернете через LibreWolf. Правый клик по приложению добавляет его на панель задач или на главный экран. На тачпаде меню открывается свайпом двумя пальцами вверх по рабочему столу."
+        }
+      },
+      {
         "icon": "window-maximize",
         "title": {
           "en": "A square taskbar",
           "ru": "Прямоугольная панель задач"
         },
         "text": {
-          "en": "The bottom panel runs from edge to edge without rounded corners, and the apps button is square. The rounded panel and the layout with everything at the bottom are one tap away in Settings, Wallpaper and style, Panel.",
-          "ru": "Нижняя панель идёт от края до края без скруглённых углов, а кнопка приложений стала квадратной. Закруглённую панель и раскладку, где всё внизу, можно вернуть в Настройках: «Обои и стиль» → «Панель»."
+          "en": "The bottom panel runs from edge to edge without rounded corners, and the apps button is a wide pill. The rounded panel and the layout with everything at the bottom are one tap away in Settings, Wallpaper and style, Panel.",
+          "ru": "Нижняя панель идёт от края до края без скруглённых углов, а кнопка приложений стала широкой «пилюлей». Закруглённую панель и раскладку, где всё внизу, можно вернуть в Настройках: «Обои и стиль» → «Панель»."
         }
       }
     ]

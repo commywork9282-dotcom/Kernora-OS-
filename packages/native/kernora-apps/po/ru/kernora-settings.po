@@ -4084,14 +4084,14 @@ msgstr "Расположение"
 msgid "Status bar at the top"
 msgstr "Строка состояния сверху"
 
-msgid "Time and quick settings at the top"
-msgstr "Время и быстрые настройки сверху"
+msgid "Time and quick settings at the top, apps open in the centre"
+msgstr "Время и быстрые настройки сверху, приложения открываются по центру"
 
 msgid "Everything at the bottom"
 msgstr "Всё в нижней панели"
 
-msgid "Time and quick settings at the bottom right"
-msgstr "Время и быстрые настройки внизу справа"
+msgid "Time and quick settings at the bottom right, the previous apps menu"
+msgstr "Время и быстрые настройки внизу справа, прежнее меню приложений"
 
 msgid "Panel shape"
 msgstr "Форма панели"

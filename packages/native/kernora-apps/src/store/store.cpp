@@ -78,6 +78,23 @@ const QList<Category> &categoryList()
     return list;
 }
 
+bool systemPackage(const QString &package)
+{
+    static const QStringList prefixes{QStringLiteral("kernora"), QStringLiteral("plasma"), QStringLiteral("kwin"),
+                                      QStringLiteral("kde-"), QStringLiteral("libkf6"), QStringLiteral("systemsettings"),
+                                      QStringLiteral("sddm"), QStringLiteral("calamares"), QStringLiteral("waydroid"),
+                                      QStringLiteral("xdg-desktop-portal"), QStringLiteral("polkit")};
+    if (package.isEmpty()) {
+        return true;
+    }
+    for (const QString &prefix : prefixes) {
+        if (package.startsWith(prefix)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 QString normalised(QString id)
 {
     if (id.endsWith(QLatin1String(".desktop"))) {
@@ -310,7 +327,7 @@ void Store::buildCatalog()
     QHash<QString, App> apps;
     QHash<QString, QString> index;
     for (auto it = m_apps.constBegin(); it != m_apps.constEnd(); ++it) {
-        if (!it.value().localPath.isEmpty()) {
+        if (!it.value().localPath.isEmpty() || it.value().localKind == QLatin1String("installed")) {
             apps.insert(it.key(), it.value());
         }
     }
@@ -353,7 +370,7 @@ void Store::buildCatalog()
 
     for (auto it = apps.begin(); it != apps.end(); ++it) {
         App &app = it.value();
-        if (!app.localPath.isEmpty() || (!app.flatpak && !app.debian)) {
+        if (!app.localPath.isEmpty() || app.localKind == QLatin1String("installed") || (!app.flatpak && !app.debian)) {
             continue;
         }
         const Component primary = app.flatpak ? flatpakComponents.value(app.id) : debianComponents.value(app.id);
@@ -675,7 +692,7 @@ QStringList Store::query(const QString &text, const QString &category, Filter fi
     if (filter == Installed || filter == Updates) {
         for (auto it = m_apps.constBegin(); it != m_apps.constEnd(); ++it) {
             const App &app = it.value();
-            if (!app.localPath.isEmpty()) {
+            if (!app.localPath.isEmpty() || app.localKind == QLatin1String("installed")) {
                 continue;
             }
             if ((filter == Installed && isInstalled(app)) || (filter == Updates && app.update)) {
@@ -836,6 +853,7 @@ QVariantMap Store::details(const QString &id) const
         {QStringLiteral("ratingCount"), m_ratings.value(id).total},
         {QStringLiteral("ratingVotes"), m_ratings.value(id).votes},
         {QStringLiteral("local"), !app.localPath.isEmpty()},
+        {QStringLiteral("removable"), app.localKind != QLatin1String("installed") || !systemPackage(app.packages.value(0))},
     };
 
     QVariantList sources;
@@ -1254,7 +1272,21 @@ QString Store::openUrl(const QString &text)
         while (id.startsWith(QLatin1Char('/'))) {
             id.remove(0, 1);
         }
-        return idFor(id.section(QLatin1Char('/'), 0, 0));
+        id = id.section(QLatin1Char('/'), 0, 0);
+        const QString known = idFor(id);
+        if (!known.isEmpty()) {
+            return known;
+        }
+        const QString desktop = id.endsWith(QLatin1String(".desktop")) ? id : id + QStringLiteral(".desktop");
+        for (auto it = m_apps.constBegin(); it != m_apps.constEnd(); ++it) {
+            if (it.value().desktopId == desktop && it.value().localPath.isEmpty() && it.value().localKind.isEmpty()) {
+                return it.key();
+            }
+        }
+        if (!m_ready) {
+            return QString();
+        }
+        return openInstalled(desktop);
     }
     if (!url.isLocalFile()) {
         return QString();
@@ -1267,6 +1299,40 @@ QString Store::openUrl(const QString &text)
         return openDeb(path);
     }
     return QString();
+}
+
+QString Store::openInstalled(const QString &desktopId)
+{
+    const QString id = QStringLiteral("installed:") + desktopId;
+    if (m_apps.contains(id)) {
+        return id;
+    }
+    const QString path = QStandardPaths::locate(QStandardPaths::ApplicationsLocation, desktopId);
+    if (path.isEmpty()) {
+        return QString();
+    }
+    KService service(path);
+    if (service.name().isEmpty()) {
+        return QString();
+    }
+    App app;
+    app.id = id;
+    app.name = service.name();
+    app.summary = service.comment().isEmpty() ? service.genericName() : service.comment();
+    app.icon = service.icon().isEmpty() ? QStringLiteral("application-x-executable") : service.icon();
+    app.desktopId = desktopId;
+    app.localKind = QStringLiteral("installed");
+    QProcess owner;
+    owner.start(QStringLiteral("dpkg-query"), {QStringLiteral("-S"), QFileInfo(path).canonicalFilePath()});
+    if (owner.waitForFinished(3000) && owner.exitCode() == 0) {
+        const QString package = QString::fromUtf8(owner.readAllStandardOutput()).section(QLatin1Char(':'), 0, 0).trimmed();
+        if (!package.isEmpty() && !package.contains(QLatin1Char(' ')) && !package.contains(QLatin1Char(','))) {
+            app.debian = true;
+            app.packages = {package};
+        }
+    }
+    m_apps.insert(id, app);
+    return id;
 }
 
 QString Store::openFlatpakRef(const QString &path)

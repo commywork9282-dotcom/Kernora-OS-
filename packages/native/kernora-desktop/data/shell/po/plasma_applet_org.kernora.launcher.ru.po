@@ -46,3 +46,30 @@ msgstr "Открепить"
 
 msgid "Restart"
 msgstr "Перезагрузить"
+
+msgid "Search web and more"
+msgstr "Поиск в интернете и не только"
+
+msgid "Search the web"
+msgstr "Искать в интернете"
+
+msgid "Search for “%1” in Store"
+msgstr "Найти «%1» в Магазине"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Files"
+msgstr "Файлы"
+
+msgid "Add to taskbar"
+msgstr "Добавить на панель задач"
+
+msgid "Remove from taskbar"
+msgstr "Убрать с панели задач"
+
+msgid "Add to Home screen"
+msgstr "Добавить на главный экран"
+
+msgid "App info"
+msgstr "О приложении"

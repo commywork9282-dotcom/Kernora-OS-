@@ -46,4 +46,11 @@ if (String(layoutConfig.readEntry("style")) !== "classic") {
         loadTemplate("org.kernora.desktop.statusBar");
     }
     layoutConfig.writeEntry("style", "statusbar");
+    panels().forEach(function (panel) {
+        panel.widgets("org.kernora.launcher").forEach(function (launcher) {
+            launcher.currentConfigGroup = ["General"];
+            launcher.writeConfig("menuStyle", "googlebook");
+            launcher.reloadConfig();
+        });
+    });
 }

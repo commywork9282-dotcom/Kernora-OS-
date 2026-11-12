@@ -179,6 +179,7 @@ private:
     QString idFor(const QString &id) const;
     QString openFlatpakRef(const QString &path);
     QString openDeb(const QString &path);
+    QString openInstalled(const QString &desktopId);
 
     AppStream::Pool *m_pool = nullptr;
     QThread m_thread;

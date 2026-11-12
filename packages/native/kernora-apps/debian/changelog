@@ -1,7 +1,15 @@
 kernora-apps (1.1.87) UNRELEASED; urgency=medium
 
   * Settings: Wallpaper and style has Layout, Panel shape and Apps button.
-  * What's new: the status bar.
+    The Apps button shape only shows with everything at the bottom.
+  * Settings pages and options show up in the apps menu search and in
+    KRunner (kernora-settings-runner).
+  * Settings opens a sub-page when started with category:Page.qml.
+  * Store: "search:text" starts a search, and App info from the apps menu
+    finds an installed app by its desktop file. Apps the catalog does not
+    know get a simple page with Open, and Uninstall when the package is
+    not part of Kernora or Plasma.
+  * What's new: the status bar and the new apps menu.
 
  -- Kernora Developers <developers@kernora.invalid>  Mon, 09 Nov 2026 17:00:00 -0800
 

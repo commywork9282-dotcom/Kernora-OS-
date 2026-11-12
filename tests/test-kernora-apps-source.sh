@@ -326,4 +326,15 @@ grep -Fq 'appgroups.cpp appgroups.h' "$package_root/src/system/CMakeLists.txt" \
   && grep -Fq 'msgid "Remove from group"' "$package_root/po/ru/kernora-appgroup.po" \
   && grep -Fq 'msgid "Productivity"' "$package_root/po/ru/kernora-system.po" \
   || fail "apps cannot be grouped on the desktop"
+grep -Fq 'Q_CLASSINFO("D-Bus Interface", "org.kde.krunner1")' "$package_root/src/settingsrunner/main.cpp" \
+  && grep -Fq 'kernora/settings/components/Catalog.qml' "$package_root/src/settingsrunner/main.cpp" \
+  && grep -Fq 'add_subdirectory(src/settingsrunner)' "$package_root/CMakeLists.txt" \
+  && grep -Fq 'X-Plasma-API=DBus' "$package_root/src/settingsrunner/org.kernora.settings.desktop" \
+  && grep -Fq '/^([a-z]+):([A-Za-z]+Page\.qml)$/' "$package_root/apps/settings/qml/components/Catalog.qml" \
+  && grep -Fq 'text.startsWith("search:")' "$package_root/apps/store/qml/Main.qml" \
+  && grep -Fq 'it.value().desktopId == desktop' "$package_root/src/store/store.cpp" \
+  && grep -Fq 'QString Store::openInstalled(const QString &desktopId)' "$package_root/src/store/store.cpp" \
+  && grep -Fq 'visible: page.installed && page.info.removable !== false' "$package_root/apps/store/qml/AppPage.qml" \
+  && grep -Fq 'visible: page.layoutStyle === "classic"' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
+  || fail "the apps menu cannot find Settings pages or open Store pages"
 printf 'kernora-apps source test: OK\n'

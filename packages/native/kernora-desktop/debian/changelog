@@ -12,7 +12,22 @@ kernora-desktop (1.4.75) UNRELEASED; urgency=medium
     notifications. Silent ones get their own section, Clear all and the
     settings button sit at the bottom, and a card shows its close and
     settings buttons when the pointer is over it.
-  * The bottom panel and the apps button are square by default.
+  * The bottom panel is square by default.
+  * New apps menu: it opens in the middle of the screen above the taskbar
+    and dims everything behind it, the status bar included. A search pill
+    with LibreWolf at the top, all apps from A to Z in six columns, a thin
+    scrollbar that shows the letter while it is dragged.
+  * Typing searches apps, Kernora Settings, files and quick answers, with
+    "Search the web" in LibreWolf and "Search in Store" rows. Enter opens
+    the first result.
+  * Right-click an app: its own actions, Add to taskbar or Remove from
+    taskbar, Add to Home screen and App info. Dragging an app hides the
+    menu so it can be dropped on the desktop or the taskbar.
+  * The apps button is a wide pill that lights up while the menu is open.
+    Meta opens the menu with the cursor in the search field.
+  * A two-finger swipe up on the desktop opens the menu, a two-finger
+    swipe down at the top of the list closes it.
+  * The layout with everything at the bottom keeps the previous menu.
   * Settings can switch back to everything at the bottom and to the rounded
     panel.
 

@@ -154,6 +154,10 @@ QtObject {
     })
 
     function resolve(argument: string): var {
+        const direct = /^([a-z]+):([A-Za-z]+Page\.qml)$/.exec(argument);
+        if (direct && categories.some(c => c.id === direct[1])) {
+            return { category: direct[1], page: direct[2] };
+        }
         let name = argument.replace(/^.*\//, "").replace(/\.desktop$/, "");
         if (categories.some(c => c.id === name)) {
             return { category: name, page: "" };

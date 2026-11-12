@@ -393,8 +393,8 @@ SettingsPage {
             iconStyle: "plain"
             enabled: page.layoutAvailable && !page.layoutBusy && !Appearance.busy
             options: [
-                { value: "statusbar", label: i18n("Status bar at the top"), description: i18n("Time and quick settings at the top") },
-                { value: "classic", label: i18n("Everything at the bottom"), description: i18n("Time and quick settings at the bottom right") }
+                { value: "statusbar", label: i18n("Status bar at the top"), description: i18n("Time and quick settings at the top, apps open in the centre") },
+                { value: "classic", label: i18n("Everything at the bottom"), description: i18n("Time and quick settings at the bottom right, the previous apps menu") }
             ]
             currentValue: page.layoutStyle
             subtitle: {
@@ -428,6 +428,7 @@ SettingsPage {
             title: i18n("Apps button")
             icon: "view-app-grid"
             iconStyle: "plain"
+            visible: page.layoutStyle === "classic"
             enabled: page.layoutAvailable && !page.layoutBusy && !Appearance.busy
             options: [
                 { value: "square", label: i18n("Square") },

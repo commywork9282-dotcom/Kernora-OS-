@@ -1505,6 +1505,28 @@ grep -Fq 'applet.pluginName === "org.kernora.datetime"' "$data_root/panel/Panel.
   && grep -Fq 'squarePanel ? ["square", pre, ""] : [pre, ""]' "$data_root/panel/Panel.qml" \
   && grep -Fq 'launcherApplet.configuration?.panelShape' "$data_root/panel/Panel.qml" \
   || fail "the status bar does not draw like a status bar"
+launcher_ui="$package_root/data/shell/launcher/contents/ui"
+grep -Fxq 'singleton LauncherState 1.0 LauncherState.qml' "$package_root/data/shell/bartint/qmldir" \
+  && grep -Fq 'entry name="menuStyle"' "$package_root/data/shell/launcher/contents/config/main.xml" \
+  && grep -Fq 'preferredRepresentation: googlebook ? fullRepresentation : compactRepresentation' "$launcher_ui/main.qml" \
+  && grep -Fq 'backgroundHints: PlasmaCore.Dialog.NoBackground' "$launcher_ui/DrawerWindow.qml" \
+  && grep -Fq 'readonly property real scrimOpacity: 0.55' "$launcher_ui/DrawerScene.qml" \
+  && grep -Fq 'property: "scrim"' "$launcher_ui/DrawerScene.qml" \
+  && grep -Fq 'width: Math.min(668, scene.areaWidth - 32)' "$launcher_ui/DrawerScene.qml" \
+  && grep -Fq 'i18n("Search web and more")' "$launcher_ui/DrawerSheet.qml" \
+  && grep -Fq 'source: "librewolf"' "$launcher_ui/DrawerSheet.qml" \
+  && grep -Fq 'readonly property int columns: 6' "$launcher_ui/DrawerSheet.qml" \
+  && grep -Fq 'runners: ["org.kernora.settings"]' "$launcher_ui/DrawerResults.qml" \
+  && grep -Fq 'runDetached("librewolf --search " + quoted(text));' "$launcher_ui/main.qml" \
+  && grep -Fq 'typeof item.removeLauncher === "function"' "$launcher_ui/main.qml" \
+  && grep -Fq 'i18n("Add to Home screen")' "$launcher_ui/DrawerSheet.qml" \
+  && grep -Fq 'onDragStarted: window.dragging = true' "$launcher_ui/DrawerWindow.qml" \
+  && grep -Fq 'LauncherState.requestOpen(Screen.name);' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'LauncherState.screen === Screen.name ? LauncherState.scrim : 0' "$data_root/panel/Panel.qml" \
+  && grep -Fq 'launcher.writeConfig("menuStyle", "googlebook");' "$data_root/panel/statusbar.js" \
+  && grep -Fq 'launcher.writeConfig("menuStyle", "classic");' "$data_root/panel/classic.js" \
+  && grep -Fq 'msgstr "Поиск в интернете и не только"' "$package_root/data/shell/po/plasma_applet_org.kernora.launcher.ru.po" \
+  || fail "the Googlebook apps menu is incomplete"
 grep -Fxq 'module org.kernora.bartint' "$package_root/data/shell/bartint/qmldir" \
   && grep -Fxq 'singleton BarTint 1.0 BarTint.qml' "$package_root/data/shell/bartint/qmldir" \
   && grep -Fq 'cp -a data/shell/bartint generated/style/org/kernora/bartint' "$package_root/debian/rules" \

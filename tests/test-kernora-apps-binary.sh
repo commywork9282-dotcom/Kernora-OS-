@@ -76,6 +76,14 @@ grep -Fxq 'License: MPL-2.0' "$temporary_root/usr/share/kernora/copyright/librew
   || fail "the LibreWolf copyright summary is missing"
 [[ -x "$temporary_root/usr/lib/x86_64-linux-gnu/libexec/kernora-filechooser" ]] \
   || fail "the file chooser backend is missing"
+[[ -x "$temporary_root/usr/lib/x86_64-linux-gnu/libexec/kernora-settings-runner" ]] \
+  || fail "the Settings search runner is missing"
+grep -qx 'Exec=/usr/lib/x86_64-linux-gnu/libexec/kernora-settings-runner' \
+  "$temporary_root/usr/share/dbus-1/services/org.kernora.settings.runner.service" \
+  || fail "D-Bus cannot start the Settings search runner"
+grep -qx 'X-Plasma-DBusRunner-Service=org.kernora.settings.runner' \
+  "$temporary_root/usr/share/krunner/dbusplugins/org.kernora.settings.desktop" \
+  || fail "KRunner does not know the Settings search runner"
 [[ -s "$temporary_root/usr/share/kernora/filechooser/Chooser.qml" ]] || fail "the file chooser window is missing"
 grep -qx 'Exec=/usr/lib/x86_64-linux-gnu/libexec/kernora-filechooser' \
   "$temporary_root/usr/share/dbus-1/services/org.freedesktop.impl.portal.desktop.kernora.service" \

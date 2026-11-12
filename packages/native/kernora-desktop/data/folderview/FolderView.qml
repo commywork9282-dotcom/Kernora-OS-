@@ -16,6 +16,8 @@ import org.kde.kquickcontrolsaddons 2.0
 
 import org.kde.private.desktopcontainment.folder as Folder
 import org.kde.plasma.plasma5support as P5Support
+import QtQuick.Window
+import org.kernora.bartint
 import "code/FolderTools.js" as FolderTools
 
 FocusScope {
@@ -771,6 +773,26 @@ FocusScope {
                 id: gridView
                 clip: true
                 anchors.fill: parent
+
+                WheelHandler {
+                    property real travel: 0
+                    target: null
+                    acceptedDevices: PointerDevice.TouchPad
+                    enabled: root.isContainment && main.isRootView
+                    onWheel: event => {
+                        const delta = event.pixelDelta.y !== 0 ? event.pixelDelta.y : event.angleDelta.y / 8;
+                        const up = event.inverted ? delta < 0 : delta > 0;
+                        if (up && Math.abs(delta) > Math.abs(event.pixelDelta.x)) {
+                            travel += Math.abs(delta);
+                            if (travel > 80) {
+                                travel = 0;
+                                LauncherState.requestOpen(Screen.name);
+                            }
+                        } else {
+                            travel = 0;
+                        }
+                    }
+                }
 
                 property bool isRootView: false
 
