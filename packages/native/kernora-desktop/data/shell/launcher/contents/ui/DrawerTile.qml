@@ -70,10 +70,11 @@ Item {
         id: icon
         anchors.horizontalCenter: parent.horizontalCenter
         y: 10
-        width: 48
-        height: 48
+        width: 44
+        height: 44
         source: root.iconSource
         animated: false
+        roundToIconSize: false
         scale: mouse.pressed ? 0.92 : 1
 
         Behavior on scale {
@@ -85,21 +86,35 @@ Item {
         }
     }
 
+    FontMetrics {
+        id: metrics
+        font.family: M3.bodySmall.family
+        font.pixelSize: label.baseSize
+    }
+
     Text {
+        id: label
+
+        readonly property int baseSize: Math.round(12 * M3.scale)
+        readonly property int minSize: Math.round(10 * M3.scale)
+        readonly property real widestWord: metrics.font.pixelSize > 0
+            ? Math.max(1, ...root.name.split(/\s+/).map(word => metrics.advanceWidth(word))) : 1
+        readonly property int fitSize: Math.floor(baseSize * width / widestWord)
+
         anchors.top: icon.bottom
         anchors.topMargin: 6
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.leftMargin: 4
-        anchors.rightMargin: 4
+        anchors.leftMargin: 2
+        anchors.rightMargin: 2
         text: root.name
         color: M3.surfaceContent
         font.family: M3.bodySmall.family
-        font.pixelSize: Math.round(13 * M3.scale)
+        font.pixelSize: Math.max(minSize, Math.min(baseSize, fitSize))
         font.weight: Font.Normal
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignTop
-        wrapMode: Text.WordWrap
+        wrapMode: fitSize < minSize ? Text.Wrap : Text.WordWrap
         maximumLineCount: 2
         elide: Text.ElideRight
         lineHeight: 1.1

@@ -16,6 +16,7 @@ Flickable {
     property string query
     property int columns: 6
     property real cellWidth: 104
+    property int cellHeight: 108
     property int currentIndex: 0
 
     signal launched()
@@ -142,7 +143,7 @@ Flickable {
                     required property var model
                     visible: index < root.columns
                     width: root.cellWidth
-                    height: 108
+                    height: root.cellHeight
                     name: model.display ?? ""
                     iconSource: model.decoration ?? ""
                     current: root.currentIndex === index

@@ -1534,7 +1534,10 @@ grep -Fxq 'singleton LauncherState 1.0 LauncherState.qml' "$package_root/data/sh
   && grep -Fq 'layer.enabled: root.whiteDock' "$data_root/panel/Panel.qml" \
   && grep -Fq '(root.fromTop && !M3.dark ? 0 : 0.32)' "$package_root/data/shell/shade/contents/ui/ShadeWindow.qml" \
   && grep -Fq 'property: "scrim"' "$launcher_ui/DrawerScene.qml" \
-  && grep -Fq 'width: Math.min(668, scene.areaWidth - 32)' "$launcher_ui/DrawerScene.qml" \
+  && grep -Fq 'width: Math.min(scene.areaWidth - 32, Math.round(height / 1.19))' "$launcher_ui/DrawerScene.qml" \
+  && grep -Fq 'roundToIconSize: false' "$launcher_ui/DrawerTile.qml" \
+  && grep -Fq 'wrapMode: fitSize < minSize ? Text.Wrap : Text.WordWrap' "$launcher_ui/DrawerTile.qml" \
+  && grep -Fq '(sheet.searching ? input : grid).forceActiveFocus();' "$launcher_ui/DrawerSheet.qml" \
   && grep -Fq 'i18n("Search web and more")' "$launcher_ui/DrawerSheet.qml" \
   && grep -Fq 'source: "librewolf"' "$launcher_ui/DrawerSheet.qml" \
   && grep -Fq 'readonly property int columns: 6' "$launcher_ui/DrawerSheet.qml" \

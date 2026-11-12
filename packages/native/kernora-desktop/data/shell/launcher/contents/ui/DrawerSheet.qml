@@ -23,7 +23,7 @@ FocusScope {
     readonly property int columns: 6
     readonly property int sidePadding: 16
     readonly property int cellWidth: Math.floor((width - sidePadding * 2) / columns)
-    readonly property int cellHeight: 108
+    readonly property int cellHeight: 96
 
     property var letters: []
     property bool dragging: false
@@ -149,7 +149,7 @@ FocusScope {
             return;
         }
         menu.groups = groups;
-        menu.openFor(tile, 10, 48);
+        menu.openFor(tile, 10, 44);
     }
 
     function launchAction(model: var, index: int, action: var): void {
@@ -418,6 +418,7 @@ FocusScope {
             query: sheet.trimmedQuery
             columns: sheet.columns
             cellWidth: sheet.cellWidth
+            cellHeight: sheet.cellHeight
             onLaunched: sheet.requestClose()
             onSearchWeb: text => {
                 if (sheet.launcher) {
@@ -447,5 +448,10 @@ FocusScope {
     DrawerMenu {
         id: menu
         parent: sheet.parent
+        onClosed: {
+            if (!input.activeFocus && !grid.activeFocus) {
+                (sheet.searching ? input : grid).forceActiveFocus();
+            }
+        }
     }
 }

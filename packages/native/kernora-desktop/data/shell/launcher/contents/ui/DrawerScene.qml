@@ -112,8 +112,8 @@ FocusScope {
     DrawerSheet {
         id: sheet
 
-        width: Math.min(668, scene.areaWidth - 32)
-        height: Math.min(800, Math.round(scene.areaHeight * 0.72))
+        height: Math.min(760, Math.round(scene.areaHeight * 0.8))
+        width: Math.min(scene.areaWidth - 32, Math.round(height / 1.19))
         x: Math.round((scene.areaWidth - width) / 2)
         y: scene.areaHeight - height - 12 + Math.round((1 - scene.reveal) * 56)
         opacity: Math.min(1, scene.reveal * 1.6)
