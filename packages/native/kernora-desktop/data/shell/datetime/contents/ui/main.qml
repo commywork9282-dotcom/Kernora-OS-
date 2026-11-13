@@ -105,13 +105,14 @@ PlasmoidItem {
             spacing: 8
 
             MText {
-                role: "labelLarge"
-                font.weight: Font.Bold
+                role: "labelLargeEmphasized"
+                rounded: true
                 color: root.ink
                 text: root.timeText
             }
             MText {
                 role: "labelLarge"
+                rounded: true
                 color: root.ink
                 text: root.dateText
             }

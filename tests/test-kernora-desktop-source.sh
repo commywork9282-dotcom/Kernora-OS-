@@ -2315,4 +2315,20 @@ grep -Fxq 'PAD_SIDE = 20' "$package_root/tools/gen-aurorae-theme" \
   && ! grep -Fq 'False, "mimetypes"' "$package_root/tools/symbols_map.py" \
   || fail "window frame padding is not a multiple of 20 or the corner effect is not set up"
 
+grep -Fxq 'TYPEFACES = {"md1": "Roboto", "md2": "Roboto", "md3": "Google Sans Flex"}' "$package_root/tools/kernora_design.py" \
+  && grep -Fq 'readonly property string typeface: [{faces}][tokens.generationIndex]' "$package_root/tools/gen-qml-tokens" \
+  && grep -Fq 'value.variableAxes = { "ROND": 100 };' "$package_root/data/shell/m3/MText.qml" \
+  && grep -Fq 'fonts-google-sans (>= 1.0)' "$package_root/debian/control" \
+  && ! grep -Fq 'font.family: "Roboto"' "$package_root/data/sddm-theme/kernora/Main.qml" \
+  && grep -Fq 'data/kconf_update/kernora-google-sans-flex.sh usr/share/kconf_update' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq '=Google Sans Flex,' "$package_root/data/kconf_update/kernora-google-sans-flex.sh" \
+  || fail "Google Sans Flex is not the Material 3 typeface everywhere"
+grep -Fq 'LayerShell.Window.scope: "on-screen-display"' "$package_root/data/shell/shade/contents/ui/Glowbar.qml" \
+  && grep -Fq 'Qt.WindowTransparentForInput' "$package_root/data/shell/shade/contents/ui/Glowbar.qml" \
+  && grep -Fq 'glowbarComponent.createObject(null' "$package_root/data/shell/shade/contents/ui/main.qml" \
+  && grep -Fq 'activeProfile === "power-saver"' "$package_root/data/shell/shade/contents/ui/sources/PowerSource.qml" \
+  && grep -Fq 'saver: root.backend.powerSaver' "$package_root/data/shell/shade/contents/ui/StatusChip.qml" \
+  && grep -Fq 'readonly property bool low: !charging && percent <= 20' "$package_root/data/shell/shade/contents/ui/BatteryPill.qml" \
+  || fail "the battery has no Glowbar on plug-in or no saver and low states"
+
 printf 'kernora-desktop source test: OK\n'

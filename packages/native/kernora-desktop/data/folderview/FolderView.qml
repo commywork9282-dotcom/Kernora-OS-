@@ -848,7 +848,7 @@ FocusScope {
                     } else {
                         var iconWidth = iconSize + (2 * Kirigami.Units.gridUnit) + (2 * Kirigami.Units.smallSpacing);
                         if (root.isContainment && isRootView && scrollArea.viewportWidth > 0) {
-                            var minIconWidth = Math.max(iconWidth, Kirigami.Units.iconSizes.small * ((Plasmoid.configuration.labelWidth * 2) + 4));
+                            var minIconWidth = Math.max(iconWidth, Kirigami.Units.iconSizes.small * ((Plasmoid.configuration.labelWidth * 2) + 4) + Kirigami.Units.gridUnit / 2);
                             var extraWidth = calcExtraSpacing(minIconWidth, scrollArea.viewportWidth);
                             return minIconWidth + extraWidth;
                         } else {

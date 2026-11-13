@@ -161,6 +161,7 @@ Item {
                 visible: root.backend.hasBattery
                 percent: root.backend.batteryPercent
                 charging: root.backend.charging
+                saver: root.backend.powerSaver
                 ink: pill.ink
                 knockout: pill.knockout
             }

@@ -228,6 +228,7 @@ Item {
                     id: titleText
                     width: root.googlebook ? implicitWidth : parent.width
                     role: "titleSmall"
+                    rounded: true
                     text: root.title
                     color: root.bodyContent
                     elide: root.googlebook ? Text.ElideNone : Text.ElideRight

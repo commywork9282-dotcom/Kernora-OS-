@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	install -D -m 0644 fonts/GoogleSansFlex.ttf debian/fonts-google-sans/usr/share/fonts/truetype/google-sans/GoogleSansFlex.ttf
+	install -D -m 0644 fonts/GoogleSans.ttf debian/fonts-google-sans/usr/share/fonts/truetype/google-sans/GoogleSans.ttf
+	install -D -m 0644 fontconfig/56-google-sans-flex.conf debian/fonts-google-sans/usr/share/fontconfig/conf.avail/56-google-sans-flex.conf

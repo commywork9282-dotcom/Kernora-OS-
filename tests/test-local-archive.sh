@@ -93,6 +93,10 @@ grep -Fxq 'Package: kernora-wallpapers' "$packages" \
   || fail "kernora-wallpapers is not indexed"
 grep -Fxq 'Package: kernora-wallpapers' "$sources" \
   || fail "kernora-wallpapers source is not indexed"
+grep -Fxq 'Package: fonts-google-sans' "$packages" \
+  || fail "fonts-google-sans is not indexed"
+grep -Fxq 'Package: fonts-google-sans' "$sources" \
+  || fail "fonts-google-sans source is not indexed"
 grep -Fxq 'Package: kwin-effect-rounded-corners' "$packages" \
   || fail "kwin-effect-rounded-corners is not indexed"
 grep -Fxq 'Package: kwin-effect-rounded-corners' "$sources" \

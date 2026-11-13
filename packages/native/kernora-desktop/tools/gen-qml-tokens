@@ -305,7 +305,8 @@ def motion_lines() -> list[str]:
 
 def type_lines() -> list[str]:
     lines = ["", "    // --- typography ---------------------------------------------------------", ""]
-    lines.append(f'    readonly property string typeface: "{design.TYPEFACE}"')
+    faces = ", ".join(f'"{design.TYPEFACES[g]}"' for g in design.GENERATIONS)
+    lines.append(f"    readonly property string typeface: [{faces}][tokens.generationIndex]")
     lines.append(
         f'    readonly property string typefaceFallback: "{design.TYPEFACE_FALLBACK}"'
     )

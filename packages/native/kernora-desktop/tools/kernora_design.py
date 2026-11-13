@@ -315,7 +315,8 @@ SHAPE = {
 }
 
 
-TYPEFACE = "Roboto"
+TYPEFACES = {"md1": "Roboto", "md2": "Roboto", "md3": "Google Sans Flex"}
+TYPEFACE = TYPEFACES[GENERATION]
 TYPEFACE_FALLBACK = "Noto Sans"
 
 TYPE_SCALE = {
@@ -343,12 +344,26 @@ TYPE_OVERRIDES = {
     "titleLarge": {"md1": (20, 28, 500, 0.0), "md2": (20, 28, 500, 0.15)},
 }
 
+GOOGLE_SANS_TRACKING = {
+    "titleMedium": 0.0,
+    "titleSmall": 0.0,
+    "bodyLarge": 0.0,
+    "bodyMedium": 0.0,
+    "bodySmall": 0.1,
+    "labelLarge": 0.0,
+    "labelMedium": 0.1,
+    "labelSmall": 0.1,
+}
+
 CLASSIC_BUTTON_TRACKING = 1.25
 
 
 def type_style(style: str, generation: str | None = None) -> tuple[float, float, int, float]:
     generation = generation or GENERATION
-    return TYPE_OVERRIDES.get(style, {}).get(generation, TYPE_SCALE[style])
+    size, line, weight, tracking = TYPE_OVERRIDES.get(style, {}).get(generation, TYPE_SCALE[style])
+    if TYPEFACES[generation] == "Google Sans Flex":
+        tracking = GOOGLE_SANS_TRACKING.get(style, tracking)
+    return size, line, weight, tracking
 
 
 def emphasized_type_style(style: str, generation: str | None = None) -> tuple[float, float, int, float]:

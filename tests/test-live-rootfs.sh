@@ -134,12 +134,12 @@ done
   || fail "the default cursor theme is not Kernora's"
 grep -qx 'cursorTheme=kernora_cursors' /etc/xdg/kcminputrc || fail "Plasma does not use the Kernora cursors"
 grep -qx 'Bouncing=false' /etc/xdg/klaunchrc || fail "the bouncing launch icon is still on"
-# The wallpapers are Kernora's live ones; no picture wallpapers ship.
+# Picture wallpapers come only from kernora-wallpapers.
 for wallpaper in rhythm starfall pastel ribbon; do
   [[ -s /usr/share/plasma/wallpapers/org.kernora.$wallpaper/contents/ui/Scene.qml ]] \
     || fail "the $wallpaper live wallpaper is missing"
 done
-pictures=$(find /usr/share/wallpapers -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.jpeg' -o -name '*.webp' -o -name '*.avif' \) 2>/dev/null | head -3 || true)
+pictures=$(find /usr/share/wallpapers -path '/usr/share/wallpapers/kernora-*' -prune -o -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.jpeg' -o -name '*.webp' -o -name '*.avif' \) -print 2>/dev/null | head -3 || true)
 [[ -z $pictures ]] || fail "picture wallpapers are installed: $pictures"
 [[ -s "$qml_root/QtQuick/Shapes/qmldir" ]] \
   || fail "Qt Quick Shapes, which draws the wallpaper, is missing"
@@ -168,6 +168,12 @@ grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "kernora-quickshare 1.0.2 is not installed"
 [[ "$(dpkg-query -W -f='${Version}' kernora-wallpapers)" == "1.0" ]] \
   || fail "kernora-wallpapers 1.0 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' fonts-google-sans)" == "1.0" ]] \
+  || fail "fonts-google-sans 1.0 is not installed"
+[[ "$(fc-match -f '%{family[0]}' 'Google Sans Flex')" == "Google Sans Flex" ]] \
+  || fail "fontconfig does not find Google Sans Flex"
+fc-match -s -f '%{family[0]}\n' 'Google Sans Flex:lang=ru' | head -2 | grep -Fxq 'Google Sans' \
+  || fail "Cyrillic in Google Sans Flex does not fall back to Google Sans"
 [[ "$(dpkg-query -W -f='${Version}' kwin-effect-rounded-corners)" == "0.11.0+kernora1" ]] \
   || fail "kwin-effect-rounded-corners 0.11.0+kernora1 is not installed"
 for package in flatpak appstream; do

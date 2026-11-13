@@ -1,0 +1,7 @@
+fonts-google-sans (1.0) UNRELEASED; urgency=medium
+
+  * Initial release: Google Sans Flex 5.000 and Google Sans 14.000 from
+    Google Fonts, with a fontconfig rule that takes letters Google Sans
+    Flex lacks, such as Cyrillic, from Google Sans.
+
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 13 Nov 2026 14:00:00 -0800

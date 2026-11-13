@@ -104,6 +104,8 @@ data/kconf_update/kernora-marbles-to-pastel.sh usr/share/kconf_update
 data/shell-updates/kernora_marbles_to_pastel.js usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates
 data/kconf_update/kernora-tower-to-shapes.upd usr/share/kconf_update
 data/kconf_update/kernora-tower-to-shapes.sh usr/share/kconf_update
+data/kconf_update/kernora-google-sans-flex.upd usr/share/kconf_update
+data/kconf_update/kernora-google-sans-flex.sh usr/share/kconf_update
 data/shell-updates/kernora_tower_to_shapes.js usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates
 data/xdg-notifyrc/plasma_workspace.notifyrc etc/xdg
 data/crash/kernora-crash-notifier usr/libexec

@@ -12,6 +12,7 @@ BatteryControlModel {
     readonly property bool hasBattery: hasInternalBatteries
     readonly property int batteryPercent: percent
     readonly property bool charging: pluggedIn && state === BatteryControlModel.Charging
+    readonly property bool plugged: pluggedIn
 
     readonly property string batteryIcon: {
         if (charging) {

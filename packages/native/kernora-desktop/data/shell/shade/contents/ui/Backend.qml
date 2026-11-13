@@ -18,6 +18,7 @@ Item {
     Loader { id: displayLoader; source: "sources/DisplaySource.qml" }
     Loader { id: batteryLoader; source: "sources/BatterySource.qml" }
     Loader { id: awakeLoader; source: "sources/AwakeSource.qml" }
+    Loader { id: powerLoader; source: "sources/PowerSource.qml" }
     Loader { id: sessionLoader; source: "sources/SessionSource.qml" }
     Loader { id: notificationLoader; source: "sources/NotificationSource.qml" }
     Loader { id: mediaLoader; source: "sources/MediaSource.qml" }
@@ -30,6 +31,7 @@ Item {
     readonly property var display: displayLoader.item
     readonly property var battery: batteryLoader.item
     readonly property var awake: awakeLoader.item
+    readonly property var power: powerLoader.item
     readonly property var session: sessionLoader.item
     readonly property var notifications: notificationLoader.item
     readonly property var media: mediaLoader.item
@@ -53,6 +55,8 @@ Item {
     readonly property bool hasBattery: battery ? battery.hasBattery : false
     readonly property int batteryPercent: battery ? battery.batteryPercent : 0
     readonly property bool charging: battery ? battery.charging : false
+    readonly property bool pluggedIn: battery ? battery.plugged : false
+    readonly property bool powerSaver: power ? power.saver : false
     readonly property string batteryIcon: battery ? battery.batteryIcon : "battery-missing"
 
     readonly property bool canLock: session ? session.canLock : false

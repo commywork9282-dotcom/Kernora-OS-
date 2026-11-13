@@ -1,0 +1,21 @@
+Source: fonts-google-sans
+Section: fonts
+Priority: optional
+Maintainer: Kernora Developers <developers@kernora.invalid>
+Standards-Version: 4.7.4
+Build-Depends: debhelper-compat (= 13)
+Rules-Requires-Root: no
+
+Package: fonts-google-sans
+Architecture: all
+Multi-Arch: foreign
+Depends:
+ ${misc:Depends}
+Description: Google Sans Flex and Google Sans typefaces
+ Google Sans Flex is the variable typeface of Android and Googlebook, with
+ weight, width, optical size, slant and roundness axes. Kernora uses it for
+ the shell, its apps, window titles and KDE and GTK apps.
+ .
+ Google Sans Flex has no Cyrillic, Greek or most non-Latin scripts, so the
+ package also ships Google Sans and a fontconfig rule that takes those
+ letters from Google Sans.

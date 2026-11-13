@@ -50,6 +50,27 @@ PlasmoidItem {
         anchorItem: null
     }
 
+    property var glowbar: null
+    Component {
+        id: glowbarComponent
+        Glowbar {}
+    }
+    Connections {
+        target: shadeBackend
+        function onPluggedInChanged(): void {
+            if (!shadeBackend.pluggedIn || !shadeBackend.hasBattery || !root.acceptActivations) {
+                return;
+            }
+            if (root.glowbar) {
+                root.glowbar.destroy();
+            }
+            root.glowbar = glowbarComponent.createObject(null, {
+                percent: shadeBackend.batteryPercent,
+                screen: root.Window.window ? root.Window.window.screen : Qt.application.screens[0]
+            });
+        }
+    }
+
     property bool acceptActivations: false
     Timer {
         interval: 2000

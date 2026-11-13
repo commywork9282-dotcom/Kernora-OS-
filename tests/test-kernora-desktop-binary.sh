@@ -222,7 +222,7 @@ grep -Fq 'pragma Singleton' \
   "$temporary_root/desktop/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/M3.qml" \
   || fail "Qt Quick style carries no design-token singleton"
 for field in fonts-roboto-unhinted plasma-workspace qt-style-kvantum kwin-common \
-  qml6-module-org-kde-desktop qml6-module-qtquick-shapes kernora-wallpapers kwin-effect-rounded-corners; do
+  qml6-module-org-kde-desktop qml6-module-qtquick-shapes kernora-wallpapers fonts-google-sans kwin-effect-rounded-corners; do
   dpkg-deb --field "$desktop_deb" Depends | grep -Fq "$field" \
     || fail "desktop package does not depend on $field"
 done

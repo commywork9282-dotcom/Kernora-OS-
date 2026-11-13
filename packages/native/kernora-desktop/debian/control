@@ -28,6 +28,7 @@ Depends:
  qml6-module-qtquick-templates,
  qt-style-kvantum,
  kernora-wallpapers (>= 1.0),
+ fonts-google-sans (>= 1.0),
  kwin-effect-rounded-corners (>= 0.11.0+kernora1)
 Recommends:
  plymouth,

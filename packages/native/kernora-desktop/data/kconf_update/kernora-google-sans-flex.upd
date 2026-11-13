@@ -1,0 +1,4 @@
+Version=6
+
+Id=kernora_google_sans_flex
+Script=kernora-google-sans-flex.sh,sh

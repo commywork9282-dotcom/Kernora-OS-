@@ -27,6 +27,7 @@ kernora-calamares=1.4.75
 kernora-apps=1.1.87
 kernora-quickshare=1.0.2
 kernora-wallpapers=1.0
+fonts-google-sans=1.0
 kwin-effect-rounded-corners=0.11.0+kernora1
 polkit-kde-agent-1=4:6.3.6-1kernora2
 plymouth

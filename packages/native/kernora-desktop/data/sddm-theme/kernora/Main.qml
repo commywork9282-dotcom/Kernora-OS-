@@ -272,7 +272,7 @@ Rectangle {
             Layout.alignment: Qt.AlignHCenter
             text: root.now.toLocaleTimeString(Qt.locale(), Qt.locale().name === "C" ? "HH:mm" : Locale.ShortFormat)
             color: M3.darkScheme.surfaceContent
-            font.family: "Roboto"
+            font.family: "Google Sans Flex"
             font.weight: Font.Light
             font.pixelSize: 136
             renderType: Text.QtRendering
@@ -281,7 +281,7 @@ Rectangle {
             Layout.alignment: Qt.AlignHCenter
             text: root.now.toLocaleDateString(Qt.locale(), "dddd, d MMMM")
             color: M3.darkScheme.surfaceContent
-            font.family: "Roboto"
+            font.family: "Google Sans Flex"
             font.pixelSize: 22
             renderType: Text.QtRendering
         }
@@ -313,7 +313,7 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             text: root.tr("Swipe up or start typing", "Проведите вверх или начните вводить пароль")
             color: M3.darkScheme.surfaceContent
-            font.family: "Roboto"
+            font.family: "Google Sans Flex"
             font.pixelSize: 15
             font.weight: Font.Medium
             opacity: root.hinting ? 1 : 0
@@ -377,7 +377,7 @@ Rectangle {
                         visible: face.status !== Image.Ready
                         text: parent.parent.user ? parent.parent.user.displayName.charAt(0).toUpperCase() : ""
                         color: M3.primaryContainerContent
-                        font.family: "Roboto"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 44
                         font.weight: Font.Medium
                     }
@@ -413,7 +413,7 @@ Rectangle {
                 horizontalAlignment: Text.AlignHCenter
                 text: root.user ? root.user.displayName : ""
                 color: M3.surfaceContent
-                font.family: "Roboto"
+                font.family: "Google Sans Flex"
                 font.pixelSize: 24
                 elide: Text.ElideRight
                 renderType: Text.QtRendering
@@ -445,7 +445,7 @@ Rectangle {
                         enabled: !root.busy
                         color: M3.surfaceContent
                         selectionColor: M3.primaryContainer
-                        font.family: "Roboto"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 18
                         renderType: Text.QtRendering
                         clip: true
@@ -511,7 +511,7 @@ Rectangle {
                 text: root.failure.length > 0 ? root.failure
                     : keyboard.capsLock ? root.tr("Caps Lock is on", "Включён Caps Lock") : ""
                 color: root.failure.length > 0 ? M3.error : M3.surfaceVariantContent
-                font.family: "Roboto"
+                font.family: "Google Sans Flex"
                 font.pixelSize: 14
                 wrapMode: Text.Wrap
             }
@@ -537,7 +537,7 @@ Rectangle {
                             anchors.centerIn: parent
                             text: realName.length > 0 ? realName : name
                             color: index === root.userIndex ? M3.secondaryContainerContent : M3.surfaceVariantContent
-                            font.family: "Roboto"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 14
                         }
                         MouseArea {
@@ -589,7 +589,7 @@ Rectangle {
         Text {
             text: sddm.hostName
             color: M3.darkScheme.surfaceVariantContent
-            font.family: "Roboto"
+            font.family: "Google Sans Flex"
             font.pixelSize: 14
             Layout.rightMargin: 8
         }
@@ -612,7 +612,7 @@ Rectangle {
             anchors.centerIn: parent
             spacing: 8
             Kirigami.Icon { source: Qt.resolvedUrl(chip.icon); isMask: true; color: M3.surfaceVariantContent; Layout.preferredWidth: 20; Layout.preferredHeight: 20 }
-            Text { text: chip.label; color: M3.surfaceContent; font.family: "Roboto"; font.pixelSize: 14 }
+            Text { text: chip.label; color: M3.surfaceContent; font.family: "Google Sans Flex"; font.pixelSize: 14 }
         }
         MouseArea {
             id: chipMouse
@@ -654,7 +654,7 @@ Rectangle {
                 anchors.centerIn: parent
                 text: button.label
                 color: M3.inverseOnSurface
-                font.family: "Roboto"
+                font.family: "Google Sans Flex"
                 font.pixelSize: 13
             }
         }

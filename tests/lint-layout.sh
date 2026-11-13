@@ -34,6 +34,8 @@ required_paths=(
   packages/native/kernora-apps/debian/changelog
   packages/native/kernora-wallpapers/debian/control
   packages/native/kernora-wallpapers/debian/changelog
+  packages/native/fonts-google-sans/debian/control
+  packages/native/fonts-google-sans/debian/changelog
   packages/native/kwin-effect-rounded-corners/debian/control
   packages/native/kwin-effect-rounded-corners/debian/changelog
   packages/native/kernora-apps/CMakeLists.txt
@@ -66,6 +68,8 @@ required_paths=(
   scripts/build-kernora-archive-binary
   scripts/build-kernora-wallpapers-source
   scripts/build-kernora-wallpapers-binary
+  scripts/build-fonts-google-sans-source
+  scripts/build-fonts-google-sans-binary
   scripts/build-kwin-effect-rounded-corners-source
   scripts/build-kwin-effect-rounded-corners-binary
   scripts/create-archive-key
@@ -88,6 +92,8 @@ required_paths=(
   tests/test-kernora-archive-binary.sh
   tests/test-kernora-wallpapers-source.sh
   tests/test-kernora-wallpapers-binary.sh
+  tests/test-fonts-google-sans-source.sh
+  tests/test-fonts-google-sans-binary.sh
   tests/test-kwin-effect-rounded-corners-source.sh
   tests/test-kwin-effect-rounded-corners-binary.sh
   tests/test-kernora-desktop-source.sh

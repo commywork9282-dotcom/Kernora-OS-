@@ -9,8 +9,14 @@ Text {
     id: root
 
     property string role: "bodyMedium"
+    property bool rounded: false
 
-    font: M3[role]
+    font: rounded ? roundedFont : M3[role]
+    readonly property font roundedFont: {
+        const value = M3[role];
+        value.variableAxes = { "ROND": 100 };
+        return value;
+    }
     lineHeight: M3[role + "LineHeight"]
     lineHeightMode: Text.FixedHeight
     color: M3.surfaceContent
