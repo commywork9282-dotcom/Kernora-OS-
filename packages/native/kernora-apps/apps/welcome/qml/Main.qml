@@ -23,7 +23,7 @@ AppWindow {
     minimumHeight: 520
     color: M3.surfaceContainer
     visible: !(firstRun && SystemInfo.live) && !(whatsNew && notes.length === 0) && !(kernelPanic && !panic.id)
-    title: kernelPanic ? i18n("Kernora restarted") : whatsNew ? i18n("What's new") : i18n("Welcome")
+    title: kernelPanic ? i18n("Kernora restarted") : heroActive ? i18n("Meet KED 2") : whatsNew ? i18n("What's new") : i18n("Welcome")
 
     property int page: 0
     readonly property int pages: 6
@@ -72,6 +72,8 @@ AppWindow {
     readonly property bool special: whatsNew || kernelPanic
     readonly property var panic: kernelPanic ? SystemInfo.kernelPanic() : ({})
     property var notes: []
+    property bool heroDone: false
+    readonly property bool heroActive: whatsNew && !heroDone && notes.length > 0 && notes[0].hero === "ked2"
 
     function cookie(centre: real, radius: real, depth: real, lobes: int): var {
         const points = [];
@@ -100,7 +102,7 @@ AppWindow {
                 if (last && last.date === release.date) {
                     last.items = last.items.concat(release.items);
                 } else {
-                    merged.push({ id: release.id, date: release.date, items: Array.from(release.items) });
+                    merged.push({ id: release.id, date: release.date, items: Array.from(release.items), hero: release.hero });
                 }
             }
             notes = merged;
@@ -128,8 +130,14 @@ AppWindow {
 
         Loader {
             anchors.fill: parent
-            active: app.whatsNew
+            active: app.whatsNew && !app.heroActive
             sourceComponent: whatsNewView
+        }
+
+        Loader {
+            anchors.fill: parent
+            active: app.heroActive
+            sourceComponent: ked2View
         }
 
         Loader {
@@ -539,6 +547,581 @@ AppWindow {
                 }
             }
             Item { Layout.fillHeight: true }
+        }
+    }
+
+    component ArtLine: Rectangle {
+        height: 6
+        radius: 3
+        color: M3.outlineVariant
+    }
+
+    component ArtDot: Rectangle {
+        width: 18
+        height: 18
+        radius: width / 2
+    }
+
+    component ArtStatusBar: Item {
+        id: bar
+        property real unit: 1
+        height: 22 * unit
+        Text {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            color: M3.surfaceContent
+            font.family: M3.labelLarge.family
+            font.pixelSize: 11 * bar.unit
+            font.weight: Font.Medium
+            renderType: Text.QtRendering
+            text: "9:41  " + Qt.locale().toString(new Date(2026, 10, 12), "ddd, d MMM")
+        }
+        Row {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 5 * bar.unit
+            Rectangle {
+                width: 46 * bar.unit
+                height: 16 * bar.unit
+                radius: height / 2
+                color: M3.inverseSurface
+                Rectangle {
+                    x: 4 * bar.unit
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 9 * bar.unit
+                    height: width
+                    radius: width / 2
+                    color: M3.inversePrimary
+                }
+            }
+            Rectangle {
+                width: 10 * bar.unit
+                height: 10 * bar.unit
+                radius: width / 2
+                anchors.verticalCenter: parent.verticalCenter
+                color: M3.surfaceContent
+            }
+            Rectangle {
+                width: 40 * bar.unit
+                height: 16 * bar.unit
+                radius: height / 2
+                color: M3.surfaceContainerHighest
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 4 * bar.unit
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 18 * bar.unit
+                    height: 9 * bar.unit
+                    radius: height / 2
+                    color: M3.primary
+                }
+            }
+        }
+    }
+
+    component ArtMenu: Rectangle {
+        id: menu
+        property real unit: 1
+        property int columns: 3
+        property int rows: 3
+        radius: 18 * unit
+        color: M3.surfaceContainerLowest
+        Rectangle {
+            id: search
+            x: 12 * menu.unit
+            y: 12 * menu.unit
+            width: parent.width - 24 * menu.unit
+            height: 20 * menu.unit
+            radius: height / 2
+            color: M3.surfaceContainerHigh
+            ArtLine {
+                anchors.verticalCenter: parent.verticalCenter
+                x: 12 * menu.unit
+                width: parent.width * 0.45
+                height: 5 * menu.unit
+            }
+        }
+        Grid {
+            anchors.top: search.bottom
+            anchors.topMargin: 12 * menu.unit
+            anchors.horizontalCenter: parent.horizontalCenter
+            columns: menu.columns
+            columnSpacing: 16 * menu.unit
+            rowSpacing: 12 * menu.unit
+            Repeater {
+                model: menu.columns * menu.rows
+                delegate: Column {
+                    required property int index
+                    spacing: 5 * menu.unit
+                    ArtDot {
+                        width: 24 * menu.unit
+                        height: width
+                        color: [M3.primaryContainer, M3.tertiaryContainer, M3.secondaryContainer][index % 3]
+                    }
+                    ArtLine {
+                        width: 24 * menu.unit
+                        height: 4 * menu.unit
+                    }
+                }
+            }
+        }
+    }
+
+    component ArtQuick: Rectangle {
+        id: quick
+        property real unit: 1
+        radius: 18 * unit
+        color: M3.surfaceContainerLowest
+        Column {
+            anchors.fill: parent
+            anchors.margins: 12 * quick.unit
+            spacing: 8 * quick.unit
+            Repeater {
+                model: [0.72, 0.45]
+                delegate: Rectangle {
+                    required property real modelData
+                    width: parent.width
+                    height: 22 * quick.unit
+                    radius: height / 2
+                    color: M3.secondaryContainer
+                    Rectangle {
+                        width: parent.width * parent.modelData
+                        height: parent.height
+                        radius: height / 2
+                        color: M3.primary
+                    }
+                }
+            }
+            Grid {
+                columns: 2
+                columnSpacing: 8 * quick.unit
+                rowSpacing: 8 * quick.unit
+                Repeater {
+                    model: [true, false, false, true]
+                    delegate: Rectangle {
+                        required property bool modelData
+                        width: (quick.width - 24 * quick.unit - 8 * quick.unit) / 2
+                        height: 26 * quick.unit
+                        radius: height / 2
+                        color: modelData ? M3.primaryContainer : M3.surfaceContainerHighest
+                        ArtDot {
+                            x: 6 * quick.unit
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 14 * quick.unit
+                            height: width
+                            color: parent.modelData ? M3.primary : M3.outline
+                        }
+                        ArtLine {
+                            x: 26 * quick.unit
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: parent.width * 0.4
+                            height: 4 * quick.unit
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    component ArtWindow: Item {
+        id: window
+        property real unit: 1
+        property color bar: M3.surfaceContainer
+        Rectangle {
+            anchors.fill: parent
+            anchors.topMargin: 6 * window.unit
+            anchors.leftMargin: 3 * window.unit
+            anchors.rightMargin: -3 * window.unit
+            anchors.bottomMargin: -8 * window.unit
+            radius: 14 * window.unit
+            color: Qt.rgba(0, 0, 0, M3.dark ? 0.35 : 0.10)
+        }
+        RoundedClip {
+            anchors.fill: parent
+            radius: 14 * window.unit
+            Rectangle {
+                anchors.fill: parent
+                color: M3.surfaceContainerLowest
+            }
+            Rectangle {
+                width: parent.width
+                height: 24 * window.unit
+                color: window.bar
+                Row {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 10 * window.unit
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 6 * window.unit
+                    Repeater {
+                        model: 3
+                        delegate: ArtDot {
+                            width: 8 * window.unit
+                            height: width
+                            color: M3.outline
+                        }
+                    }
+                }
+            }
+            Column {
+                x: 16 * window.unit
+                y: 40 * window.unit
+                spacing: 10 * window.unit
+                Repeater {
+                    model: [0.6, 0.8, 0.45, 0.7]
+                    delegate: ArtLine {
+                        required property real modelData
+                        width: window.width * modelData
+                    }
+                }
+            }
+        }
+    }
+
+    component ArtCard: RoundedClip {
+        id: card
+        default property alias contents: canvas.data
+        property string shape: "cookie9"
+        property color shapeColor: M3.primaryContainer
+        property real shapeX: 0
+        property real shapeY: 0
+        property real shapeSize: 160
+        radius: 28
+        Rectangle {
+            anchors.fill: parent
+            color: M3.surfaceContainerHigh
+        }
+        MShape {
+            x: card.shapeX
+            y: card.shapeY
+            width: card.shapeSize
+            height: card.shapeSize
+            shape: card.shape
+            color: card.shapeColor
+        }
+        Item {
+            id: canvas
+            anchors.fill: parent
+        }
+    }
+
+    Component {
+        id: ked2View
+        Item {
+            id: tour
+
+            property int page: 0
+            readonly property int count: 6
+            function next(): void {
+                if (page < count - 1) {
+                    page += 1;
+                } else {
+                    Qt.quit();
+                }
+            }
+            function previous(): void {
+                page = Math.max(0, page - 1);
+            }
+
+            Shortcut { sequences: ["Right", "PgDown"]; onActivated: tour.next() }
+            Shortcut { sequences: ["Left", "PgUp"]; onActivated: tour.previous() }
+
+            readonly property var texts: [
+                { title: i18n("Meet KED 2"), text: i18n("Kernora Expressive Design 2 is Kernora's new look, inspired by Googlebook. Here is what changed.") },
+                { title: i18n("Status bar at the top"), text: i18n("The time and date sit on the left, notifications, the network and the battery on the right. The bar stays clear and follows your wallpaper.") },
+                { title: i18n("A new apps menu"), text: i18n("It opens in the middle above the taskbar. All apps from A to Z, and search finds apps, settings, files and the web.") },
+                { title: i18n("Quick settings"), text: i18n("Big sliders and tiles in two columns. Click a tile's icon to turn it on, or its name for details.") },
+                { title: i18n("Rounded windows"), text: i18n("Every corner of a window is rounded, with a soft shadow around it. Maximised windows stay square.") },
+                { title: i18n("Wallpaper collections"), text: i18n("Landscapes, Earth, Art and more, sorted into collections in Wallpaper & style.") }
+            ]
+
+            Rectangle {
+                anchors.fill: parent
+                color: M3.surfaceContainerLow
+            }
+
+            Item {
+                id: viewport
+                anchors.fill: parent
+                anchors.bottomMargin: 96
+                clip: true
+
+                Row {
+                    id: strip
+                    x: -tour.page * viewport.width
+                    Behavior on x {
+                        NumberAnimation {
+                            duration: M3.motionScale > 0 ? 550 : 0
+                            easing.type: Easing.Bezier
+                            easing.bezierCurve: M3.easingEmphasizedDecelerate
+                        }
+                    }
+
+                    Repeater {
+                        model: tour.count
+                        delegate: Item {
+                            id: slide
+                            required property int index
+                            width: viewport.width
+                            height: viewport.height
+
+                            ArtCard {
+                                id: art
+                                x: 24
+                                y: 24
+                                width: slide.width - 48
+                                height: slide.height - 190
+                                shape: ["cookie12", "sunny", "clover4", "cookie9", "softBurst", "cookie12"][slide.index]
+                                shapeColor: [M3.primaryContainer, M3.tertiaryContainer, M3.secondaryContainer, M3.primaryContainer, M3.tertiaryContainer, M3.secondaryContainer][slide.index]
+                                shapeSize: 220
+                                shapeX: [-60, width - 170, -50, width - 160, -70, width - 180][slide.index]
+                                shapeY: [height - 150, -70, -60, height - 140, height - 160, height - 150][slide.index]
+
+                                Loader {
+                                    anchors.centerIn: parent
+                                    sourceComponent: [overviewArt, statusArt, menuArt, quickArt, windowsArt, wallsArt][slide.index]
+                                }
+                            }
+
+                            Text {
+                                id: heading
+                                x: 48
+                                anchors.top: art.bottom
+                                anchors.topMargin: 28
+                                width: slide.width - 96
+                                color: M3.surfaceContent
+                                font.family: M3.displaySmall.family
+                                font.pixelSize: slide.index === 0 ? 44 : M3.headlineLarge.pixelSize
+                                font.weight: slide.index === 0 ? Font.Medium : Font.Normal
+                                renderType: Text.QtRendering
+                                elide: Text.ElideRight
+                                text: tour.texts[slide.index].title
+                            }
+                            MText {
+                                x: 48
+                                anchors.top: heading.bottom
+                                anchors.topMargin: 10
+                                width: Math.min(slide.width - 96, 640)
+                                role: "bodyLarge"
+                                color: M3.surfaceVariantContent
+                                wrapMode: Text.Wrap
+                                maximumLineCount: 3
+                                text: tour.texts[slide.index].text
+                            }
+                        }
+                    }
+                }
+            }
+
+            Row {
+                anchors.left: parent.left
+                anchors.leftMargin: 48
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 46
+                spacing: 6
+                Repeater {
+                    model: tour.count
+                    delegate: Rectangle {
+                        required property int index
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: index === tour.page ? 26 : 8
+                        height: 8
+                        radius: 4
+                        color: index === tour.page ? M3.primary : M3.outlineVariant
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: M3.motionScale > 0 ? 300 : 0
+                                easing.type: Easing.Bezier
+                                easing.bezierCurve: M3.easingEmphasizedDecelerate
+                            }
+                        }
+                    }
+                }
+            }
+
+            Row {
+                anchors.right: parent.right
+                anchors.rightMargin: 40
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 32
+                spacing: 8
+                MButton {
+                    variant: tour.page === tour.count - 1 ? "tonal" : "text"
+                    text: tour.page === tour.count - 1 ? i18n("All changes") : i18n("Skip")
+                    onClicked: {
+                        if (tour.page === tour.count - 1) {
+                            app.heroDone = true;
+                        } else {
+                            Qt.quit();
+                        }
+                    }
+                }
+                MButton {
+                    text: tour.page === tour.count - 1 ? i18n("Get started") : i18n("Next")
+                    onClicked: tour.next()
+                }
+            }
+
+            Component {
+                id: overviewArt
+                Rectangle {
+                    width: 470
+                    height: 270
+                    radius: 22
+                    color: M3.tertiaryContainer
+                    ArtStatusBar {
+                        x: 14
+                        y: 8
+                        width: parent.width - 28
+                        unit: 1
+                    }
+                    ArtMenu {
+                        x: 92
+                        y: 42
+                        width: 150
+                        height: 166
+                        unit: 0.85
+                    }
+                    ArtQuick {
+                        x: parent.width - 168
+                        y: 40
+                        width: 150
+                        height: 128
+                        unit: 0.85
+                    }
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        height: 30
+                        radius: 0
+                        color: M3.surfaceContainerLowest
+                        Rectangle {
+                            x: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 34
+                            height: 18
+                            radius: 9
+                            color: M3.primaryContainer
+                        }
+                        Row {
+                            anchors.centerIn: parent
+                            spacing: 8
+                            Repeater {
+                                model: 5
+                                delegate: ArtDot {
+                                    required property int index
+                                    width: 16
+                                    height: 16
+                                    color: [M3.primary, M3.tertiary, M3.secondary, M3.primaryContainer, M3.tertiaryContainer][index]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Component {
+                id: statusArt
+                Rectangle {
+                    width: 560
+                    height: 120
+                    radius: 22
+                    color: M3.tertiaryContainer
+                    ArtStatusBar {
+                        x: 22
+                        y: 14
+                        width: parent.width - 44
+                        unit: 2
+                    }
+                }
+            }
+
+            Component {
+                id: menuArt
+                ArtMenu {
+                    width: 300
+                    height: 250
+                    unit: 1.25
+                    columns: 4
+                    rows: 3
+                }
+            }
+
+            Component {
+                id: quickArt
+                ArtQuick {
+                    width: 300
+                    height: 216
+                    unit: 1.45
+                }
+            }
+
+            Component {
+                id: windowsArt
+                Item {
+                    width: 440
+                    height: 240
+                    ArtWindow {
+                        x: 0
+                        y: 0
+                        width: 280
+                        height: 180
+                        unit: 1.2
+                        bar: M3.tertiaryContainer
+                    }
+                    ArtWindow {
+                        x: 150
+                        y: 56
+                        width: 290
+                        height: 184
+                        unit: 1.2
+                        bar: M3.primaryContainer
+                    }
+                }
+            }
+
+            Component {
+                id: wallsArt
+                Grid {
+                    columns: 3
+                    spacing: 12
+                    Repeater {
+                        model: 6
+                        delegate: RoundedClip {
+                            id: tile
+                            required property int index
+                            width: 132
+                            height: 84
+                            radius: 16
+                            Rectangle {
+                                anchors.fill: parent
+                                gradient: Gradient {
+                                    orientation: Gradient.Horizontal
+                                    GradientStop { position: 0; color: [M3.primaryContainer, M3.tertiaryContainer, M3.secondaryContainer][tile.index % 3] }
+                                    GradientStop { position: 1; color: [M3.tertiary, M3.primary, M3.tertiaryContainer][tile.index % 3] }
+                                }
+                            }
+                            MShape {
+                                x: tile.width - 54
+                                y: tile.height - 50
+                                width: 70
+                                height: 70
+                                shape: ["cookie9", "sunny", "clover4", "softBurst", "cookie12", "circle"][tile.index]
+                                color: M3.surfaceContainerLowest
+                                opacity: 0.55
+                            }
+                            Rectangle {
+                                visible: tile.index === 1
+                                x: tile.width - 26
+                                y: 8
+                                width: 18
+                                height: 18
+                                radius: 9
+                                color: M3.primary
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

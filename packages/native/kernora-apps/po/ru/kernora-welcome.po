@@ -256,3 +256,45 @@ msgstr "Копировать"
 #: apps/welcome/qml/Main.qml:841
 msgid "Okay"
 msgstr "Понятно"
+
+msgid "Meet KED 2"
+msgstr "Meet KED 2"
+
+msgid "Get started"
+msgstr "Начать"
+
+msgid "Kernora Expressive Design 2 is Kernora's new look, inspired by Googlebook. Here is what changed."
+msgstr "Kernora Expressive Design 2 — новый облик Kernora в духе Googlebook. Вот что изменилось."
+
+msgid "Status bar at the top"
+msgstr "Строка состояния сверху"
+
+msgid "The time and date sit on the left, notifications, the network and the battery on the right. The bar stays clear and follows your wallpaper."
+msgstr "Время и дата слева, уведомления, сеть и батарея справа. Строка остаётся прозрачной и подстраивается под обои."
+
+msgid "A new apps menu"
+msgstr "Новое меню приложений"
+
+msgid "It opens in the middle above the taskbar. All apps from A to Z, and search finds apps, settings, files and the web."
+msgstr "Открывается по центру над панелью задач. Все приложения от А до Я, а поиск находит приложения, настройки, файлы и сайты."
+
+msgid "Quick settings"
+msgstr "Быстрые настройки"
+
+msgid "Big sliders and tiles in two columns. Click a tile's icon to turn it on, or its name for details."
+msgstr "Крупные ползунки и плитки в две колонки. Нажмите на значок плитки, чтобы включить её, или на название — для подробностей."
+
+msgid "Rounded windows"
+msgstr "Скруглённые окна"
+
+msgid "Every corner of a window is rounded, with a soft shadow around it. Maximised windows stay square."
+msgstr "У окон скруглены все четыре угла, а вокруг мягкая тень. Развёрнутые окна остаются с прямыми углами."
+
+msgid "Wallpaper collections"
+msgstr "Коллекции обоев"
+
+msgid "Landscapes, Earth, Art and more, sorted into collections in Wallpaper & style."
+msgstr "Пейзажи, Земля, Искусство и другие — обои разложены по коллекциям в «Обоях и стиле»."
+
+msgid "All changes"
+msgstr "Все изменения"
