@@ -2317,7 +2317,11 @@ grep -Fxq 'PAD_SIDE = 20' "$package_root/tools/gen-aurorae-theme" \
 
 grep -Fxq 'TYPEFACES = {"md1": "Roboto", "md2": "Roboto", "md3": "Google Sans Flex"}' "$package_root/tools/kernora_design.py" \
   && grep -Fq 'readonly property string typeface: [{faces}][tokens.generationIndex]' "$package_root/tools/gen-qml-tokens" \
-  && grep -Fq 'value.variableAxes = { "ROND": 100 };' "$package_root/data/shell/m3/MText.qml" \
+  && grep -Fq 'opsz\": {pick(style, 0, emphasized)}, \"ROND\": 100' "$package_root/tools/gen-qml-tokens" \
+  && grep -Fq 'weight = min(1000, weight + 100)' "$package_root/tools/kernora_design.py" \
+  && grep -Fq 'role: "titleSmallEmphasized"' "$package_root/data/shell/m3/MTile.qml" \
+  && grep -Fq 'role: "titleSmallEmphasized"' "$package_root/data/notifications/kernora/components/Summary.qml" \
+  && [[ $(grep -c 'role: "labelLargeEmphasized"' "$package_root/data/shell/datetime/contents/ui/main.qml") == 2 ]] \
   && grep -Fq 'fonts-google-sans (>= 1.0)' "$package_root/debian/control" \
   && ! grep -Fq 'font.family: "Roboto"' "$package_root/data/sddm-theme/kernora/Main.qml" \
   && grep -Fq 'data/kconf_update/kernora-google-sans-flex.sh usr/share/kconf_update' "$package_root/debian/kernora-desktop.install" \

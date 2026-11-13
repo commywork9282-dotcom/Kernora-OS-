@@ -369,7 +369,9 @@ def type_style(style: str, generation: str | None = None) -> tuple[float, float,
 def emphasized_type_style(style: str, generation: str | None = None) -> tuple[float, float, int, float]:
     generation = generation or GENERATION
     size, line, weight, tracking = type_style(style, generation)
-    if generation == "md3":
+    if TYPEFACES[generation] == "Google Sans Flex":
+        weight = min(1000, weight + 100)
+    elif generation == "md3":
         weight = 500 if weight < 500 else 700
     return size, line, weight, tracking
 

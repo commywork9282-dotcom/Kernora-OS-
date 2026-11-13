@@ -227,8 +227,7 @@ Item {
                 MText {
                     id: titleText
                     width: root.googlebook ? implicitWidth : parent.width
-                    role: "titleSmall"
-                    rounded: true
+                    role: "titleSmallEmphasized"
                     text: root.title
                     color: root.bodyContent
                     elide: root.googlebook ? Text.ElideNone : Text.ElideRight
@@ -246,7 +245,7 @@ Item {
             }
             MText {
                 width: parent.width
-                role: "bodySmall"
+                role: "labelMedium"
                 text: root.subtitle
                 color: root.bodySupporting
                 opacity: root.on ? 0.85 : 1

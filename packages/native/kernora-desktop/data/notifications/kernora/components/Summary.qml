@@ -20,7 +20,7 @@ MText {
     property ModelInterface modelInterface
     property alias metrics: summaryLabelTextMetrics
 
-    role: "titleSmall"
+    role: "titleSmallEmphasized"
     color: M3.surfaceContent
     maximumLineCount: 3
     wrapMode: Text.Wrap

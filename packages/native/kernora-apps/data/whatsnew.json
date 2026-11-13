@@ -102,6 +102,28 @@
           "en": "Documents, pictures, music, archives and other files now have rounded tiles in your accent colour, like Files on Googlebook.",
           "ru": "У документов, картинок, музыки, архивов и других файлов теперь скруглённые плитки в цвете вашей темы, как в Файлах на Googlebook."
         }
+      },
+      {
+        "icon": "preferences-desktop-font",
+        "title": {
+          "en": "Google Sans Flex",
+          "ru": "Шрифт Google Sans Flex"
+        },
+        "text": {
+          "en": "The whole system now uses Google Sans Flex, the typeface of Android and Googlebook: the status bar, menus, Settings, apps and window titles. The clock and quick settings use its rounded style.",
+          "ru": "Вся система теперь на Google Sans Flex — шрифте Android и Googlebook: строка состояния, меню, Настройки, приложения и заголовки окон. Часы и быстрые настройки — в его скруглённом начертании."
+        }
+      },
+      {
+        "icon": "battery-charging",
+        "title": {
+          "en": "Battery like Googlebook",
+          "ru": "Батарея как на Googlebook"
+        },
+        "text": {
+          "en": "On a laptop, the battery shows its level inside the icon and turns green while charging, yellow in power saver and red when it runs low. When you plug in the charger, a light bar runs along the top of the screen up to the charge level, like the Glowbar on a Googlebook.",
+          "ru": "На ноутбуке уровень заряда виден прямо внутри значка батареи: при зарядке она зелёная, в режиме энергосбережения жёлтая, а при низком заряде красная. Когда подключаете зарядку, вдоль верхнего края экрана пробегает светящаяся полоса до уровня заряда, как Glowbar на Googlebook."
+        }
       }
     ]
   },

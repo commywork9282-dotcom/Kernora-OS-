@@ -29,14 +29,14 @@ SettingsPage {
     ConfigEntry { id: filterOn; file: "kwinrc"; group: "Plugins"; key: "colorblindnesscorrectionEnabled"; defaultValue: false }
     ConfigEntry { id: filterMode; file: "kwinrc"; group: "Effect-colorblindnesscorrection"; key: "Mode"; defaultValue: 0 }
     ConfigEntry { id: cursorSize; file: "kcminputrc"; group: "Mouse"; key: "cursorSize"; defaultValue: 24 }
-    ConfigEntry { id: fontEntry; file: "kdeglobals"; group: "General"; key: "font"; defaultValue: "Roboto,10.5,-1,5,400,0,0,0,0,0,0,0,0,0,0,1" }
+    ConfigEntry { id: fontEntry; file: "kdeglobals"; group: "General"; key: "font"; defaultValue: "Google Sans Flex,10.5,-1,5,400,0,0,0,0,0,0,0,0,0,0,1" }
 
     readonly property real fontSize: {
         const size = parseFloat(String(fontEntry.value).split(",")[1]);
         return isNaN(size) ? 10.5 : size;
     }
     function fontString(size: real, weight: int): string {
-        const family = String(fontEntry.value).split(",")[0] || "Roboto";
+        const family = String(fontEntry.value).split(",")[0] || "Google Sans Flex";
         return family + "," + size + ",-1,5," + weight + ",0,0,0,0,0,0,0,0,0,0,1";
     }
     function setFontSize(size: real): void {

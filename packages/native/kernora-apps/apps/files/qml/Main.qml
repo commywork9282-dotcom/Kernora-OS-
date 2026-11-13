@@ -1030,6 +1030,7 @@ AppWindow {
             visible: fileMenu.single && Kinds.hasThumbnail(fileMenu.urls[0] || "")
             onTriggered: {
                 Files.setWallpaper(fileMenu.urls[0]);
+                Appearance.followWallpaper(String(fileMenu.urls[0]));
                 app.showMessage(i18n("Wallpaper changed"), "", null);
             }
         }

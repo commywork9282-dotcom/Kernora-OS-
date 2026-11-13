@@ -75,9 +75,9 @@ Item {
             color: root.label
             font.family: M3.typeface
             font.pixelSize: 11
-            font.weight: Font.Bold
+            font.weight: Font.DemiBold
             font.features: { "tnum": 1 }
-            font.variableAxes: { "ROND": 100 }
+            font.variableAxes: { "ROND": 100, "opsz": 11 }
 
             Behavior on color {
                 ColorAnimation {

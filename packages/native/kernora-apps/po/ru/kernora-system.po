@@ -127,8 +127,11 @@ msgid "Icons by Google, Apache License 2.0"
 msgstr "Значки Google, лицензия Apache 2.0"
 
 #: src/system/licenses.cpp:66
-msgid "The system typeface by Google"
-msgstr "Системный шрифт от Google"
+msgid "The system typeface by Google, SIL Open Font License"
+msgstr "Системный шрифт от Google, лицензия SIL Open Font License"
+
+msgid "The typeface of the classic Material styles, by Google"
+msgstr "Шрифт классических стилей Material от Google"
 
 #: src/system/licenses.cpp:67
 msgid "The engine that draws application widgets"

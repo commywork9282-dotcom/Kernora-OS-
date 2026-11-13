@@ -435,6 +435,7 @@ AppWindow {
                         onClicked: {
                             wallpaperPage.chosen = String(modelData.image);
                             Files.setWallpaper(modelData.image);
+                            Appearance.followWallpaper(String(modelData.image));
                         }
                     }
                 }

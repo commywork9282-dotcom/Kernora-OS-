@@ -3,8 +3,12 @@ kernora-desktop (1.4.75) UNRELEASED; urgency=medium
   * Google Sans Flex is the system typeface in the Material 3 style, from
     the new fonts-google-sans package: the shell, the login screen, KDE and
     GTK apps and window titles. Cyrillic and other letters it lacks come
-    from Google Sans. The status bar clock and quick settings tiles use its
-    rounded variant. The classic Material 1 and 2 styles keep Roboto.
+    from Google Sans. The classic Material 1 and 2 styles keep Roboto.
+  * Text styles follow how Pixel sets up Google Sans Flex: the optical size
+    follows the text size, and emphasized styles are one step heavier and
+    rounded. Like Android 16, the status bar, quick settings tiles and
+    notification titles use the emphasized styles, and the lock screen and
+    login clocks are rounded.
   * Upgrades switch a Roboto font set in kdeglobals or GTK to Google Sans
     Flex (kconf_update kernora-google-sans-flex).
   * File icons are tonal rounded tiles with a filled symbol in the accent

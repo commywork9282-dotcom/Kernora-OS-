@@ -20,6 +20,7 @@ class Appearance : public QObject
     Q_PROPERTY(bool dark READ dark NOTIFY darkChanged)
     Q_PROPERTY(QString generation READ generation NOTIFY generationChanged)
     Q_PROPERTY(QString colour READ colour NOTIFY colourChanged)
+    Q_PROPERTY(QString colourSource READ colourSource NOTIFY colourChanged)
     Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
 
 public:
@@ -28,6 +29,7 @@ public:
     bool dark() const;
     QString generation() const;
     QString colour() const;
+    QString colourSource() const;
     bool busy() const { return m_busy; }
 
     Q_INVOKABLE void setDark(bool dark, const QJSValue &callback = QJSValue());
@@ -35,6 +37,9 @@ public:
     Q_INVOKABLE void apply(const QString &generation, bool dark, const QJSValue &callback = QJSValue());
     Q_INVOKABLE void setColour(const QString &colour, const QJSValue &callback = QJSValue());
     Q_INVOKABLE QVariantList colours() const;
+    Q_INVOKABLE QStringList wallpaperColours(const QString &wallpaper) const;
+    Q_INVOKABLE void setWallpaperColour(const QString &colour, const QJSValue &callback = QJSValue());
+    Q_INVOKABLE void followWallpaper(const QString &wallpaper, const QJSValue &callback = QJSValue());
     Q_INVOKABLE QStringList fontFamilies(bool monospace) const;
 
 Q_SIGNALS:
@@ -46,6 +51,7 @@ Q_SIGNALS:
 private:
     struct Switch;
     void writeTerminalColours(const QString &colour, bool dark) const;
+    void setColourSource(const QString &source);
     void applyTheme(const QString &colour, const QString &generation, bool dark, const QJSValue &callback);
     QString wantedColour() const;
     QString wantedGeneration() const;

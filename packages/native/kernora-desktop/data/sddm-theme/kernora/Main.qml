@@ -275,6 +275,7 @@ Rectangle {
             font.family: "Google Sans Flex"
             font.weight: Font.Light
             font.pixelSize: 136
+            font.variableAxes: { "ROND": 100, "opsz": 136 }
             renderType: Text.QtRendering
         }
         Text {

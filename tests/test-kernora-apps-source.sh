@@ -362,4 +362,21 @@ grep -Fq 'notes[0].hero === "ked2"' "$package_root/apps/welcome/qml/Main.qml" \
   && grep -Fq '!root->property("stayHidden").toBool()' "$package_root/src/apps/host.cpp" \
   && grep -Fq '"hero": "ked2"' "$package_root/data/whatsnew.json" \
   || fail "Meet KED 2 is not a dialog with a screenshot and a tour of arrow tips"
+! grep -Fq '"Roboto,10.5' "$package_root/apps/settings/qml/pages/FontsPage.qml" \
+  && ! grep -Fq '"Roboto,10.5' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
+  && ! grep -Fq '"Roboto,10.5' "$package_root/apps/settings/qml/pages/AccessibilityPage.qml" \
+  && grep -Fq 'page.setInterface("Google Sans Flex", 10.5);' "$package_root/apps/settings/qml/pages/FontsPage.qml" \
+  && grep -Fq 'previousFace = previousGeneration == QLatin1String("md3")' "$package_root/src/system/appearance.cpp" \
+  && grep -Fq '{"fonts-google-sans", QStringLiteral("Google Sans Flex")' "$package_root/src/system/licenses.cpp" \
+  || fail "Settings still treats Roboto as the default font"
+grep -Fq 'wallpapercolours.cpp wallpapercolours.h' "$package_root/src/system/CMakeLists.txt" \
+  && grep -Fq 'QList<QRgb> result = score(population, desired, true);' "$package_root/src/system/wallpapercolours.cpp" \
+  && grep -Fq 'quantizeWsmeans(pixels, quantizeWu(pixels, 128), 128)' "$package_root/src/system/wallpapercolours.cpp" \
+  && grep -Fq 'Q_INVOKABLE void followWallpaper(' "$package_root/src/system/appearance.h" \
+  && grep -Fq 'Appearance.followWallpaper(String(url)' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
+  && grep -Fq 'Appearance.followWallpaper(' "$package_root/apps/files/qml/Main.qml" \
+  && grep -Fq 'Appearance.followWallpaper(' "$package_root/apps/photos/qml/Main.qml" \
+  && grep -Fq 'Appearance.followWallpaper(' "$package_root/apps/welcome/qml/Main.qml" \
+  && grep -Fq 'License: Apache-2.0' "$package_root/debian/copyright" \
+  || fail "the theme colour does not follow the wallpaper"
 printf 'kernora-apps source test: OK\n'

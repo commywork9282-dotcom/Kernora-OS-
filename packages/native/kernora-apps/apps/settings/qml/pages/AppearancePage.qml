@@ -44,10 +44,24 @@ SettingsPage {
     }
 
     readonly property string colour: Appearance.colour
+    readonly property string colourSource: Appearance.colourSource
     readonly property var colours: Appearance.colours()
+    readonly property var wallpaperColourIds: live || wallpaperImage.length === 0 ? [] : Appearance.wallpaperColours(wallpaperImage)
+    readonly property var wallpaperColours: wallpaperColourIds.map(id => colours.find(c => c.id === id)).filter(c => c !== undefined)
+    readonly property bool followsWallpaper: colourSource === "wallpaper" && wallpaperColourIds.indexOf(colour) >= 0
+
+    function setWallpaperColour(value: string): void {
+        if ((value !== colour || colourSource !== "wallpaper") && !Appearance.busy) {
+            Appearance.setWallpaperColour(value, ok => {
+                if (!ok) {
+                    page.notify(i18n("The colour could not be changed."));
+                }
+            });
+        }
+    }
 
     function setColour(value: string): void {
-        if (value !== colour && !Appearance.busy) {
+        if ((value !== colour || colourSource !== "preset") && !Appearance.busy) {
             Appearance.setColour(value, ok => {
                 if (!ok) {
                     page.notify(i18n("The colour could not be changed."));
@@ -253,6 +267,11 @@ SettingsPage {
         Files.setWallpaper(url);
         wallpaperPlugin = "org.kde.image";
         wallpaperImage = String(url);
+        Appearance.followWallpaper(String(url), ok => {
+            if (!ok) {
+                page.notify(i18n("The colour could not be changed."));
+            }
+        });
         if (follow) {
             Files.setLockScreenWallpaper(url);
         }
@@ -346,8 +365,42 @@ SettingsPage {
 
     Group {
         title: i18n("Colour")
-        note: Appearance.busy ? i18n("Applying…") : i18n("Apps, the panel, windows and the live wallpapers take on the chosen colour.")
+        note: Appearance.busy ? i18n("Applying…")
+            : page.followsWallpaper ? i18n("The colour follows your wallpaper. Pick a basic colour to keep one colour.")
+            : i18n("Apps, the panel, windows and the live wallpapers take on the chosen colour.")
 
+        MText {
+            width: parent.width
+            visible: page.wallpaperColours.length > 0
+            role: "labelLarge"
+            color: M3.surfaceVariantContent
+            text: i18n("Wallpaper colours")
+        }
+        Flow {
+            width: parent.width
+            visible: page.wallpaperColours.length > 0
+            spacing: 12
+
+            Repeater {
+                model: page.wallpaperColours
+                delegate: ColourSwatch {
+                    required property var modelData
+                    swatch: page.dark ? modelData.dark : modelData.light
+                    name: modelData.name
+                    selected: page.followsWallpaper && page.colour === modelData.id
+                    enabled: !Appearance.busy
+                    onClicked: page.setWallpaperColour(modelData.id)
+                }
+            }
+        }
+
+        MText {
+            width: parent.width
+            visible: page.wallpaperColours.length > 0
+            role: "labelLarge"
+            color: M3.surfaceVariantContent
+            text: i18n("Basic colours")
+        }
         Flow {
             width: parent.width
             spacing: 12
@@ -358,7 +411,7 @@ SettingsPage {
                     required property var modelData
                     swatch: page.dark ? modelData.dark : modelData.light
                     name: modelData.name
-                    selected: page.colour === modelData.id
+                    selected: !page.followsWallpaper && page.colour === modelData.id
                     enabled: !Appearance.busy
                     onClicked: page.setColour(modelData.id)
                 }
@@ -592,7 +645,7 @@ SettingsPage {
         file: "kdeglobals"
         group: "General"
         key: "font"
-        defaultValue: "Roboto,10.5,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+        defaultValue: "Google Sans Flex,10.5,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
     }
     readonly property real fontSize: {
         const size = parseFloat(String(fontEntry.value).split(",")[1]);
@@ -600,7 +653,7 @@ SettingsPage {
     }
 
     function fontString(size: real, weight: int): string {
-        const family = String(fontEntry.value).split(",")[0] || "Roboto";
+        const family = String(fontEntry.value).split(",")[0] || "Google Sans Flex";
         return family + "," + size + ",-1,5," + weight + ",0,0,0,0,0,0,0,0,0,0,1";
     }
     function setFontSize(size: real): void {

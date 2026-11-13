@@ -2,23 +2,31 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "appearance.h"
+#include "wallpapercolours.h"
 
+#include <QColor>
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QFontDatabase>
+#include <QHash>
 #include <QJSEngine>
 #include <QProcess>
 #include <QSaveFile>
 #include <QStandardPaths>
+#include <QUrl>
 
 #include <KConfig>
 #include <KConfigGroup>
 #include <KLocalizedString>
 #include <KSharedConfig>
 
+#include <algorithm>
+#include <cmath>
 #include <memory>
+#include <utility>
 
 struct Appearance::Switch {
     QList<QPair<QString, QString>> steps;
@@ -164,7 +172,132 @@ void Appearance::setGeneration(const QString &generation, const QJSValue &callba
 
 void Appearance::setColour(const QString &colour, const QJSValue &callback)
 {
+    setColourSource(QStringLiteral("preset"));
     applyTheme(colour, wantedGeneration(), wantedDark(), callback);
+}
+
+QString Appearance::colourSource() const
+{
+    auto config = KSharedConfig::openConfig(QStringLiteral("kernorarc"));
+    config->reparseConfiguration();
+    const QString fallback = colour() == QLatin1String("kernora") ? QStringLiteral("wallpaper") : QStringLiteral("preset");
+    const QString value = KConfigGroup(config, QStringLiteral("Style")).readEntry("colourSource", fallback);
+    return value == QLatin1String("preset") ? value : QStringLiteral("wallpaper");
+}
+
+void Appearance::setColourSource(const QString &source)
+{
+    const QString previous = colourSource();
+    auto config = KSharedConfig::openConfig(QStringLiteral("kernorarc"));
+    KConfigGroup style(config, QStringLiteral("Style"));
+    if (style.readEntry("colourSource", QString()) == source) {
+        return;
+    }
+    style.writeEntry("colourSource", source);
+    config->sync();
+    if (previous != source) {
+        Q_EMIT colourChanged();
+    }
+}
+
+static QString wallpaperFile(const QString &wallpaper)
+{
+    const QUrl url(wallpaper);
+    QString path = url.isLocalFile() ? url.toLocalFile() : wallpaper;
+    if (path.endsWith(QLatin1Char('/'))) {
+        path.chop(1);
+    }
+    const QFileInfo info(path);
+    if (!info.isDir()) {
+        return info.isFile() ? info.absoluteFilePath() : QString();
+    }
+    const QStringList filters{QStringLiteral("*.jpg"), QStringLiteral("*.jpeg"), QStringLiteral("*.png"), QStringLiteral("*.webp")};
+    const auto images = QDir(path + QStringLiteral("/contents/images")).entryInfoList(filters, QDir::Files, QDir::Size);
+    return images.isEmpty() ? QString() : images.first().absoluteFilePath();
+}
+
+QStringList Appearance::wallpaperColours(const QString &wallpaper) const
+{
+    static QHash<QString, QStringList> cache;
+    const QString file = wallpaperFile(wallpaper);
+    if (file.isEmpty()) {
+        return {};
+    }
+    const QString key = file + QLatin1Char('@') + QString::number(QFileInfo(file).lastModified().toSecsSinceEpoch());
+    const auto cached = cache.constFind(key);
+    if (cached != cache.constEnd()) {
+        return *cached;
+    }
+
+    struct Preset {
+        QString id;
+        Kernora::WallpaperColours::HueChroma cam;
+    };
+    QList<Preset> chromatic;
+    QList<Preset> neutral;
+    for (const QVariant &entry : colours()) {
+        const QString id = entry.toMap().value(QStringLiteral("id")).toString();
+        const QString palette = paletteFile(id);
+        if (palette.isEmpty()) {
+            continue;
+        }
+        KConfig config(palette, KConfig::SimpleConfig);
+        const QColor seed(QLatin1Char('#') + KConfigGroup(&config, QStringLiteral("Colour")).readEntry("seed", QString()));
+        if (!seed.isValid()) {
+            continue;
+        }
+        const Preset preset{id, Kernora::WallpaperColours::hueChroma(seed.rgb())};
+        (preset.cam.chroma >= 30.0 ? chromatic : neutral).append(preset);
+    }
+
+    const auto nearest = [](const QList<Preset> &presets, const Kernora::WallpaperColours::HueChroma &cam, bool useChroma) {
+        QString best;
+        double bestDistance = 0.0;
+        for (const Preset &preset : presets) {
+            const double hue = 180.0 - std::abs(std::abs(preset.cam.hue - cam.hue) - 180.0);
+            const double distance = useChroma ? hue / 180.0 * std::min(cam.chroma, preset.cam.chroma) + std::abs(preset.cam.chroma - cam.chroma) : hue;
+            if (best.isEmpty() || distance < bestDistance) {
+                best = preset.id;
+                bestDistance = distance;
+            }
+        }
+        return best;
+    };
+
+    QStringList vivid;
+    QStringList muted;
+    for (const QRgb seed : Kernora::WallpaperColours::seedsFromFile(file)) {
+        const auto cam = Kernora::WallpaperColours::hueChroma(seed);
+        const bool colourful = cam.chroma >= 12.0 && !chromatic.isEmpty();
+        const QString id = colourful ? nearest(chromatic, cam, false) : nearest(neutral, cam, true);
+        if (!id.isEmpty() && !vivid.contains(id) && !muted.contains(id)) {
+            (colourful ? vivid : muted).append(id);
+        }
+    }
+    const QStringList result = vivid + muted;
+    cache.insert(key, result);
+    return result;
+}
+
+void Appearance::setWallpaperColour(const QString &colour, const QJSValue &callback)
+{
+    setColourSource(QStringLiteral("wallpaper"));
+    applyTheme(colour, wantedGeneration(), wantedDark(), callback);
+}
+
+void Appearance::followWallpaper(const QString &wallpaper, const QJSValue &callback)
+{
+    const QStringList found = colourSource() == QLatin1String("wallpaper") ? wallpaperColours(wallpaper) : QStringList();
+    if (!found.isEmpty()) {
+        setColourSource(QStringLiteral("wallpaper"));
+    }
+    if (found.isEmpty() || found.first() == wantedColour()) {
+        if (callback.isCallable()) {
+            QJSValue(callback).call({true});
+        }
+        return;
+    }
+    applyTheme(found.first(), wantedGeneration(), wantedDark(), callback);
 }
 
 void Appearance::apply(const QString &generation, bool enable, const QJSValue &callback)
@@ -191,7 +324,8 @@ void Appearance::applyTheme(const QString &requestedColour, const QString &reque
     const QString colour = requestedColour == QLatin1String("kernora") || !paletteFile(requestedColour).isEmpty() ? requestedColour : QStringLiteral("kernora");
     const QString generation = requested == QLatin1String("md1") || requested == QLatin1String("md2") ? requested : QStringLiteral("md3");
     const bool colourChanges = colour != this->colour();
-    const bool generationChanges = generation != this->generation();
+    const QString previousGeneration = this->generation();
+    const bool generationChanges = generation != previousGeneration;
     const bool themesChange = generationChanges || colourChanges;
     const QString slug = colour == QLatin1String("kernora") ? QString() : QLatin1Char('-') + colour;
     const QString lower = slug + (generation == QLatin1String("md3") ? QString() : QLatin1Char('-') + generation);
@@ -225,6 +359,28 @@ void Appearance::applyTheme(const QString &requestedColour, const QString &reque
     }
     kde.writeEntry("widgetStyle", enable ? QStringLiteral("kvantum-dark") : QStringLiteral("kvantum"), KConfig::Notify);
     globals->sync();
+
+    const QString previousFace = previousGeneration == QLatin1String("md3") ? QStringLiteral("Google Sans Flex") : QStringLiteral("Roboto");
+    const QString face = generation == QLatin1String("md3") ? QStringLiteral("Google Sans Flex") : QStringLiteral("Roboto");
+    if (face != previousFace) {
+        const QList<std::pair<QString, QString>> fontKeys = {{QStringLiteral("General"), QStringLiteral("font")},
+                                                             {QStringLiteral("General"), QStringLiteral("menuFont")},
+                                                             {QStringLiteral("General"), QStringLiteral("toolBarFont")},
+                                                             {QStringLiteral("General"), QStringLiteral("smallestReadableFont")},
+                                                             {QStringLiteral("WM"), QStringLiteral("activeFont")}};
+        for (const auto &[groupName, key] : fontKeys) {
+            KConfigGroup group(globals, groupName);
+            const QString value = group.readEntry(key, QString());
+            if (value.startsWith(previousFace + QLatin1Char(','))) {
+                group.writeEntry(key, QString(face + value.mid(previousFace.size())), KConfig::Notify);
+            }
+        }
+        globals->sync();
+        QDBusMessage fontsChanged = QDBusMessage::createSignal(QStringLiteral("/KGlobalSettings"), QStringLiteral("org.kde.KGlobalSettings"),
+                                                               QStringLiteral("notifyChange"));
+        fontsChanged.setArguments({1, 0});
+        QDBusConnection::sessionBus().send(fontsChanged);
+    }
 
     auto kwin = KSharedConfig::openConfig(QStringLiteral("kwinrc"));
     KConfigGroup decoration(kwin, QStringLiteral("org.kde.kdecoration2"));

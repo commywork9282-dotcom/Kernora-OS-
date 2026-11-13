@@ -1,5 +1,14 @@
 kernora-apps (1.1.87) UNRELEASED; urgency=medium
 
+  * Wallpaper colours like Android: picking a picture wallpaper in Settings,
+    Files, Photos or Welcome finds its colours with Google's
+    material-color-utilities method (Celebi quantizer and Score) and turns
+    the theme to the closest Kernora colour. Wallpaper & style shows up to
+    four wallpaper colours above the basic colours; picking a basic colour
+    keeps it when the wallpaper changes.
+  * Settings: Google Sans Flex is the default interface font, and switching
+    between Material 3 and the classic styles swaps it with Roboto. About
+    lists Google Sans Flex.
   * Welcome: the KED 2 update opens "Meet KED 2" instead of What's new, a
     dialog with a screenshot of the new look. Get started shows tips with
     arrows next to quick settings, notifications and the apps menu, and

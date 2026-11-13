@@ -4170,3 +4170,12 @@ msgid_plural "%1 live wallpapers"
 msgstr[0] "%1 живой вариант"
 msgstr[1] "%1 живых варианта"
 msgstr[2] "%1 живых вариантов"
+
+msgid "Wallpaper colours"
+msgstr "Цвета обоев"
+
+msgid "Basic colours"
+msgstr "Основные цвета"
+
+msgid "The colour follows your wallpaper. Pick a basic colour to keep one colour."
+msgstr "Цвет подстраивается под обои. Выберите основной цвет, чтобы он не менялся."

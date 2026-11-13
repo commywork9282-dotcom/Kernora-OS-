@@ -106,13 +106,11 @@ PlasmoidItem {
 
             MText {
                 role: "labelLargeEmphasized"
-                rounded: true
                 color: root.ink
                 text: root.timeText
             }
             MText {
-                role: "labelLarge"
-                rounded: true
+                role: "labelLargeEmphasized"
                 color: root.ink
                 text: root.dateText
             }

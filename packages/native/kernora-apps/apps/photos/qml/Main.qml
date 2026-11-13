@@ -439,6 +439,7 @@ AppWindow {
             icon.name: "preferences-desktop-wallpaper"
             onTriggered: {
                 Files.setWallpaper(app.current);
+                Appearance.followWallpaper(String(app.current));
                 app.showMessage(i18n("Wallpaper changed"), "", null);
             }
         }

@@ -327,21 +327,24 @@ def type_lines() -> list[str]:
         lines.append(
             f"    readonly property font {style}: Qt.font({{"
             f" family: tokens.typeface, pixelSize: Math.round({pick(style, 0)} * tokens.scale),"
-            f" weight: {pick(style, 2)}, letterSpacing: {pick(style, 3)} }})"
+            f" weight: {pick(style, 2)}, letterSpacing: {pick(style, 3)},"
+            f" variableAxes: {{ \"opsz\": {pick(style, 0)} }} }})"
         )
     for style in design.TYPE_SCALE:
         emphasized = design.emphasized_type_style
         lines.append(
             f"    readonly property font {style}Emphasized: Qt.font({{"
             f" family: tokens.typeface, pixelSize: Math.round({pick(style, 0, emphasized)} * tokens.scale),"
-            f" weight: {pick(style, 2, emphasized)}, letterSpacing: {pick(style, 3, emphasized)} }})"
+            f" weight: {pick(style, 2, emphasized)}, letterSpacing: {pick(style, 3, emphasized)},"
+            f" variableAxes: {{ \"opsz\": {pick(style, 0, emphasized)}, \"ROND\": 100 }} }})"
         )
     lines.append("    // Button labels: Material 3's label style; capitals spaced out in the older")
     lines.append("    // generations.")
     lines.append(
         "    readonly property font button: Qt.font({ family: tokens.typeface,"
         " pixelSize: Math.round(14 * tokens.scale), weight: 500, letterSpacing: tokens.buttonTracking,"
-        " capitalization: tokens.buttonUppercase ? Font.AllUppercase : Font.MixedCase })"
+        " capitalization: tokens.buttonUppercase ? Font.AllUppercase : Font.MixedCase,"
+        " variableAxes: { \"opsz\": 14 } })"
     )
     lines.append("    readonly property int buttonLineHeight: Math.round(20 * tokens.scale)")
     lines.append("")
