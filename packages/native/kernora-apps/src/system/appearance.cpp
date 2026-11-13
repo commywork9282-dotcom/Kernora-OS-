@@ -230,6 +230,9 @@ void Appearance::applyTheme(const QString &requestedColour, const QString &reque
     KConfigGroup decoration(kwin, QStringLiteral("org.kde.kdecoration2"));
     decoration.writeEntry("theme", QString(QStringLiteral("__aurorae__svg__kernora") + lower + (enable ? QString() : QStringLiteral("-light"))),
                           KConfig::Notify);
+    KConfigGroup corners(kwin, QStringLiteral("Round-Corners"));
+    corners.writeEntry("OutlineThickness", enable ? 1 : 0);
+    corners.writeEntry("InactiveOutlineThickness", enable ? 1 : 0);
     kwin->sync();
 
     writeTerminalColours(colour, enable);
@@ -266,6 +269,10 @@ void Appearance::runStep(const std::shared_ptr<Switch> &state, int index)
     if (index >= state->steps.size()) {
         QDBusConnection::sessionBus().send(
             QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"), QStringLiteral("org.kde.KWin"), QStringLiteral("reconfigure")));
+        QDBusMessage corners = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/Effects"),
+                                                              QStringLiteral("org.kde.kwin.Effects"), QStringLiteral("reconfigureEffect"));
+        corners.setArguments({QStringLiteral("kwin4_effect_shapecorners")});
+        QDBusConnection::sessionBus().send(corners);
         QDBusMessage style = QDBusMessage::createSignal(QStringLiteral("/KGlobalSettings"), QStringLiteral("org.kde.KGlobalSettings"), QStringLiteral("notifyChange"));
         style.setArguments({2, 0});
         QDBusConnection::sessionBus().send(style);

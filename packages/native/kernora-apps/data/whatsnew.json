@@ -57,6 +57,28 @@
           "en": "The bottom panel runs from edge to edge without rounded corners, and the apps button is a wide pill. The rounded panel and the layout with everything at the bottom are one tap away in Settings, Wallpaper and style, Panel.",
           "ru": "Нижняя панель идёт от края до края без скруглённых углов, а кнопка приложений стала широкой «пилюлей». Закруглённую панель и раскладку, где всё внизу, можно вернуть в Настройках: «Обои и стиль» → «Панель»."
         }
+      },
+      {
+        "icon": "preferences-desktop-wallpaper",
+        "title": {
+          "en": "New wallpapers",
+          "ru": "Новые обои"
+        },
+        "text": {
+          "en": "Wallpaper & style has new pictures: soft gradients, Earth from space, dunes, mountains, flowers, patterns and plain colours. Plain colours turn darker in the dark theme.",
+          "ru": "В разделе «Обои и стиль» появились новые обои: мягкие градиенты, Земля из космоса, дюны, горы, цветы, узоры и однотонные цвета. Однотонные цвета в тёмной теме становятся темнее."
+        }
+      },
+      {
+        "icon": "window-maximize",
+        "title": {
+          "en": "Rounded windows",
+          "ru": "Скруглённые окна"
+        },
+        "text": {
+          "en": "Windows now have all four corners rounded and a soft shadow, without the thin dark line along the edges. Maximised windows stay square. In the dark theme windows get a faint light edge so they stand out from a dark wallpaper.",
+          "ru": "Теперь у окон скруглены все четыре угла, а вокруг них мягкая тень без тонкой тёмной линии по краю. Развёрнутые окна остаются с прямыми углами. В тёмной теме у окон появляется еле заметный светлый край, чтобы они не сливались с тёмными обоями."
+        }
       }
     ]
   },

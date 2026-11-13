@@ -2305,4 +2305,11 @@ PYTHONDONTWRITEBYTECODE=1 python3 -c 'import ast, sys; [ast.parse(open(path).rea
 PYTHONDONTWRITEBYTECODE=1 python3 "$project_root/tests/locales/run.py" \
   || fail "locale restoration and installer preparation failed"
 
+grep -Fxq 'PAD_SIDE = 20' "$package_root/tools/gen-aurorae-theme" \
+  && grep -Fxq 'PAD_TOP = 20' "$package_root/tools/gen-aurorae-theme" \
+  && grep -Fxq 'PAD_BOTTOM = 40' "$package_root/tools/gen-aurorae-theme" \
+  && grep -Fxq '[Round-Corners]' "$package_root/data/xdg-kwinrc/kwinrc" \
+  && grep -Fxq 'UseNativeDecorationShadows=false' "$package_root/data/xdg-kwinrc/kwinrc" \
+  || fail "window frame padding is not a multiple of 20 or the corner effect is not set up"
+
 printf 'kernora-desktop source test: OK\n'

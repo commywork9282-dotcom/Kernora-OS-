@@ -7,6 +7,7 @@ SHELL := /bin/bash
 	kernora-desktop-binary kernora-apps-source kernora-apps-binary \
 	kernora-quickshare-source kernora-quickshare-binary quickshare-crates \
 	kernora-wallpapers-source kernora-wallpapers-binary \
+	kwin-effect-rounded-corners-source kwin-effect-rounded-corners-binary \
 	calamares-source calamares-binary \
 	polkit-kde-agent-1-source polkit-kde-agent-1-binary \
 	development-archive-key archive-key local-archive publish publish-demo \
@@ -40,6 +41,7 @@ verify:
 	./tests/test-kernora-desktop-source.sh
 	./tests/test-kernora-quickshare-source.sh
 	./tests/test-kernora-wallpapers-source.sh
+	./tests/test-kwin-effect-rounded-corners-source.sh
 	./scripts/verify-sources
 
 base-files-source: verify
@@ -93,6 +95,12 @@ kernora-wallpapers-source: verify
 kernora-wallpapers-binary: verify build-rootfs
 	./scripts/build-kernora-wallpapers-binary
 
+kwin-effect-rounded-corners-source: verify
+	./scripts/build-kwin-effect-rounded-corners-source
+
+kwin-effect-rounded-corners-binary: verify build-rootfs
+	./scripts/build-kwin-effect-rounded-corners-binary
+
 calamares-source: verify
 	./scripts/build-calamares-source
 
@@ -109,7 +117,7 @@ development-archive-key:
 	./scripts/create-development-archive-key
 
 local-archive: base-files-binary kernora-base-binary kernora-archive-binary kernora-desktop-binary \
-		kernora-apps-binary kernora-quickshare-binary kernora-wallpapers-binary calamares-binary polkit-kde-agent-1-binary \
+		kernora-apps-binary kernora-quickshare-binary kernora-wallpapers-binary kwin-effect-rounded-corners-binary calamares-binary polkit-kde-agent-1-binary \
 		development-archive-key
 	./scripts/build-local-archive
 

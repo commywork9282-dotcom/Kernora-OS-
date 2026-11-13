@@ -28,6 +28,8 @@ quickshare_version=$(dpkg-parsechangelog \
   -l"$PROJECT_ROOT/packages/native/kernora-quickshare/debian/changelog" -S Version)
 wallpapers_version=$(dpkg-parsechangelog \
   -l"$PROJECT_ROOT/packages/native/kernora-wallpapers/debian/changelog" -S Version)
+corners_version=$(dpkg-parsechangelog \
+  -l"$PROJECT_ROOT/packages/native/kwin-effect-rounded-corners/debian/changelog" -S Version)
 calamares_version=$(dpkg-parsechangelog \
   -l"$PROJECT_ROOT/packages/derived/calamares/changelog" -S Version)
 source_dir="$PROJECT_ROOT/_build/source-packages"
@@ -52,6 +54,7 @@ desktop_pool="$archive_root/pool/main/k/kernora-desktop"
 apps_pool="$archive_root/pool/main/k/kernora-apps"
 quickshare_pool="$archive_root/pool/main/k/kernora-quickshare"
 wallpapers_pool="$archive_root/pool/main/k/kernora-wallpapers"
+corners_pool="$archive_root/pool/main/k/kwin-effect-rounded-corners"
 calamares_pool="$archive_root/pool/main/c/calamares"
 binary_index="$archive_root/dists/$DIST_CODENAME/main/binary-$BASE_ARCH"
 source_index="$archive_root/dists/$DIST_CODENAME/main/source"
@@ -63,7 +66,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-mkdir -p "$pool" "$meta_pool" "$archive_package_pool" "$desktop_pool" "$apps_pool" "$quickshare_pool" "$wallpapers_pool" "$calamares_pool" \
+mkdir -p "$pool" "$meta_pool" "$archive_package_pool" "$desktop_pool" "$apps_pool" "$quickshare_pool" "$wallpapers_pool" "$corners_pool" "$calamares_pool" \
   "$binary_index" "$source_index"
 for artifact in \
   "$source_dir/base-files_${package_version}.dsc" \
@@ -114,6 +117,13 @@ for artifact in \
   "$binary_dir/kernora-wallpapers_${wallpapers_version}_all.deb"; do
   [[ -s "$artifact" ]] || die "missing archive input: $artifact"
   install -m 0644 "$artifact" "$wallpapers_pool/"
+done
+for artifact in \
+  "$source_dir/kwin-effect-rounded-corners_${corners_version}.dsc" \
+  "$source_dir/kwin-effect-rounded-corners_${corners_version}.tar.xz" \
+  "$binary_dir/kwin-effect-rounded-corners_${corners_version}_${BASE_ARCH}.deb"; do
+  [[ -s "$artifact" ]] || die "missing archive input: $artifact"
+  install -m 0644 "$artifact" "$corners_pool/"
 done
 for artifact in \
   "$source_dir/calamares_${calamares_version}.dsc" \

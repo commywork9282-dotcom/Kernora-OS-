@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "theqtcompany.qt-cpp-pack",
+        "bierner.markdown-mermaid",
+        "bpruitt-goddard.mermaid-markdown-syntax-highlighting",
+        "slevesque.shader",
+        "dtoplak.vscode-glsllint",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
+        "llvm-vs-code-extensions.vscode-clangd"
+    ],
+}

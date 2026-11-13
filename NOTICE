@@ -29,6 +29,9 @@ others, under their licences:
     nozwock's fork that Packet uses), GPL-3.0. Its source package carries the
     Rust crates it is built from; each keeps its licence, listed in
     /usr/share/doc/kernora-quickshare/LICENSES.txt.
+  * packages/native/kwin-effect-rounded-corners/ is KDE Rounded Corners by
+    Matin Lotfaliei and Robert Metsäranta, under GPL-3.0 (some files
+    GPL-2.0-or-later), packaged unchanged with Kernora's debian/ directory.
 
 The ISO images are built from Debian and other packages, each under its own
 licence: the installed system lists them in /usr/share/doc/*/copyright and in

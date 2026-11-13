@@ -1,0 +1,6 @@
+kwin-effect-rounded-corners (0.11.0+kernora1) UNRELEASED; urgency=medium
+
+  * KDE Rounded Corners 0.11.0 for Kernora: all four window corners are
+    rounded, with a soft shadow and no dark seam at the edges.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 12 Nov 2026 19:00:00 -0800

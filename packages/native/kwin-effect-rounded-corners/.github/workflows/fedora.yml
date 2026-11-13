@@ -1,0 +1,167 @@
+name: Fedora
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore: [ '**.md', '**.png' ]
+  pull_request:
+    branches: [ master ]
+    paths: [ '**/fedora.yml' ]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *"
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+  RPM_NAME: kwin4_effect_shapecorners
+  DISTRO_SUFFIX: fedora
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:44
+      options: --user root
+
+    outputs:
+      version_changed: ${{ steps.version.outputs.version_changed }}
+      rpm_file: ${{ steps.package.outputs.rpm_file }}
+      rpm_file_x11: ${{ steps.package.outputs.rpm_file_x11 }}
+      package_hash: ${{ steps.hash.outputs.hash }}
+      content_changed: ${{ steps.hash_check.outputs.cache-hit != 'true' }}
+
+    steps:
+    - name: Install CLI Dependencies
+      run: |
+        dnf -y install rpm-build git copr-cli jq
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+    - name: Check out repository
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0 # Fetch all history for accurate versioning
+
+    - name: Fetch Build Versions
+      id: version
+      run: |
+        export LAST_RELEASE_TAG=$(git describe --tags --abbrev=0);
+        export REV_COUNT=$(git rev-list --count ${LAST_RELEASE_TAG}..HEAD);
+        export PKG_VERSION=$(echo ${LAST_RELEASE_TAG} | sed 's/^v//');
+        export KWIN_VERSION=$(dnf info kwin | awk '$1=="Version" {print $3}' | head -1);
+        export CURRENT_BUILD_VERSION=${PKG_VERSION}.${REV_COUNT}-${KWIN_VERSION};
+        echo "Current build version: ${CURRENT_BUILD_VERSION}";
+        echo "CURRENT_BUILD_VERSION=${CURRENT_BUILD_VERSION}" >> $GITHUB_ENV
+
+        export COPR_BUILD_VERSION=$(copr monitor matinlotfali/KDE-Rounded-Corners | jq -r 'first["pkg_version"]');
+        echo "Copr build version: ${COPR_BUILD_VERSION}";
+        echo "COPR_BUILD_VERSION=${COPR_BUILD_VERSION}" >> $GITHUB_ENV
+
+        if [ "${CURRENT_BUILD_VERSION}" != "${COPR_BUILD_VERSION}" ]; then
+          echo "version_changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "version_changed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Install Build Dependencies
+      if: env.CURRENT_BUILD_VERSION != env.COPR_BUILD_VERSION
+      run: |
+        dnf -y install cmake gcc-c++ extra-cmake-modules kwin-devel kwin-x11-devel kf6-kconfigwidgets-devel libepoxy-devel kf6-kcmutils-devel kf6-ki18n-devel qt6-qtbase-private-devel wayland-devel libdrm-devel
+
+    - name: Configure & Build For Wayland
+      if: env.CURRENT_BUILD_VERSION != env.COPR_BUILD_VERSION
+      run: |
+        cmake . -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake --build . --config ${{env.BUILD_TYPE}} -j
+        cpack -V -G RPM
+        mkdir -p artifacts
+        mv ${RPM_NAME}.rpm artifacts/${RPM_NAME}_${DISTRO_SUFFIX}.rpm
+
+    - name: Configure & Build For X11
+      if: env.CURRENT_BUILD_VERSION != env.COPR_BUILD_VERSION
+      id: package
+      run: |
+        cmake . -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DKWIN_X11=ON
+        cmake --build . --config ${{env.BUILD_TYPE}} -j
+        cpack -V -G RPM
+        mv ${RPM_NAME}_x11.rpm artifacts/${RPM_NAME}_${DISTRO_SUFFIX}_x11.rpm
+        echo "rpm_file=artifacts/${RPM_NAME}_${DISTRO_SUFFIX}.rpm" >> $GITHUB_OUTPUT
+        echo "rpm_file_x11=artifacts/${RPM_NAME}_${DISTRO_SUFFIX}_x11.rpm" >> $GITHUB_OUTPUT
+
+    - name: Hash Package Contents
+      if: env.CURRENT_BUILD_VERSION != env.COPR_BUILD_VERSION
+      id: hash
+      run: |
+        HASH=$(sh tools/package-hash.sh artifacts/*.rpm)
+        echo "hash=${HASH}" >> $GITHUB_OUTPUT
+
+    - name: Check If Package Contents Were Already Uploaded
+      if: env.CURRENT_BUILD_VERSION != env.COPR_BUILD_VERSION
+      id: hash_check
+      uses: actions/cache/restore@v6
+      with:
+        path: uploaded-hash
+        key: uploaded-${{ env.DISTRO_SUFFIX }}-${{ steps.hash.outputs.hash }}
+        lookup-only: true
+
+    - name: Upload Workflow Artifact
+      if: env.CURRENT_BUILD_VERSION != env.COPR_BUILD_VERSION && steps.hash_check.outputs.cache-hit != 'true'
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ env.RPM_NAME }}
+        path: artifacts/
+        compression-level: 0
+        if-no-files-found: error
+
+  upload-sourceforge:
+    needs: build
+    if: needs.build.outputs.version_changed == 'true' && needs.build.outputs.content_changed == 'true' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download Workflow Artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: ${{ env.RPM_NAME }}
+        path: artifacts/
+
+    - name: Upload Wayland to SourceForge
+      uses: nicklasfrahm/scp-action@main
+      with:
+        direction: upload
+        host: ${{ secrets.SOURCEFORGE_HOST }}
+        username: ${{ secrets.SOURCEFORGE_USERNAME }}
+        key: ${{ secrets.SOURCEFORGE_KEY }}
+        fingerprint: ${{ secrets.SOURCEFORGE_HOST_FINGERPRINT }}
+        source: ${{ needs.build.outputs.rpm_file }}
+        target: /home/frs/project/kde-rounded-corners/nightly/${{ env.DISTRO_SUFFIX }}/${{ env.RPM_NAME }}_${{ env.DISTRO_SUFFIX }}.rpm
+
+    - name: Upload X11 to SourceForge
+      uses: nicklasfrahm/scp-action@main
+      with:
+        direction: upload
+        host: ${{ secrets.SOURCEFORGE_HOST }}
+        username: ${{ secrets.SOURCEFORGE_USERNAME }}
+        key: ${{ secrets.SOURCEFORGE_KEY }}
+        fingerprint: ${{ secrets.SOURCEFORGE_HOST_FINGERPRINT }}
+        source: ${{ needs.build.outputs.rpm_file_x11 }}
+        target: /home/frs/project/kde-rounded-corners/nightly/${{ env.DISTRO_SUFFIX }}/${{ env.RPM_NAME }}_${{ env.DISTRO_SUFFIX }}_x11.rpm
+
+  trigger-copr:
+    needs: build
+    if: needs.build.outputs.version_changed == 'true' && needs.build.outputs.content_changed == 'true' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Trigger Copr Rebuild
+      run: |
+        curl -X POST ${{ secrets.COPR_WEBHOOK_URL }}/kwin-effect-roundcorners
+        curl -X POST ${{ secrets.COPR_WEBHOOK_URL }}/kwin-effect-roundcorners-x11
+
+    - name: Remember Uploaded Package Contents
+      run: echo "${{ needs.build.outputs.package_hash }}" > uploaded-hash
+
+    - uses: actions/cache/save@v6
+      with:
+        path: uploaded-hash
+        key: uploaded-${{ env.DISTRO_SUFFIX }}-${{ needs.build.outputs.package_hash }}

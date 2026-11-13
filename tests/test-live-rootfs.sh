@@ -168,6 +168,8 @@ grep -Fxq 'widgetStyle=kvantum-dark' /etc/xdg/kdeglobals \
   || fail "kernora-quickshare 1.0.2 is not installed"
 [[ "$(dpkg-query -W -f='${Version}' kernora-wallpapers)" == "1.0" ]] \
   || fail "kernora-wallpapers 1.0 is not installed"
+[[ "$(dpkg-query -W -f='${Version}' kwin-effect-rounded-corners)" == "0.11.0+kernora1" ]] \
+  || fail "kwin-effect-rounded-corners 0.11.0+kernora1 is not installed"
 for package in flatpak appstream; do
   [[ "$(dpkg-query -W -f='${Status}' "$package")" == 'install ok installed' ]] || fail "Store dependency missing: $package"
 done

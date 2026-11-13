@@ -1,0 +1,161 @@
+name: KDE Neon (Stable)
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore: [ '**.md', '**.png' ]
+  pull_request:
+    branches: [ master ]
+    paths: [ '**', '!**/**.md', '!**/**.png', '!**/**.yml', '**/neon.yml' ]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+  DEB_NAME: kwin4_effect_shapecorners
+  DISTRO_SUFFIX: neon
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: invent-registry.kde.org/neon/docker-images/plasma:user
+      options: --user root
+
+    outputs:
+      pkg_version: ${{ steps.version.outputs.pkg_version }}
+      deb_file_wayland: ${{ steps.package.outputs.deb_file_wayland }}
+      deb_file_x11: ${{ steps.package.outputs.deb_file_x11 }}
+      version_changed: ${{ steps.lp_check.outputs.version_changed }}
+      package_hash: ${{ steps.hash.outputs.hash }}
+      content_changed: ${{ steps.hash_check.outputs.cache-hit != 'true' }}
+
+    steps:
+    - name: Refresh Ubuntu Packages
+      # Switch to the Azure mirror — much faster than the default archive.ubuntu.com on GHA runners.
+      run: |
+        sudo find /etc/apt -type f \( -name 'sources.list' -o -name '*.list' -o -name '*.sources' \) -exec sed -i 's|archive.ubuntu.com|azure.archive.ubuntu.com|g' {} +
+        sudo apt-get update
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get -y install --no-install-recommends cmake g++ gettext extra-cmake-modules qt6-base-dev-tools libkf6configwidgets-dev libkf6kcmutils-dev kwin-dev kwin-x11-dev
+        sudo apt-get -y install --no-install-recommends dpkg-dev file git curl jq
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+    - name: Check out repository
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+
+    - name: Configure & Build Wayland
+      run: |
+        cmake . -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake --build . --config ${{env.BUILD_TYPE}} -j
+
+    - name: Package Wayland
+      run: |
+        cpack -V -G DEB
+        mkdir -p artifacts
+        mv ${DEB_NAME}.deb artifacts/${DEB_NAME}_${DISTRO_SUFFIX}.deb
+
+    - name: Configure & Build X11
+      run: |
+        cmake . -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DKWIN_X11=ON
+        cmake --build . --config ${{env.BUILD_TYPE}} -j
+
+    - name: Package X11
+      id: package
+      run: |
+        cpack -V -G DEB
+        mv ${DEB_NAME}_x11.deb artifacts/${DEB_NAME}_${DISTRO_SUFFIX}_x11.deb
+        echo "deb_file_wayland=artifacts/${DEB_NAME}_${DISTRO_SUFFIX}.deb" >> $GITHUB_OUTPUT
+        echo "deb_file_x11=artifacts/${DEB_NAME}_${DISTRO_SUFFIX}_x11.deb" >> $GITHUB_OUTPUT
+
+    - name: Compute Package Version
+      id: version
+      run: |
+        LAST_TAG=$(git describe --tags --abbrev=0)
+        REV_COUNT=$(git rev-list --count ${LAST_TAG}..HEAD)
+        TAG_VERSION=$(echo ${LAST_TAG} | sed 's/^v//')
+        KWIN_VERSION=$(dpkg -s kwin-dev | grep '^Version:' | cut -d' ' -f2 | sed 's/^[0-9]*://' | cut -d'-' -f1)
+        PKG_VERSION="${TAG_VERSION}.${REV_COUNT}.${KWIN_VERSION}"
+        echo "pkg_version=${PKG_VERSION}" >> $GITHUB_OUTPUT
+
+    - name: Check Launchpad PPA For Existing Version
+      id: lp_check
+      env:
+        PKG_VERSION: ${{ steps.version.outputs.pkg_version }}
+      run: |
+        VERSION_CHANGED=false
+        for pkg in kwin-effect-roundcorners-neon kwin-effect-roundcorners-x11-neon; do
+          if ! sh tools/upload-to-launchpad.sh --check "$pkg" "$PKG_VERSION" neon; then
+            VERSION_CHANGED=true
+          fi
+        done
+        echo "version_changed=${VERSION_CHANGED}" >> $GITHUB_OUTPUT
+
+    - name: Hash Package Contents
+      id: hash
+      run: |
+        HASH=$(sh tools/package-hash.sh artifacts/*.deb)
+        echo "hash=${HASH}" >> $GITHUB_OUTPUT
+
+    - name: Check If Package Contents Were Already Uploaded
+      id: hash_check
+      uses: actions/cache/restore@v6
+      with:
+        path: uploaded-hash
+        key: uploaded-${{ env.DISTRO_SUFFIX }}-${{ steps.hash.outputs.hash }}
+        lookup-only: true
+
+    - name: Upload Workflow Artifacts
+      if: steps.hash_check.outputs.cache-hit != 'true'
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ env.DEB_NAME }}
+        path: artifacts/
+        compression-level: 0
+        if-no-files-found: error
+
+  upload-launchpad:
+    needs: build
+    if: needs.build.outputs.version_changed == 'true' && needs.build.outputs.content_changed == 'true' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v7
+
+    - name: Download Workflow Artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: ${{ env.DEB_NAME }}
+        path: artifacts/
+
+    - name: Install Launchpad Tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends debhelper dput devscripts
+
+    - name: Upload to Launchpad PPA
+      env:
+        GPG_PRIVATE_KEY: ${{ secrets.LAUNCHPAD_GPG_PRIVATE_KEY }}
+        GPG_KEY_ID: DCCACDF0AE2E535CEF20ABC1916523094AD3BA70
+        DEB_FILE_WAYLAND: ${{ needs.build.outputs.deb_file_wayland }}
+        DEB_FILE_X11: ${{ needs.build.outputs.deb_file_x11 }}
+        PKG_VERSION: ${{ needs.build.outputs.pkg_version }}
+      run: |
+        echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+        sh tools/upload-to-launchpad.sh "$DEB_FILE_WAYLAND" kwin-effect-roundcorners-neon "$PKG_VERSION" neon noble
+        sh tools/upload-to-launchpad.sh "$DEB_FILE_X11" kwin-effect-roundcorners-x11-neon "$PKG_VERSION" neon noble
+
+    - name: Remember Uploaded Package Contents
+      run: echo "${{ needs.build.outputs.package_hash }}" > uploaded-hash
+
+    - uses: actions/cache/save@v6
+      with:
+        path: uploaded-hash
+        key: uploaded-${{ env.DISTRO_SUFFIX }}-${{ needs.build.outputs.package_hash }}

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+                          http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+    <kcfgfile name="kwinrc"/>
+
+    <group name="Round-Corners">
+        <entry name="Size" type="UInt">
+            <default>20</default>
+        </entry>
+        <entry name="InactiveCornerRadius" type="UInt">
+            <default>20</default>
+        </entry>
+        <entry name="UseSquircleShape" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="Squircleness" type="Double">
+            <default>0.55</default>
+            <min>0</min>
+            <max>1</max>
+        </entry>
+        <entry name="AnimationDuration" type="UInt">
+            <default>250</default>
+            <min>0</min>
+            <max>2000</max>
+        </entry>
+        <entry name="MarkWindowsTranslucent" type="Bool">
+            <default>true</default>
+        </entry>
+
+        <!-- Shadow Options -->
+
+        <entry name="UseNativeDecorationShadows" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="ShadowSize" type="UInt">
+            <default>60</default>
+            <min>0</min>
+        </entry>
+        <entry name="InactiveShadowSize" type="UInt">
+            <default>40</default>
+            <min>0</min>
+        </entry>
+        <entry name="ShadowColor" type="Color">
+            <default>black</default>
+        </entry>
+        <entry name="InactiveShadowColor" type="Color">
+            <default>black</default>
+        </entry>
+        <entry name="ActiveShadowAlpha" type="Int">
+            <default>128</default>
+            <min>0</min>
+            <max>255</max>
+        </entry>
+        <entry name="InactiveShadowAlpha" type="Int">
+            <default>64</default>
+            <min>0</min>
+            <max>255</max>
+        </entry>
+        <entry name="ActiveShadowPalette" type="UInt">
+            <default>11</default>
+        </entry>
+        <entry name="InactiveShadowPalette" type="UInt">
+            <default>11</default>
+        </entry>
+        <entry name="ActiveShadowUsePalette" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="InactiveShadowUsePalette" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="ActiveShadowUseCustom" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="InactiveShadowUseCustom" type="Bool">
+            <default>false</default>
+        </entry>
+
+        <!-- Primary Outline Options -->
+
+        <entry name="OutlineThickness" type="Double">
+            <default>1</default>
+            <min>0</min>
+            <max>20</max>
+        </entry>
+        <entry name="InactiveOutlineThickness" type="Double">
+            <default>1</default>
+            <min>0</min>
+            <max>20</max>
+        </entry>
+        <entry name="OutlineColor" type="Color">
+            <default>black</default>
+        </entry>
+        <entry name="InactiveOutlineColor" type="Color">
+            <default>black</default>
+        </entry>
+        <entry name="ActiveOutlineAlpha" type="Int">
+            <default>255</default>
+            <min>0</min>
+            <max>255</max>
+        </entry>
+        <entry name="InactiveOutlineAlpha" type="Int">
+            <default>255</default>
+            <min>0</min>
+            <max>255</max>
+        </entry>
+        <entry name="ActiveOutlinePalette" type="UInt">
+            <default>12</default>
+        </entry>
+        <entry name="InactiveOutlinePalette" type="UInt">
+            <default>12</default>
+        </entry>
+        <entry name="ActiveOutlineUsePalette" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="InactiveOutlineUsePalette" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="ActiveOutlineUseCustom" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="InactiveOutlineUseCustom" type="Bool">
+            <default>true</default>
+        </entry>
+
+        <!-- Primary Outline Gradient (second stop is custom-color only) -->
+
+        <entry name="OutlineIsGradient" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="InactiveOutlineIsGradient" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="OutlineColor2" type="Color">
+            <default>black</default>
+        </entry>
+        <entry name="InactiveOutlineColor2" type="Color">
+            <default>black</default>
+        </entry>
+        <entry name="OutlineGradientAngle" type="Int">
+            <default>45</default>
+            <min>0</min>
+            <max>360</max>
+        </entry>
+        <entry name="InactiveOutlineGradientAngle" type="Int">
+            <default>45</default>
+            <min>0</min>
+            <max>360</max>
+        </entry>
+
+        <!-- Second Outline Options -->
+
+        <entry name="SecondOutlineThickness" type="Double">
+            <default>1</default>
+            <min>0</min>
+            <max>20</max>
+        </entry>
+        <entry name="InactiveSecondOutlineThickness" type="Double">
+            <default>1</default>
+            <min>0</min>
+            <max>20</max>
+        </entry>
+        <entry name="SecondOutlineColor" type="Color">
+            <default>white</default>
+        </entry>
+        <entry name="InactiveSecondOutlineColor" type="Color">
+            <default>white</default>
+        </entry>
+        <entry name="ActiveSecondOutlineAlpha" type="Int">
+            <default>85</default>
+            <min>0</min>
+            <max>255</max>
+        </entry>
+        <entry name="InactiveSecondOutlineAlpha" type="Int">
+            <default>85</default>
+            <min>0</min>
+            <max>255</max>
+        </entry>
+        <entry name="ActiveSecondOutlinePalette" type="UInt">
+            <default>12</default>
+        </entry>
+        <entry name="InactiveSecondOutlinePalette" type="UInt">
+            <default>12</default>
+        </entry>
+        <entry name="ActiveSecondOutlineUsePalette" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="InactiveSecondOutlineUsePalette" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="ActiveSecondOutlineUseCustom" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="InactiveSecondOutlineUseCustom" type="Bool">
+            <default>true</default>
+        </entry>
+
+        <!-- Second Outline Gradient (second stop is custom-color only) -->
+
+        <entry name="SecondOutlineIsGradient" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="InactiveSecondOutlineIsGradient" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="SecondOutlineColor2" type="Color">
+            <default>white</default>
+        </entry>
+        <entry name="InactiveSecondOutlineColor2" type="Color">
+            <default>white</default>
+        </entry>
+        <entry name="SecondOutlineGradientAngle" type="Int">
+            <default>45</default>
+            <min>0</min>
+            <max>360</max>
+        </entry>
+        <entry name="InactiveSecondOutlineGradientAngle" type="Int">
+            <default>45</default>
+            <min>0</min>
+            <max>360</max>
+        </entry>
+
+        <!-- Outer Outline Options -->
+
+        <entry name="OuterOutlineThickness" type="Double">
+            <default>0</default>
+            <min>0</min>
+            <max>20</max>
+        </entry>
+        <entry name="InactiveOuterOutlineThickness" type="Double">
+            <default>0</default>
+            <min>0</min>
+            <max>20</max>
+        </entry>
+        <entry name="OuterOutlineColor" type="Color">
+            <default>black</default>
+        </entry>
+        <entry name="InactiveOuterOutlineColor" type="Color">
+            <default>black</default>
+        </entry>
+        <entry name="ActiveOuterOutlineAlpha" type="Int">
+            <default>255</default>
+            <min>0</min>
+            <max>255</max>
+        </entry>
+        <entry name="InactiveOuterOutlineAlpha" type="Int">
+            <default>255</default>
+            <min>0</min>
+            <max>255</max>
+        </entry>
+        <entry name="ActiveOuterOutlinePalette" type="UInt">
+            <default>12</default>
+        </entry>
+        <entry name="InactiveOuterOutlinePalette" type="UInt">
+            <default>12</default>
+        </entry>
+        <entry name="ActiveOuterOutlineUsePalette" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="InactiveOuterOutlineUsePalette" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="ActiveOuterOutlineUseCustom" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="InactiveOuterOutlineUseCustom" type="Bool">
+            <default>true</default>
+        </entry>
+
+        <!-- Outer Outline Gradient (second stop is custom-color only) -->
+
+        <entry name="OuterOutlineIsGradient" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="InactiveOuterOutlineIsGradient" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="OuterOutlineColor2" type="Color">
+            <default>black</default>
+        </entry>
+        <entry name="InactiveOuterOutlineColor2" type="Color">
+            <default>black</default>
+        </entry>
+        <entry name="OuterOutlineGradientAngle" type="Int">
+            <default>45</default>
+            <min>0</min>
+            <max>360</max>
+        </entry>
+        <entry name="InactiveOuterOutlineGradientAngle" type="Int">
+            <default>45</default>
+            <min>0</min>
+            <max>360</max>
+        </entry>
+
+        <!-- Inclusion and Exclusion Options -->
+
+        <entry name="Inclusions" type="StringList">
+        </entry>
+        <entry name="Exclusions" type="StringList">
+        </entry>
+        <entry name="IncludeNormalWindows" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="IncludeDialogs" type="Bool">
+            <default>true</default>
+        </entry>
+        
+        <entry name="DisableRoundTile" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="DisableOutlineTile" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="DisableRoundMaximize" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="DisableOutlineMaximize" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="DisableRoundFullScreen" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="DisableOutlineFullScreen" type="Bool">
+            <default>true</default>
+        </entry>
+    </group>
+</kcfg>

@@ -34,6 +34,8 @@ required_paths=(
   packages/native/kernora-apps/debian/changelog
   packages/native/kernora-wallpapers/debian/control
   packages/native/kernora-wallpapers/debian/changelog
+  packages/native/kwin-effect-rounded-corners/debian/control
+  packages/native/kwin-effect-rounded-corners/debian/changelog
   packages/native/kernora-apps/CMakeLists.txt
   packages/native/kernora-desktop/data/ui/qmldir
   configs/live/kernora-live-language
@@ -64,6 +66,8 @@ required_paths=(
   scripts/build-kernora-archive-binary
   scripts/build-kernora-wallpapers-source
   scripts/build-kernora-wallpapers-binary
+  scripts/build-kwin-effect-rounded-corners-source
+  scripts/build-kwin-effect-rounded-corners-binary
   scripts/create-archive-key
   scripts/publish-updates
   tests/test-publish-updates.sh
@@ -84,6 +88,8 @@ required_paths=(
   tests/test-kernora-archive-binary.sh
   tests/test-kernora-wallpapers-source.sh
   tests/test-kernora-wallpapers-binary.sh
+  tests/test-kwin-effect-rounded-corners-source.sh
+  tests/test-kwin-effect-rounded-corners-binary.sh
   tests/test-kernora-desktop-source.sh
   tests/test-kernora-desktop-binary.sh
   tests/test-local-archive.sh

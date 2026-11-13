@@ -1,0 +1,33 @@
+Source: kwin-effect-rounded-corners
+Section: kde
+Priority: optional
+Maintainer: Kernora Developers <developers@kernora.invalid>
+Standards-Version: 4.7.4
+Build-Depends: debhelper-compat (= 13),
+ cmake,
+ extra-cmake-modules,
+ gettext,
+ kwin-dev (>= 4:6.3.6),
+ libepoxy-dev,
+ libkf6configwidgets-dev,
+ libkf6i18n-dev,
+ libkf6kcmutils-dev,
+ libxcb1-dev,
+ pkgconf,
+ qt6-base-dev,
+ qt6-base-private-dev
+Rules-Requires-Root: no
+Homepage: https://github.com/matinlotfali/KDE-Rounded-Corners
+
+Package: kwin-effect-rounded-corners
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ kwin-common (>= 4:6.3.6)
+Description: KWin effect that rounds all four window corners
+ KDE Rounded Corners by Matin Lotfaliei, built for Kernora OS. It rounds
+ the bottom corners of windows as well as the top, draws a soft shadow
+ that follows the rounded shape, and leaves maximised, tiled and full
+ screen windows square. Kernora sets its radius, shadow and outline in
+ /etc/xdg/kwinrc.

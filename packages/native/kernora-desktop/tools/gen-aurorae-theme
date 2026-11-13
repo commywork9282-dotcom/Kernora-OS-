@@ -19,9 +19,9 @@ THEME = "kernora" + design.COLOUR_SLUG + ("" if design.GENERATION == "md3" else 
 TITLE = 32
 TITLE_EDGE = 0
 RADIUS = design.corner("window")
-PAD_SIDE = 28
-PAD_TOP = 18
-PAD_BOTTOM = 38
+PAD_SIDE = 20
+PAD_TOP = 20
+PAD_BOTTOM = 40
 BUTTON = 32
 GLYPH = 18
 HIGHLIGHT = 13

@@ -1,0 +1,233 @@
+#include "WindowManager.h"
+#include <QDBusError>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QtDBus/QDBusConnection>
+#include <memory>
+#include <ranges>
+#include "Config.h"
+#include "TileChecker.h"
+#include "Window.h"
+#if QT_VERSION_MAJOR >= 6
+#include <effect/effecthandler.h>
+#include <effect/effectwindow.h>
+#else
+#include <kwineffects.h>
+#endif
+
+/**
+ * @brief Pointer to the singleton instance of WindowManager.
+ */
+const ShapeCorners::WindowManager *ShapeCorners::WindowManager::self = nullptr;
+
+ShapeCorners::WindowManager::WindowManager()
+{
+    // Assign singleton instance
+    self = this;
+
+    // Register D-Bus service and object for external communication
+    registerDBus();
+
+#if QT_VERSION_MAJOR < 6
+    // Qt5 reports geometry changes globally, so connect only once for all windows.
+    connect(KWin::effects, &KWin::EffectsHandler::windowFrameGeometryChanged, this, &WindowManager::windowResized);
+#endif
+
+    // Add all currently stacked windows
+    for (const auto &kwindow: KWin::effects->stackingOrder()) {
+        addWindow(kwindow);
+    }
+
+    // Listen for window deletion events
+    connect(KWin::effects, &KWin::EffectsHandler::windowDeleted, this, &WindowManager::windowRemoved);
+}
+
+const ShapeCorners::WindowManager *ShapeCorners::WindowManager::instance() { return self; }
+
+ShapeCorners::Window *ShapeCorners::WindowManager::findWindow(const KWin::EffectWindow *kwindow) const
+{
+    const auto iterator = m_managed.find(kwindow);
+    if (iterator != m_managed.end()) {
+        return iterator->second.get();
+    }
+    return nullptr;
+}
+
+bool ShapeCorners::WindowManager::addWindow(KWin::EffectWindow *kwindow)
+{
+    // Don't treat docks as windows. They are needed for the maximized check only.
+    if (kwindow->isDock()) {
+#ifdef QT_DEBUG
+        qInfo() << "ShapeCorners: menu added." << *kwindow;
+#endif
+        m_menuBars.push_back(kwindow);
+
+        // Changes in menu bars can change the tiled and maximized state of all windows
+        checkTiled();
+        checkMaximized();
+        return false;
+    }
+
+#ifdef QT_DEBUG
+    qInfo() << "ShapeCorners: window added." << *kwindow;
+#endif
+
+    // Ignore windows without a valid class or caption
+    if (kwindow->windowClass().trimmed().isEmpty() && kwindow->caption().trimmed().isEmpty()) {
+#ifdef QT_DEBUG
+        qWarning() << "ShapeCorners: window does not have a valid class name.";
+#endif
+        return false;
+    }
+
+    // Ignore hardcoded exceptions (KWin, lockscreen, etc.)
+    const QSet hardExceptions{
+            QStringLiteral("kwin"),         QStringLiteral("kwin_x11"),
+            QStringLiteral("kwin_wayland"), QStringLiteral("kscreenlocker_greet"),
+            QStringLiteral("ksmserver"),    QStringLiteral("krunner"),
+            QStringLiteral("ksplashqml"),   QStringLiteral("ksmserver-logout-greeter"),
+            // QStringLiteral("plasmashell")  Note: Don't add it to exceptions, it involves widget config windows.
+    };
+    const auto name = kwindow->windowClass().split(QChar::Space).first();
+    if (hardExceptions.contains(name)) {
+#ifdef QT_DEBUG
+        qWarning() << "ShapeCorners: ignoring window explicitly.";
+#endif
+        return false;
+    }
+
+    // Create and add the managed window
+    const auto &[iter, r] = m_managed.emplace(kwindow, std::make_unique<Window>(kwindow));
+    if (!r) {
+#ifdef QT_DEBUG
+        qWarning() << "ShapeCorners: ignoring duplicate window.";
+#endif
+        return false;
+    }
+
+#if QT_VERSION_MAJOR >= 6
+    // Qt6 reports geometry changes on each window.
+    connect(kwindow, &KWin::EffectWindow::windowFrameGeometryChanged, this, &WindowManager::windowResized);
+#endif
+
+    // Update tiling and maximized state for the new window
+    windowResized(kwindow, QRectF());
+    return true;
+}
+
+void ShapeCorners::WindowManager::windowRemoved(KWin::EffectWindow *kwindow)
+{
+    if (kwindow == nullptr) {
+        qDebug() << "ShapeCorners: null window removed";
+    } else if (const auto iterator = m_managed.find(kwindow); iterator != m_managed.end()) {
+        m_managed.erase(iterator);
+        qDebug() << "ShapeCorners: window removed" << kwindow->windowClass();
+    } else if (const auto iterator2 = std::ranges::find(m_menuBars, kwindow); iterator2 != m_menuBars.end()) {
+        m_menuBars.erase(iterator2);
+        qDebug() << "ShapeCorners: menu removed" << kwindow->windowClass();
+
+        // Changes in menu bars can change the maximized state of all windows
+        checkMaximized();
+    } else {
+        qDebug() << "ShapeCorners: excluded window removed" << kwindow->windowClass();
+    }
+
+    // Changes in windows can change the tile state of other windows
+    checkTiled();
+}
+
+QString ShapeCorners::WindowManager::get_window_titles() const
+{
+    QJsonArray array;
+    for (const auto &window: m_managed | std::views::values) {
+        auto json = window->toJson();
+        if (!array.contains(json)) {
+            array.push_back(json);
+        }
+    }
+    const auto doc = QJsonDocument(array).toJson(QJsonDocument::Compact);
+    return QString::fromUtf8(doc);
+}
+
+void ShapeCorners::WindowManager::registerDBus()
+{
+    auto connection = QDBusConnection::sessionBus();
+    if (!connection.isConnected()) {
+        qWarning() << "ShapeCorners: Cannot connect to the D-Bus session bus.";
+        return;
+    }
+    if (!connection.registerService(QStringLiteral("org.kde.ShapeCorners"))) {
+        qWarning() << "ShapeCorners: " << connection.lastError().message();
+        return;
+    }
+    if (!connection.registerObject(QStringLiteral("/ShapeCornersEffect"), this, QDBusConnection::ExportAllSlots)) {
+        qWarning() << "ShapeCorners: " << connection.lastError().message();
+        return;
+    }
+}
+
+void ShapeCorners::WindowManager::checkTiled() const
+{
+    TileChecker::clearTiles();
+
+    // If both tile options are disabled, skip checking
+    if (!Config::disableRoundTile() && !Config::disableOutlineTile()) {
+        return;
+    }
+
+    TileChecker tileChecker;
+    // Check tiling for each screen, excluding menu bars
+    for (const auto &screen: KWin::effects->screens()) {
+
+#if KWIN_EFFECT_API_VERSION >= 237
+#if KWIN_PLUGIN_VERSION_NUM >= QT_VERSION_CHECK(6, 6, 90)
+        const auto geometry = KWin::effects->clientArea(KWin::MaximizeArea, screen);
+#else
+        const auto geometry = KWin::effects->clientArea(KWin::MaximizeArea, screen, KWin::effects->currentDesktop());
+#endif // KWIN_PLUGIN_VERSION_NUM >= QT_VERSION_CHECK(6, 6, 90)
+#else
+        const auto geometry = KWin::effects->clientArea(KWin::MaximizeArea, screen, KWin::effects->currentDesktop());
+#endif // KWIN_EFFECT_API_VERSION >= 237
+
+        tileChecker.checkTiles(geometry);
+    }
+}
+
+void ShapeCorners::WindowManager::checkMaximized(KWin::EffectWindow *kwindow) const
+{
+    auto *const window = findWindow(kwindow);
+    if (window == nullptr) {
+        return;
+    }
+
+    const auto frame   = kwindow->frameGeometry();
+    const auto maxArea = KWin::effects->clientArea(KWin::MaximizeArea, kwindow);
+
+    constexpr qreal tolerance = 1.0;
+    window->isMaximized       = (qAbs(frame.x() - maxArea.x()) <= tolerance) &&
+                                (qAbs(frame.y() - maxArea.y()) <= tolerance) &&
+                                (qAbs(frame.width() - maxArea.width()) <= tolerance) &&
+                                (qAbs(frame.height() - maxArea.height()) <= tolerance);
+
+#ifdef DEBUG_MAXIMIZED
+    qDebug() << "ShapeCorners: maximize area" << maxArea << "window" << kwindow->frameGeometry();
+    if (window->isMaximized) {
+        qInfo() << "ShapeCorners: window maximized" << kwindow->windowClass();
+    }
+#endif
+}
+
+void ShapeCorners::WindowManager::windowResized(KWin::EffectWindow *kwindow, const QRectF &size)
+{
+    Q_UNUSED(size);
+
+    checkTiled();
+    checkMaximized(kwindow);
+}
+
+void ShapeCorners::WindowManager::checkMaximized()
+{
+    for (const auto &window: m_managed | std::views::values) {
+        checkMaximized(window->w);
+    }
+}

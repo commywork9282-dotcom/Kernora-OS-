@@ -1,5 +1,7 @@
 kernora-apps (1.1.87) UNRELEASED; urgency=medium
 
+  * The dark theme gives windows a faint light outline and the light theme
+    takes it away, through the rounded corners effect.
   * Settings: Wallpaper and style has Layout, Panel shape and Apps button.
     The Apps button shape only shows with everything at the bottom.
   * Settings pages and options show up in the apps menu search and in

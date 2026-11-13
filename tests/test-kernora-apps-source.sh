@@ -339,4 +339,8 @@ grep -Fq 'Q_CLASSINFO("D-Bus Interface", "org.kde.krunner1")' "$package_root/src
   && grep -Fq 'KWindowEffects::enableBlurBehind(m_window, true, roundedRegion(' "$package_root/src/shell/windowblur.cpp" \
   && grep -Fq 'windowblur.cpp windowblur.h' "$package_root/src/shell/CMakeLists.txt" \
   || fail "the apps menu cannot find Settings pages or open Store pages"
+grep -Fq 'KConfigGroup corners(kwin, QStringLiteral("Round-Corners"));' "$package_root/src/system/appearance.cpp" \
+  && grep -Fq 'corners.writeEntry("OutlineThickness", enable ? 1 : 0);' "$package_root/src/system/appearance.cpp" \
+  && grep -Fq 'QStringLiteral("kwin4_effect_shapecorners")' "$package_root/src/system/appearance.cpp" \
+  || fail "the dark theme does not switch the window outline"
 printf 'kernora-apps source test: OK\n'

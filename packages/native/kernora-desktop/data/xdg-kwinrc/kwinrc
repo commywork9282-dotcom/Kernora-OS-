@@ -11,3 +11,21 @@ LayoutName=org.kernora.switcher
 
 [TabBoxAlternative]
 LayoutName=org.kernora.switcher
+
+[Round-Corners]
+Size=12
+InactiveCornerRadius=12
+UseSquircleShape=false
+UseNativeDecorationShadows=false
+OutlineThickness=1
+InactiveOutlineThickness=1
+ActiveOutlineUseCustom=true
+InactiveOutlineUseCustom=true
+OutlineColor=255,255,255
+InactiveOutlineColor=255,255,255
+ActiveOutlineAlpha=40
+InactiveOutlineAlpha=28
+SecondOutlineThickness=0
+InactiveSecondOutlineThickness=0
+OuterOutlineThickness=0
+InactiveOuterOutlineThickness=0

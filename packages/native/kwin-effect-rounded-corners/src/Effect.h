@@ -1,0 +1,190 @@
+/*
+ *   Copyright © 2015 Robert Metsäranta <therealestrob@gmail.com>
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; see the file COPYING.  if not, write to
+ *   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *   Boston, MA 02110-1301, USA.
+ */
+
+#pragma once
+
+#include <QObject>
+#include <chrono>
+#include "Shader.h"
+#if QT_VERSION_MAJOR >= 6
+#include <effect/offscreeneffect.h>
+#else
+#include <kwinoffscreeneffect.h>
+#endif
+
+namespace ShapeCorners
+{
+    class Animation;
+    class WindowManager;
+
+    /**
+     * @class Effect
+     * @brief KDE KWin effect for rendering rounded corners on windows.
+     *
+     * This class implements a KWin OffscreenEffect that applies rounded corners
+     * to windows using a custom shader. It manages window addition, configuration,
+     * and painting logic.
+     */
+    class Effect final : public KWin::OffscreenEffect
+    {
+        Q_OBJECT
+
+    public:
+        /**
+         * @brief Constructs the Effect object.
+         */
+        Effect();
+
+        // don't allow copying
+        Effect(const Effect &)  = delete;
+        Effect(const Effect &&) = delete;
+
+        Effect &operator=(const Effect &)  = delete;
+        Effect &operator=(const Effect &&) = delete;
+
+        /**
+         * @brief Destructor.
+         */
+        ~Effect() override;
+
+        /**
+         * @brief Checks if the effect is supported on the current system.
+         * @return True if supported, false otherwise.
+         */
+        static bool supported();
+
+        /**
+         * @brief Reconfigures the effect based on the given flags.
+         * @param flags The reconfiguration flags.
+         */
+        void reconfigure(ReconfigureFlags flags) override;
+
+        /**
+         * @brief Prepares a window for painting.
+         * @param w The effect window.
+         * @param data The window pre-paint data.
+         * @param time The time since the last frame.
+         */
+#if KWIN_EFFECT_API_VERSION >= 237
+#if KWIN_PLUGIN_VERSION_NUM >= QT_VERSION_CHECK(6, 6, 80)
+        void prePaintWindow(KWin::RenderView *view, KWin::EffectWindow *w, KWin::WindowPrePaintData &data) override;
+#else
+        void prePaintWindow(KWin::RenderView *view, KWin::EffectWindow *w, KWin::WindowPrePaintData &data,
+                            std::chrono::milliseconds time) override;
+#endif // KWIN_PLUGIN_VERSION_NUM >= QT_VERSION_CHECK(6, 6, 80)
+#else
+        void prePaintWindow(KWin::EffectWindow *w, KWin::WindowPrePaintData &data,
+                            std::chrono::milliseconds time) override;
+#endif // KWIN_EFFECT_API_VERSION >= 237
+
+#if QT_VERSION_MAJOR >= 6
+        /**
+         * @brief Draws the window with the effect applied (Qt6 version).
+         * @param RenderTarget The render target.
+         * @param viewport The render viewport.
+         * @param w The effect window.
+         * @param mask The paint mask.
+         * @param region The paint region.
+         * @param data The window paint data.
+         */
+#if KWIN_EFFECT_API_VERSION >= 237 && KWIN_PLUGIN_VERSION_NUM >= QT_VERSION_CHECK(6, 7, 80)
+        bool drawWindow(
+#else
+        void drawWindow(
+#endif // KWIN_EFFECT_API_VERSION >= 237 && KWIN_PLUGIN_VERSION_NUM >= QT_VERSION_CHECK(6, 7, 80)
+                        const KWin::RenderTarget &RenderTarget, const KWin::RenderViewport &viewport,
+                        KWin::EffectWindow *w, int mask,
+#if KWIN_EFFECT_API_VERSION >= 237
+                        const KWin::Region &region,
+#else
+                        const QRegion &region,
+#endif
+                        KWin::WindowPaintData &data) override;
+#else
+        /**
+         * @brief Draws the window with the effect applied (Qt5 version).
+         * @param w The effect window.
+         * @param mask The paint mask.
+         * @param region The paint region.
+         * @param data The window paint data.
+         */
+        void drawWindow(KWin::EffectWindow *w, int mask, const QRegion &region, KWin::WindowPaintData &data) override;
+#endif
+
+        /**
+         * @brief Returns the requested position in the effect chain.
+         * @return The effect chain position.
+         */
+        [[nodiscard]]
+        int requestedEffectChainPosition() const override
+        {
+            return 99;
+        }
+
+        /**
+         * @brief Indicates whether the effect blocks direct scanout.
+         * @return False, this effect does not block direct scanout.
+         */
+        [[nodiscard]]
+        bool blocksDirectScanout() const override
+        {
+            return false;
+        }
+
+        /**
+         * @brief Checks if the effect is currently active.
+         * @return True if the shader manager is valid, false otherwise.
+         */
+        [[nodiscard]]
+        bool isActive() const override
+        {
+            return m_shaderManager.IsValid();
+        }
+
+        /**
+         * @brief Indicates which features this effect provides.
+         * @param feature The feature to check.
+         * @return True if the feature is provided, false otherwise.
+         */
+        [[nodiscard]]
+        bool provides(const Feature feature) override
+        {
+            return feature == Nothing;
+        }
+
+    private Q_SLOTS:
+        /**
+         * @brief Slot called when a new window is added.
+         * @param kwindow The newly added effect window.
+         */
+        void windowAdded(KWin::EffectWindow *kwindow);
+
+    private:
+        /// Timestamp of the last config reload.
+        std::chrono::system_clock::time_point lastConfigReloadTime = std::chrono::system_clock::time_point::min();
+        /// Manages the shader used for rounded corners.
+        Shader m_shaderManager;
+        /// Manages the windows affected by the effect.
+        std::unique_ptr<WindowManager> m_windowManager;
+        /// Manages the animation state for window corner effects.
+        std::unique_ptr<Animation> m_animation;
+
+        void WriteBreezeConfig(bool set_disabled);
+    };
+} // namespace ShapeCorners

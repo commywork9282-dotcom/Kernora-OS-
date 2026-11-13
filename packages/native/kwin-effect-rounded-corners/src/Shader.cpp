@@ -1,0 +1,186 @@
+
+#include "Shader.h"
+#include <QFile>
+#include <QStandardPaths>
+#include "Config.h"
+#include "Utils.h"
+#include "Window.h"
+#include "WindowConfig.h"
+#if QT_VERSION_MAJOR >= 6
+#include <core/pixelgrid.h>
+#include <effect/effect.h>
+#include <effect/effectwindow.h>
+#include <opengl/glutils.h>
+#else
+#include <kwineffects.h>
+#include <kwinglutils.h>
+#endif
+
+namespace
+{
+    /**
+     * @brief Converts a QSizeF to a QVector2D.
+     * @param size The QSizeF to convert.
+     * @return The corresponding QVector2D.
+     */
+    constexpr QVector2D toVector2D(const QSizeF &size)
+    {
+        return {static_cast<float>(size.width()), static_cast<float>(size.height())};
+    }
+
+    /**
+     * @brief The shader traits the effect's shader is generated with.
+     *
+     * RoundedCorners makes KWin pass `position0`, which the shader uses to detect which way up
+     * the offscreen texture is. From KWin 6.7.90 that differs between systems (#544).
+     */
+#if KWIN_EFFECT_API_VERSION >= 237 && KWIN_PLUGIN_VERSION_NUM >= QT_VERSION_CHECK(6, 7, 90)
+    const KWin::ShaderTraits kShaderTraits = KWin::ShaderTrait::MapTexture | KWin::ShaderTrait::RoundedCorners;
+#else
+    constexpr auto kShaderTraits = KWin::ShaderTrait::MapTexture;
+#endif
+} // namespace
+
+ShapeCorners::Shader::Shader()
+{
+
+    qInfo() << "ShapeCorners: loading shaders...";
+
+    // KWin 6.7 Wayland requires the core-profile shader directly. KWin X11 keeps the older
+    // effect API and still selects the _core variant itself based on the OpenGL context.
+#if KWIN_EFFECT_API_VERSION >= 237 && KWIN_PLUGIN_VERSION_NUM >= QT_VERSION_CHECK(6, 7, 0)
+    const auto shaderFileName = QStringLiteral("shapecorners_core.frag");
+#else
+    const auto shaderFileName = QStringLiteral("shapecorners.frag");
+#endif
+
+#ifdef KWIN_X11
+    const QString shaderFileRelativePath = QStringLiteral("kwin-x11/shaders/") + shaderFileName;
+#else
+    const QString shaderFileRelativePath = QStringLiteral("kwin/shaders/") + shaderFileName;
+#endif
+
+    // Locate the shader file in the standard data locations
+    const QString shaderFilePath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, shaderFileRelativePath);
+    // Generate the shader from file using the ShaderManager
+    m_shader = KWin::ShaderManager::instance()->generateShaderFromFile(kShaderTraits, QString(), shaderFilePath);
+    if (!IsValid()) {
+        qCritical() << "ShapeCorners: no valid shaders found! effect will not work.";
+        return;
+    }
+
+    // Assign uniform variable locations
+    m_shader_windowSize             = m_shader->uniformLocation("windowSize");
+    m_shader_windowExpandedSize     = m_shader->uniformLocation("windowExpandedSize");
+    m_shader_windowTopLeft          = m_shader->uniformLocation("windowTopLeft");
+    m_shader_usesNativeShadows      = m_shader->uniformLocation("usesNativeShadows");
+    m_shader_shadowColor            = m_shader->uniformLocation("shadowColor");
+    m_shader_shadowSize             = m_shader->uniformLocation("shadowSize");
+    m_shader_radius                 = m_shader->uniformLocation("radius");
+    m_shader_useSquircleShape       = m_shader->uniformLocation("useSquircleShape");
+    m_shader_squircleBlend          = m_shader->uniformLocation("squircleBlend");
+    m_shader_outlineColor1          = m_shader->uniformLocation("outlineColor1");
+    m_shader_outlineColor2          = m_shader->uniformLocation("outlineColor2");
+    m_shader_outlineAngle           = m_shader->uniformLocation("outlineAngle");
+    m_shader_outlineThickness       = m_shader->uniformLocation("outlineThickness");
+    m_shader_secondOutlineColor1    = m_shader->uniformLocation("secondOutlineColor1");
+    m_shader_secondOutlineColor2    = m_shader->uniformLocation("secondOutlineColor2");
+    m_shader_secondOutlineAngle     = m_shader->uniformLocation("secondOutlineAngle");
+    m_shader_secondOutlineThickness = m_shader->uniformLocation("secondOutlineThickness");
+    m_shader_outerOutlineColor1     = m_shader->uniformLocation("outerOutlineColor1");
+    m_shader_outerOutlineColor2     = m_shader->uniformLocation("outerOutlineColor2");
+    m_shader_outerOutlineAngle      = m_shader->uniformLocation("outerOutlineAngle");
+    m_shader_outerOutlineThickness  = m_shader->uniformLocation("outerOutlineThickness");
+    m_shader_front                  = m_shader->uniformLocation("front");
+    qInfo() << "ShapeCorners: shaders loaded.";
+}
+
+bool ShapeCorners::Shader::IsValid() const
+{
+#if KWIN_EFFECT_API_VERSION >= 237 && KWIN_PLUGIN_VERSION_NUM >= QT_VERSION_CHECK(6, 6, 80)
+    return m_shader != nullptr;
+#else
+    return m_shader != nullptr && m_shader->isValid();
+#endif
+}
+
+void ShapeCorners::Shader::Bind(const Window &window, const double scale) const
+{
+    if (!IsValid()) {
+        return;
+    }
+
+    // Calculate scaled geometries
+#if KWIN_EFFECT_API_VERSION >= 237 && KWIN_PLUGIN_VERSION_NUM >= QT_VERSION_CHECK(6, 3, 4)
+    // KWin from 6.3.4 onwards snaps the offscreen texture's geometry to the device pixel grid,
+    // so the uniforms have to be derived the same way. KWin X11 does not snap.
+    const auto frameGeometry    = KWin::snapToPixels(window.w->frameGeometry(), scale) * scale;
+    const auto expandedGeometry = KWin::snapToPixels(window.w->expandedGeometry(), scale) * scale;
+#else
+    const auto frameGeometry    = window.w->frameGeometry() * scale;
+    const auto expandedGeometry = window.w->expandedGeometry() * scale;
+#endif
+    // Calculate the offset between expanded and frame geometry
+    const auto frameOffset = QVector2D(frameGeometry.topLeft() - expandedGeometry.topLeft());
+    // Clamp the shadow size to the maximum allowed
+    const qreal max_shadow_size = frameOffset.length();
+    const auto  shadowSize      = std::min(window.currentConfig.shadowSize * scale, max_shadow_size);
+    // Push the shader to the rendering stack
+    KWin::ShaderManager::instance()->pushShader(m_shader.get());
+    // Set all required uniforms
+    m_shader->setUniform(m_shader_windowSize, toVector2D(frameGeometry.size()));
+    m_shader->setUniform(m_shader_windowExpandedSize, toVector2D(expandedGeometry.size()));
+    m_shader->setUniform(m_shader_windowTopLeft, frameOffset);
+    m_shader->setUniform(m_shader_usesNativeShadows, static_cast<int>(Config::useNativeDecorationShadows()));
+    m_shader->setUniform(m_shader_useSquircleShape, static_cast<int>(Config::useSquircleShape()));
+    m_shader->setUniform(m_shader_squircleBlend, static_cast<float>(Config::squircleness()));
+    m_shader->setUniform(m_shader_front, 0);
+    m_shader->setUniform(m_shader_outlineThickness, static_cast<float>(window.currentConfig.outline.size * scale));
+    m_shader->setUniform(m_shader_secondOutlineThickness,
+                         static_cast<float>(window.currentConfig.secondOutline.size * scale));
+    m_shader->setUniform(m_shader_outerOutlineThickness,
+                         static_cast<float>(window.currentConfig.outerOutline.size * scale));
+    m_shader->setUniform(m_shader_shadowSize, static_cast<float>(shadowSize));
+    m_shader->setUniform(m_shader_shadowColor, window.currentConfig.shadowColor.toQColor());
+
+    // Set shader uniforms based on disabled states
+    if (window.hasRoundCorners()) {
+        m_shader->setUniform(m_shader_radius, static_cast<float>(window.currentConfig.cornerRadius * scale));
+    } else {
+        m_shader->setUniform(m_shader_radius, 0.F);
+    }
+    if (window.hasOutline()) {
+        const auto &outline       = window.currentConfig.outline;
+        const auto &secondOutline = window.currentConfig.secondOutline;
+        const auto &outerOutline  = window.currentConfig.outerOutline;
+        // color1 == color2 gives a solid outline; they differ only when a gradient is configured.
+        m_shader->setUniform(m_shader_outlineColor1, outline.color1.toQColor());
+        m_shader->setUniform(m_shader_outlineColor2, outline.color2.toQColor());
+        m_shader->setUniform(m_shader_outlineAngle, outline.angle);
+        m_shader->setUniform(m_shader_secondOutlineColor1, secondOutline.color1.toQColor());
+        m_shader->setUniform(m_shader_secondOutlineColor2, secondOutline.color2.toQColor());
+        m_shader->setUniform(m_shader_secondOutlineAngle, secondOutline.angle);
+        m_shader->setUniform(m_shader_outerOutlineColor1, outerOutline.color1.toQColor());
+        m_shader->setUniform(m_shader_outerOutlineColor2, outerOutline.color2.toQColor());
+        m_shader->setUniform(m_shader_outerOutlineAngle, outerOutline.angle);
+    } else {
+        const QColor transparent(0, 0, 0, 0);
+        m_shader->setUniform(m_shader_outlineColor1, transparent);
+        m_shader->setUniform(m_shader_outlineColor2, transparent);
+        m_shader->setUniform(m_shader_outlineAngle, 0.0F);
+        m_shader->setUniform(m_shader_secondOutlineColor1, transparent);
+        m_shader->setUniform(m_shader_secondOutlineColor2, transparent);
+        m_shader->setUniform(m_shader_secondOutlineAngle, 0.0F);
+        m_shader->setUniform(m_shader_outerOutlineColor1, transparent);
+        m_shader->setUniform(m_shader_outerOutlineColor2, transparent);
+        m_shader->setUniform(m_shader_outerOutlineAngle, 0.0F);
+    }
+}
+
+void ShapeCorners::Shader::Unbind() const
+{
+    if (!IsValid()) {
+        return;
+    }
+    KWin::ShaderManager::instance()->popShader();
+}
