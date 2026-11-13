@@ -29,3 +29,4 @@ SecondOutlineThickness=0
 InactiveSecondOutlineThickness=0
 OuterOutlineThickness=0
 InactiveOuterOutlineThickness=0
+Exclusions=org.kernora.appgroup,org.kernora.appsplash,org.kernora.androiddialog,org.kernora.apkinstaller,org.kernora.screenshot

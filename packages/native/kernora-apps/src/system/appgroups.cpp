@@ -70,7 +70,8 @@ bool isLauncher(const QString &path)
     if (!path.endsWith(QLatin1String(".desktop")) || !QFileInfo(path).isFile()) {
         return false;
     }
-    const KConfigGroup entry = KDesktopFile(path).desktopGroup();
+    const KDesktopFile file(path);
+    const KConfigGroup entry = file.desktopGroup();
     return entry.readEntry("Type") == QLatin1String("Application") && entry.readEntry(GroupKey, QString()).isEmpty();
 }
 
@@ -162,15 +163,18 @@ QString renderIcon(const QString &directory, const QStringList &apps)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
     const int count = std::min<int>(apps.size(), 4);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(QColor(18, 18, 22, 150));
+    painter.drawRoundedRect(QRectF(4, 4, 248, 248), 76, 76);
     QList<QRectF> places;
     if (count <= 1) {
-        places = {QRectF(28, 28, 200, 200)};
+        places = {QRectF(53, 53, 150, 150)};
     } else if (count == 2) {
-        places = {QRectF(8, 8, 150, 150), QRectF(98, 98, 150, 150)};
+        places = {QRectF(24, 78, 100, 100), QRectF(132, 78, 100, 100)};
     } else if (count == 3) {
-        places = {QRectF(66, 6, 124, 124), QRectF(6, 126, 124, 124), QRectF(126, 126, 124, 124)};
+        places = {QRectF(78, 22, 100, 100), QRectF(24, 134, 100, 100), QRectF(132, 134, 100, 100)};
     } else {
-        places = {QRectF(6, 6, 120, 120), QRectF(130, 6, 120, 120), QRectF(6, 130, 120, 120), QRectF(130, 130, 120, 120)};
+        places = {QRectF(24, 24, 100, 100), QRectF(132, 24, 100, 100), QRectF(24, 132, 100, 100), QRectF(132, 132, 100, 100)};
     }
     for (int i = 0; i < count; ++i) {
         const QRectF place = places.at(i);

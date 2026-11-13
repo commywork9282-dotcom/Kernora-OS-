@@ -80,6 +80,17 @@
           "en": "Windows now have all four corners rounded and a soft shadow, without the thin dark line along the edges. Maximised windows stay square. In the dark theme windows get a faint light edge so they stand out from a dark wallpaper.",
           "ru": "Теперь у окон скруглены все четыре угла, а вокруг них мягкая тень без тонкой тёмной линии по краю. Развёрнутые окна остаются с прямыми углами. В тёмной теме у окон появляется еле заметный светлый край, чтобы они не сливались с тёмными обоями."
         }
+      },
+      {
+        "icon": "view-app-grid",
+        "title": {
+          "en": "App groups",
+          "ru": "Группы приложений"
+        },
+        "text": {
+          "en": "Drag an app onto another app on the desktop to put them in a group, like on Googlebook. Click a group to open it, click its name to rename it, and right-click an app to take it out.",
+          "ru": "Перетащите приложение на другое приложение на рабочем столе, и они окажутся в одной группе, как в Googlebook. Нажмите на группу, чтобы открыть её, на название — чтобы переименовать, а правый клик по приложению убирает его из группы."
+        }
       }
     ]
   },

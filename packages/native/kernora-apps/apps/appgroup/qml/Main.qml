@@ -17,6 +17,7 @@ QtObject {
 
     readonly property var args: Array.from(startArguments).map(String)
     readonly property string mode: args[0] || ""
+    property var window: null
 
     property Timer quitter: Timer {
         interval: 0
@@ -141,38 +142,6 @@ QtObject {
                     width: parent.width - 40
                     spacing: 12
 
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 44
-                        radius: 22
-                        color: nameField.activeFocus ? M3.surfaceContainerHighest : "transparent"
-
-                        TextInput {
-                            id: nameField
-                            anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
-                            verticalAlignment: TextInput.AlignVCenter
-                            horizontalAlignment: activeFocus ? TextInput.AlignLeft : TextInput.AlignHCenter
-                            font: M3.titleLarge
-                            color: M3.surfaceContent
-                            selectionColor: M3.primary
-                            selectedTextColor: M3.primaryContent
-                            selectByMouse: true
-                            maximumLength: 40
-                            text: window.info.name || ""
-                            Accessible.name: i18nc("@label", "Group name")
-                            onEditingFinished: {
-                                if (text.trim().length > 0 && text.trim() !== window.info.name) {
-                                    AppGroups.rename(window.file, text);
-                                    window.refresh();
-                                } else {
-                                    text = window.info.name || "";
-                                }
-                            }
-                        }
-                    }
-
                     Grid {
                         Layout.alignment: Qt.AlignHCenter
                         columns: window.columns
@@ -242,15 +211,38 @@ QtObject {
                         }
                     }
 
-                    MButton {
-                        Layout.alignment: Qt.AlignRight
-                        variant: "text"
-                        text: i18nc("@action:button", "Ungroup")
-                        onClicked: {
-                            AppGroups.ungroup(window.file);
-                            window.leave();
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 44
+                        radius: 22
+                        color: nameField.activeFocus ? M3.surfaceContainerHighest : "transparent"
+
+                        TextInput {
+                            id: nameField
+                            anchors.fill: parent
+                            anchors.leftMargin: 16
+                            anchors.rightMargin: 16
+                            verticalAlignment: TextInput.AlignVCenter
+                            horizontalAlignment: activeFocus ? TextInput.AlignLeft : TextInput.AlignHCenter
+                            font: M3.titleMedium
+                            color: M3.surfaceContent
+                            selectionColor: M3.primary
+                            selectedTextColor: M3.primaryContent
+                            selectByMouse: true
+                            maximumLength: 40
+                            text: window.info.name || ""
+                            Accessible.name: i18nc("@label", "Group name")
+                            onEditingFinished: {
+                                if (text.trim().length > 0 && text.trim() !== window.info.name) {
+                                    AppGroups.rename(window.file, text);
+                                    window.refresh();
+                                } else {
+                                    text = window.info.name || "";
+                                }
+                            }
                         }
                     }
+
                 }
 
                 MMenu {
@@ -278,7 +270,7 @@ QtObject {
             AppGroups.drop(args[1], args.slice(2));
             quitter.start();
         } else if (mode === "open" && args.length > 1) {
-            popup.createObject(null);
+            window = popup.createObject(app);
         } else {
             quitter.start();
         }

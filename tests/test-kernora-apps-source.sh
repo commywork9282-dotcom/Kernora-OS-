@@ -348,4 +348,9 @@ grep -Fq '{QStringLiteral("category"), category}' "$package_root/src/system/file
   && grep -Fq 'required property string collection' "$package_root/apps/settings/qml/pages/WallpaperCollectionPage.qml" \
   && grep -Fq 'msgstr "Живые обои Kernora"' "$package_root/po/ru/kernora-settings.po" \
   || fail "wallpapers are not grouped into collections"
+grep -Fq '    const KDesktopFile file(path);' "$package_root/src/system/appgroups.cpp" \
+  && grep -Fq 'painter.drawRoundedRect(QRectF(4, 4, 248, 248), 76, 76);' "$package_root/src/system/appgroups.cpp" \
+  && grep -Fq 'window = popup.createObject(app);' "$package_root/apps/appgroup/qml/Main.qml" \
+  && ! grep -Fq '"Ungroup")' "$package_root/apps/appgroup/qml/Main.qml" \
+  || fail "app groups crash, look unlike Googlebook or lose their window"
 printf 'kernora-apps source test: OK\n'

@@ -1,5 +1,8 @@
 kernora-apps (1.1.87) UNRELEASED; urgency=medium
 
+  * App groups work: dragging an app onto another no longer crashes, the
+    group icon is a dark rounded tile like on Googlebook, and the opened
+    group shows its apps with the name below.
   * Settings: Wallpaper & style groups wallpapers into collections with a
     cover each, and a collection opens on its own page.
   * The dark theme gives windows a faint light outline and the light theme
