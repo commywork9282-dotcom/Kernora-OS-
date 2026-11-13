@@ -343,4 +343,9 @@ grep -Fq 'KConfigGroup corners(kwin, QStringLiteral("Round-Corners"));' "$packag
   && grep -Fq 'corners.writeEntry("OutlineThickness", enable ? 1 : 0);' "$package_root/src/system/appearance.cpp" \
   && grep -Fq 'QStringLiteral("kwin4_effect_shapecorners")' "$package_root/src/system/appearance.cpp" \
   || fail "the dark theme does not switch the window outline"
+grep -Fq '{QStringLiteral("category"), category}' "$package_root/src/system/files.cpp" \
+  && grep -Fq 'page.open("WallpaperCollectionPage.qml"' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
+  && grep -Fq 'required property string collection' "$package_root/apps/settings/qml/pages/WallpaperCollectionPage.qml" \
+  && grep -Fq 'msgstr "Живые обои Kernora"' "$package_root/po/ru/kernora-settings.po" \
+  || fail "wallpapers are not grouped into collections"
 printf 'kernora-apps source test: OK\n'

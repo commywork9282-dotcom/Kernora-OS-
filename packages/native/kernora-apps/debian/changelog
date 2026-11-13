@@ -1,5 +1,7 @@
 kernora-apps (1.1.87) UNRELEASED; urgency=medium
 
+  * Settings: Wallpaper & style groups wallpapers into collections with a
+    cover each, and a collection opens on its own page.
   * The dark theme gives windows a faint light outline and the light theme
     takes it away, through the rounded corners effect.
   * Settings: Wallpaper and style has Layout, Panel shape and Apps button.

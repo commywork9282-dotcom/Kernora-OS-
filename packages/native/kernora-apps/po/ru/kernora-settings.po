@@ -4116,3 +4116,57 @@ msgstr "Круглая"
 
 msgid "The panel could not be changed."
 msgstr "Не удалось изменить панель."
+
+msgid "Landscapes"
+msgstr "Пейзажи"
+
+msgid "Earth"
+msgstr "Земля"
+
+msgid "Art"
+msgstr "Искусство"
+
+msgid "Curated"
+msgstr "Подборка"
+
+msgid "Culture"
+msgstr "Культура"
+
+msgid "Life"
+msgstr "Жизнь"
+
+msgid "Motif"
+msgstr "Узоры"
+
+msgid "Textures"
+msgstr "Текстуры"
+
+msgid "Minerals"
+msgstr "Минералы"
+
+msgid "Cityscapes"
+msgstr "Города"
+
+msgid "For fun"
+msgstr "Весёлые"
+
+msgid "Solid colours"
+msgstr "Однотонные"
+
+msgid "More wallpapers"
+msgstr "Другие обои"
+
+msgid "Kernora live wallpapers"
+msgstr "Живые обои Kernora"
+
+msgid "%1 wallpaper"
+msgid_plural "%1 wallpapers"
+msgstr[0] "%1 вариант"
+msgstr[1] "%1 варианта"
+msgstr[2] "%1 вариантов"
+
+msgid "%1 live wallpaper"
+msgid_plural "%1 live wallpapers"
+msgstr[0] "%1 живой вариант"
+msgstr[1] "%1 живых варианта"
+msgstr[2] "%1 живых вариантов"

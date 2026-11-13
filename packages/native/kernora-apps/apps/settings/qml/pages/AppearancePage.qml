@@ -63,6 +63,34 @@ SettingsPage {
     readonly property var currentLive: liveWallpapers.find(w => w.id === wallpaperPlugin) || null
     readonly property bool live: currentLive !== null
     property var wallpapers: Files.wallpapers()
+    readonly property var collections: {
+        const names = {
+            "landscapes": i18n("Landscapes"),
+            "earth": i18n("Earth"),
+            "art": i18n("Art"),
+            "curated": i18n("Curated"),
+            "culture": i18n("Culture"),
+            "life": i18n("Life"),
+            "motif": i18n("Motif"),
+            "textures": i18n("Textures"),
+            "minerals": i18n("Minerals"),
+            "cityscapes": i18n("Cityscapes"),
+            "for-fun": i18n("For fun"),
+            "solid-colors": i18n("Solid colours")
+        };
+        const result = [];
+        for (const id of Object.keys(names)) {
+            const items = wallpapers.filter(w => w.category === id);
+            if (items.length > 0) {
+                result.push({ id: id, name: names[id], items: items });
+            }
+        }
+        const other = wallpapers.filter(w => !(w.category in names));
+        if (other.length > 0) {
+            result.push({ id: "other", name: i18n("More wallpapers"), items: other });
+        }
+        return result;
+    }
 
     function isDesktop(group: string): bool {
         const containment = Config.read(appletsrc, group, "plugin", "");
@@ -463,27 +491,25 @@ SettingsPage {
             columnSpacing: 12
             rowSpacing: 12
 
-            Repeater {
-                model: page.liveWallpapers
-                delegate: WallpaperTile {
-                    required property var modelData
-                    Layout.fillWidth: true
-                    title: modelData.name
-                    subtitle: i18n("Live")
-                    scene: modelData.scene
-                    selected: page.wallpaperPlugin === modelData.id
-                    onClicked: page.chooseLive(modelData.id)
-                }
+            WallpaperTile {
+                Layout.fillWidth: true
+                visible: page.liveWallpapers.length > 0
+                title: i18n("Kernora")
+                subtitle: i18np("%1 live wallpaper", "%1 live wallpapers", page.liveWallpapers.length)
+                scene: page.liveWallpapers.length > 0 ? page.liveWallpapers[0].scene : ""
+                selected: page.live
+                onClicked: page.open("WallpaperCollectionPage.qml", { appearance: page, collection: "kernora", name: i18n("Kernora live wallpapers") })
             }
             Repeater {
-                model: page.wallpapers
+                model: page.collections
                 delegate: WallpaperTile {
                     required property var modelData
                     Layout.fillWidth: true
                     title: modelData.name
-                    preview: modelData.preview
-                    selected: !page.live && page.sameImage(page.wallpaperImage, modelData.image)
-                    onClicked: page.chooseImage(modelData.image)
+                    subtitle: i18np("%1 wallpaper", "%1 wallpapers", modelData.items.length)
+                    preview: modelData.items[0].preview
+                    selected: !page.live && modelData.items.some(w => page.sameImage(page.wallpaperImage, w.image))
+                    onClicked: page.open("WallpaperCollectionPage.qml", { appearance: page, collection: modelData.id, name: modelData.name })
                 }
             }
             WallpaperTile {

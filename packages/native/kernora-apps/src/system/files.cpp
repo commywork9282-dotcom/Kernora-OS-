@@ -659,6 +659,7 @@ QVariantList Files::wallpapers() const
             QString name;
             QString image;
             QString preview;
+            QString category;
             if (entry.isDir()) {
                 image = largestImage(entry.absoluteFilePath() + QStringLiteral("/contents/images"));
                 if (image.isEmpty()) {
@@ -666,7 +667,9 @@ QVariantList Files::wallpapers() const
                 }
                 QFile metadata(entry.absoluteFilePath() + QStringLiteral("/metadata.json"));
                 if (metadata.open(QIODevice::ReadOnly)) {
-                    name = localizedName(QJsonDocument::fromJson(metadata.readAll()).object().value(QStringLiteral("KPlugin")).toObject());
+                    const QJsonObject object = QJsonDocument::fromJson(metadata.readAll()).object();
+                    name = localizedName(object.value(QStringLiteral("KPlugin")).toObject());
+                    category = object.value(QStringLiteral("X-Kernora-Category")).toString();
                 }
                 const QString screenshot = entry.absoluteFilePath() + QStringLiteral("/contents/screenshot.png");
                 preview = QFileInfo::exists(screenshot) ? screenshot : image;
@@ -682,7 +685,8 @@ QVariantList Files::wallpapers() const
             seen.append(entry.fileName());
             list.append(QVariantMap{{QStringLiteral("name"), name},
                                     {QStringLiteral("image"), QUrl::fromLocalFile(image)},
-                                    {QStringLiteral("preview"), QUrl::fromLocalFile(preview)}});
+                                    {QStringLiteral("preview"), QUrl::fromLocalFile(preview)},
+                                    {QStringLiteral("category"), category}});
         }
     }
     return list;
