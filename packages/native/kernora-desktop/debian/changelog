@@ -1,5 +1,7 @@
 kernora-desktop (1.4.75) UNRELEASED; urgency=medium
 
+  * File icons are tonal rounded tiles with a filled symbol in the accent
+    colour, like Files on Googlebook. Symbolic file icons stay plain glyphs.
   * Picture wallpapers sorted into collections come with the desktop
     through the new kernora-wallpapers package.
   * Windows have all four corners rounded and a soft shadow, through the

@@ -2311,6 +2311,8 @@ grep -Fxq 'PAD_SIDE = 20' "$package_root/tools/gen-aurorae-theme" \
   && grep -Fxq '[Round-Corners]' "$package_root/data/xdg-kwinrc/kwinrc" \
   && grep -Fxq 'UseNativeDecorationShadows=false' "$package_root/data/xdg-kwinrc/kwinrc" \
   && grep -Fq 'Exclusions=org.kernora.appgroup,' "$package_root/data/xdg-kwinrc/kwinrc" \
+  && grep -Fq 'drawing = file_tile(source, symbol, primary) if tile else' "$package_root/tools/gen-icon-theme" \
+  && ! grep -Fq 'False, "mimetypes"' "$package_root/tools/symbols_map.py" \
   || fail "window frame padding is not a multiple of 20 or the corner effect is not set up"
 
 printf 'kernora-desktop source test: OK\n'

@@ -91,6 +91,17 @@
           "en": "Drag an app onto another app on the desktop to put them in a group, like on Googlebook. Click a group to open it, click its name to rename it, and right-click an app to take it out.",
           "ru": "Перетащите приложение на другое приложение на рабочем столе, и они окажутся в одной группе, как в Googlebook. Нажмите на группу, чтобы открыть её, на название — чтобы переименовать, а правый клик по приложению убирает его из группы."
         }
+      },
+      {
+        "icon": "folder-documents",
+        "title": {
+          "en": "New file icons",
+          "ru": "Новые значки файлов"
+        },
+        "text": {
+          "en": "Documents, pictures, music, archives and other files now have rounded tiles in your accent colour, like Files on Googlebook.",
+          "ru": "У документов, картинок, музыки, архивов и других файлов теперь скруглённые плитки в цвете вашей темы, как в Файлах на Googlebook."
+        }
       }
     ]
   },
