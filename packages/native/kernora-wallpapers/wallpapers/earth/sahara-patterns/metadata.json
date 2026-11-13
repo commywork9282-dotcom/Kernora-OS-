@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-earth-sahara-patterns",
+        "Name": "Sahara Patterns",
+        "Name[ru]": "Узоры Сахары",
+        "Authors": [
+            {
+                "Name": "Zakaria Zayane"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "earth"
+}

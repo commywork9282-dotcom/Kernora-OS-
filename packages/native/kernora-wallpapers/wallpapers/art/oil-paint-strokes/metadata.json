@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-art-oil-paint-strokes",
+        "Name": "Oil Paint Strokes",
+        "Name[ru]": "Мазки масляной краской",
+        "Authors": [
+            {
+                "Name": "Unsplash Contributor"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "art"
+}

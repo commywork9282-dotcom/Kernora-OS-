@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-art-neon-gradient",
+        "Name": "Neon Gradient",
+        "Name[ru]": "Неоновый градиент",
+        "Authors": [
+            {
+                "Name": "Unsplash Contributor"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "art"
+}

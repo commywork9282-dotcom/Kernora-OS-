@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-art-geometric-3d",
+        "Name": "Geometric 3D",
+        "Name[ru]": "Геометрическое 3D",
+        "Authors": [
+            {
+                "Name": "Unsplash Contributor"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "art"
+}

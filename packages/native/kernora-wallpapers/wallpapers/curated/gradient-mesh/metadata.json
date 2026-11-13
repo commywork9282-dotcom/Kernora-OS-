@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-curated-gradient-mesh",
+        "Name": "Gradient Mesh",
+        "Name[ru]": "Градиентная сетка",
+        "Authors": [
+            {
+                "Name": "Unsplash Contributor"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "curated"
+}

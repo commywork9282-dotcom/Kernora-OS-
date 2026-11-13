@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-curated-silk-wave",
+        "Name": "Silk Wave",
+        "Name[ru]": "Шёлковая волна",
+        "Authors": [
+            {
+                "Name": "Unsplash Contributor"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "curated"
+}

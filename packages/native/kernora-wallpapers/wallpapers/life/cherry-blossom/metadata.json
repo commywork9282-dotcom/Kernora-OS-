@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-life-cherry-blossom",
+        "Name": "Cherry Blossom",
+        "Name[ru]": "Цветение сакуры",
+        "Authors": [
+            {
+                "Name": "dbmartin00"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "life"
+}

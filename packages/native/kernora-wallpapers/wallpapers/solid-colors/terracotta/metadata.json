@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-solid-colors-terracotta",
+        "Name": "Terracotta",
+        "Name[ru]": "Терракотовый",
+        "Authors": [
+            {
+                "Name": "Kernora Team"
+            }
+        ],
+        "License": "CC0-1.0"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "solid-colors"
+}

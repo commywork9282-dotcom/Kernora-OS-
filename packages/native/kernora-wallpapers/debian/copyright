@@ -1,0 +1,153 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: kernora-wallpapers
+
+Files: *
+Copyright: 2026 Kernora Developers
+License: GPL-2+
+
+Files: wallpapers/art/geometric-3d/*
+Copyright: Unknown photographer on Unsplash
+License: Unsplash
+
+Files: wallpapers/art/neon-gradient/*
+Copyright: Unknown photographer on Unsplash
+License: Unsplash
+
+Files: wallpapers/art/oil-paint-strokes/*
+Copyright: Unknown photographer on Unsplash
+License: Unsplash
+
+Files: wallpapers/culture/lantern-festival/*
+Copyright: Unknown photographer on Unsplash
+License: Unsplash
+
+Files: wallpapers/culture/origami-cranes/*
+Copyright: Unknown photographer on Unsplash
+License: Unsplash
+
+Files: wallpapers/curated/fluid-art/*
+Copyright: Unknown photographer on Unsplash
+License: Unsplash
+
+Files: wallpapers/curated/gradient-mesh/*
+Copyright: Unknown photographer on Unsplash
+License: Unsplash
+
+Files: wallpapers/curated/ink-bloom/*
+Copyright: Unknown photographer on Unsplash
+License: Unsplash
+
+Files: wallpapers/curated/silk-wave/*
+Copyright: Unknown photographer on Unsplash
+License: Unsplash
+
+Files: wallpapers/earth/aurora-from-space/*
+Copyright: NASA / ISS Expedition 23 crew, public domain (United States Government work)
+License: CC0-1.0
+
+Files: wallpapers/earth/river-delta/*
+Copyright: USGS / Landsat, public domain (United States Government work)
+License: CC0-1.0
+
+Files: wallpapers/earth/sahara-patterns/*
+Copyright: Zakaria Zayane (Unsplash)
+License: Unsplash
+
+Files: wallpapers/landscapes/dunes/*
+Copyright: shot_by_teo (Unsplash)
+License: Unsplash
+
+Files: wallpapers/landscapes/northern-lights/*
+Copyright: Lightscape (Unsplash)
+License: Unsplash
+
+Files: wallpapers/landscapes/ocean-waves/*
+Copyright: Ivan Bandura (Unsplash)
+License: Unsplash
+
+Files: wallpapers/landscapes/snowy-peaks/*
+Copyright: erol (Unsplash)
+License: Unsplash
+
+Files: wallpapers/life/cherry-blossom/*
+Copyright: dbmartin00 (Unsplash)
+License: Unsplash
+
+Files: wallpapers/life/dandelion-seeds/*
+Copyright: Hasan Almasi (Unsplash)
+License: Unsplash
+
+Files: wallpapers/life/monstera-leaf/*
+Copyright: Chris Lee (Unsplash)
+License: Unsplash
+
+Files: wallpapers/motif/hexagonal/*
+Copyright: the blowup (Unsplash)
+License: Unsplash
+
+Files: wallpapers/motif/wave-lines/*
+Copyright: Unknown photographer on Unsplash
+License: Unsplash
+
+Files: wallpapers/solid-colors/coral-pink/*
+Copyright: 2026 Kernora Developers
+License: CC0-1.0
+
+Files: wallpapers/solid-colors/deep-blue/*
+Copyright: 2026 Kernora Developers
+License: CC0-1.0
+
+Files: wallpapers/solid-colors/lavender-mist/*
+Copyright: 2026 Kernora Developers
+License: CC0-1.0
+
+Files: wallpapers/solid-colors/midnight/*
+Copyright: 2026 Kernora Developers
+License: CC0-1.0
+
+Files: wallpapers/solid-colors/sage-green/*
+Copyright: 2026 Kernora Developers
+License: CC0-1.0
+
+Files: wallpapers/solid-colors/slate-gray/*
+Copyright: 2026 Kernora Developers
+License: CC0-1.0
+
+Files: wallpapers/solid-colors/terracotta/*
+Copyright: 2026 Kernora Developers
+License: CC0-1.0
+
+Files: wallpapers/solid-colors/warm-sand/*
+Copyright: 2026 Kernora Developers
+License: CC0-1.0
+
+Files: wallpapers/textures/brushed-metal/*
+Copyright: Gordeonbleu
+License: CC0-1.0
+
+License: GPL-2+
+ This package is free software; you can redistribute it and/or modify it under
+ the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later
+ version.
+ .
+ On Debian systems, the complete text of version 2 of the GNU General Public
+ License can be found in `/usr/share/common-licenses/GPL-2`.
+
+License: CC0-1.0
+ To the extent possible under law, the authors have dedicated all copyright
+ and related and neighbouring rights to this work to the public domain
+ worldwide. This work is distributed without any warranty.
+ .
+ On Debian systems, the complete text of the CC0 1.0 Universal Public Domain
+ Dedication can be found in `/usr/share/common-licenses/CC0-1.0`.
+
+License: Unsplash
+ Unsplash grants you an irrevocable, nonexclusive, worldwide copyright
+ license to download, copy, modify, distribute, perform, and use photos from
+ Unsplash for free, including for commercial purposes, without permission
+ from or attributing the photographer or Unsplash. This license does not
+ include the right to compile photos from Unsplash to replicate a similar or
+ competing service.
+ .
+ https://unsplash.com/license

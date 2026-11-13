@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-earth-river-delta",
+        "Name": "River Delta",
+        "Name[ru]": "Дельта реки",
+        "Authors": [
+            {
+                "Name": "USGS / Landsat"
+            }
+        ],
+        "License": "CC0-1.0"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "earth"
+}

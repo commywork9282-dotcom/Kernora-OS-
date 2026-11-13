@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-culture-origami-cranes",
+        "Name": "Origami Cranes",
+        "Name[ru]": "Оригами журавли",
+        "Authors": [
+            {
+                "Name": "Unsplash Contributor"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "culture"
+}

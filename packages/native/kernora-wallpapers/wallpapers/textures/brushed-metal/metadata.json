@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-textures-brushed-metal",
+        "Name": "Brushed Metal",
+        "Name[ru]": "Шлифованный металл",
+        "Authors": [
+            {
+                "Name": "Gordeonbleu"
+            }
+        ],
+        "License": "CC0-1.0"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "textures"
+}

@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-solid-colors-warm-sand",
+        "Name": "Warm Sand",
+        "Name[ru]": "Тёплый песочный",
+        "Authors": [
+            {
+                "Name": "Kernora Team"
+            }
+        ],
+        "License": "CC0-1.0"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "solid-colors"
+}

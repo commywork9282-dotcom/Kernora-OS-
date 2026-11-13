@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-earth-aurora-from-space",
+        "Name": "Aurora from Space",
+        "Name[ru]": "Полярное сияние из космоса",
+        "Authors": [
+            {
+                "Name": "NASA / ISS Expedition 23 crew"
+            }
+        ],
+        "License": "CC0-1.0"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "earth"
+}

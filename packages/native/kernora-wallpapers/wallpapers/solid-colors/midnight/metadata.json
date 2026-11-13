@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-solid-colors-midnight",
+        "Name": "Midnight",
+        "Name[ru]": "Полночный",
+        "Authors": [
+            {
+                "Name": "Kernora Team"
+            }
+        ],
+        "License": "CC0-1.0"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "solid-colors"
+}

@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-landscapes-northern-lights",
+        "Name": "Northern Lights",
+        "Name[ru]": "Северное сияние",
+        "Authors": [
+            {
+                "Name": "Lightscape"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "landscapes"
+}

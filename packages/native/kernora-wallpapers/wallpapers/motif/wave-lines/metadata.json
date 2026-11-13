@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-motif-wave-lines",
+        "Name": "Wave Lines",
+        "Name[ru]": "Волнистые линии",
+        "Authors": [
+            {
+                "Name": "Unsplash Contributor"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "motif"
+}

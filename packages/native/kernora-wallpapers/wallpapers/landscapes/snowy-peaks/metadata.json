@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-landscapes-snowy-peaks",
+        "Name": "Snowy Peaks",
+        "Name[ru]": "Снежные вершины",
+        "Authors": [
+            {
+                "Name": "erol"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "landscapes"
+}

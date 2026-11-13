@@ -1,0 +1,6 @@
+kernora-wallpapers (1.0) UNRELEASED; urgency=medium
+
+  * Initial release: picture wallpapers sorted into collections for
+    Wallpaper & style, with light and dark variants where available.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 12 Nov 2026 18:00:00 -0800

@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-landscapes-ocean-waves",
+        "Name": "Ocean Waves",
+        "Name[ru]": "Океанские волны",
+        "Authors": [
+            {
+                "Name": "Ivan Bandura"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "landscapes"
+}

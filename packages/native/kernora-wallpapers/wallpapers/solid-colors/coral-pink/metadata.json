@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-solid-colors-coral-pink",
+        "Name": "Coral Pink",
+        "Name[ru]": "Коралловый розовый",
+        "Authors": [
+            {
+                "Name": "Kernora Team"
+            }
+        ],
+        "License": "CC0-1.0"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "solid-colors"
+}

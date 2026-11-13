@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-curated-ink-bloom",
+        "Name": "Ink Bloom",
+        "Name[ru]": "Чернильный всплеск",
+        "Authors": [
+            {
+                "Name": "Unsplash Contributor"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "curated"
+}

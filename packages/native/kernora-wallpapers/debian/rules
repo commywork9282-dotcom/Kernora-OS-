@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	set -e; for dir in wallpapers/*/*/; do \
+	  category=$$(basename "$$(dirname "$$dir")"); \
+	  name=$$(basename "$$dir"); \
+	  target="debian/kernora-wallpapers/usr/share/wallpapers/kernora-$$category-$$name"; \
+	  install -d "$$target"; \
+	  cp -r "$$dir." "$$target/"; \
+	done
+	find debian/kernora-wallpapers/usr/share/wallpapers -type d -exec chmod 0755 {} +
+	find debian/kernora-wallpapers/usr/share/wallpapers -type f -exec chmod 0644 {} +

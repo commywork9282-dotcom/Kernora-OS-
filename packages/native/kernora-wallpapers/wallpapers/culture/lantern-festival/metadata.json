@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "kernora-culture-lantern-festival",
+        "Name": "Lantern Festival",
+        "Name[ru]": "Фестиваль фонарей",
+        "Authors": [
+            {
+                "Name": "Unsplash Contributor"
+            }
+        ],
+        "License": "Unsplash License"
+    },
+    "KPackageStructure": "Wallpaper/Images",
+    "X-Kernora-Category": "culture"
+}
