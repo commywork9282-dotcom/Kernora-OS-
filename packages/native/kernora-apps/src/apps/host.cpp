@@ -121,7 +121,8 @@ int run(int &argc, char **argv, const Application &application, KLocalizedString
                              }
                              const QStringList forwarded = normalised(received.mid(1), workingDirectory);
                              QMetaObject::invokeMethod(root, "handleArguments", Q_ARG(QVariant, QVariant(forwarded)));
-                             if (auto *window = qobject_cast<QQuickWindow *>(root)) {
+                             auto *window = qobject_cast<QQuickWindow *>(root);
+                             if (window && !root->property("stayHidden").toBool()) {
                                  window->show();
                                  window->raise();
                                  window->requestActivate();

@@ -1,5 +1,10 @@
 kernora-apps (1.1.87) UNRELEASED; urgency=medium
 
+  * Welcome: the KED 2 update opens "Meet KED 2" instead of What's new, a
+    dialog with a screenshot of the new look. Get started shows tips with
+    arrows next to quick settings, notifications and the apps menu, and
+    the next tip comes up once the opened one is closed. Then app groups
+    and wallpaper collections.
   * App groups work: dragging an app onto another no longer crashes, the
     group icon is a dark rounded tile like on Googlebook, and the opened
     group shows its apps with the name below.

@@ -353,4 +353,13 @@ grep -Fq '    const KDesktopFile file(path);' "$package_root/src/system/appgroup
   && grep -Fq 'window = popup.createObject(app);' "$package_root/apps/appgroup/qml/Main.qml" \
   && ! grep -Fq '"Ungroup")' "$package_root/apps/appgroup/qml/Main.qml" \
   || fail "app groups crash, look unlike Googlebook or lose their window"
+grep -Fq 'notes[0].hero === "ked2"' "$package_root/apps/welcome/qml/Main.qml" \
+  && grep -Fq 'source: Qt.resolvedUrl("ked2.jpg")' "$package_root/apps/welcome/qml/Main.qml" \
+  && [[ -s "$package_root/apps/welcome/qml/ked2.jpg" ]] \
+  && grep -Fq 'id: bubbleComponent' "$package_root/apps/welcome/qml/Main.qml" \
+  && ! grep -Fq 'i18n("End tour")' "$package_root/apps/welcome/qml/Main.qml" \
+  && grep -Fq 'window.appletPopup === true' "$package_root/apps/welcome/qml/tour-watch.js" \
+  && grep -Fq '!root->property("stayHidden").toBool()' "$package_root/src/apps/host.cpp" \
+  && grep -Fq '"hero": "ked2"' "$package_root/data/whatsnew.json" \
+  || fail "Meet KED 2 is not a dialog with a screenshot and a tour of arrow tips"
 printf 'kernora-apps source test: OK\n'

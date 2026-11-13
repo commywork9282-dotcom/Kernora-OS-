@@ -263,110 +263,41 @@ msgstr "Meet KED 2"
 msgid "Get started"
 msgstr "Начать"
 
-msgid "Kernora Expressive Design 2 is Kernora's new look, inspired by Googlebook. Here is what changed."
-msgstr "Kernora Expressive Design 2 — новый облик Kernora в духе Googlebook. Вот что изменилось."
-
-msgid "Status bar at the top"
-msgstr "Строка состояния сверху"
-
-msgid "The time and date sit on the left, notifications, the network and the battery on the right. The bar stays clear and follows your wallpaper."
-msgstr "Время и дата слева, уведомления, сеть и батарея справа. Строка остаётся прозрачной и подстраивается под обои."
-
-msgid "A new apps menu"
-msgstr "Новое меню приложений"
-
-msgid "It opens in the middle above the taskbar. All apps from A to Z, and search finds apps, settings, files and the web."
-msgstr "Открывается по центру над панелью задач. Все приложения от А до Я, а поиск находит приложения, настройки, файлы и сайты."
-
 msgid "Quick settings"
 msgstr "Быстрые настройки"
-
-msgid "Big sliders and tiles in two columns. Click a tile's icon to turn it on, or its name for details."
-msgstr "Крупные ползунки и плитки в две колонки. Нажмите на значок плитки, чтобы включить её, или на название — для подробностей."
-
-msgid "Rounded windows"
-msgstr "Скруглённые окна"
-
-msgid "Every corner of a window is rounded, with a soft shadow around it. Maximised windows stay square."
-msgstr "У окон скруглены все четыре угла, а вокруг мягкая тень. Развёрнутые окна остаются с прямыми углами."
 
 msgid "Wallpaper collections"
 msgstr "Коллекции обоев"
 
-msgid "Landscapes, Earth, Art and more, sorted into collections in Wallpaper & style."
-msgstr "Пейзажи, Земля, Искусство и другие — обои разложены по коллекциям в «Обоях и стиле»."
+msgid "Notifications"
+msgstr "Уведомления"
 
-msgid "All changes"
-msgstr "Все изменения"
+msgid "App groups"
+msgstr "Группы приложений"
 
-msgid "Search web and more"
-msgstr "Поиск в интернете и не только"
+msgid "Not now"
+msgstr "Не сейчас"
 
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
+msgid "Kernora's new look, inspired by Googlebook. Take a short tour: tips point at what changed, and you can try each thing right away."
+msgstr "Новый облик Kernora в духе Googlebook. Пройдите короткий тур: подсказки покажут, что изменилось, и всё можно сразу попробовать."
 
-msgid "Connected"
-msgstr "Подключено"
+msgid "Click the icons on the right: sliders, and tiles for Wi-Fi, Bluetooth and more."
+msgstr "Нажмите на значки справа: там ползунки и плитки Wi-Fi, Bluetooth и другие."
 
-msgid "On"
-msgstr "Включён"
+msgid "The bell opens your notifications. Silent ones have their own section."
+msgstr "Колокольчик открывает уведомления. Беззвучные собраны отдельно."
 
-msgid "Off"
-msgstr "Выключен"
+msgid "Apps menu"
+msgstr "Меню приложений"
 
-msgid "Bluetooth"
-msgstr "Bluetooth"
+msgid "All your apps from A to Z, and search for apps, settings, files and the web."
+msgstr "Все приложения от А до Я и поиск по приложениям, настройкам, файлам и интернету."
 
-msgid "Dark theme"
-msgstr "Тёмная тема"
+msgid "Drag one app onto another on the desktop to put them in a group."
+msgstr "Перетащите одно приложение на другое на рабочем столе, и они объединятся в группу."
 
-msgid "Do Not Disturb"
-msgstr "Не беспокоить"
+msgid "Click here to open Wallpaper & style, with wallpapers sorted into collections."
+msgstr "Нажмите, чтобы открыть «Обои и стиль»: там обои разложены по коллекциям."
 
-msgid "Downloads"
-msgstr "Загрузки"
-
-msgid "Documents"
-msgstr "Документы"
-
-msgid "Pictures"
-msgstr "Изображения"
-
-msgid "Network & internet"
-msgstr "Сеть и интернет"
-
-msgid "Wallpaper & style"
-msgstr "Обои и стиль"
-
-msgid "Landscapes"
-msgstr "Пейзажи"
-
-msgid "Earth"
-msgstr "Земля"
-
-msgid "Art"
-msgstr "Искусство"
-
-msgid "Curated"
-msgstr "Подборка"
-
-msgid "Life"
-msgstr "Жизнь"
-
-msgid "Solid colours"
-msgstr "Однотонные"
-
-msgid "Culture"
-msgstr "Культура"
-
-msgid "Motif"
-msgstr "Узоры"
-
-msgid "Textures"
-msgstr "Текстуры"
-
-msgid "Brightness"
-msgstr "Яркость"
-
-msgid "Volume"
-msgstr "Громкость"
+msgid "%1 of %2"
+msgstr "%1 из %2"

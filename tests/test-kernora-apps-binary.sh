@@ -38,6 +38,9 @@ for app in settings files welcome editor photos player calculator screenshot sto
   cmp -s "$package_root/apps/$app/qml/Main.qml" "$temporary_root/usr/share/kernora/$app/Main.qml" || fail "$app interface differs from the source"
   [[ -s "$temporary_root/usr/share/applications/org.kernora.$app.desktop" ]] || fail "missing the $app desktop entry"
 done
+for file in ked2.jpg tour-watch.js; do
+  cmp -s "$package_root/apps/welcome/qml/$file" "$temporary_root/usr/share/kernora/welcome/$file" || fail "missing the welcome $file"
+done
 grep -q 'X-KDE-DBUS-Restricted-Interfaces=org.kde.KWin.ScreenShot2' \
   "$temporary_root/usr/share/applications/org.kernora.screenshot.desktop" \
   || fail "Screenshot cannot ask KWin for screenshots"

@@ -11,6 +11,7 @@ import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import QtQuick.Shapes
 import org.kde.kirigami as Kirigami
+import org.kde.layershell as LayerShell
 import org.kernora.m3
 import org.kernora.ui
 import org.kernora.system
@@ -23,7 +24,7 @@ AppWindow {
     minimumWidth: 560
     minimumHeight: 520
     color: M3.surfaceContainer
-    visible: !(firstRun && SystemInfo.live) && !(whatsNew && notes.length === 0) && !(kernelPanic && !panic.id)
+    visible: !(firstRun && SystemInfo.live) && !(whatsNew && notes.length === 0) && !(kernelPanic && !panic.id) && !heroActive
     title: kernelPanic ? i18n("Kernora restarted") : heroActive ? i18n("Meet KED 2") : whatsNew ? i18n("What's new") : i18n("Welcome")
 
     property int page: 0
@@ -65,7 +66,11 @@ AppWindow {
     }
 
     onClosing: retire()
-    function handleArguments(args: var): void {}
+    function handleArguments(args: var): void {
+        if (tourWaiting) {
+            showBubble(tourStep + 1);
+        }
+    }
 
     readonly property bool firstRun: (startArguments || []).indexOf("--first-run") >= 0
     readonly property bool whatsNew: (startArguments || []).indexOf("--whats-new") >= 0
@@ -73,8 +78,7 @@ AppWindow {
     readonly property bool special: whatsNew || kernelPanic
     readonly property var panic: kernelPanic ? SystemInfo.kernelPanic() : ({})
     property var notes: []
-    property bool heroDone: false
-    readonly property bool heroActive: whatsNew && !heroDone && notes.length > 0 && notes[0].hero === "ked2"
+    readonly property bool heroActive: whatsNew && notes.length > 0 && notes[0].hero === "ked2"
 
     function cookie(centre: real, radius: real, depth: real, lobes: int): var {
         const points = [];
@@ -112,6 +116,9 @@ AppWindow {
             } else {
                 Qt.quit();
             }
+            if (heroActive) {
+                greeting = greetingComponent.createObject(null);
+            }
         }
     }
 
@@ -135,11 +142,6 @@ AppWindow {
             sourceComponent: whatsNewView
         }
 
-        Loader {
-            anchors.fill: parent
-            active: app.heroActive
-            sourceComponent: ked2View
-        }
 
         Loader {
             anchors.fill: parent
@@ -551,753 +553,346 @@ AppWindow {
         }
     }
 
-    component TourBackdrop: Item {
-        id: backdrop
-        property url image
-        property url scene
-        property bool dim: false
-        clip: true
-        Rectangle {
-            anchors.fill: parent
-            color: M3.tertiaryContainer
-        }
-        Image {
-            anchors.fill: parent
-            visible: backdrop.image.toString().length > 0
-            source: backdrop.image
-            sourceSize: Qt.size(1200, 800)
-            fillMode: Image.PreserveAspectCrop
-            asynchronous: true
-        }
-        Loader {
-            active: backdrop.scene.toString().length > 0
-            width: 960
-            height: 600
-            scale: Math.max(backdrop.width / 960, backdrop.height / 600)
-            transformOrigin: Item.TopLeft
-            source: backdrop.scene
-            onLoaded: {
-                item.intro = 1;
-                item.phase = 0.35;
+    property var greeting: null
+    property var bubble: null
+    property int tourStep: -1
+    property bool tourWaiting: false
+    readonly property bool stayHidden: greeting !== null || bubble !== null || tourWaiting
+    readonly property var tourSteps: [
+        { icon: "preferences-desktop", title: i18n("Quick settings"), edge: "topRight", arrow: "up", offset: 28,
+          text: i18n("Click the icons on the right: sliders, and tiles for Wi-Fi, Bluetooth and more.") },
+        { icon: "notifications", title: i18n("Notifications"), edge: "topRight", arrow: "up", offset: 63,
+          text: i18n("The bell opens your notifications. Silent ones have their own section.") },
+        { icon: "kernora-logo", title: i18n("Apps menu"), edge: "bottomLeft", arrow: "down", offset: 50,
+          text: i18n("All your apps from A to Z, and search for apps, settings, files and the web.") },
+        { icon: "view-app-grid", title: i18n("App groups"), edge: "center", arrow: "none", offset: 0,
+          text: i18n("Drag one app onto another on the desktop to put them in a group.") },
+        { icon: "preferences-desktop-wallpaper", title: i18n("Wallpaper collections"), edge: "bottom", arrow: "none", offset: 0,
+          text: i18n("Click here to open Wallpaper & style, with wallpapers sorted into collections.") }
+    ]
+
+    function invokeKeys(keys: string): void {
+        for (const key of Config.keyList("kglobalshortcutsrc", "plasmashell")) {
+            if (String(Config.read("kglobalshortcutsrc", "plasmashell", key, "")).split(",")[0] === keys) {
+                DBus.call("session", "org.kde.kglobalaccel", "/component/plasmashell", "org.kde.kglobalaccel.Component",
+                          "invokeShortcut", [{ type: "s", value: key }], null);
+                return;
             }
-        }
-        Rectangle {
-            anchors.fill: parent
-            visible: backdrop.dim
-            color: Qt.rgba(0, 0, 0, M3.dark ? 0.55 : 0.0)
         }
     }
 
-    component TourStatusBar: Item {
-        id: statusBar
-        height: 36
-        Rectangle {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            height: 72
-            gradient: Gradient {
-                GradientStop { position: 0; color: Qt.rgba(0, 0, 0, 0.32) }
-                GradientStop { position: 1; color: "transparent" }
-            }
+    function startTourWatch(): void {
+        DBus.call("session", "org.kde.KWin", "/Scripting", "org.kde.kwin.Scripting", "unloadScript",
+                  [{ type: "s", value: "kernora-tour-watch" }], () => {
+            DBus.call("session", "org.kde.KWin", "/Scripting", "org.kde.kwin.Scripting", "loadScript",
+                      [{ type: "s", value: "/usr/share/kernora/welcome/tour-watch.js" }, { type: "s", value: "kernora-tour-watch" }], () => {
+                DBus.call("session", "org.kde.KWin", "/Scripting", "org.kde.kwin.Scripting", "start", [], null);
+            });
+        });
+    }
+
+    function stopTourWatch(): void {
+        DBus.call("session", "org.kde.KWin", "/Scripting", "org.kde.kwin.Scripting", "unloadScript",
+                  [{ type: "s", value: "kernora-tour-watch" }], null);
+    }
+
+    function showBubble(step: int): void {
+        if (bubble) {
+            bubble.destroy();
+            bubble = null;
         }
-        Text {
-            x: 18
-            anchors.verticalCenter: parent.verticalCenter
-            color: "white"
-            font.family: M3.labelLarge.family
-            font.pixelSize: 14
-            font.weight: Font.Medium
-            renderType: Text.QtRendering
-            text: Qt.formatTime(new Date(), Qt.locale().timeFormat(Locale.ShortFormat)) + "   " + Qt.locale().toString(new Date(), "ddd, d MMM")
+        if (step >= tourSteps.length) {
+            finishTour();
+            return;
         }
-        Row {
-            anchors.right: parent.right
-            anchors.rightMargin: 14
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 12
-            MIcon {
-                anchors.verticalCenter: parent.verticalCenter
-                size: 18
-                source: "notifications"
-                color: "white"
+        tourStep = step;
+        tourWaiting = step <= 2;
+        if (tourWaiting) {
+            startTourWatch();
+        } else {
+            stopTourWatch();
+        }
+        bubble = bubbleComponent.createObject(null, { step: step });
+    }
+
+    function startTour(): void {
+        if (greeting) {
+            greeting.destroy();
+            greeting = null;
+        }
+        showBubble(0);
+    }
+
+    function runBubble(step: int): void {
+        if (step === 0) {
+            invokeKeys("Meta+Q");
+        } else if (step === 1) {
+            invokeKeys("Meta+N");
+        } else if (step === 2) {
+            DBus.call("session", "org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell", "activateLauncherMenu", [], null);
+        } else if (step === 3) {
+            showBubble(4);
+        } else {
+            Process.startDetached("kernora-settings", ["appearance"]);
+            finishTour();
+        }
+    }
+
+    function finishTour(): void {
+        tourWaiting = false;
+        stopTourWatch();
+        if (bubble) {
+            bubble.destroy();
+            bubble = null;
+        }
+        if (greeting) {
+            greeting.destroy();
+            greeting = null;
+        }
+        Qt.quit();
+    }
+
+    Component {
+        id: greetingComponent
+        Window {
+            id: hello
+
+            property real shown: M3.motionScale > 0 ? 0 : 1
+            NumberAnimation on shown {
+                running: M3.motionScale > 0
+                to: 1
+                duration: 400
+                easing.type: Easing.Bezier
+                easing.bezierCurve: M3.easingEmphasizedDecelerate
             }
+
+            LayerShell.Window.scope: "kernora-meet-ked2"
+            LayerShell.Window.layer: LayerShell.Window.LayerOverlay
+            LayerShell.Window.anchors: LayerShell.Window.AnchorTop | LayerShell.Window.AnchorBottom | LayerShell.Window.AnchorLeft | LayerShell.Window.AnchorRight
+            LayerShell.Window.exclusionZone: -1
+            LayerShell.Window.keyboardInteractivity: LayerShell.Window.KeyboardInteractivityExclusive
+
+            flags: Qt.FramelessWindowHint
+            color: "transparent"
+            title: i18n("Meet KED 2")
+            visible: true
+
+            Shortcut {
+                sequence: "Escape"
+                onActivated: app.finishTour()
+            }
+            Shortcut {
+                sequences: ["Return", "Enter"]
+                onActivated: app.startTour()
+            }
+
             Rectangle {
-                anchors.verticalCenter: parent.verticalCenter
-                width: chipRow.width + 20
-                height: 26
-                radius: 13
-                color: Qt.rgba(0, 0, 0, 0.42)
-                Row {
-                    id: chipRow
-                    anchors.centerIn: parent
-                    spacing: 8
-                    MIcon {
-                        anchors.verticalCenter: parent.verticalCenter
-                        size: 16
-                        source: "kernora-bar-wifi-4"
-                        color: "white"
-                    }
-                    Rectangle {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 30
-                        height: 16
-                        radius: 8
-                        color: "white"
-                        Text {
-                            anchors.centerIn: parent
-                            color: "black"
-                            font.family: M3.labelSmall.family
-                            font.pixelSize: 10
-                            font.weight: Font.Bold
-                            renderType: Text.QtRendering
-                            text: "82"
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    component TourTaskbar: Rectangle {
-        id: taskbar
-        property bool menuOpen: false
-        property var apps: []
-        height: 52
-        color: M3.dark ? M3.surfaceContainer : "white"
-        Rectangle {
-            x: 10
-            anchors.verticalCenter: parent.verticalCenter
-            width: 66
-            height: 36
-            radius: 18
-            color: taskbar.menuOpen ? M3.primary : M3.surfaceContainerHigh
-            MIcon {
-                anchors.centerIn: parent
-                size: 20
-                source: "kernora-logo"
-                color: taskbar.menuOpen ? M3.primaryContent : M3.surfaceVariantContent
-            }
-        }
-        Row {
-            anchors.centerIn: parent
-            spacing: 10
-            Repeater {
-                model: taskbar.apps.slice(0, 6)
-                delegate: AppIcon {
-                    required property var modelData
-                    size: 32
-                    name: modelData.icon
-                }
-            }
-        }
-    }
-
-    component TourWindow: Item {
-        id: win
-        property string title
-        property string icon
-        default property alias contents: body.data
-        Kirigami.ShadowedRectangle {
-            anchors.fill: parent
-            radius: 12
-            color: M3.surface
-            shadow.size: 26
-            shadow.yOffset: 8
-            shadow.color: Qt.rgba(0, 0, 0, M3.dark ? 0.45 : 0.22)
-            border.width: M3.dark ? 1 : 0
-            border.color: Qt.rgba(1, 1, 1, 0.12)
-        }
-        RoundedClip {
-            anchors.fill: parent
-            radius: 12
-            Rectangle {
-                id: titleBar
-                width: parent.width
-                height: 34
-                color: M3.surfaceContainer
-                AppIcon {
-                    x: 12
-                    anchors.verticalCenter: parent.verticalCenter
-                    size: 18
-                    name: win.icon
-                }
-                Text {
-                    x: 38
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: M3.surfaceContent
-                    font.family: M3.titleSmall.family
-                    font.pixelSize: 13
-                    renderType: Text.QtRendering
-                    text: win.title
-                }
-                Row {
-                    anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 14
-                    Repeater {
-                        model: ["window-minimize", "window-maximize", "window-close"]
-                        delegate: MIcon {
-                            required property string modelData
-                            size: 15
-                            source: modelData
-                            color: M3.surfaceVariantContent
-                        }
-                    }
-                }
-            }
-            Item {
-                id: body
                 anchors.fill: parent
-                anchors.topMargin: titleBar.height
+                color: Qt.rgba(0, 0, 0, 0.32 * hello.shown)
             }
+            MouseArea {
+                anchors.fill: parent
+            }
+
+            Kirigami.ShadowedRectangle {
+                id: dialog
+                anchors.centerIn: parent
+                width: 560
+                height: actions.y + actions.height + 24
+                radius: 28
+                color: M3.surfaceContainerHigh
+                shadow.size: 28
+                shadow.yOffset: 8
+                shadow.color: Qt.rgba(0, 0, 0, M3.dark ? 0.5 : 0.22)
+                opacity: hello.shown
+                scale: 0.94 + 0.06 * hello.shown
+
+                RoundedClip {
+                    id: hero
+                    x: 16
+                    y: 16
+                    width: dialog.width - 32
+                    height: Math.round(width * 10 / 16)
+                    radius: 20
+                    Image {
+                        anchors.fill: parent
+                        source: Qt.resolvedUrl("ked2.jpg")
+                        sourceSize.width: 1056
+                        fillMode: Image.PreserveAspectCrop
+                        smooth: true
+                        mipmap: true
+                    }
+                }
+
+                Text {
+                    id: headline
+                    x: 24
+                    y: hero.y + hero.height + 24
+                    width: dialog.width - 48
+                    color: M3.surfaceContent
+                    font.family: M3.headlineMedium.family
+                    font.pixelSize: M3.headlineMedium.pixelSize
+                    font.weight: Font.Normal
+                    renderType: Text.QtRendering
+                    text: i18n("Meet KED 2")
+                }
+                MText {
+                    id: supporting
+                    x: 24
+                    y: headline.y + headline.height + 16
+                    width: dialog.width - 48
+                    role: "bodyMedium"
+                    color: M3.surfaceVariantContent
+                    wrapMode: Text.Wrap
+                    text: i18n("Kernora's new look, inspired by Googlebook. Take a short tour: tips point at what changed, and you can try each thing right away.")
+                }
+                Row {
+                    id: actions
+                    anchors.right: parent.right
+                    anchors.rightMargin: 24
+                    y: supporting.y + supporting.height + 24
+                    spacing: 8
+                    MButton {
+                        variant: "text"
+                        text: i18n("Not now")
+                        onClicked: app.finishTour()
+                    }
+                    MButton {
+                        text: i18n("Get started")
+                        onClicked: app.startTour()
+                    }
+                }
+            }
+
+            Component.onCompleted: requestActivate()
         }
     }
 
     Component {
-        id: ked2View
-        Item {
-            id: tour
+        id: bubbleComponent
+        Window {
+            id: tip
 
-            property int page: 0
-            readonly property int count: 6
-            function next(): void {
-                if (page < count - 1) {
-                    page += 1;
-                } else {
-                    Qt.quit();
-                }
-            }
-            function previous(): void {
-                page = Math.max(0, page - 1);
-            }
+            required property int step
+            readonly property var spec: app.tourSteps[step]
+            readonly property bool up: spec.arrow === "up"
+            readonly property bool down: spec.arrow === "down"
+            readonly property real arrowX: spec.edge === "topRight" ? width - spec.offset : spec.edge === "bottomLeft" ? spec.offset : width / 2
 
-            Shortcut { sequences: ["Right", "PgDown"]; onActivated: tour.next() }
-            Shortcut { sequences: ["Left", "PgUp"]; onActivated: tour.previous() }
-
-            readonly property var texts: [
-                { title: i18n("Meet KED 2"), text: i18n("Kernora Expressive Design 2 is Kernora's new look, inspired by Googlebook. Here is what changed.") },
-                { title: i18n("Status bar at the top"), text: i18n("The time and date sit on the left, notifications, the network and the battery on the right. The bar stays clear and follows your wallpaper.") },
-                { title: i18n("A new apps menu"), text: i18n("It opens in the middle above the taskbar. All apps from A to Z, and search finds apps, settings, files and the web.") },
-                { title: i18n("Quick settings"), text: i18n("Big sliders and tiles in two columns. Click a tile's icon to turn it on, or its name for details.") },
-                { title: i18n("Rounded windows"), text: i18n("Every corner of a window is rounded, with a soft shadow around it. Maximised windows stay square.") },
-                { title: i18n("Wallpaper collections"), text: i18n("Landscapes, Earth, Art and more, sorted into collections in Wallpaper & style.") }
-            ]
-
-            readonly property var apps: {
-                const ids = ["librewolf", "org.kernora.files", "org.kernora.store", "org.kernora.settings", "org.kernora.photos",
-                             "org.kernora.player", "org.kernora.calculator", "org.kernora.editor", "org.kernora.screenshot",
-                             "org.kernora.taskmanager", "org.kernora.drivers", "org.kernora.quickshare"];
-                const list = [];
-                for (const id of ids) {
-                    const info = Process.application(id);
-                    if (info && info.name) {
-                        list.push({ id: id, name: info.name, icon: info.icon || id });
-                    }
-                }
-                return list;
+            property real shown: M3.motionScale > 0 ? 0 : 1
+            NumberAnimation on shown {
+                running: M3.motionScale > 0
+                to: 1
+                duration: 350
+                easing.type: Easing.Bezier
+                easing.bezierCurve: M3.easingEmphasizedDecelerate
             }
 
-            readonly property var wallpapers: Files.wallpapers()
-            readonly property var collections: {
-                const order = ["landscapes", "earth", "art", "curated", "life", "solid-colors", "culture", "motif", "textures"];
-                const result = [];
-                for (const id of order) {
-                    const items = wallpapers.filter(w => w.category === id);
-                    if (items.length > 0) {
-                        result.push({ id: id, items: items });
-                    }
-                }
-                return result;
-            }
-            function collectionName(id: string): string {
-                return ({
-                    "landscapes": i18n("Landscapes"), "earth": i18n("Earth"), "art": i18n("Art"), "curated": i18n("Curated"),
-                    "life": i18n("Life"), "solid-colors": i18n("Solid colours"), "culture": i18n("Culture"),
-                    "motif": i18n("Motif"), "textures": i18n("Textures")
-                })[id] || id;
-            }
+            LayerShell.Window.scope: "kernora-tour"
+            LayerShell.Window.layer: LayerShell.Window.LayerTop
+            LayerShell.Window.anchors: spec.edge === "topRight" ? (LayerShell.Window.AnchorTop | LayerShell.Window.AnchorRight)
+                                     : spec.edge === "bottomLeft" ? (LayerShell.Window.AnchorBottom | LayerShell.Window.AnchorLeft)
+                                     : spec.edge === "bottom" ? LayerShell.Window.AnchorBottom
+                                     : LayerShell.Window.AnchorNone
+            LayerShell.Window.exclusionZone: 0
+            LayerShell.Window.keyboardInteractivity: LayerShell.Window.KeyboardInteractivityNone
 
-            property url backdropImage
-            property url backdropScene
-            Component.onCompleted: {
-                const appletsrc = "plasma-org.kde.plasma.desktop-appletsrc";
-                for (const id of Config.groupList(appletsrc, "Containments")) {
-                    const group = "Containments/" + id;
-                    const plugin = Config.read(appletsrc, group, "wallpaperplugin", "");
-                    const containment = Config.read(appletsrc, group, "plugin", "");
-                    if (plugin.length === 0 || (containment !== "org.kde.desktopcontainment" && containment !== "org.kde.plasma.folder")) {
-                        continue;
-                    }
-                    if (plugin === "org.kde.image") {
-                        const stored = String(Config.read(appletsrc, group + "/Wallpaper/org.kde.image/General", "Image", "")).replace(/\/$/, "");
-                        if (stored.length === 0) {
-                            continue;
-                        }
-                        const match = wallpapers.find(w => String(w.image) === stored || String(w.image).indexOf(stored + "/") === 0);
-                        backdropImage = match ? match.preview : stored;
-                    } else {
-                        backdropScene = "file:///usr/share/plasma/wallpapers/" + plugin + "/contents/ui/Scene.qml";
-                    }
-                    break;
-                }
-                if (backdropImage.toString().length === 0 && backdropScene.toString().length === 0) {
-                    backdropScene = "file:///usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/Scene.qml";
-                }
-            }
-
-            Rectangle {
-                anchors.fill: parent
-                color: M3.surfaceContainerLow
-            }
+            flags: Qt.FramelessWindowHint
+            color: "transparent"
+            title: tip.spec.title
+            width: 360
+            height: card.height + 30
+            visible: true
 
             Item {
-                id: viewport
                 anchors.fill: parent
-                anchors.bottomMargin: 96
-                clip: true
+                opacity: tip.shown
+                scale: 0.9 + 0.1 * tip.shown
+                transformOrigin: tip.up ? Item.TopRight : tip.down ? Item.BottomLeft : tip.spec.edge === "bottom" ? Item.Bottom : Item.Center
 
-                Row {
-                    x: -tour.page * viewport.width
-                    Behavior on x {
-                        NumberAnimation {
-                            duration: M3.motionScale > 0 ? 550 : 0
-                            easing.type: Easing.Bezier
-                            easing.bezierCurve: M3.easingEmphasizedDecelerate
+                Kirigami.ShadowedRectangle {
+                    id: card
+                    x: 6
+                    y: tip.up ? 16 : 6
+                    width: tip.width - 12
+                    height: content.implicitHeight + 32
+                    radius: 20
+                    corners.topRightRadius: tip.up && tip.spec.edge === "topRight" ? 12 : 20
+                    color: M3.tertiary
+                    shadow.size: 10
+                    shadow.yOffset: 2
+                    shadow.color: Qt.rgba(0, 0, 0, M3.dark ? 0.4 : 0.16)
+
+                    Row {
+                        id: content
+                        x: 16
+                        y: 16
+                        width: card.width - 32
+                        spacing: 14
+                        MIcon {
+                            size: 24
+                            source: tip.spec.icon
+                            color: M3.tertiaryContent
                         }
-                    }
-
-                    Repeater {
-                        model: tour.count
-                        delegate: Item {
-                            id: slide
-                            required property int index
-                            width: viewport.width
-                            height: viewport.height
-
-                            RoundedClip {
-                                id: art
-                                x: 24
-                                y: 24
-                                width: slide.width - 48
-                                height: slide.height - 190
-                                radius: 28
-                                Loader {
-                                    anchors.fill: parent
-                                    sourceComponent: [overviewArt, statusArt, menuArt, quickArt, windowsArt, wallsArt][slide.index]
-                                }
-                            }
-
-                            Text {
-                                id: heading
-                                x: 48
-                                anchors.top: art.bottom
-                                anchors.topMargin: 28
-                                width: slide.width - 96
-                                color: M3.surfaceContent
-                                font.family: M3.displaySmall.family
-                                font.pixelSize: slide.index === 0 ? 44 : M3.headlineLarge.pixelSize
-                                font.weight: slide.index === 0 ? Font.Medium : Font.Normal
-                                renderType: Text.QtRendering
-                                elide: Text.ElideRight
-                                text: tour.texts[slide.index].title
+                        Column {
+                            width: content.width - 38
+                            spacing: 4
+                            MText {
+                                width: parent.width
+                                role: "titleSmall"
+                                color: M3.tertiaryContent
+                                wrapMode: Text.Wrap
+                                text: tip.spec.title
                             }
                             MText {
-                                x: 48
-                                anchors.top: heading.bottom
-                                anchors.topMargin: 10
-                                width: Math.min(slide.width - 96, 640)
-                                role: "bodyLarge"
-                                color: M3.surfaceVariantContent
+                                width: parent.width
+                                role: "bodyMedium"
+                                color: M3.tertiaryContent
                                 wrapMode: Text.Wrap
-                                maximumLineCount: 3
-                                text: tour.texts[slide.index].text
+                                maximumLineCount: 4
+                                text: tip.spec.text
+                            }
+                            MText {
+                                anchors.right: parent.right
+                                role: "labelSmall"
+                                color: M3.tertiaryContent
+                                opacity: 0.75
+                                text: i18n("%1 of %2", tip.step + 1, app.tourSteps.length)
                             }
                         }
                     }
-                }
-            }
 
-            Row {
-                anchors.left: parent.left
-                anchors.leftMargin: 48
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 46
-                spacing: 6
-                Repeater {
-                    model: tour.count
-                    delegate: Rectangle {
-                        required property int index
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: index === tour.page ? 26 : 8
-                        height: 8
-                        radius: 4
-                        color: index === tour.page ? M3.primary : M3.outlineVariant
-                        Behavior on width {
-                            NumberAnimation {
-                                duration: M3.motionScale > 0 ? 300 : 0
-                                easing.type: Easing.Bezier
-                                easing.bezierCurve: M3.easingEmphasizedDecelerate
-                            }
-                        }
+                    MStateLayer {
+                        radius: card.radius
+                        color: M3.tertiaryContent
+                        hovered: tipMouse.containsMouse
+                        pressed: tipMouse.pressed
+                        pressPoint: Qt.point(tipMouse.mouseX, tipMouse.mouseY)
                     }
-                }
-            }
-
-            Row {
-                anchors.right: parent.right
-                anchors.rightMargin: 40
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 32
-                spacing: 8
-                MButton {
-                    variant: tour.page === tour.count - 1 ? "tonal" : "text"
-                    text: tour.page === tour.count - 1 ? i18n("All changes") : i18n("Skip")
-                    onClicked: {
-                        if (tour.page === tour.count - 1) {
-                            app.heroDone = true;
-                        } else {
-                            Qt.quit();
-                        }
-                    }
-                }
-                MButton {
-                    text: tour.page === tour.count - 1 ? i18n("Get started") : i18n("Next")
-                    onClicked: tour.next()
-                }
-            }
-
-            Component {
-                id: overviewArt
-                Item {
-                    TourBackdrop {
+                    MouseArea {
+                        id: tipMouse
                         anchors.fill: parent
-                        image: tour.backdropImage
-                        scene: tour.backdropScene
-                    }
-                    TourStatusBar {
-                        width: parent.width
-                    }
-                    TourTaskbar {
-                        anchors.bottom: parent.bottom
-                        width: parent.width
-                        apps: tour.apps
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: app.runBubble(tip.step)
                     }
                 }
-            }
 
-            Component {
-                id: statusArt
-                Item {
-                    TourBackdrop {
-                        anchors.fill: parent
-                        image: tour.backdropImage
-                        scene: tour.backdropScene
-                    }
-                    TourStatusBar {
-                        width: parent.width / 1.6
-                        scale: 1.6
-                        transformOrigin: Item.TopLeft
-                    }
-                }
-            }
-
-            Component {
-                id: menuArt
-                Item {
-                    TourBackdrop {
-                        anchors.fill: parent
-                        image: tour.backdropImage
-                        scene: tour.backdropScene
-                        dim: true
-                    }
-                    TourStatusBar {
-                        width: parent.width
-                    }
-                    Rectangle {
-                        id: sheet
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.bottom: dock.top
-                        anchors.bottomMargin: 10
-                        width: 470
-                        height: parent.height - 36 - 52 - 22
-                        radius: 28
-                        color: M3.dark ? M3.surfaceContainerHigh : M3.surfaceContainerLow
-                        Rectangle {
-                            id: searchPill
-                            x: 22
-                            y: 22
-                            width: parent.width - 44
-                            height: 44
-                            radius: 22
-                            color: M3.dark ? M3.surfaceContainer : M3.surfaceContainerLowest
-                            AppIcon {
-                                x: 14
-                                anchors.verticalCenter: parent.verticalCenter
-                                size: 22
-                                name: "librewolf"
-                            }
-                            Text {
-                                x: 48
-                                anchors.verticalCenter: parent.verticalCenter
-                                color: M3.surfaceVariantContent
-                                font.family: M3.bodyLarge.family
-                                font.pixelSize: 15
-                                renderType: Text.QtRendering
-                                text: i18n("Search web and more")
-                            }
-                        }
-                        Grid {
-                            anchors.top: searchPill.bottom
-                            anchors.topMargin: 16
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            columns: 6
-                            columnSpacing: 0
-                            rowSpacing: 8
-                            Repeater {
-                                model: tour.apps.slice(0, 12)
-                                delegate: Column {
-                                    required property var modelData
-                                    width: 70
-                                    spacing: 6
-                                    AppIcon {
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        size: 40
-                                        name: modelData.icon
-                                    }
-                                    Text {
-                                        width: parent.width
-                                        horizontalAlignment: Text.AlignHCenter
-                                        color: M3.surfaceContent
-                                        font.family: M3.bodySmall.family
-                                        font.pixelSize: 11
-                                        elide: Text.ElideRight
-                                        renderType: Text.QtRendering
-                                        text: modelData.name
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    TourTaskbar {
-                        id: dock
-                        anchors.bottom: parent.bottom
-                        width: parent.width
-                        apps: tour.apps
-                        menuOpen: true
-                    }
-                }
-            }
-
-            Component {
-                id: quickArt
-                Item {
-                    id: quickScene
-                    property bool wifi: true
-                    property bool bt: false
-                    property bool dnd: false
-                    TourBackdrop {
-                        anchors.fill: parent
-                        image: tour.backdropImage
-                        scene: tour.backdropScene
-                    }
-                    TourStatusBar {
-                        width: parent.width
-                    }
-                    Rectangle {
-                        anchors.right: parent.right
-                        anchors.rightMargin: 12
-                        y: 42
-                        width: 448
-                        height: quickColumn.implicitHeight + 32
-                        radius: 28
-                        color: M3.surfaceContainerHigh
-                        Column {
-                            id: quickColumn
-                            x: 16
-                            y: 16
-                            width: parent.width - 32
-                            spacing: 10
-                            MSlider {
-                                width: parent.width
-                                googlebook: true
-                                trackHeight: 40
-                                icon: "kernora-brightness"
-                                text: i18n("Brightness")
-                                from: 0
-                                to: 100
-                                value: 70
-                            }
-                            MSlider {
-                                width: parent.width
-                                googlebook: true
-                                trackHeight: 40
-                                icon: "audio-volume-high"
-                                text: i18n("Volume")
-                                from: 0
-                                to: 100
-                                value: 45
-                            }
-                            Grid {
-                                columns: 2
-                                columnSpacing: 8
-                                rowSpacing: 8
-                                MTile {
-                                    width: (quickColumn.width - 8) / 2
-                                    googlebook: true
-                                    icon: "network-wireless"
-                                    title: i18n("Wi-Fi")
-                                    subtitle: quickScene.wifi ? i18n("Connected") : i18n("Off")
-                                    checked: quickScene.wifi
-                                    hasDetails: true
-                                    onToggled: quickScene.wifi = !quickScene.wifi
-                                }
-                                MTile {
-                                    width: (quickColumn.width - 8) / 2
-                                    googlebook: true
-                                    icon: quickScene.bt ? "bluetooth" : "bluetooth-disabled"
-                                    iconOn: "kernora-tile-bluetooth-on"
-                                    title: i18n("Bluetooth")
-                                    subtitle: quickScene.bt ? i18n("On") : i18n("Off")
-                                    checked: quickScene.bt
-                                    hasDetails: true
-                                    onToggled: quickScene.bt = !quickScene.bt
-                                }
-                                MTile {
-                                    width: (quickColumn.width - 8) / 2
-                                    googlebook: true
-                                    icon: "kernora-tile-darktheme"
-                                    title: i18n("Dark theme")
-                                    checked: M3.dark
-                                }
-                                MTile {
-                                    width: (quickColumn.width - 8) / 2
-                                    googlebook: true
-                                    icon: "dnd"
-                                    iconOn: "kernora-tile-dnd-on"
-                                    title: i18n("Do Not Disturb")
-                                    checked: quickScene.dnd
-                                    onToggled: quickScene.dnd = !quickScene.dnd
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Component {
-                id: windowsArt
-                Item {
-                    TourBackdrop {
-                        anchors.fill: parent
-                        image: tour.backdropImage
-                        scene: tour.backdropScene
-                    }
-                    TourStatusBar {
-                        width: parent.width
-                    }
-                    TourWindow {
-                        x: 70
-                        y: 58
-                        width: 400
-                        height: 250
-                        title: i18n("Files")
-                        icon: "org.kernora.files"
-                        Column {
-                            x: 8
-                            y: 10
-                            width: parent.width - 16
-                            Repeater {
-                                model: [
-                                    { icon: "folder-download", title: i18n("Downloads") },
-                                    { icon: "folder-documents", title: i18n("Documents") },
-                                    { icon: "folder-pictures", title: i18n("Pictures") }
-                                ]
-                                delegate: ListItem {
-                                    required property var modelData
-                                    width: parent.width
-                                    title: modelData.title
-                                    icon: modelData.icon
-                                    iconStyle: "plain"
-                                    interactive: false
-                                }
-                            }
-                        }
-                    }
-                    TourWindow {
-                        x: parent.width - 470
-                        y: 104
-                        width: 420
-                        height: 250
-                        title: i18n("Settings")
-                        icon: "org.kernora.settings"
-                        Column {
-                            x: 8
-                            y: 10
-                            width: parent.width - 16
-                            Repeater {
-                                model: [
-                                    { icon: "network-wireless", title: i18n("Network & internet"), accent: 0 },
-                                    { icon: "bluetooth", title: i18n("Bluetooth"), accent: 1 },
-                                    { icon: "preferences-desktop-wallpaper", title: i18n("Wallpaper & style"), accent: 4 }
-                                ]
-                                delegate: ListItem {
-                                    required property var modelData
-                                    width: parent.width
-                                    title: modelData.title
-                                    icon: modelData.icon
-                                    accent: modelData.accent
-                                    interactive: false
-                                }
-                            }
-                        }
-                    }
-                    TourTaskbar {
-                        anchors.bottom: parent.bottom
-                        width: parent.width
-                        apps: tour.apps
-                    }
-                }
-            }
-
-            Component {
-                id: wallsArt
-                Rectangle {
-                    color: M3.surfaceContainerHigh
-                    Grid {
-                        anchors.centerIn: parent
-                        columns: 3
-                        columnSpacing: 14
-                        rowSpacing: 10
-                        Repeater {
-                            model: tour.collections.slice(0, 6)
-                            delegate: Column {
-                                id: collection
-                                required property var modelData
-                                spacing: 6
-                                RoundedClip {
-                                    width: 200
-                                    height: 112
-                                    radius: 18
-                                    Image {
-                                        anchors.fill: parent
-                                        source: collection.modelData.items[0].preview
-                                        sourceSize: Qt.size(400, 224)
-                                        fillMode: Image.PreserveAspectCrop
-                                        asynchronous: true
-                                    }
-                                }
-                                Text {
-                                    color: M3.surfaceContent
-                                    font.family: M3.titleSmall.family
-                                    font.pixelSize: 14
-                                    font.weight: Font.Medium
-                                    renderType: Text.QtRendering
-                                    text: tour.collectionName(collection.modelData.id)
-                                }
-                            }
-                        }
+                Shape {
+                    visible: tip.up || tip.down
+                    x: tip.arrowX - 9
+                    y: tip.up ? 6 : card.y + card.height - 1
+                    width: 18
+                    height: 11
+                    preferredRendererType: Shape.CurveRenderer
+                    ShapePath {
+                        fillColor: M3.tertiary
+                        strokeWidth: -1
+                        startX: 0
+                        startY: tip.up ? 11 : 0
+                        PathLine { x: 9; y: tip.up ? 0 : 11 }
+                        PathLine { x: 18; y: tip.up ? 11 : 0 }
+                        PathLine { x: 0; y: tip.up ? 11 : 0 }
                     }
                 }
             }
