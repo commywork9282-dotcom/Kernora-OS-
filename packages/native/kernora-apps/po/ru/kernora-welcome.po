@@ -298,3 +298,75 @@ msgstr "Пейзажи, Земля, Искусство и другие — об�
 
 msgid "All changes"
 msgstr "Все изменения"
+
+msgid "Search web and more"
+msgstr "Поиск в интернете и не только"
+
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+msgid "Connected"
+msgstr "Подключено"
+
+msgid "On"
+msgstr "Включён"
+
+msgid "Off"
+msgstr "Выключен"
+
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+msgid "Dark theme"
+msgstr "Тёмная тема"
+
+msgid "Do Not Disturb"
+msgstr "Не беспокоить"
+
+msgid "Downloads"
+msgstr "Загрузки"
+
+msgid "Documents"
+msgstr "Документы"
+
+msgid "Pictures"
+msgstr "Изображения"
+
+msgid "Network & internet"
+msgstr "Сеть и интернет"
+
+msgid "Wallpaper & style"
+msgstr "Обои и стиль"
+
+msgid "Landscapes"
+msgstr "Пейзажи"
+
+msgid "Earth"
+msgstr "Земля"
+
+msgid "Art"
+msgstr "Искусство"
+
+msgid "Curated"
+msgstr "Подборка"
+
+msgid "Life"
+msgstr "Жизнь"
+
+msgid "Solid colours"
+msgstr "Однотонные"
+
+msgid "Culture"
+msgstr "Культура"
+
+msgid "Motif"
+msgstr "Узоры"
+
+msgid "Textures"
+msgstr "Текстуры"
+
+msgid "Brightness"
+msgstr "Яркость"
+
+msgid "Volume"
+msgstr "Громкость"

@@ -10,6 +10,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import QtQuick.Shapes
+import org.kde.kirigami as Kirigami
 import org.kernora.m3
 import org.kernora.ui
 import org.kernora.system
@@ -550,172 +551,107 @@ AppWindow {
         }
     }
 
-    component ArtLine: Rectangle {
-        height: 6
-        radius: 3
-        color: M3.outlineVariant
+    component TourBackdrop: Item {
+        id: backdrop
+        property url image
+        property url scene
+        property bool dim: false
+        clip: true
+        Rectangle {
+            anchors.fill: parent
+            color: M3.tertiaryContainer
+        }
+        Image {
+            anchors.fill: parent
+            visible: backdrop.image.toString().length > 0
+            source: backdrop.image
+            sourceSize: Qt.size(1200, 800)
+            fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+        }
+        Loader {
+            active: backdrop.scene.toString().length > 0
+            width: 960
+            height: 600
+            scale: Math.max(backdrop.width / 960, backdrop.height / 600)
+            transformOrigin: Item.TopLeft
+            source: backdrop.scene
+            onLoaded: {
+                item.intro = 1;
+                item.phase = 0.35;
+            }
+        }
+        Rectangle {
+            anchors.fill: parent
+            visible: backdrop.dim
+            color: Qt.rgba(0, 0, 0, M3.dark ? 0.55 : 0.0)
+        }
     }
 
-    component ArtDot: Rectangle {
-        width: 18
-        height: 18
-        radius: width / 2
-    }
-
-    component ArtStatusBar: Item {
-        id: bar
-        property real unit: 1
-        height: 22 * unit
-        Text {
+    component TourStatusBar: Item {
+        id: statusBar
+        height: 36
+        Rectangle {
             anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            height: 72
+            gradient: Gradient {
+                GradientStop { position: 0; color: Qt.rgba(0, 0, 0, 0.32) }
+                GradientStop { position: 1; color: "transparent" }
+            }
+        }
+        Text {
+            x: 18
             anchors.verticalCenter: parent.verticalCenter
-            color: M3.surfaceContent
+            color: "white"
             font.family: M3.labelLarge.family
-            font.pixelSize: 11 * bar.unit
+            font.pixelSize: 14
             font.weight: Font.Medium
             renderType: Text.QtRendering
-            text: "9:41  " + Qt.locale().toString(new Date(2026, 10, 12), "ddd, d MMM")
+            text: Qt.formatTime(new Date(), Qt.locale().timeFormat(Locale.ShortFormat)) + "   " + Qt.locale().toString(new Date(), "ddd, d MMM")
         }
         Row {
             anchors.right: parent.right
+            anchors.rightMargin: 14
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 5 * bar.unit
-            Rectangle {
-                width: 46 * bar.unit
-                height: 16 * bar.unit
-                radius: height / 2
-                color: M3.inverseSurface
-                Rectangle {
-                    x: 4 * bar.unit
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 9 * bar.unit
-                    height: width
-                    radius: width / 2
-                    color: M3.inversePrimary
-                }
-            }
-            Rectangle {
-                width: 10 * bar.unit
-                height: 10 * bar.unit
-                radius: width / 2
+            spacing: 12
+            MIcon {
                 anchors.verticalCenter: parent.verticalCenter
-                color: M3.surfaceContent
+                size: 18
+                source: "notifications"
+                color: "white"
             }
             Rectangle {
-                width: 40 * bar.unit
-                height: 16 * bar.unit
-                radius: height / 2
-                color: M3.surfaceContainerHighest
-                Rectangle {
-                    anchors.right: parent.right
-                    anchors.rightMargin: 4 * bar.unit
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 18 * bar.unit
-                    height: 9 * bar.unit
-                    radius: height / 2
-                    color: M3.primary
-                }
-            }
-        }
-    }
-
-    component ArtMenu: Rectangle {
-        id: menu
-        property real unit: 1
-        property int columns: 3
-        property int rows: 3
-        radius: 18 * unit
-        color: M3.surfaceContainerLowest
-        Rectangle {
-            id: search
-            x: 12 * menu.unit
-            y: 12 * menu.unit
-            width: parent.width - 24 * menu.unit
-            height: 20 * menu.unit
-            radius: height / 2
-            color: M3.surfaceContainerHigh
-            ArtLine {
                 anchors.verticalCenter: parent.verticalCenter
-                x: 12 * menu.unit
-                width: parent.width * 0.45
-                height: 5 * menu.unit
-            }
-        }
-        Grid {
-            anchors.top: search.bottom
-            anchors.topMargin: 12 * menu.unit
-            anchors.horizontalCenter: parent.horizontalCenter
-            columns: menu.columns
-            columnSpacing: 16 * menu.unit
-            rowSpacing: 12 * menu.unit
-            Repeater {
-                model: menu.columns * menu.rows
-                delegate: Column {
-                    required property int index
-                    spacing: 5 * menu.unit
-                    ArtDot {
-                        width: 24 * menu.unit
-                        height: width
-                        color: [M3.primaryContainer, M3.tertiaryContainer, M3.secondaryContainer][index % 3]
+                width: chipRow.width + 20
+                height: 26
+                radius: 13
+                color: Qt.rgba(0, 0, 0, 0.42)
+                Row {
+                    id: chipRow
+                    anchors.centerIn: parent
+                    spacing: 8
+                    MIcon {
+                        anchors.verticalCenter: parent.verticalCenter
+                        size: 16
+                        source: "kernora-bar-wifi-4"
+                        color: "white"
                     }
-                    ArtLine {
-                        width: 24 * menu.unit
-                        height: 4 * menu.unit
-                    }
-                }
-            }
-        }
-    }
-
-    component ArtQuick: Rectangle {
-        id: quick
-        property real unit: 1
-        radius: 18 * unit
-        color: M3.surfaceContainerLowest
-        Column {
-            anchors.fill: parent
-            anchors.margins: 12 * quick.unit
-            spacing: 8 * quick.unit
-            Repeater {
-                model: [0.72, 0.45]
-                delegate: Rectangle {
-                    required property real modelData
-                    width: parent.width
-                    height: 22 * quick.unit
-                    radius: height / 2
-                    color: M3.secondaryContainer
                     Rectangle {
-                        width: parent.width * parent.modelData
-                        height: parent.height
-                        radius: height / 2
-                        color: M3.primary
-                    }
-                }
-            }
-            Grid {
-                columns: 2
-                columnSpacing: 8 * quick.unit
-                rowSpacing: 8 * quick.unit
-                Repeater {
-                    model: [true, false, false, true]
-                    delegate: Rectangle {
-                        required property bool modelData
-                        width: (quick.width - 24 * quick.unit - 8 * quick.unit) / 2
-                        height: 26 * quick.unit
-                        radius: height / 2
-                        color: modelData ? M3.primaryContainer : M3.surfaceContainerHighest
-                        ArtDot {
-                            x: 6 * quick.unit
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 14 * quick.unit
-                            height: width
-                            color: parent.modelData ? M3.primary : M3.outline
-                        }
-                        ArtLine {
-                            x: 26 * quick.unit
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: parent.width * 0.4
-                            height: 4 * quick.unit
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 30
+                        height: 16
+                        radius: 8
+                        color: "white"
+                        Text {
+                            anchors.centerIn: parent
+                            color: "black"
+                            font.family: M3.labelSmall.family
+                            font.pixelSize: 10
+                            font.weight: Font.Bold
+                            renderType: Text.QtRendering
+                            text: "82"
                         }
                     }
                 }
@@ -723,84 +659,99 @@ AppWindow {
         }
     }
 
-    component ArtWindow: Item {
-        id: window
-        property real unit: 1
-        property color bar: M3.surfaceContainer
+    component TourTaskbar: Rectangle {
+        id: taskbar
+        property bool menuOpen: false
+        property var apps: []
+        height: 52
+        color: M3.dark ? M3.surfaceContainer : "white"
         Rectangle {
+            x: 10
+            anchors.verticalCenter: parent.verticalCenter
+            width: 66
+            height: 36
+            radius: 18
+            color: taskbar.menuOpen ? M3.primary : M3.surfaceContainerHigh
+            MIcon {
+                anchors.centerIn: parent
+                size: 20
+                source: "kernora-logo"
+                color: taskbar.menuOpen ? M3.primaryContent : M3.surfaceVariantContent
+            }
+        }
+        Row {
+            anchors.centerIn: parent
+            spacing: 10
+            Repeater {
+                model: taskbar.apps.slice(0, 6)
+                delegate: AppIcon {
+                    required property var modelData
+                    size: 32
+                    name: modelData.icon
+                }
+            }
+        }
+    }
+
+    component TourWindow: Item {
+        id: win
+        property string title
+        property string icon
+        default property alias contents: body.data
+        Kirigami.ShadowedRectangle {
             anchors.fill: parent
-            anchors.topMargin: 6 * window.unit
-            anchors.leftMargin: 3 * window.unit
-            anchors.rightMargin: -3 * window.unit
-            anchors.bottomMargin: -8 * window.unit
-            radius: 14 * window.unit
-            color: Qt.rgba(0, 0, 0, M3.dark ? 0.35 : 0.10)
+            radius: 12
+            color: M3.surface
+            shadow.size: 26
+            shadow.yOffset: 8
+            shadow.color: Qt.rgba(0, 0, 0, M3.dark ? 0.45 : 0.22)
+            border.width: M3.dark ? 1 : 0
+            border.color: Qt.rgba(1, 1, 1, 0.12)
         }
         RoundedClip {
             anchors.fill: parent
-            radius: 14 * window.unit
+            radius: 12
             Rectangle {
-                anchors.fill: parent
-                color: M3.surfaceContainerLowest
-            }
-            Rectangle {
+                id: titleBar
                 width: parent.width
-                height: 24 * window.unit
-                color: window.bar
+                height: 34
+                color: M3.surfaceContainer
+                AppIcon {
+                    x: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    size: 18
+                    name: win.icon
+                }
+                Text {
+                    x: 38
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: M3.surfaceContent
+                    font.family: M3.titleSmall.family
+                    font.pixelSize: 13
+                    renderType: Text.QtRendering
+                    text: win.title
+                }
                 Row {
                     anchors.right: parent.right
-                    anchors.rightMargin: 10 * window.unit
+                    anchors.rightMargin: 12
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: 6 * window.unit
+                    spacing: 14
                     Repeater {
-                        model: 3
-                        delegate: ArtDot {
-                            width: 8 * window.unit
-                            height: width
-                            color: M3.outline
+                        model: ["window-minimize", "window-maximize", "window-close"]
+                        delegate: MIcon {
+                            required property string modelData
+                            size: 15
+                            source: modelData
+                            color: M3.surfaceVariantContent
                         }
                     }
                 }
             }
-            Column {
-                x: 16 * window.unit
-                y: 40 * window.unit
-                spacing: 10 * window.unit
-                Repeater {
-                    model: [0.6, 0.8, 0.45, 0.7]
-                    delegate: ArtLine {
-                        required property real modelData
-                        width: window.width * modelData
-                    }
-                }
+            Item {
+                id: body
+                anchors.fill: parent
+                anchors.topMargin: titleBar.height
             }
-        }
-    }
-
-    component ArtCard: RoundedClip {
-        id: card
-        default property alias contents: canvas.data
-        property string shape: "cookie9"
-        property color shapeColor: M3.primaryContainer
-        property real shapeX: 0
-        property real shapeY: 0
-        property real shapeSize: 160
-        radius: 28
-        Rectangle {
-            anchors.fill: parent
-            color: M3.surfaceContainerHigh
-        }
-        MShape {
-            x: card.shapeX
-            y: card.shapeY
-            width: card.shapeSize
-            height: card.shapeSize
-            shape: card.shape
-            color: card.shapeColor
-        }
-        Item {
-            id: canvas
-            anchors.fill: parent
         }
     }
 
@@ -834,6 +785,68 @@ AppWindow {
                 { title: i18n("Wallpaper collections"), text: i18n("Landscapes, Earth, Art and more, sorted into collections in Wallpaper & style.") }
             ]
 
+            readonly property var apps: {
+                const ids = ["librewolf", "org.kernora.files", "org.kernora.store", "org.kernora.settings", "org.kernora.photos",
+                             "org.kernora.player", "org.kernora.calculator", "org.kernora.editor", "org.kernora.screenshot",
+                             "org.kernora.taskmanager", "org.kernora.drivers", "org.kernora.quickshare"];
+                const list = [];
+                for (const id of ids) {
+                    const info = Process.application(id);
+                    if (info && info.name) {
+                        list.push({ id: id, name: info.name, icon: info.icon || id });
+                    }
+                }
+                return list;
+            }
+
+            readonly property var wallpapers: Files.wallpapers()
+            readonly property var collections: {
+                const order = ["landscapes", "earth", "art", "curated", "life", "solid-colors", "culture", "motif", "textures"];
+                const result = [];
+                for (const id of order) {
+                    const items = wallpapers.filter(w => w.category === id);
+                    if (items.length > 0) {
+                        result.push({ id: id, items: items });
+                    }
+                }
+                return result;
+            }
+            function collectionName(id: string): string {
+                return ({
+                    "landscapes": i18n("Landscapes"), "earth": i18n("Earth"), "art": i18n("Art"), "curated": i18n("Curated"),
+                    "life": i18n("Life"), "solid-colors": i18n("Solid colours"), "culture": i18n("Culture"),
+                    "motif": i18n("Motif"), "textures": i18n("Textures")
+                })[id] || id;
+            }
+
+            property url backdropImage
+            property url backdropScene
+            Component.onCompleted: {
+                const appletsrc = "plasma-org.kde.plasma.desktop-appletsrc";
+                for (const id of Config.groupList(appletsrc, "Containments")) {
+                    const group = "Containments/" + id;
+                    const plugin = Config.read(appletsrc, group, "wallpaperplugin", "");
+                    const containment = Config.read(appletsrc, group, "plugin", "");
+                    if (plugin.length === 0 || (containment !== "org.kde.desktopcontainment" && containment !== "org.kde.plasma.folder")) {
+                        continue;
+                    }
+                    if (plugin === "org.kde.image") {
+                        const stored = String(Config.read(appletsrc, group + "/Wallpaper/org.kde.image/General", "Image", "")).replace(/\/$/, "");
+                        if (stored.length === 0) {
+                            continue;
+                        }
+                        const match = wallpapers.find(w => String(w.image) === stored || String(w.image).indexOf(stored + "/") === 0);
+                        backdropImage = match ? match.preview : stored;
+                    } else {
+                        backdropScene = "file:///usr/share/plasma/wallpapers/" + plugin + "/contents/ui/Scene.qml";
+                    }
+                    break;
+                }
+                if (backdropImage.toString().length === 0 && backdropScene.toString().length === 0) {
+                    backdropScene = "file:///usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/Scene.qml";
+                }
+            }
+
             Rectangle {
                 anchors.fill: parent
                 color: M3.surfaceContainerLow
@@ -846,7 +859,6 @@ AppWindow {
                 clip: true
 
                 Row {
-                    id: strip
                     x: -tour.page * viewport.width
                     Behavior on x {
                         NumberAnimation {
@@ -864,20 +876,15 @@ AppWindow {
                             width: viewport.width
                             height: viewport.height
 
-                            ArtCard {
+                            RoundedClip {
                                 id: art
                                 x: 24
                                 y: 24
                                 width: slide.width - 48
                                 height: slide.height - 190
-                                shape: ["cookie12", "sunny", "clover4", "cookie9", "softBurst", "cookie12"][slide.index]
-                                shapeColor: [M3.primaryContainer, M3.tertiaryContainer, M3.secondaryContainer, M3.primaryContainer, M3.tertiaryContainer, M3.secondaryContainer][slide.index]
-                                shapeSize: 220
-                                shapeX: [-60, width - 170, -50, width - 160, -70, width - 180][slide.index]
-                                shapeY: [height - 150, -70, -60, height - 140, height - 160, height - 150][slide.index]
-
+                                radius: 28
                                 Loader {
-                                    anchors.centerIn: parent
+                                    anchors.fill: parent
                                     sourceComponent: [overviewArt, statusArt, menuArt, quickArt, windowsArt, wallsArt][slide.index]
                                 }
                             }
@@ -963,160 +970,332 @@ AppWindow {
 
             Component {
                 id: overviewArt
-                Rectangle {
-                    width: 470
-                    height: 270
-                    radius: 22
-                    color: M3.tertiaryContainer
-                    ArtStatusBar {
-                        x: 14
-                        y: 8
-                        width: parent.width - 28
-                        unit: 1
+                Item {
+                    TourBackdrop {
+                        anchors.fill: parent
+                        image: tour.backdropImage
+                        scene: tour.backdropScene
                     }
-                    ArtMenu {
-                        x: 92
-                        y: 42
-                        width: 150
-                        height: 166
-                        unit: 0.85
+                    TourStatusBar {
+                        width: parent.width
                     }
-                    ArtQuick {
-                        x: parent.width - 168
-                        y: 40
-                        width: 150
-                        height: 128
-                        unit: 0.85
-                    }
-                    Rectangle {
+                    TourTaskbar {
                         anchors.bottom: parent.bottom
                         width: parent.width
-                        height: 30
-                        radius: 0
-                        color: M3.surfaceContainerLowest
-                        Rectangle {
-                            x: 10
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 34
-                            height: 18
-                            radius: 9
-                            color: M3.primaryContainer
-                        }
-                        Row {
-                            anchors.centerIn: parent
-                            spacing: 8
-                            Repeater {
-                                model: 5
-                                delegate: ArtDot {
-                                    required property int index
-                                    width: 16
-                                    height: 16
-                                    color: [M3.primary, M3.tertiary, M3.secondary, M3.primaryContainer, M3.tertiaryContainer][index]
-                                }
-                            }
-                        }
+                        apps: tour.apps
                     }
                 }
             }
 
             Component {
                 id: statusArt
-                Rectangle {
-                    width: 560
-                    height: 120
-                    radius: 22
-                    color: M3.tertiaryContainer
-                    ArtStatusBar {
-                        x: 22
-                        y: 14
-                        width: parent.width - 44
-                        unit: 2
+                Item {
+                    TourBackdrop {
+                        anchors.fill: parent
+                        image: tour.backdropImage
+                        scene: tour.backdropScene
+                    }
+                    TourStatusBar {
+                        width: parent.width / 1.6
+                        scale: 1.6
+                        transformOrigin: Item.TopLeft
                     }
                 }
             }
 
             Component {
                 id: menuArt
-                ArtMenu {
-                    width: 300
-                    height: 250
-                    unit: 1.25
-                    columns: 4
-                    rows: 3
+                Item {
+                    TourBackdrop {
+                        anchors.fill: parent
+                        image: tour.backdropImage
+                        scene: tour.backdropScene
+                        dim: true
+                    }
+                    TourStatusBar {
+                        width: parent.width
+                    }
+                    Rectangle {
+                        id: sheet
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.bottom: dock.top
+                        anchors.bottomMargin: 10
+                        width: 470
+                        height: parent.height - 36 - 52 - 22
+                        radius: 28
+                        color: M3.dark ? M3.surfaceContainerHigh : M3.surfaceContainerLow
+                        Rectangle {
+                            id: searchPill
+                            x: 22
+                            y: 22
+                            width: parent.width - 44
+                            height: 44
+                            radius: 22
+                            color: M3.dark ? M3.surfaceContainer : M3.surfaceContainerLowest
+                            AppIcon {
+                                x: 14
+                                anchors.verticalCenter: parent.verticalCenter
+                                size: 22
+                                name: "librewolf"
+                            }
+                            Text {
+                                x: 48
+                                anchors.verticalCenter: parent.verticalCenter
+                                color: M3.surfaceVariantContent
+                                font.family: M3.bodyLarge.family
+                                font.pixelSize: 15
+                                renderType: Text.QtRendering
+                                text: i18n("Search web and more")
+                            }
+                        }
+                        Grid {
+                            anchors.top: searchPill.bottom
+                            anchors.topMargin: 16
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            columns: 6
+                            columnSpacing: 0
+                            rowSpacing: 8
+                            Repeater {
+                                model: tour.apps.slice(0, 12)
+                                delegate: Column {
+                                    required property var modelData
+                                    width: 70
+                                    spacing: 6
+                                    AppIcon {
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        size: 40
+                                        name: modelData.icon
+                                    }
+                                    Text {
+                                        width: parent.width
+                                        horizontalAlignment: Text.AlignHCenter
+                                        color: M3.surfaceContent
+                                        font.family: M3.bodySmall.family
+                                        font.pixelSize: 11
+                                        elide: Text.ElideRight
+                                        renderType: Text.QtRendering
+                                        text: modelData.name
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    TourTaskbar {
+                        id: dock
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        apps: tour.apps
+                        menuOpen: true
+                    }
                 }
             }
 
             Component {
                 id: quickArt
-                ArtQuick {
-                    width: 300
-                    height: 216
-                    unit: 1.45
+                Item {
+                    id: quickScene
+                    property bool wifi: true
+                    property bool bt: false
+                    property bool dnd: false
+                    TourBackdrop {
+                        anchors.fill: parent
+                        image: tour.backdropImage
+                        scene: tour.backdropScene
+                    }
+                    TourStatusBar {
+                        width: parent.width
+                    }
+                    Rectangle {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        y: 42
+                        width: 448
+                        height: quickColumn.implicitHeight + 32
+                        radius: 28
+                        color: M3.surfaceContainerHigh
+                        Column {
+                            id: quickColumn
+                            x: 16
+                            y: 16
+                            width: parent.width - 32
+                            spacing: 10
+                            MSlider {
+                                width: parent.width
+                                googlebook: true
+                                trackHeight: 40
+                                icon: "kernora-brightness"
+                                text: i18n("Brightness")
+                                from: 0
+                                to: 100
+                                value: 70
+                            }
+                            MSlider {
+                                width: parent.width
+                                googlebook: true
+                                trackHeight: 40
+                                icon: "audio-volume-high"
+                                text: i18n("Volume")
+                                from: 0
+                                to: 100
+                                value: 45
+                            }
+                            Grid {
+                                columns: 2
+                                columnSpacing: 8
+                                rowSpacing: 8
+                                MTile {
+                                    width: (quickColumn.width - 8) / 2
+                                    googlebook: true
+                                    icon: "network-wireless"
+                                    title: i18n("Wi-Fi")
+                                    subtitle: quickScene.wifi ? i18n("Connected") : i18n("Off")
+                                    checked: quickScene.wifi
+                                    hasDetails: true
+                                    onToggled: quickScene.wifi = !quickScene.wifi
+                                }
+                                MTile {
+                                    width: (quickColumn.width - 8) / 2
+                                    googlebook: true
+                                    icon: quickScene.bt ? "bluetooth" : "bluetooth-disabled"
+                                    iconOn: "kernora-tile-bluetooth-on"
+                                    title: i18n("Bluetooth")
+                                    subtitle: quickScene.bt ? i18n("On") : i18n("Off")
+                                    checked: quickScene.bt
+                                    hasDetails: true
+                                    onToggled: quickScene.bt = !quickScene.bt
+                                }
+                                MTile {
+                                    width: (quickColumn.width - 8) / 2
+                                    googlebook: true
+                                    icon: "kernora-tile-darktheme"
+                                    title: i18n("Dark theme")
+                                    checked: M3.dark
+                                }
+                                MTile {
+                                    width: (quickColumn.width - 8) / 2
+                                    googlebook: true
+                                    icon: "dnd"
+                                    iconOn: "kernora-tile-dnd-on"
+                                    title: i18n("Do Not Disturb")
+                                    checked: quickScene.dnd
+                                    onToggled: quickScene.dnd = !quickScene.dnd
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
             Component {
                 id: windowsArt
                 Item {
-                    width: 440
-                    height: 240
-                    ArtWindow {
-                        x: 0
-                        y: 0
-                        width: 280
-                        height: 180
-                        unit: 1.2
-                        bar: M3.tertiaryContainer
+                    TourBackdrop {
+                        anchors.fill: parent
+                        image: tour.backdropImage
+                        scene: tour.backdropScene
                     }
-                    ArtWindow {
-                        x: 150
-                        y: 56
-                        width: 290
-                        height: 184
-                        unit: 1.2
-                        bar: M3.primaryContainer
+                    TourStatusBar {
+                        width: parent.width
+                    }
+                    TourWindow {
+                        x: 70
+                        y: 58
+                        width: 400
+                        height: 250
+                        title: i18n("Files")
+                        icon: "org.kernora.files"
+                        Column {
+                            x: 8
+                            y: 10
+                            width: parent.width - 16
+                            Repeater {
+                                model: [
+                                    { icon: "folder-download", title: i18n("Downloads") },
+                                    { icon: "folder-documents", title: i18n("Documents") },
+                                    { icon: "folder-pictures", title: i18n("Pictures") }
+                                ]
+                                delegate: ListItem {
+                                    required property var modelData
+                                    width: parent.width
+                                    title: modelData.title
+                                    icon: modelData.icon
+                                    iconStyle: "plain"
+                                    interactive: false
+                                }
+                            }
+                        }
+                    }
+                    TourWindow {
+                        x: parent.width - 470
+                        y: 104
+                        width: 420
+                        height: 250
+                        title: i18n("Settings")
+                        icon: "org.kernora.settings"
+                        Column {
+                            x: 8
+                            y: 10
+                            width: parent.width - 16
+                            Repeater {
+                                model: [
+                                    { icon: "network-wireless", title: i18n("Network & internet"), accent: 0 },
+                                    { icon: "bluetooth", title: i18n("Bluetooth"), accent: 1 },
+                                    { icon: "preferences-desktop-wallpaper", title: i18n("Wallpaper & style"), accent: 4 }
+                                ]
+                                delegate: ListItem {
+                                    required property var modelData
+                                    width: parent.width
+                                    title: modelData.title
+                                    icon: modelData.icon
+                                    accent: modelData.accent
+                                    interactive: false
+                                }
+                            }
+                        }
+                    }
+                    TourTaskbar {
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        apps: tour.apps
                     }
                 }
             }
 
             Component {
                 id: wallsArt
-                Grid {
-                    columns: 3
-                    spacing: 12
-                    Repeater {
-                        model: 6
-                        delegate: RoundedClip {
-                            id: tile
-                            required property int index
-                            width: 132
-                            height: 84
-                            radius: 16
-                            Rectangle {
-                                anchors.fill: parent
-                                gradient: Gradient {
-                                    orientation: Gradient.Horizontal
-                                    GradientStop { position: 0; color: [M3.primaryContainer, M3.tertiaryContainer, M3.secondaryContainer][tile.index % 3] }
-                                    GradientStop { position: 1; color: [M3.tertiary, M3.primary, M3.tertiaryContainer][tile.index % 3] }
+                Rectangle {
+                    color: M3.surfaceContainerHigh
+                    Grid {
+                        anchors.centerIn: parent
+                        columns: 3
+                        columnSpacing: 14
+                        rowSpacing: 10
+                        Repeater {
+                            model: tour.collections.slice(0, 6)
+                            delegate: Column {
+                                id: collection
+                                required property var modelData
+                                spacing: 6
+                                RoundedClip {
+                                    width: 200
+                                    height: 112
+                                    radius: 18
+                                    Image {
+                                        anchors.fill: parent
+                                        source: collection.modelData.items[0].preview
+                                        sourceSize: Qt.size(400, 224)
+                                        fillMode: Image.PreserveAspectCrop
+                                        asynchronous: true
+                                    }
                                 }
-                            }
-                            MShape {
-                                x: tile.width - 54
-                                y: tile.height - 50
-                                width: 70
-                                height: 70
-                                shape: ["cookie9", "sunny", "clover4", "softBurst", "cookie12", "circle"][tile.index]
-                                color: M3.surfaceContainerLowest
-                                opacity: 0.55
-                            }
-                            Rectangle {
-                                visible: tile.index === 1
-                                x: tile.width - 26
-                                y: 8
-                                width: 18
-                                height: 18
-                                radius: 9
-                                color: M3.primary
+                                Text {
+                                    color: M3.surfaceContent
+                                    font.family: M3.titleSmall.family
+                                    font.pixelSize: 14
+                                    font.weight: Font.Medium
+                                    renderType: Text.QtRendering
+                                    text: tour.collectionName(collection.modelData.id)
+                                }
                             }
                         }
                     }
