@@ -1,1 +1,2 @@
 export QT_QUICK_CONTROLS_STYLE=org.kernora.desktop
+export QSG_ANTIALIASING_METHOD=vertex

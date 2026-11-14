@@ -19,6 +19,7 @@ Rectangle {
     implicitWidth: size
     implicitHeight: size
     radius: size / 2
+    antialiasing: true
     color: containerColor
 
     MIcon {

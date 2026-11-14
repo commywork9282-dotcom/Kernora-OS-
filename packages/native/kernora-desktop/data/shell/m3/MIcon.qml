@@ -13,9 +13,12 @@ Kirigami.Icon {
 
     implicitWidth: size
     implicitHeight: size
+    width: size
+    height: size
     roundToIconSize: false
     isMask: true
     animated: false
+    smooth: true
     color: M3.surfaceVariantContent
 
     Behavior on color {

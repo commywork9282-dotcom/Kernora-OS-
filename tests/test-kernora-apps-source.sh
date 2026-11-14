@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.87" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.88" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -71,7 +71,7 @@ done
 [[ -s "$package_root/src/apps/drivers.cpp" && -s "$package_root/po/ru/kernora-drivers.po" ]] \
   && grep -Fq 'Icon=org.kernora.drivers' "$package_root/apps/drivers/org.kernora.drivers.desktop" \
   && grep -Eq 'set\(KERNORA_APPS .* drivers ' "$package_root/CMakeLists.txt" \
-  && grep -Fq 'kernora-desktop (>= 1.4.75)' "$package_root/debian/control" \
+  && grep -Fq 'kernora-desktop (>= 1.4.78)' "$package_root/debian/control" \
   || fail "the Drivers app is not packaged"
 python3 - "$package_root" <<'PY' || fail "a Drivers string has no translation"
 import re

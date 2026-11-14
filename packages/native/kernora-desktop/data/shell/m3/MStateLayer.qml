@@ -34,6 +34,7 @@ Item {
         topRightRadius: root.safeTopRight
         bottomLeftRadius: root.safeBottomLeft
         bottomRightRadius: root.safeBottomRight
+        antialiasing: true
         color: root.color
         opacity: {
             if (root.dragged) {
@@ -105,8 +106,10 @@ Item {
         topRightRadius: root.safeTopRight
         bottomLeftRadius: root.safeBottomLeft
         bottomRightRadius: root.safeBottomRight
+        antialiasing: true
         visible: false
         layer.enabled: wave.opacity > 0
+        layer.smooth: true
     }
 
     MultiEffect {

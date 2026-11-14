@@ -1,3 +1,11 @@
+kernora-apps (1.1.88) UNRELEASED; urgency=medium
+
+  * Explain the smoother circles and corrected SVG sizing in What's New,
+    including the need to sign out and back in after installing the update.
+  * Require the desktop package that provides the rendering fixes.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 14 Nov 2026 10:30:00 -0800
+
 kernora-apps (1.1.87) UNRELEASED; urgency=medium
 
   * Files: in the grid, folders sit on top as compact chips with their

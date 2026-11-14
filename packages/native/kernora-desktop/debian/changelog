@@ -1,3 +1,12 @@
+kernora-desktop (1.4.78) UNRELEASED; urgency=medium
+
+  * Use vertex antialiasing throughout the Plasma session so circular
+    surfaces and offscreen masks do not depend on multisampled surfaces.
+  * Keep application and symbolic SVG icons at their requested size,
+    including at 75% scaling, and smooth avatar and interaction masks.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 14 Nov 2026 10:30:00 -0800
+
 kernora-desktop (1.4.77) UNRELEASED; urgency=medium
 
   * Quick settings move as one card: the tiles and sliders no longer

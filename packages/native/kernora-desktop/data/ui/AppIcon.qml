@@ -12,7 +12,11 @@ Kirigami.Icon {
 
     implicitWidth: size
     implicitHeight: size
+    width: size
+    height: size
     source: name.length > 0 ? name : "application-x-executable"
     fallback: "application-x-executable"
     isMask: false
+    roundToIconSize: false
+    smooth: true
 }

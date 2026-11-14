@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-14-1",
+    "date": "2026-11-14",
+    "items": [
+      {
+        "icon": "preferences-desktop-display",
+        "title": {
+          "en": "Smoother circles and icons",
+          "ru": "Более гладкие круги и значки"
+        },
+        "text": {
+          "en": "Improved antialiasing for circular backgrounds, account pictures and interaction effects, including on low-resolution screens. Application and symbolic SVG icons now keep their requested size at scales below 100%, too. Sign out and back in after installing this update to apply the rendering change.",
+          "ru": "Улучшено сглаживание круглых подложек, фотографий профиля и эффектов нажатия, в том числе на экранах с небольшим разрешением. Значки приложений и символические SVG теперь сохраняют заданный размер и при масштабе ниже 100%. После установки обновления выйдите из сеанса и войдите снова, чтобы применить изменение отрисовки."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-13-1",
     "date": "2026-11-13",
     "hero": "ked2",

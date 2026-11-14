@@ -37,6 +37,7 @@ Item {
         source: root.source
         sourceSize: Qt.size(root.size * 2, root.size * 2)
         fillMode: Image.PreserveAspectCrop
+        smooth: true
         visible: false
         cache: false
     }
@@ -44,8 +45,10 @@ Item {
         id: mask
         anchors.fill: parent
         radius: width / 2
+        antialiasing: true
         visible: false
         layer.enabled: true
+        layer.smooth: true
     }
     MultiEffect {
         anchors.fill: parent
