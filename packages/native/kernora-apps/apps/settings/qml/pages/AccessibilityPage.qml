@@ -121,6 +121,19 @@ SettingsPage {
     }
 
     ConfigEntry { id: animationFactor; file: "kdeglobals"; group: "KDE"; key: "AnimationDurationFactor"; defaultValue: 1 }
+    ConfigEntry { id: reduceBlur; file: "kernorarc"; group: "Accessibility"; key: "ReduceBlur"; defaultValue: false }
+
+    function setReduceBlur(on: bool): void {
+        Config.write("kwinrc", "Plugins", "blurEnabled", !on, true);
+        Config.write("kwinrc", "Plugins", "contrastEnabled", !on, true);
+        Config.write("kwinrc", "Effect-overview", "BlurBackground", !on, true);
+        Config.write("kernorarc", "Accessibility", "ReduceBlur", on, true);
+        reconfigureKWin();
+        for (const effect of ["blur", "contrast"]) {
+            DBus.call("session", "org.kde.KWin", "/Effects", "org.kde.kwin.Effects", on ? "unloadEffect" : "loadEffect",
+                      [{ type: "s", value: effect }], null);
+        }
+    }
     ConfigEntry { id: visibleBell; file: "kaccessrc"; group: "Bell"; key: "VisibleBell"; defaultValue: false }
     ConfigEntry { id: screenReader; file: "kaccessrc"; group: "ScreenReader"; key: "Enabled"; defaultValue: false }
     readonly property bool hasOrca: Process.findExecutable("orca").length > 0
@@ -143,6 +156,15 @@ SettingsPage {
                 animationFactor.value = on ? 0 : 1;
                 page.reconfigureKWin();
             }
+        }
+        ListItem {
+            title: i18n("Reduce blur")
+            subtitle: i18n("Solid backgrounds behind quick settings, notifications, the apps menu and window overview")
+            icon: "kernora-blur"
+            accent: 1
+            checkable: true
+            checked: page.isOn(reduceBlur)
+            onToggled: on => page.setReduceBlur(on)
         }
         ListItem {
             title: i18n("Flash the screen for alerts")

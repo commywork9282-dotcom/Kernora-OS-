@@ -167,7 +167,7 @@ FocusScope {
     Kirigami.ShadowedRectangle {
         anchors.fill: parent
         radius: 28
-        color: sheet.frosted ? M3.withAlpha(M3.surfaceContainerHigh, 0.62) : M3.surfaceContainerHighest
+        color: sheet.frosted ? M3.withAlpha(M3.surfaceContainerHigh, M3.dark ? 0.72 : 0.62) : M3.surfaceContainerHighest
         border.width: sheet.frosted ? 1 : 0
         border.color: M3.withAlpha(M3.surfaceContainerLowest, 0.45)
         shadow.size: sheet.frosted ? 0 : 28

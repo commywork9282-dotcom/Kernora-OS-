@@ -181,7 +181,7 @@ SettingsPage {
         ListItem {
             title: i18n("Save received files to")
             subtitle: page.folderName(QuickShare.folder)
-            icon: "folder-download"
+            icon: "folder-download-symbolic"
             iconStyle: "plain"
             chevron: true
             onClicked: folderDialog.open()
@@ -199,7 +199,7 @@ SettingsPage {
                 required property var modelData
                 title: modelData.device.length > 0 ? modelData.device : i18n("Unknown device")
                 subtitle: page.transferText(modelData)
-                icon: modelData.outgoing ? "kernora-upload" : "folder-download"
+                icon: modelData.outgoing ? "kernora-upload" : "folder-download-symbolic"
                 iconStyle: "plain"
                 interactive: modelData.phase === "finished" && !modelData.outgoing && modelData.kind === "files"
                 onClicked: Process.openUrl(Qt.resolvedUrl("file://" + QuickShare.folder))

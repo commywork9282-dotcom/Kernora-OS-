@@ -69,7 +69,7 @@ ColumnLayout {
         UI.ListItem {
             title: root.tr("Folder")
             subtitle: root.cfg_folder.length > 0 ? decodeURIComponent(root.cfg_folder.replace("file://", "")) : root.tr("Pictures")
-            icon: "folder"
+            icon: "folder-symbolic"
             iconStyle: "plain"
             chevron: true
             onClicked: folderDialog.open()

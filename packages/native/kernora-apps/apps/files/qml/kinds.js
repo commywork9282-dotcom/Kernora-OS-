@@ -16,17 +16,17 @@ const groups = {
 };
 
 const icons = {
-    folder: "folder",
-    image: "image-x-generic",
-    video: "video-x-generic",
-    audio: "audio-x-generic",
-    archive: "application-x-archive",
-    document: "x-office-document",
-    code: "text-x-script",
-    text: "text-x-generic",
-    program: "application-x-executable",
-    android: "application-vnd.android.package-archive",
-    other: "text-x-generic"
+    folder: "folder-symbolic",
+    image: "image-x-generic-symbolic",
+    video: "video-x-generic-symbolic",
+    audio: "audio-x-generic-symbolic",
+    archive: "application-x-archive-symbolic",
+    document: "x-office-document-symbolic",
+    code: "text-x-script-symbolic",
+    text: "text-x-generic-symbolic",
+    program: "application-x-executable-symbolic",
+    android: "application-vnd.android.package-archive-symbolic",
+    other: "text-x-generic-symbolic"
 };
 
 const accents = {

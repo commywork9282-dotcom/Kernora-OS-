@@ -124,6 +124,28 @@
           "en": "On a laptop, the battery shows its level inside the icon and turns green while charging, yellow in power saver and red when it runs low. When you plug in the charger, a light bar runs along the top of the screen up to the charge level, like the Glowbar on a Googlebook.",
           "ru": "На ноутбуке уровень заряда виден прямо внутри значка батареи: при зарядке она зелёная, в режиме энергосбережения жёлтая, а при низком заряде красная. Когда подключаете зарядку, вдоль верхнего края экрана пробегает светящаяся полоса до уровня заряда, как Glowbar на Googlebook."
         }
+      },
+      {
+        "icon": "folder",
+        "title": {
+          "en": "Folders like Googlebook",
+          "ru": "Папки как на Googlebook"
+        },
+        "text": {
+          "en": "In Files, folders sit on top as compact chips and files follow as cards, like Google Drive. Documents, Downloads, Pictures and other folders have their own symbol, and folder icons on the desktop are rounded tiles.",
+          "ru": "В Файлах папки идут сверху компактными плашками, а файлы ниже карточками, как в Google Диске. У Документов, Загрузок, Изображений и других папок свой значок, а папки на рабочем столе — скруглённые плитки."
+        }
+      },
+      {
+        "icon": "kernora-blur",
+        "title": {
+          "en": "Blur like Android",
+          "ru": "Размытие как в Android"
+        },
+        "text": {
+          "en": "Quick settings, notifications, the apps menu and app groups are translucent over a blurred background, the window overview blurs the wallpaper, and the lock screen blurs it when you enter your password. Accessibility › Reduce blur turns it off.",
+          "ru": "Быстрые настройки, уведомления, меню приложений и группы приложений полупрозрачные с размытым фоном, обзор окон размывает обои, а экран блокировки — когда вводите пароль. Отключить можно в Спец. возможностях › «Уменьшить размытие»."
+        }
       }
     ]
   },

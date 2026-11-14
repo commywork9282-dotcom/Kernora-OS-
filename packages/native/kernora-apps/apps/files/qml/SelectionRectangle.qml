@@ -6,6 +6,7 @@ MouseArea {
     objectName: "selectionRectangle"
     required property var view
     required property var model
+    property var rectOf: null
     property var selection: ({})
     signal chosen(var selection)
     signal cleared()
@@ -25,9 +26,8 @@ MouseArea {
         const y2 = Math.max(start.y, end.y);
         const next = additive ? Object.assign({}, initialSelection) : {};
         for (let i = 0; i < model.count; ++i) {
-            const left = (i % view.columns) * view.cellWidth;
-            const top = Math.floor(i / view.columns) * view.cellHeight;
-            if (left + view.cellWidth - 4 > x1 && left + 4 < x2 && top + view.cellHeight - 4 > y1 && top + 4 < y2) {
+            const area = rectOf ? rectOf(i) : Qt.rect((i % view.columns) * view.cellWidth, Math.floor(i / view.columns) * view.cellHeight, view.cellWidth, view.cellHeight);
+            if (area.x + area.width - 4 > x1 && area.x + 4 < x2 && area.y + area.height - 4 > y1 && area.y + 4 < y2) {
                 next[String(model.get(i, "fileUrl"))] = true;
             }
         }

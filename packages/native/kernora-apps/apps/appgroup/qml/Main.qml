@@ -11,6 +11,7 @@ import QtQuick.Layouts
 import org.kernora.m3
 import org.kernora.ui
 import org.kernora.system
+import org.kernora.shell
 
 QtObject {
     id: app
@@ -107,10 +108,20 @@ QtObject {
                 width: window.columns * 96 + 40
                 height: content.implicitHeight + 40
                 radius: M3.classic ? M3.cornerDialog : 28
-                color: M3.surfaceContainer
+                color: blur.available ? M3.withAlpha(M3.surfaceContainer, M3.dark ? 0.72 : 0.62) : M3.surfaceContainer
+                border.width: blur.available ? 1 : 0
+                border.color: M3.withAlpha(M3.surfaceContainerLowest, 0.45)
                 opacity: 0
                 scale: 0.92
                 transformOrigin: Item.Top
+
+                WindowBlur {
+                    id: blur
+                    window: window
+                    rect: Qt.rect(card.x + card.width * (1 - card.scale) / 2, card.y, card.width * card.scale, card.height * card.scale)
+                    radius: card.radius * card.scale
+                    enabled: card.opacity > 0.02
+                }
 
                 MSpring {
                     dampingRatio: M3.springExpressiveDefaultDamping

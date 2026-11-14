@@ -1,5 +1,13 @@
 kernora-desktop (1.4.75) UNRELEASED; urgency=medium
 
+  * Folder icons are tonal tiles with a filled folder or special-folder
+    symbol, a step stronger than file tiles; folder names used as glyphs
+    keep their symbolic icons.
+  * Blur like Android 16: quick settings, the apps menu (now in the dark
+    theme too) and Plasma popups such as notifications are translucent
+    over a blurred background when KWin's blur is on, the window overview
+    blurs the wallpaper, and the lock screen blurs the wallpaper as the
+    password prompt comes up.
   * Google Sans Flex is the system typeface in the Material 3 style, from
     the new fonts-google-sans package: the shell, the login screen, KDE and
     GTK apps and window titles. Cyrillic and other letters it lacks come

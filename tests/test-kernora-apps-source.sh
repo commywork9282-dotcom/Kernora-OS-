@@ -379,4 +379,14 @@ grep -Fq 'wallpapercolours.cpp wallpapercolours.h' "$package_root/src/system/CMa
   && grep -Fq 'Appearance.followWallpaper(' "$package_root/apps/welcome/qml/Main.qml" \
   && grep -Fq 'License: Apache-2.0' "$package_root/debian/copyright" \
   || fail "the theme colour does not follow the wallpaper"
+grep -Fq 'filterRowCallback: (row, parent) => !!sourceModel.get(row, "fileIsDir")' "$package_root/apps/files/qml/Main.qml" \
+  && grep -Fq 'text: i18n("Folders")' "$package_root/apps/files/qml/Main.qml" \
+  && grep -Fq 'property bool chip: false' "$package_root/apps/files/qml/FileItem.qml" \
+  && grep -Fq 'document: "x-office-document-symbolic",' "$package_root/apps/files/qml/kinds.js" \
+  && grep -Fq 'rectOf: row => app.rectOf(row)' "$package_root/apps/files/qml/Main.qml" \
+  || fail "Files does not show folders as chips above the files"
+grep -Fq 'readEntry("ReduceBlur", false)' "$package_root/src/shell/windowblur.cpp" \
+  && grep -Fq 'Config.write("kwinrc", "Plugins", "blurEnabled", !on, true);' "$package_root/apps/settings/qml/pages/AccessibilityPage.qml" \
+  && grep -Fq 'WindowBlur {' "$package_root/apps/appgroup/qml/Main.qml" \
+  || fail "Reduce blur or the app group blur is missing"
 printf 'kernora-apps source test: OK\n'

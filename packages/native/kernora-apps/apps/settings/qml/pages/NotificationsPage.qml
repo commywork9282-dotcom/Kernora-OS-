@@ -170,7 +170,7 @@ SettingsPage {
         ListItem {
             title: i18n("Progress of file transfers")
             subtitle: i18n("Show copying and downloads as notifications")
-            icon: "folder-download"
+            icon: "folder-download-symbolic"
             iconStyle: "plain"
             checkable: true
             checked: settings.jobsInNotifications

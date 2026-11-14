@@ -47,7 +47,7 @@ RowLayout {
                 anchors.leftMargin: 12
                 anchors.rightMargin: 44
                 spacing: 8
-                MIcon { source: "folder"; size: 20; color: tab.active ? M3.secondaryContainerContent : M3.surfaceVariantContent }
+                MIcon { source: "folder-symbolic"; size: 20; color: tab.active ? M3.secondaryContainerContent : M3.surfaceVariantContent }
                 MText {
                     Layout.fillWidth: true
                     role: "labelLarge"

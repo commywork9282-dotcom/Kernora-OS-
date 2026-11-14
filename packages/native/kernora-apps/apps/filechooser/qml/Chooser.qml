@@ -537,7 +537,7 @@ AppWindow {
                     anchors.centerIn: parent
                     width: parent.width - 48
                     visible: folderModel.status === FolderListModel.Ready && folderModel.count === 0
-                    icon: search.text.length > 0 ? "search" : "folder"
+                    icon: search.text.length > 0 ? "search" : "folder-symbolic"
                     title: search.text.length > 0 ? i18n("Nothing found")
                         : chooser.choosingFolder ? i18n("No folders here")
                         : chooser.filterGlobs.length > 0 ? i18n("No suitable files here")

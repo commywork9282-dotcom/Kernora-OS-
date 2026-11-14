@@ -1530,7 +1530,7 @@ grep -Fxq 'singleton LauncherState 1.0 LauncherState.qml' "$package_root/data/sh
   && grep -Fq 'backgroundHints: PlasmaCore.Dialog.NoBackground' "$launcher_ui/DrawerWindow.qml" \
   && grep -Fq 'readonly property real scrimOpacity: M3.dark ? 0.55 : 0' "$launcher_ui/DrawerScene.qml" \
   && grep -Fq 'import org.kernora.shell\nWindowBlur { radius: 28 }' "$launcher_ui/DrawerScene.qml" \
-  && grep -Fq 'M3.withAlpha(M3.surfaceContainerHigh, 0.62)' "$launcher_ui/DrawerSheet.qml" \
+  && grep -Fq 'M3.withAlpha(M3.surfaceContainerHigh, M3.dark ? 0.72 : 0.62)' "$launcher_ui/DrawerSheet.qml" \
   && grep -Fq 'layer.enabled: root.whiteDock' "$data_root/panel/Panel.qml" \
   && grep -Fq '(root.fromTop && !M3.dark ? 0 : 0.32)' "$package_root/data/shell/shade/contents/ui/ShadeWindow.qml" \
   && grep -Fq 'property: "scrim"' "$launcher_ui/DrawerScene.qml" \
@@ -2311,7 +2311,7 @@ grep -Fxq 'PAD_SIDE = 20' "$package_root/tools/gen-aurorae-theme" \
   && grep -Fxq '[Round-Corners]' "$package_root/data/xdg-kwinrc/kwinrc" \
   && grep -Fxq 'UseNativeDecorationShadows=false' "$package_root/data/xdg-kwinrc/kwinrc" \
   && grep -Fq 'Exclusions=org.kernora.appgroup,' "$package_root/data/xdg-kwinrc/kwinrc" \
-  && grep -Fq 'drawing = file_tile(source, symbol, primary) if tile else' "$package_root/tools/gen-icon-theme" \
+  && grep -Fq 'drawing = file_tile(source, symbol, primary, folder) if tile else' "$package_root/tools/gen-icon-theme" \
   && ! grep -Fq 'False, "mimetypes"' "$package_root/tools/symbols_map.py" \
   || fail "window frame padding is not a multiple of 20 or the corner effect is not set up"
 
@@ -2335,4 +2335,16 @@ grep -Fq 'LayerShell.Window.scope: "on-screen-display"' "$package_root/data/shel
   && grep -Fq 'readonly property bool low: !charging && percent <= 20' "$package_root/data/shell/shade/contents/ui/BatteryPill.qml" \
   || fail "the battery has no Glowbar on plug-in or no saver and low states"
 
+grep -Fq 'folder = context == "places" and fill and primary.startswith("folder")' "$package_root/tools/gen-icon-theme" \
+  && grep -Fq '("folder", True, "places", ["folder", "inode-directory"]),' "$package_root/tools/symbols_map.py" \
+  && grep -Fq '("download", False, "places", ["download"]),' "$package_root/tools/symbols_map.py" \
+  && grep -Fq '"folder-symbolic", "folder-symbolic", "image-x-generic-symbolic"' "$package_root/data/explorer/OtherPreview.qml" \
+  || fail "folder icons are not tiles or glyph users still get tiles"
+grep -Fq '"translucent/dialogs/background.svg": dialog_background(DIALOG_FROSTED_OPACITY),' "$package_root/tools/gen-plasma-theme" \
+  && grep -Fq 'SHARED = ("dialogs", "icons", "solid", "translucent", "widgets")' "$package_root/tools/gen-plasma-theme" \
+  && grep -Fq 'frosted: root.blur !== null && root.blur.available' "$package_root/data/shell/shade/contents/ui/ShadeWindow.qml" \
+  && grep -Fq 'readonly property bool frosted: blur !== null && blur.available' "$package_root/data/shell/launcher/contents/ui/DrawerScene.qml" \
+  && grep -Fq 'blur: lockScreen.reveal' "$package_root/data/lockscreen/LockScreen.qml" \
+  && grep -Fxq 'BlurBackground=true' "$package_root/data/xdg-kwinrc/kwinrc" \
+  || fail "blur is not where Android 16 has it"
 printf 'kernora-desktop source test: OK\n'

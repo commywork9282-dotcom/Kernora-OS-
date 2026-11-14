@@ -39,7 +39,7 @@ var widgets = {
                                                   [0.1, 0.12, 0.2, 0.15, 0.25, 0.18, 0.12, 0.2, 0.16, 0.1, 0.14]] },
     "org.kde.plasma.systemmonitor": { group: "monitor", icon: "ksysguardd", preview: "sensor" },
 
-    "org.kde.plasma.folder": { group: "files", icon: "folder", preview: "folder" },
+    "org.kde.plasma.folder": { group: "files", icon: "folder-symbolic", preview: "folder" },
     "org.kde.plasma.trash": { group: "files", icon: "user-trash", preview: "glyph", shape: "cookie9", tone: "secondary" },
     "org.kde.plasma.vault": { group: "files", icon: "plasmavault", preview: "glyph", shape: "gem", tone: "tertiary" },
     "org.kde.plasma.devicenotifier": { group: "files", icon: "drive-removable-media-usb", preview: "rows",

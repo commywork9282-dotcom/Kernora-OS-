@@ -423,7 +423,7 @@ Item {
             rowSpacing: 10
 
             Repeater {
-                model: ["folder", "folder", "image-x-generic", "text-x-generic", "audio-x-generic", "application-x-archive"]
+                model: ["folder-symbolic", "folder-symbolic", "image-x-generic-symbolic", "text-x-generic-symbolic", "audio-x-generic-symbolic", "application-x-archive-symbolic"]
 
                 delegate: Column {
                     required property string modelData
@@ -801,7 +801,7 @@ Item {
                 }
             }
             Repeater {
-                model: ["folder", "text-x-generic"]
+                model: ["folder-symbolic", "text-x-generic-symbolic"]
 
                 delegate: Row {
                     required property string modelData
@@ -1024,8 +1024,8 @@ Item {
             spacing: 5
 
             Repeater {
-                model: [{ icon: "folder", tone: "primary" }, { icon: "applications-internet", tone: "secondary" },
-                        { icon: "audio-x-generic", tone: "tertiary" }, { icon: "image-x-generic", tone: "primary" },
+                model: [{ icon: "folder-symbolic", tone: "primary" }, { icon: "applications-internet", tone: "secondary" },
+                        { icon: "audio-x-generic-symbolic", tone: "tertiary" }, { icon: "image-x-generic", tone: "primary" },
                         { icon: "utilities-terminal", tone: "secondary" }]
 
                 delegate: Rectangle {
@@ -1053,7 +1053,7 @@ Item {
             spacing: 6
 
             Repeater {
-                model: ["folder", "applications-internet"]
+                model: ["folder-symbolic", "applications-internet"]
 
                 delegate: Rectangle {
                     id: chip

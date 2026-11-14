@@ -86,7 +86,8 @@ QQC2.ScrollView {
                     leading: Component {
                         MIcon {
                             size: 24
-                            source: place.iconName
+                            source: place.iconName.length > 0 && !place.iconName.endsWith("-symbolic") ? place.iconName + "-symbolic" : place.iconName
+                            fallback: place.iconName
                             color: root.isCurrent(place.url) ? M3.secondaryContainerContent : M3.surfaceVariantContent
                         }
                     }

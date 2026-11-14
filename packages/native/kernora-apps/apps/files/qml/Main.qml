@@ -14,6 +14,7 @@ import org.kernora.ui
 import org.kernora.system
 import org.kde.notification
 import org.kde.kirigami as Kirigami
+import org.kde.kitemmodels as KItemModels
 import "kinds.js" as Kinds
 
 AppWindow {
@@ -44,6 +45,80 @@ AppWindow {
     property var pendingTabState: null
     property var folderModel: null
     readonly property bool folderReady: !!folderModel && folderModel.status === FolderListModel.Ready
+    property int currentRow: -1
+    property int folderCount: 0
+    readonly property bool sections: !listMode && folderCount > 0
+    readonly property int fileOffset: sections ? folderCount : 0
+    readonly property int chipColumns: Math.max(1, Math.floor((view.width - 24) / 220))
+    readonly property real chipWidth: Math.floor((view.width - 24) / chipColumns)
+    readonly property int chipHeight: 64
+    readonly property int sectionLabelHeight: 44
+    readonly property real headerHeight: sections
+        ? sectionLabelHeight + Math.ceil(folderCount / chipColumns) * chipHeight + (filesProxy.count > 0 ? sectionLabelHeight : 8)
+        : 0
+    onFolderModelChanged: refreshFolderCount()
+    property real shownHeader: 0
+    onHeaderHeightChanged: {
+        const wasAtTop = view.contentY <= -shownHeader + 1;
+        shownHeader = headerHeight;
+        if (wasAtTop && !pendingTabState) {
+            Qt.callLater(() => {
+                view.forceLayout();
+                view.positionViewAtBeginning();
+            });
+        }
+    }
+
+    function refreshFolderCount(): void {
+        if (!folderModel) {
+            folderCount = 0;
+            return;
+        }
+        let low = 0;
+        let high = folderModel.count;
+        while (low < high) {
+            const middle = (low + high) >> 1;
+            if (folderModel.get(middle, "fileIsDir")) {
+                low = middle + 1;
+            } else {
+                high = middle;
+            }
+        }
+        folderCount = low;
+    }
+    function rectOf(row: int): rect {
+        if (sections && row < folderCount) {
+            return Qt.rect((row % chipColumns) * chipWidth,
+                           -headerHeight + sectionLabelHeight + Math.floor(row / chipColumns) * chipHeight, chipWidth, chipHeight);
+        }
+        const item = row - fileOffset;
+        return Qt.rect((item % view.columns) * view.cellWidth, Math.floor(item / view.columns) * view.cellHeight, view.cellWidth, view.cellHeight);
+    }
+    function rowAt(x: real, y: real): int {
+        if (sections && y < 0) {
+            const top = y + headerHeight - sectionLabelHeight;
+            const column = Math.floor(x / chipWidth);
+            const row = Math.floor(top / chipHeight) * chipColumns + column;
+            return top >= 0 && x >= 0 && column < chipColumns && row < folderCount ? row : -1;
+        }
+        const item = view.indexAt(x, y);
+        return item < 0 ? -1 : item + fileOffset;
+    }
+    function revealRow(row: int): void {
+        if (row < 0) {
+            return;
+        }
+        if (row >= fileOffset) {
+            view.positionViewAtIndex(row - fileOffset, ItemView.Contain);
+            return;
+        }
+        const area = rectOf(row);
+        if (area.y < view.contentY) {
+            view.contentY = Math.max(view.originY, area.y - app.sectionLabelHeight);
+        } else if (area.y + area.height > view.contentY + view.height) {
+            view.contentY = area.y + area.height - view.height;
+        }
+    }
     property bool modelInitialized: false
     onFolderChanged: if (modelInitialized) loadFolderModel()
 
@@ -66,7 +141,7 @@ AppWindow {
         tabs[activeTab] = { id: tabs[activeTab].id, folder: String(folder), history: history.slice(),
             historyIndex: historyIndex, selected: Object.assign({}, selected), anchor: anchorRow,
             search: filter.text, searchShown: filterBox.shown, scroll: view.contentY,
-            current: view.currentIndex >= 0 ? String(folderModel.get(view.currentIndex, "fileUrl")) : "" };
+            current: currentRow >= 0 ? String(folderModel.get(currentRow, "fileUrl")) : "" };
     }
     function switchTab(index: int): void {
         if (index < 0 || index >= tabs.length || index === activeTab) return;
@@ -80,7 +155,7 @@ AppWindow {
         clearSelection();
         filter.text = state.search || "";
         filterBox.shown = !!state.searchShown;
-        view.currentIndex = -1;
+        currentRow = -1;
         folder = state.folder;
         if (sameFolder) loadFolderModel();
         restoreTabTimer.restart();
@@ -95,7 +170,7 @@ AppWindow {
         }
         selected = next;
         anchorRow = state.anchor === undefined ? -1 : state.anchor;
-        view.currentIndex = state.current ? folderModel.indexOf(state.current) : -1;
+        currentRow = state.current ? folderModel.indexOf(state.current) : -1;
         view.contentY = Math.max(view.originY, Math.min(state.scroll || 0, view.originY + Math.max(0, view.contentHeight - view.height)));
         view.forceActiveFocus();
     }
@@ -149,7 +224,7 @@ AppWindow {
         pendingTabState = null;
         clearSelection();
         filter.text = "";
-        view.currentIndex = -1;
+        currentRow = -1;
         folder = url;
         if (tabs.length) {
             const list = tabs.slice();
@@ -202,6 +277,17 @@ AppWindow {
         tabs = [{id: nextTabId++, folder: String(folder), history: history.slice(), historyIndex: historyIndex}];
     }
 
+    KItemModels.KSortFilterProxyModel {
+        id: foldersProxy
+        sourceModel: app.sections ? app.folderModel : null
+        filterRowCallback: (row, parent) => !!sourceModel.get(row, "fileIsDir")
+    }
+    KItemModels.KSortFilterProxyModel {
+        id: filesProxy
+        sourceModel: app.folderModel
+        filterRowCallback: (row, parent) => !sourceModel.get(row, "fileIsDir")
+    }
+
     Component {
         id: folderModelFactory
         FolderListModel {
@@ -214,24 +300,28 @@ AppWindow {
             sortField: Number(sortField.value)
             sortReversed: app.isOn(sortReversed)
             nameFilters: filter.text.trim().length > 0 ? ["*" + filter.text.trim() + "*"] : []
-            onCountChanged: Qt.callLater(() => {
-                if (!app || model !== app.folderModel) return;
-                if (!app.folderReady || app.pendingTabState) return;
-                const next = {};
-                for (const url of app.selectedUrls()) {
-                    if (indexOf(url) >= 0) next[url] = true;
-                }
-                app.selected = next;
-            })
+            onCountChanged: {
+                if (app && model === app.folderModel) app.refreshFolderCount();
+                Qt.callLater(() => {
+                    if (!app || model !== app.folderModel) return;
+                    if (!app.folderReady || app.pendingTabState) return;
+                    const next = {};
+                    for (const url of app.selectedUrls()) {
+                        if (indexOf(url) >= 0) next[url] = true;
+                    }
+                    app.selected = next;
+                });
+            }
             onStatusChanged: {
                 if (model !== app.folderModel) return;
+                app.refreshFolderCount();
                 if (status === FolderListModel.Ready && app.pendingTabState) restoreTabTimer.restart();
                 if (status === FolderListModel.Ready && app.selectAfterLoad.length > 0) {
                     const row = indexOf(app.selectAfterLoad);
                     if (row >= 0) {
                         app.selectOnly(row);
-                        view.currentIndex = row;
-                        view.positionViewAtIndex(row, ItemView.Contain);
+                        app.currentRow = row;
+                        app.revealRow(row);
                     }
                     app.selectAfterLoad = "";
                 }
@@ -302,7 +392,7 @@ AppWindow {
 
     function press(row: int, mouse: var): void {
         view.forceActiveFocus();
-        view.currentIndex = row;
+        currentRow = row;
         deferredSingle = false;
         deferredToggle = false;
         const url = urlKey(folderModel.get(row, "fileUrl"));
@@ -340,22 +430,35 @@ AppWindow {
         Files.startDrag(view, selectedUrls());
     }
     function keyboardNavigate(event: var): void {
-        let row = view.currentIndex;
-        const step = view.columns;
+        let row = currentRow;
+        const inFolders = sections && row >= 0 && row < folderCount;
+        const step = inFolders ? chipColumns : view.columns;
+        const files = folderModel.count - folderCount;
         if (event.key === Qt.Key_Left) row -= 1;
         else if (event.key === Qt.Key_Right) row += 1;
-        else if (event.key === Qt.Key_Up) row -= step;
-        else if (event.key === Qt.Key_Down) row += step;
+        else if (event.key === Qt.Key_Up) {
+            if (sections && !inFolders && row >= 0 && row - fileOffset < view.columns) {
+                row = Math.min(folderCount - 1, (Math.ceil(folderCount / chipColumns) - 1) * chipColumns + (row - fileOffset) % chipColumns);
+            } else {
+                row -= step;
+            }
+        } else if (event.key === Qt.Key_Down) {
+            if (inFolders && row + step >= folderCount) {
+                row = files > 0 ? fileOffset + Math.min(row % chipColumns, files - 1) : row;
+            } else {
+                row += step;
+            }
+        }
         else if (event.key === Qt.Key_Home) row = 0;
         else if (event.key === Qt.Key_End) row = folderModel.count - 1;
         else { event.accepted = false; return; }
         event.accepted = true;
         if (!folderModel.count) return;
         row = Math.max(0, Math.min(folderModel.count - 1, row));
-        view.currentIndex = row;
+        currentRow = row;
         if (event.modifiers & Qt.ShiftModifier) selectRange(row);
         else if (!(event.modifiers & Qt.ControlModifier)) selectOnly(row);
-        view.positionViewAtIndex(row, ItemView.Contain);
+        revealRow(row);
     }
 
     property var clipboard: ({ urls: [], cut: false })
@@ -505,7 +608,7 @@ AppWindow {
     Shortcut { sequence: "Ctrl+W"; onActivated: app.closeTab(app.activeTab) }
     Shortcut { sequences: ["Ctrl+Tab", "Ctrl+PgDown"]; onActivated: app.switchTab((app.activeTab + 1) % app.tabs.length) }
     Shortcut { sequences: ["Ctrl+Shift+Tab", "Ctrl+PgUp"]; onActivated: app.switchTab((app.activeTab + app.tabs.length - 1) % app.tabs.length) }
-    Shortcut { sequence: "Ctrl+Space"; onActivated: app.toggle(view.currentIndex) }
+    Shortcut { sequence: "Ctrl+Space"; onActivated: app.toggle(app.currentRow) }
     Shortcut { sequence: "Ctrl+Shift+A"; onActivated: app.selectionMode = !app.selectionMode }
     Shortcut { sequences: [StandardKey.Back, "Alt+Left", "Backspace"]; onActivated: app.back() }
     Shortcut { sequences: [StandardKey.Forward, "Alt+Right"]; onActivated: app.forward() }
@@ -694,7 +797,7 @@ AppWindow {
                         bottomMargin: 88
                         clip: true
                         focus: true
-                        model: folderModel
+                        model: app.sections ? filesProxy : folderModel
                         enabled: !app.pendingTabState && app.folderReady
                         cellWidth: app.listMode ? width - 24 : Math.floor((width - 24) / columns)
                         cellHeight: app.listMode ? 60 : cellWidth * 0.78 + 72
@@ -703,36 +806,99 @@ AppWindow {
                         boundsBehavior: Flickable.StopAtBounds
                         QQC2.ScrollBar.vertical: QQC2.ScrollBar {}
 
+                        header: Item {
+                            width: view.width - view.leftMargin - view.rightMargin
+                            height: app.headerHeight
+                            visible: app.sections
+
+                            MText {
+                                x: 8
+                                height: app.sectionLabelHeight
+                                role: "titleSmall"
+                                color: M3.surfaceVariantContent
+                                text: i18n("Folders")
+                            }
+                            Repeater {
+                                model: app.sections ? foldersProxy : null
+                                delegate: FileItem {
+                                    id: folderItem
+                                    readonly property int row: index
+                                    x: (index % app.chipColumns) * app.chipWidth
+                                    y: app.sectionLabelHeight + Math.floor(index / app.chipColumns) * app.chipHeight
+                                    width: app.chipWidth
+                                    height: app.chipHeight
+                                    chip: true
+                                    selected: app.isSelected(fileUrl)
+                                    current: app.currentRow === folderItem.row
+                                    showFocus: view.activeFocus
+                                    cut: app.clipboard.cut && app.clipboard.urls.some(url => app.urlKey(url) === app.urlKey(fileUrl))
+                                    details: fileIsDir ? Qt.formatDate(fileModified, Locale.ShortFormat)
+                                        : SystemInfo.formatBytes(fileSize) + " · " + Qt.formatDate(fileModified, Locale.ShortFormat)
+                                    onPressed: mouse => app.press(folderItem.row, mouse)
+                                    selectionEnabled: true
+                                    selectionMode: app.selectionMode
+                                    dragEnabled: !app.inTrash
+                                    dropEnabled: !app.inTrash
+                                    onClicked: mouse => app.release(folderItem.row, mouse)
+                                    onSelectionToggled: {
+                                        app.selectionMode = true;
+                                        app.currentRow = folderItem.row;
+                                        app.toggle(folderItem.row);
+                                    }
+                                    onSelectionHeld: {
+                                        app.selectionMode = true;
+                                        if (!app.isSelected(fileUrl)) app.toggle(folderItem.row);
+                                    }
+                                    onDragRequested: app.dragSelection(folderItem.row)
+                                    onTabRequested: app.newTab(fileUrl, true)
+                                    onFilesDropped: (urls, destination, actions, position) => app.acceptDrop(urls, destination, actions, position)
+                                    onActivated: app.open(folderItem.row)
+                                    onMenuRequested: (x, y) => (app.inTrash ? trashMenu : fileMenu).popup(folderItem, x, y)
+                                }
+                            }
+                            MText {
+                                x: 8
+                                y: parent.height - app.sectionLabelHeight
+                                height: app.sectionLabelHeight
+                                visible: filesProxy.count > 0
+                                role: "titleSmall"
+                                color: M3.surfaceVariantContent
+                                text: i18n("Files")
+                            }
+                        }
+
                         delegate: FileItem {
                             id: item
+                            readonly property int row: index + app.fileOffset
                             width: view.cellWidth
                             height: view.cellHeight
                             list: app.listMode
+                            chip: false
                             selected: app.isSelected(fileUrl)
-                            current: GridView.isCurrentItem
+                            current: app.currentRow === item.row
                             showFocus: view.activeFocus
                             cut: app.clipboard.cut && app.clipboard.urls.some(url => app.urlKey(url) === app.urlKey(fileUrl))
                             details: fileIsDir ? Qt.formatDate(fileModified, Locale.ShortFormat)
                                 : SystemInfo.formatBytes(fileSize) + " · " + Qt.formatDate(fileModified, Locale.ShortFormat)
-                            onPressed: mouse => app.press(index, mouse)
+                            onPressed: mouse => app.press(item.row, mouse)
                             selectionEnabled: true
                             selectionMode: app.selectionMode
                             dragEnabled: !app.inTrash
                             dropEnabled: !app.inTrash
-                            onClicked: mouse => app.release(index, mouse)
+                            onClicked: mouse => app.release(item.row, mouse)
                             onSelectionToggled: {
                                 app.selectionMode = true;
-                                view.currentIndex = index;
-                                app.toggle(index);
+                                app.currentRow = item.row;
+                                app.toggle(item.row);
                             }
                             onSelectionHeld: {
                                 app.selectionMode = true;
-                                if (!app.isSelected(fileUrl)) app.toggle(index);
+                                if (!app.isSelected(fileUrl)) app.toggle(item.row);
                             }
-                            onDragRequested: app.dragSelection(index)
+                            onDragRequested: app.dragSelection(item.row)
                             onTabRequested: app.newTab(fileUrl, true)
                             onFilesDropped: (urls, destination, actions, position) => app.acceptDrop(urls, destination, actions, position)
-                            onActivated: app.open(index)
+                            onActivated: app.open(item.row)
                             onMenuRequested: (x, y) => (app.inTrash ? trashMenu : fileMenu).popup(item, x, y)
                         }
 
@@ -764,7 +930,7 @@ AppWindow {
                             destination: app.folder
                             acceptsPosition: (x, y) => {
                                 const point = backgroundDrop.mapToItem(view.contentItem, x, y);
-                                const row = view.indexAt(point.x, point.y);
+                                const row = app.rowAt(point.x, point.y);
                                 return row < 0 || !folderModel.get(row, "fileIsDir");
                             }
                             onFilesDropped: (urls, destination, actions, position) => app.acceptDrop(urls, destination, actions, position)
@@ -778,6 +944,7 @@ AppWindow {
                             z: -1
                             view: view
                             model: folderModel
+                            rectOf: row => app.rectOf(row)
                         enabled: !app.pendingTabState && app.folderReady
                             selection: app.selected
                             onChosen: selection => app.selected = selection
@@ -804,7 +971,7 @@ AppWindow {
                     anchors.centerIn: parent
                     width: parent.width - 48
                     visible: app.folderReady && folderModel.count === 0
-                    icon: app.inTrash ? "user-trash" : filter.text.length > 0 ? "search" : "folder"
+                    icon: app.inTrash ? "user-trash" : filter.text.length > 0 ? "search" : "folder-symbolic"
                     title: app.inTrash ? i18n("The trash is empty") : filter.text.length > 0 ? i18n("Nothing found") : i18n("This folder is empty")
                     text: filter.text.length > 0 ? i18n("No names contain “%1”.", filter.text) : ""
                 }
@@ -1086,9 +1253,9 @@ AppWindow {
             visible: app.narrow
             enabled: app.narrow
             QQC2.MenuItem { text: i18n("Home"); icon.name: "user-home"; onTriggered: app.go(Files.standardFolder("home")) }
-            QQC2.MenuItem { text: i18n("Documents"); icon.name: "folder-documents"; onTriggered: app.go(Files.standardFolder("documents")) }
-            QQC2.MenuItem { text: i18n("Downloads"); icon.name: "folder-download"; onTriggered: app.go(Files.standardFolder("downloads")) }
-            QQC2.MenuItem { text: i18n("Pictures"); icon.name: "folder-pictures"; onTriggered: app.go(Files.standardFolder("pictures")) }
+            QQC2.MenuItem { text: i18n("Documents"); icon.name: "folder-documents-symbolic"; onTriggered: app.go(Files.standardFolder("documents")) }
+            QQC2.MenuItem { text: i18n("Downloads"); icon.name: "folder-download-symbolic"; onTriggered: app.go(Files.standardFolder("downloads")) }
+            QQC2.MenuItem { text: i18n("Pictures"); icon.name: "folder-pictures-symbolic"; onTriggered: app.go(Files.standardFolder("pictures")) }
             QQC2.MenuItem { text: i18n("Trash"); icon.name: "user-trash"; onTriggered: app.go(Files.trashFolder()) }
         }
         QQC2.MenuItem { text: i18n("Open terminal here"); icon.name: "utilities-terminal"; onTriggered: Process.startDetached("alacritty", ["--class", "org.kernora.terminal", "--working-directory", app.folderPath]) }
@@ -1246,7 +1413,7 @@ AppWindow {
         property int count: 0
         readonly property var trashInfo: app.inTrash && count === 1 ? Files.trashInfo(info.path ? "file://" + info.path : "") : ({})
 
-        icon: info.isDir ? "folder" : Kinds.iconOf(Kinds.kindOf(info.name || "", false))
+        icon: info.isDir ? "folder-symbolic" : Kinds.iconOf(Kinds.kindOf(info.name || "", false))
         title: count > 1 ? i18np("%1 item", "%1 items", count) : (info.name || "")
         showReject: false
         acceptText: i18n("Close")

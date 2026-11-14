@@ -479,3 +479,9 @@ msgstr[2] "%1 объектов перемещены"
 
 msgid "To “%1”"
 msgstr "В папку «%1»"
+
+msgid "Folders"
+msgstr "Папки"
+
+msgid "Files"
+msgstr "Файлы"

@@ -32,6 +32,21 @@ PlasmaCore.Dialog {
     visible: controller.shown
 
     property double openedAt: 0
+    property QtObject blur: null
+
+    Component.onCompleted: {
+        try {
+            blur = Qt.createQmlObject("import org.kernora.shell\nWindowBlur {}", root, "ShadeBlur");
+        } catch (error) {
+            blur = null;
+        }
+        if (blur) {
+            blur.window = root;
+            blur.radius = Qt.binding(() => sheet.cornerRadius);
+            blur.rect = Qt.binding(() => Qt.rect(sheet.x, sheet.y, sheet.width, sheet.height));
+            blur.enabled = Qt.binding(() => root.visible && root.controller.progress > 0.02);
+        }
+    }
     readonly property bool opening: controller.opening
     onOpeningChanged: {
         if (opening) {
@@ -120,6 +135,7 @@ PlasmaCore.Dialog {
             backend: root.backend
             progress: root.controller.progress
             fromTop: root.fromTop
+            frosted: root.blur !== null && root.blur.available
             width: Math.min(implicitWidth, stage.width - 2 * root.edgeGap)
             height: Math.min(implicitHeight, stage.room)
 

@@ -98,7 +98,7 @@ SettingsPage {
         ListItem {
             title: i18n("Picture")
             subtitle: i18n("Choose a picture or a photo of your own")
-            icon: "folder-pictures"
+            icon: "folder-pictures-symbolic"
             accent: 0
             chevron: true
             onClicked: pictureDialog.open()

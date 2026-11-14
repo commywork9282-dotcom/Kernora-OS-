@@ -192,7 +192,7 @@ AppWindow {
                             anchors.centerIn: parent
                             visible: tile.fileIsDir
                             width: parent.width - 24
-                            MIcon { Layout.alignment: Qt.AlignHCenter; size: 40; source: "folder-pictures"; color: M3.primaryContainerContent }
+                            MIcon { Layout.alignment: Qt.AlignHCenter; size: 40; source: "folder-pictures-symbolic"; color: M3.primaryContainerContent }
                             MText { Layout.fillWidth: true; role: "labelLarge"; text: tile.fileName; horizontalAlignment: Text.AlignHCenter; color: M3.primaryContainerContent }
                         }
                         MStateLayer {

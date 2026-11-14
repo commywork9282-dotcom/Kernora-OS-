@@ -35,6 +35,7 @@ Item {
     signal filesDropped(var urls, url destination, int actions, point position)
 
     property bool list: false
+    property bool chip: false
     property bool selected: false
     property bool current: false
     property bool showFocus: false
@@ -49,6 +50,26 @@ Item {
     readonly property bool thumbnail: !fileIsDir && Kinds.hasThumbnail(fileName)
     property string appIcon: ""
     readonly property Component preview: thumbnail ? picture : (appIcon.length > 0 ? packageIcon : symbol)
+    readonly property string folderIcon: {
+        if (!fileIsDir) {
+            return Kinds.iconOf(kind);
+        }
+        const url = String(fileUrl).replace(/\/$/, "");
+        const special = {
+            desktop: "folder-desktop-symbolic",
+            documents: "folder-documents-symbolic",
+            downloads: "folder-download-symbolic",
+            music: "folder-music-symbolic",
+            pictures: "folder-pictures-symbolic",
+            videos: "folder-videos-symbolic"
+        };
+        for (const name in special) {
+            if (String(Files.standardFolder(name)) === url) {
+                return special[name];
+            }
+        }
+        return "folder-symbolic";
+    }
 
     function loadAppIcon(): void {
         appIcon = "";
@@ -72,8 +93,8 @@ Item {
         id: surface
         anchors.fill: parent
         anchors.margins: root.list ? 0 : 4
-        radius: M3.classic ? (root.list ? M3.cornerListItem : M3.cornerCard) : root.list ? 16 : 20
-        color: root.selected ? M3.secondaryContainer : "transparent"
+        radius: M3.classic ? (root.list ? M3.cornerListItem : M3.cornerCard) : root.list || root.chip ? 16 : 20
+        color: root.selected ? M3.secondaryContainer : root.chip ? M3.surfaceContainerHigh : "transparent"
         Behavior on color { ColorAnimation { duration: M3.durationShort3 } }
         MStateLayer {
             radius: surface.radius
@@ -101,7 +122,7 @@ Item {
             MIcon {
                 anchors.centerIn: parent
                 size: root.list ? 22 : Math.round(parent.height * 0.46)
-                source: Kinds.iconOf(root.kind)
+                source: root.folderIcon
                 color: root.kind === "folder" ? M3.primaryContainerContent : (Kinds.accentOf(root.kind) >= 0 ? M3.accent(Kinds.accentOf(root.kind)).content : M3.surfaceVariantContent)
             }
         }
@@ -144,8 +165,29 @@ Item {
         }
     }
 
+    RowLayout {
+        visible: root.chip
+        anchors.fill: parent
+        anchors.leftMargin: 20
+        anchors.rightMargin: root.selectionEnabled ? 48 : 16
+        spacing: 14
+
+        MIcon {
+            size: 24
+            source: root.folderIcon
+            color: root.selected ? M3.secondaryContainerContent : M3.primary
+        }
+        MText {
+            Layout.fillWidth: true
+            role: "titleSmall"
+            text: root.fileName
+            elide: Text.ElideMiddle
+            color: root.selected ? M3.secondaryContainerContent : M3.surfaceContent
+        }
+    }
+
     ColumnLayout {
-        visible: !root.list
+        visible: !root.list && !root.chip
         anchors.fill: parent
         anchors.margins: 10
         spacing: 8
@@ -249,9 +291,9 @@ Item {
     QQC2.CheckBox {
         objectName: "fileSelection"
         anchors.right: parent.right
-        anchors.top: root.list ? undefined : parent.top
-        anchors.verticalCenter: root.list ? parent.verticalCenter : undefined
-        anchors.margins: 6
+        anchors.top: root.list || root.chip ? undefined : parent.top
+        anchors.verticalCenter: root.list || root.chip ? parent.verticalCenter : undefined
+        anchors.margins: root.chip ? 10 : 6
         visible: root.selectionEnabled && (root.selectionMode || root.selected || mouse.containsMouse || hovered)
         checked: root.selected
         text: ""

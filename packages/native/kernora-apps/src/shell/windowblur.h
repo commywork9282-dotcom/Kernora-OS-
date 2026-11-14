@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <KConfigWatcher>
 #include <QObject>
 #include <QPointer>
 #include <QRectF>
@@ -43,6 +44,7 @@ Q_SIGNALS:
 private:
     void schedule();
     void apply();
+    void readReduced();
 
     QPointer<QWindow> m_window;
     QRectF m_rect;
@@ -50,4 +52,6 @@ private:
     bool m_enabled = true;
     bool m_pending = false;
     bool m_available = false;
+    bool m_reduced = false;
+    KConfigWatcher::Ptr m_watcher;
 };

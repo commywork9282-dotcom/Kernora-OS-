@@ -1,5 +1,15 @@
 kernora-apps (1.1.87) UNRELEASED; urgency=medium
 
+  * Files: in the grid, folders sit on top as compact chips with their
+    icon and name, like Google Drive and Files on Googlebook, and files
+    follow as cards. Documents, Downloads, Pictures, Music, Videos and the
+    desktop get their own symbol. File and folder glyphs ask for the
+    symbolic icons, so PDFs and other documents no longer show a solid
+    square.
+  * Blur like Android 16: the app group popup is translucent over a blurred
+    background, and org.kernora.shell WindowBlur turns off when Accessibility
+    > Reduce blur is on. Reduce blur also turns off KWin's blur and the
+    overview background blur.
   * Wallpaper colours like Android: picking a picture wallpaper in Settings,
     Files, Photos or Welcome finds its colours with Google's
     material-color-utilities method (Celebi quantizer and Score) and turns

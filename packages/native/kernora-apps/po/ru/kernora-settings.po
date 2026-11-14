@@ -4179,3 +4179,9 @@ msgstr "Основные цвета"
 
 msgid "The colour follows your wallpaper. Pick a basic colour to keep one colour."
 msgstr "Цвет подстраивается под обои. Выберите основной цвет, чтобы он не менялся."
+
+msgid "Reduce blur"
+msgstr "Уменьшить размытие"
+
+msgid "Solid backgrounds behind quick settings, notifications, the apps menu and window overview"
+msgstr "Сплошной фон под быстрыми настройками, уведомлениями, меню приложений и обзором окон"

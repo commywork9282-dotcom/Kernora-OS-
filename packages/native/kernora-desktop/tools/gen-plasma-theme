@@ -23,6 +23,7 @@ SQUARE_PANEL_RADIUS = 0
 PANEL_PADDING = 8
 PANEL_FLOAT_GAP = 8
 PANEL_OPACITY = 0.82
+DIALOG_FROSTED_OPACITY = 0.74
 
 DIALOG_RADIUS = design.corner("dialog")
 DIALOG_PADDING = 12
@@ -378,11 +379,11 @@ def panel_background(opacity: float = PANEL_OPACITY) -> str:
     return sheet.render()
 
 
-def dialog_background() -> str:
+def dialog_background(opacity: float = 1.0) -> str:
     sheet = Sheet()
-    frame(sheet, "", DIALOG_RADIUS, "ColorScheme-Background", 1.0,
+    frame(sheet, "", DIALOG_RADIUS, "ColorScheme-Background", opacity,
           margins=DIALOG_PADDING, insets=0, mask=True)
-    shadow(sheet, SHADOW_DIALOG[0], DIALOG_RADIUS, SHADOW_DIALOG[1], "dialog-shadow")
+    shadow(sheet, SHADOW_DIALOG[0], DIALOG_RADIUS, SHADOW_DIALOG[1], "dialog-shadow", cutout=opacity < 1)
     return sheet.render()
 
 
@@ -690,7 +691,7 @@ enabled=true
 """
 
 
-SHARED = ("dialogs", "icons", "solid", "widgets")
+SHARED = ("dialogs", "icons", "solid", "translucent", "widgets")
 
 
 def link_shared(theme: pathlib.Path, base: pathlib.Path) -> None:
@@ -720,6 +721,7 @@ def main(argv: list[str]) -> int:
         "solid/widgets/panel-background.svg": panel_background(1.0),
         "dialogs/background.svg": dialog_background(),
         "solid/dialogs/background.svg": dialog_background(),
+        "translucent/dialogs/background.svg": dialog_background(DIALOG_FROSTED_OPACITY),
         "widgets/background.svg": widget_background(),
         "widgets/tooltip.svg": tooltip(),
         "solid/widgets/tooltip.svg": tooltip(),

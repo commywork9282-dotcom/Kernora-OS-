@@ -12,6 +12,7 @@ target_link_libraries(kernorashell PRIVATE
     Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick
     Plasma::Plasma Plasma::PlasmaQuick
     KF6::WindowSystem
+    KF6::ConfigCore
 )
 
 ecm_finalize_qml_module(kernorashell DESTINATION ${KDE_INSTALL_QMLDIR})

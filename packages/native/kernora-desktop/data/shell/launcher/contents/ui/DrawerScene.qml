@@ -21,7 +21,7 @@ FocusScope {
 
     readonly property real scrimOpacity: M3.dark ? 0.55 : 0
     property QtObject blur: null
-    readonly property bool frosted: !M3.dark && blur !== null && blur.available
+    readonly property bool frosted: blur !== null && blur.available
 
     signal requestClose()
     signal leftScreen()
@@ -37,7 +37,7 @@ FocusScope {
         if (blur) {
             blur.window = Qt.binding(() => scene.Window.window);
             blur.rect = Qt.binding(() => Qt.rect(sheet.x, sheet.y, sheet.width, sheet.height));
-            blur.enabled = Qt.binding(() => !M3.dark && scene.windowShown && scene.reveal > 0.02 && scene.width > 1);
+            blur.enabled = Qt.binding(() => scene.windowShown && scene.reveal > 0.02 && scene.width > 1);
         }
     }
 

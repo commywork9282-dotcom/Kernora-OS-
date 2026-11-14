@@ -6,6 +6,8 @@
 #include <QRegion>
 #include <QTimer>
 
+#include <KConfigGroup>
+#include <KSharedConfig>
 #include <KWindowEffects>
 
 #include <algorithm>
@@ -33,8 +35,21 @@ static QRegion roundedRegion(const QRect &rect, int radius)
 
 WindowBlur::WindowBlur(QObject *parent)
     : QObject(parent)
-    , m_available(KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind))
+    , m_watcher(KConfigWatcher::create(KSharedConfig::openConfig(QStringLiteral("kernorarc"))))
 {
+    readReduced();
+    m_available = !m_reduced && KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind);
+    connect(m_watcher.data(), &KConfigWatcher::configChanged, this, [this](const KConfigGroup &group) {
+        if (group.name() == QLatin1String("Accessibility")) {
+            readReduced();
+            schedule();
+        }
+    });
+}
+
+void WindowBlur::readReduced()
+{
+    m_reduced = KConfigGroup(m_watcher->config(), QStringLiteral("Accessibility")).readEntry("ReduceBlur", false);
 }
 
 WindowBlur::~WindowBlur()
@@ -128,7 +143,7 @@ void WindowBlur::schedule()
 void WindowBlur::apply()
 {
     m_pending = false;
-    const bool available = KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind);
+    const bool available = !m_reduced && KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind);
     if (available != m_available) {
         m_available = available;
         Q_EMIT availableChanged();
@@ -137,7 +152,7 @@ void WindowBlur::apply()
         return;
     }
     const QRect rect = m_rect.toAlignedRect();
-    if (!m_enabled || rect.isEmpty()) {
+    if (!m_enabled || !m_available || rect.isEmpty()) {
         KWindowEffects::enableBlurBehind(m_window, false);
         return;
     }

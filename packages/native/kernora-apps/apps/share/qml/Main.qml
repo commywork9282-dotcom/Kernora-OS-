@@ -384,7 +384,7 @@ AppWindow {
                     width: 64
                     height: 64
                     shape: M3.classic ? "circle" : "clover4"
-                    icon: app.files.length === 1 ? Files.iconName(app.files[0]) : "folder-documents"
+                    icon: app.files.length === 1 ? Files.iconName(app.files[0]) + "-symbolic" : "folder-documents-symbolic"
                     color: M3.tertiaryContainer
                     ink: M3.tertiaryContainerContent
                 }
@@ -967,7 +967,7 @@ AppWindow {
                                 Layout.preferredHeight: 52
                                 visible: !(app.singleImage && smallThumb.status === Image.Ready)
                                 shape: M3.classic ? "circle" : "clover4"
-                                icon: app.files.length === 1 ? Files.iconName(app.files[0]) : "folder-documents"
+                                icon: app.files.length === 1 ? Files.iconName(app.files[0]) + "-symbolic" : "folder-documents-symbolic"
                                 color: M3.tertiaryContainer
                                 ink: M3.tertiaryContainerContent
                             }
@@ -1270,7 +1270,7 @@ AppWindow {
 
                 NavItem {
                     key: "receive"
-                    icon: "folder-download"
+                    icon: "folder-download-symbolic"
                     iconOn: "kernora-download-on"
                     label: i18n("Receive")
                 }

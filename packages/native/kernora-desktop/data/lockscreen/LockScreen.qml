@@ -160,6 +160,15 @@ Item {
             item.phase = Qt.binding(() => scene.phase % 1);
         }
     }
+    MultiEffect {
+        anchors.fill: parent
+        source: root.ownBackground ? scene : (typeof wallpaper !== "undefined" ? wallpaper : null)
+        visible: source !== null && lockScreen.reveal > 0.01
+        autoPaddingEnabled: false
+        blurEnabled: true
+        blurMax: 64
+        blur: lockScreen.reveal
+    }
     Rectangle {
         anchors.fill: parent
         color: M3.darkScheme.surface
