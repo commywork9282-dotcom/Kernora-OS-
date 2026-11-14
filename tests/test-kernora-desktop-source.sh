@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.75" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.77" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -2240,6 +2240,43 @@ python3 -I -m py_compile "$package_root/data/plymouth/kernora-boot-theme" 2>/dev
   || fail "the boot theme tool does not compile"
 find "$package_root/data/plymouth" -name __pycache__ -exec rm -rf {} +
 bash -n "$package_root/data/grub/kernora-grub-theme" || fail "the grub theme helper does not parse"
+bash -n "$package_root/data/grub/kernora-efi-fallback" || fail "the EFI fallback helper does not parse"
+grep -Fxq '  - shellprocess@efi' "$package_root/data/calamares/settings.conf" \
+  && grep -Fq 'config: shellprocess-efi.conf' "$package_root/data/calamares/settings.conf" \
+  && grep -Fq '/usr/libexec/kernora-efi-fallback' "$package_root/data/calamares/modules/shellprocess-efi.conf" \
+  && grep -Fxq 'data/grub/kernora-efi-fallback usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq '[ "$1" = triggered ]' "$package_root/debian/kernora-desktop.postinst" \
+  && grep -Fq '/usr/libexec/kernora-efi-fallback || true' "$package_root/debian/kernora-desktop.postinst" \
+  && grep -Fxq 'interest-noawait /usr/lib/grub/x86_64-efi-signed' "$package_root/debian/kernora-desktop.triggers" \
+  && grep -Fxq 'interest-noawait /usr/lib/shim' "$package_root/debian/kernora-desktop.triggers" \
+  || fail "the EFI fallback loader is not set up by the installer and updates"
+if unshare -r true 2>/dev/null; then
+  esp=$(mktemp -d)
+  mkdir -p "$esp/EFI/kernora" "$esp/EFI/BOOT"
+  for file in shimx64.efi grubx64.efi mmx64.efi fbx64.efi grub.cfg; do
+    printf '%s\n' "$file" > "$esp/EFI/kernora/$file"
+  done
+  cp "$esp/EFI/kernora/grubx64.efi" "$esp/EFI/BOOT/BOOTX64.EFI"
+  unshare -r "$package_root/data/grub/kernora-efi-fallback" "$esp" \
+    && cmp -s "$esp/EFI/BOOT/BOOTX64.EFI" "$esp/EFI/kernora/shimx64.efi" \
+    && cmp -s "$esp/EFI/BOOT/grubx64.efi" "$esp/EFI/kernora/grubx64.efi" \
+    && cmp -s "$esp/EFI/BOOT/mmx64.efi" "$esp/EFI/kernora/mmx64.efi" \
+    && cmp -s "$esp/EFI/BOOT/grub.cfg" "$esp/EFI/kernora/grub.cfg" \
+    && [[ ! -e $esp/EFI/BOOT/fbx64.efi ]] \
+    || fail "the EFI fallback helper does not install shim, GRUB and grub.cfg"
+  printf 'new grub\n' > "$esp/EFI/kernora/grubx64.efi"
+  unshare -r "$package_root/data/grub/kernora-efi-fallback" "$esp" \
+    && cmp -s "$esp/EFI/BOOT/grubx64.efi" "$esp/EFI/kernora/grubx64.efi" \
+    || fail "the EFI fallback helper does not follow a GRUB update"
+  rm -rf "$esp/EFI/BOOT"
+  mkdir -p "$esp/EFI/BOOT"
+  printf 'other system\n' > "$esp/EFI/BOOT/BOOTX64.EFI"
+  unshare -r "$package_root/data/grub/kernora-efi-fallback" "$esp" \
+    && grep -Fxq 'other system' "$esp/EFI/BOOT/BOOTX64.EFI" \
+    && [[ ! -e $esp/EFI/BOOT/grub.cfg ]] \
+    || fail "the EFI fallback helper replaced another system's loader"
+  rm -rf "$esp"
+fi
 ! grep -qi 'ember' "$package_root/data/calamares/branding/kernora/branding.desc" \
   || fail "the installer still says Ember"
 grep -Fq '/^[0-9.]+$/.test(version) ? ["", ""] : ["«", "»"]' "$package_root/data/calamares/branding/kernora/welcomeq.qml" \
@@ -2347,6 +2384,12 @@ grep -Fq '"translucent/dialogs/background.svg": dialog_background(DIALOG_FROSTED
   && grep -Fq 'blur: lockScreen.reveal' "$package_root/data/lockscreen/LockScreen.qml" \
   && grep -Fxq 'BlurBackground=true' "$package_root/data/xdg-kwinrc/kwinrc" \
   || fail "blur is not where Android 16 has it"
+grep -Fq 'blur.enabled = Qt.binding(() => root.visible && sheet.frost > 0);' "$package_root/data/shell/shade/contents/ui/ShadeWindow.qml" \
+  && grep -Fq 'resting: root.controller.resting' "$package_root/data/shell/shade/contents/ui/ShadeWindow.qml" \
+  && grep -Fq 'readonly property bool resting: !dragActive && !spring.running && spring.value > 0.99' "$package_root/data/shell/shade/contents/ui/ShadeController.qml" \
+  && grep -Fq 'property real frost: frosted && resting ? 1 : 0' "$package_root/data/shell/shade/contents/ui/ShadeSheet.qml" \
+  && ! grep -Fq 'panel.sheet.stage(' "$package_root/data/shell/shade/contents/ui/QuickPanel.qml" \
+  || fail "quick settings blur lags the moving sheet or its tiles drift"
 grep -Fq 'return shape("panelShape", "square")' "$package_root/data/panel/kernora-panel-layout" \
   || fail "the layout migration keeps a rounded floating taskbar"
 printf 'kernora-desktop source test: OK\n'

@@ -1,3 +1,26 @@
+kernora-desktop (1.4.77) UNRELEASED; urgency=medium
+
+  * Quick settings move as one card: the tiles and sliders no longer
+    slide and fade on their own while the sheet is dragged or animated,
+    so they stop running into the version line and leaving an empty
+    box. The sheet turns solid while it moves and becomes frosted again
+    once it rests, and the blur is only on at rest, so it never trails
+    behind the moving sheet.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 14 Nov 2026 10:00:00 -0800
+
+kernora-desktop (1.4.76) UNRELEASED; urgency=medium
+
+  * The installed system boots on PCs that forget UEFI boot entries,
+    like many X79 boards: the fallback EFI/BOOT loader is now shim with
+    Kernora's GRUB and its own grub.cfg, so it no longer stops at a bare
+    grub> prompt, and it works with Secure Boot on. The installer sets
+    it up, updates fix existing installs, and new GRUB or shim versions
+    are copied over by a dpkg trigger. A fallback loader that belongs to
+    another system is left alone.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 14 Nov 2026 09:00:00 -0800
+
 kernora-desktop (1.4.75) UNRELEASED; urgency=medium
 
   * Moving an updated system to the status bar layout also makes the

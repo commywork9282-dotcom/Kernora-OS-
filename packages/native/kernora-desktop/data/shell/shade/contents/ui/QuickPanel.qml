@@ -100,7 +100,6 @@ ColumnLayout {
         Layout.fillWidth: true
         visible: !panel.sheet.editing
         spacing: 4
-        opacity: panel.sheet.stage(0.15)
 
         MIconButton {
             icon: "kernora-tiles-edit"
@@ -225,8 +224,6 @@ ColumnLayout {
         Layout.fillWidth: true
         visible: !panel.sheet.editing
         spacing: 8
-        opacity: panel.sheet.stage(0.3)
-        transform: Translate { y: (1 - panel.sheet.stage(0.3)) * 24 }
 
         RowLayout {
             Layout.fillWidth: true
@@ -298,8 +295,6 @@ ColumnLayout {
         editing: panel.sheet.editing
         tiles: panel.tileComponents
         names: panel.tileNames
-        opacity: panel.sheet.stage(0.45)
-        transform: Translate { y: (1 - panel.sheet.stage(0.45)) * 32 }
     }
 
     RowLayout {

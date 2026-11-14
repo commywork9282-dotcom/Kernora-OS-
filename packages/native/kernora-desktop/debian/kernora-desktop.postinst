@@ -37,4 +37,8 @@ if [ "$1" = configure ]; then
     fi
 fi
 
+if [ "$1" = configure ] || [ "$1" = triggered ]; then
+    /usr/libexec/kernora-efi-fallback || true
+fi
+
 #DEBHELPER#

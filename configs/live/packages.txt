@@ -22,8 +22,8 @@ kwin-x11
 xserver-xorg
 libpam-fprintd
 
-kernora-desktop=1.4.75
-kernora-calamares=1.4.75
+kernora-desktop=1.4.77
+kernora-calamares=1.4.77
 kernora-apps=1.1.87
 kernora-quickshare=1.0.2
 kernora-wallpapers=1.0

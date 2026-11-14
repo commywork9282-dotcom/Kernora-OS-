@@ -28,6 +28,14 @@ Item {
     readonly property bool scrollable: scroller.interactive
     property string detail: ""
     property bool frosted: false
+    property bool resting: true
+    property real frost: frosted && resting ? 1 : 0
+    Behavior on frost {
+        NumberAnimation {
+            duration: 120
+            easing.type: Easing.OutCubic
+        }
+    }
     readonly property real cornerRadius: surface.radius
     property bool editing: false
     readonly property bool googlebook: fromTop
@@ -57,10 +65,10 @@ Item {
         readonly property var shadowSpec: M3.elevationOf("sheet")
         radius: root.googlebook ? 28 : M3.cornerSheet
         readonly property color base: root.googlebook ? M3.surfaceContainerHigh : M3.surfaceContainer
-        color: root.frosted ? M3.withAlpha(base, M3.dark ? 0.72 : 0.62) : base
+        color: M3.withAlpha(base, 1 - root.frost * (M3.dark ? 0.28 : 0.38))
         border.width: root.frosted ? 1 : 0
-        border.color: M3.withAlpha(M3.surfaceContainerLowest, 0.45)
-        shadow.size: root.frosted ? shadowSpec.blur / 2 : shadowSpec.blur
+        border.color: M3.withAlpha(M3.surfaceContainerLowest, 0.45 * root.frost)
+        shadow.size: shadowSpec.blur * (1 - root.frost / 2)
         shadow.yOffset: shadowSpec.offset
         shadow.color: Qt.rgba(0, 0, 0, shadowSpec.opacity)
     }

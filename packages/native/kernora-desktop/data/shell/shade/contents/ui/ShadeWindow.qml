@@ -44,7 +44,7 @@ PlasmaCore.Dialog {
             blur.window = root;
             blur.radius = Qt.binding(() => sheet.cornerRadius);
             blur.rect = Qt.binding(() => Qt.rect(sheet.x, sheet.y, sheet.width, sheet.height));
-            blur.enabled = Qt.binding(() => root.visible && root.controller.progress > 0.02);
+            blur.enabled = Qt.binding(() => root.visible && sheet.frost > 0);
         }
     }
     readonly property bool opening: controller.opening
@@ -136,6 +136,7 @@ PlasmaCore.Dialog {
             progress: root.controller.progress
             fromTop: root.fromTop
             frosted: root.blur !== null && root.blur.available
+            resting: root.controller.resting
             width: Math.min(implicitWidth, stage.width - 2 * root.edgeGap)
             height: Math.min(implicitHeight, stage.room)
 

@@ -18,6 +18,7 @@ Item {
     readonly property bool dragging: dragActive
     readonly property bool shown: spring.value > 0.001 || dragActive || spring.running
     readonly property bool opening: spring.target > 0.5
+    readonly property bool resting: !dragActive && !spring.running && spring.value > 0.99
 
     property bool dragActive: false
     property real dragOrigin: 0

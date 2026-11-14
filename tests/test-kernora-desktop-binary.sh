@@ -232,6 +232,7 @@ for path in \
   etc/calamares/modules/unpackfs.conf \
   etc/calamares/modules/removeuser.conf \
   etc/calamares/modules/shellprocess-drivers.conf \
+  etc/calamares/modules/shellprocess-efi.conf \
   etc/calamares/branding/kernora/branding.desc \
   etc/calamares/branding/kernora/show.qml \
   etc/calamares/branding/kernora/kernora-logo.png \
@@ -259,6 +260,8 @@ for path in \
 done
 dpkg-deb --field "$installer_deb" Depends | grep -Fq pkexec \
   || fail "installer package does not depend on pkexec, which starts Calamares"
+grep -Fxq 'interest-noawait /usr/lib/shim' <<<"$(dpkg-deb -I "$desktop_deb" triggers)" \
+  || fail "desktop package does not refresh the EFI fallback after shim updates"
 
 for path in \
   etc/alacritty/alacritty.toml \
@@ -285,6 +288,7 @@ for path in \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MLoadingIndicator.qml \
   usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/m3/MMorph.qml \
   usr/libexec/kernora-grub-theme \
+  usr/libexec/kernora-efi-fallback \
   usr/libexec/kernora-boot-theme \
   usr/share/kernora/boot/plymouth.pack \
   usr/share/kernora/grub/kernora-dark/theme.txt \
@@ -478,20 +482,21 @@ for path in \
 done
 [[ -L "$temporary_root/desktop/usr/share/plasma/desktoptheme/kernora-red/widgets" ]] \
   || fail "the red Plasma theme copies its pictures instead of linking them"
+desktop_postinst=$(dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst)
 [[ -s "$temporary_root/desktop/usr/lib/sysctl.d/90-kernora-panic.conf" ]] || fail "the panic timeout is missing"
 [[ -x "$temporary_root/desktop/usr/libexec/kernora-panic-report" ]] || fail "the panic report is missing"
 grep -Fxq 'After=systemd-pstore.service' "$temporary_root/desktop/usr/lib/systemd/system/kernora-panic-report.service" \
   || fail "the panic report does not wait for systemd-pstore"
-dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -q 'kernora-panic-report.service' \
+grep -q 'kernora-panic-report.service' <<<"$desktop_postinst" \
   || fail "the panic report service is not enabled on installation"
 [[ -x "$temporary_root/desktop/usr/libexec/kernora-drivers" ]] \
   && [[ -s "$temporary_root/desktop/usr/share/kernora/nvidia-archive-keyring.gpg" ]] \
   && [[ -s "$temporary_root/desktop/usr/lib/systemd/system/kernora-drivers@.service" ]] \
   && [[ -s "$temporary_root/desktop/usr/share/polkit-1/actions/org.kernora.drivers.policy" ]] \
   || fail "the graphics driver tool is incomplete"
-dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -q 'kernora-drivers.timer' \
+grep -q 'kernora-drivers.timer' <<<"$desktop_postinst" \
   || fail "the graphics driver check is not enabled on installation"
-dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -q "'kernora-drivers.service'" \
+grep -q "'kernora-drivers.service'" <<<"$desktop_postinst" \
   && fail "installing the package would run the driver install inside the dpkg transaction"
 [[ -x "$temporary_root/desktop/usr/libexec/kernora-android" ]] \
   && [[ -x "$temporary_root/desktop/usr/libexec/kernora-android-session" ]] \
@@ -667,7 +672,7 @@ cmp "$package_root/data/locales/kernora-locales" "$temporary_root/desktop/usr/li
   || fail "the packaged locale helper differs from the tested source"
 [[ -s "$temporary_root/installer/etc/calamares/modules/kernoralocales/main.py" ]] \
   || fail "installer locale preparation is missing"
-dpkg-deb --ctrl-tarfile "$desktop_deb" | tar -xO ./postinst 2>/dev/null | grep -Fq '/usr/libexec/kernora-locales' \
+grep -Fq '/usr/libexec/kernora-locales' <<<"$desktop_postinst" \
   || fail "upgrades do not repair missing selected locales"
 cmp "$package_root/data/calamares/modules/kernoralocales/module.desc" "$temporary_root/installer/etc/calamares/modules/kernoralocales/module.desc" \
   || fail "the packaged locale module descriptor differs from its source"

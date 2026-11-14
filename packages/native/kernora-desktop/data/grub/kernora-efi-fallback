@@ -1,0 +1,41 @@
+#!/bin/bash
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+set -eu
+
+(( EUID == 0 )) || { echo "kernora-efi-fallback: run as root" >&2; exit 1; }
+
+esp=${1:-/boot/efi}
+source=$esp/EFI/kernora
+target=$esp/EFI/BOOT
+
+[[ -f $source/grub.cfg && -f $source/grubx64.efi ]] || exit 0
+
+loader=$source/grubx64.efi
+[[ -f $source/shimx64.efi ]] && loader=$source/shimx64.efi
+
+owned() {
+  [[ -e $target/BOOTX64.EFI ]] || return 0
+  cmp -s "$target/grub.cfg" "$source/grub.cfg" && return 0
+  local file
+  for file in shimx64.efi grubx64.efi; do
+    [[ -f $source/$file ]] && cmp -s "$target/BOOTX64.EFI" "$source/$file" && return 0
+  done
+  return 1
+}
+
+put() {
+  cmp -s "$1" "$target/$2" && return 0
+  cp "$1" "$target/.$2.new"
+  mv -f "$target/.$2.new" "$target/$2"
+}
+
+owned || exit 0
+install -d "$target"
+if [[ $loader == "$source/shimx64.efi" ]]; then
+  put "$source/grubx64.efi" grubx64.efi
+  [[ -f $source/mmx64.efi ]] && put "$source/mmx64.efi" mmx64.efi
+fi
+put "$source/grub.cfg" grub.cfg
+put "$loader" BOOTX64.EFI
+sync -f "$target/BOOTX64.EFI" 2>/dev/null || sync

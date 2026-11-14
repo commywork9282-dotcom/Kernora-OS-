@@ -130,6 +130,7 @@ data/grub/kernora.cfg etc/default/grub.d
 generated/grub/kernora usr/share/grub/themes
 generated/grub-themes/* usr/share/kernora/grub
 data/grub/kernora-grub-theme usr/libexec
+data/grub/kernora-efi-fallback usr/libexec
 generated/boot/plymouth.pack usr/share/kernora/boot
 data/plymouth/kernora-boot-theme usr/libexec
 data/plymouth/plymouth-quit-kernora.conf usr/lib/systemd/system/plymouth-quit.service.d
