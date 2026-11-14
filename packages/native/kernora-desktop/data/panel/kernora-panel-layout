@@ -113,7 +113,9 @@ def migrate() -> int:
         for _attempt in range(45):
             result = evaluate(STATUS)
             if result is not None and "dock=yes" in result.split():
-                return style("statusbar")
+                if style("statusbar") != 0:
+                    return 1
+                return shape("panelShape", "square")
             time.sleep(2)
         return 1
 

@@ -1,5 +1,8 @@
 kernora-desktop (1.4.75) UNRELEASED; urgency=medium
 
+  * Moving an updated system to the status bar layout also makes the
+    taskbar square and edge to edge, like Googlebook, instead of keeping
+    the old rounded floating panel.
   * Folder icons are tonal tiles with a filled folder or special-folder
     symbol, a step stronger than file tiles; folder names used as glyphs
     keep their symbolic icons.
@@ -71,7 +74,7 @@ kernora-desktop (1.4.75) UNRELEASED; urgency=medium
   * Settings can switch back to everything at the bottom and to the rounded
     panel.
 
- -- Kernora Developers <developers@kernora.invalid>  Mon, 09 Nov 2026 17:00:00 -0800
+ -- Kernora Developers <developers@kernora.invalid>  Fri, 13 Nov 2026 19:00:00 -0800
 
 kernora-desktop (1.4.74) UNRELEASED; urgency=medium
 

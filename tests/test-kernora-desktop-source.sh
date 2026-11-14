@@ -2347,4 +2347,6 @@ grep -Fq '"translucent/dialogs/background.svg": dialog_background(DIALOG_FROSTED
   && grep -Fq 'blur: lockScreen.reveal' "$package_root/data/lockscreen/LockScreen.qml" \
   && grep -Fxq 'BlurBackground=true' "$package_root/data/xdg-kwinrc/kwinrc" \
   || fail "blur is not where Android 16 has it"
+grep -Fq 'return shape("panelShape", "square")' "$package_root/data/panel/kernora-panel-layout" \
+  || fail "the layout migration keeps a rounded floating taskbar"
 printf 'kernora-desktop source test: OK\n'
