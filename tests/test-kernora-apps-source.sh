@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.88" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.89" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -353,7 +353,10 @@ grep -Fq '    const KDesktopFile file(path);' "$package_root/src/system/appgroup
   && grep -Fq 'window = popup.createObject(app);' "$package_root/apps/appgroup/qml/Main.qml" \
   && ! grep -Fq '"Ungroup")' "$package_root/apps/appgroup/qml/Main.qml" \
   || fail "app groups crash, look unlike Googlebook or lose their window"
-grep -Fq 'notes[0].hero === "ked2"' "$package_root/apps/welcome/qml/Main.qml" \
+grep -Fq 'connect(quick, &QQuickWindow::afterAnimating, this, &WindowBlur::apply, Qt::SingleShotConnection);' "$package_root/src/shell/windowblur.cpp" \
+  && grep -Fxq '    m_window = window;' <<<"$(grep -A1 -F 'm_pending = false;' "$package_root/src/shell/windowblur.cpp")" \
+  || fail "window blur trails the frame that moves the blurred item"
+grep -Fq 'notes.some(note => note.hero === "ked2")' "$package_root/apps/welcome/qml/Main.qml" \
   && grep -Fq 'source: Qt.resolvedUrl("ked2.jpg")' "$package_root/apps/welcome/qml/Main.qml" \
   && [[ -s "$package_root/apps/welcome/qml/ked2.jpg" ]] \
   && grep -Fq 'id: bubbleComponent' "$package_root/apps/welcome/qml/Main.qml" \

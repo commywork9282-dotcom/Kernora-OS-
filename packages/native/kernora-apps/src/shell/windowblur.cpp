@@ -3,6 +3,7 @@
 
 #include "windowblur.h"
 
+#include <QQuickWindow>
 #include <QRegion>
 #include <QTimer>
 
@@ -73,6 +74,7 @@ void WindowBlur::setWindow(QWindow *window)
         disconnect(m_window, nullptr, this, nullptr);
         KWindowEffects::enableBlurBehind(m_window, false);
     }
+    m_pending = false;
     m_window = window;
     if (m_window) {
         connect(m_window, &QWindow::visibleChanged, this, &WindowBlur::schedule);
@@ -137,6 +139,12 @@ void WindowBlur::schedule()
         return;
     }
     m_pending = true;
+    auto *quick = qobject_cast<QQuickWindow *>(m_window.data());
+    if (quick && quick->isExposed()) {
+        connect(quick, &QQuickWindow::afterAnimating, this, &WindowBlur::apply, Qt::SingleShotConnection);
+        quick->update();
+        return;
+    }
     QTimer::singleShot(0, this, &WindowBlur::apply);
 }
 

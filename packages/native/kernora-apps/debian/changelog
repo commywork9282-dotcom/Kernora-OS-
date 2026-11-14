@@ -1,3 +1,14 @@
+kernora-apps (1.1.89) UNRELEASED; urgency=medium
+
+  * Window blur sends its region to KWin right before the frame that
+    moves or resizes the blurred item, so the blur stays exactly under
+    quick settings, the apps menu and app groups instead of trailing a
+    frame behind and flashing a strip of sharp or blurred background.
+  * What's New opens Meet KED 2 and the tour whenever an unseen release
+    carries it, even when newer small updates came after KED 2.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 14 Nov 2026 12:00:00 -0800
+
 kernora-apps (1.1.88) UNRELEASED; urgency=medium
 
   * Explain the smoother circles and corrected SVG sizing in What's New,

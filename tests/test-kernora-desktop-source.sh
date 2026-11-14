@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.78" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.79" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -2386,7 +2386,8 @@ grep -Fq '"translucent/dialogs/background.svg": dialog_background(DIALOG_FROSTED
   || fail "blur is not where Android 16 has it"
 grep -Fq 'blur.enabled = Qt.binding(() => root.visible && sheet.frost > 0);' "$package_root/data/shell/shade/contents/ui/ShadeWindow.qml" \
   && grep -Fq 'resting: root.controller.resting' "$package_root/data/shell/shade/contents/ui/ShadeWindow.qml" \
-  && grep -Fq 'readonly property bool resting: !dragActive && !spring.running && spring.value > 0.99' "$package_root/data/shell/shade/contents/ui/ShadeController.qml" \
+  && grep -Fq 'readonly property bool resting: rested && !dragActive && spring.target > 0.5' "$package_root/data/shell/shade/contents/ui/ShadeController.qml" \
+  && grep -Fq 'Math.abs(spring.value - 1) < 0.01 && Math.abs(spring.velocity) < 0.1' "$package_root/data/shell/shade/contents/ui/ShadeController.qml" \
   && grep -Fq 'property real frost: frosted && resting ? 1 : 0' "$package_root/data/shell/shade/contents/ui/ShadeSheet.qml" \
   && ! grep -Fq 'panel.sheet.stage(' "$package_root/data/shell/shade/contents/ui/QuickPanel.qml" \
   || fail "quick settings blur lags the moving sheet or its tiles drift"

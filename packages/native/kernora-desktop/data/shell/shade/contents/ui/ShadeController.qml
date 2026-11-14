@@ -18,7 +18,8 @@ Item {
     readonly property bool dragging: dragActive
     readonly property bool shown: spring.value > 0.001 || dragActive || spring.running
     readonly property bool opening: spring.target > 0.5
-    readonly property bool resting: !dragActive && !spring.running && spring.value > 0.99
+    readonly property bool resting: rested && !dragActive && spring.target > 0.5
+    property bool rested: false
 
     property bool dragActive: false
     property real dragOrigin: 0
@@ -28,6 +29,18 @@ Item {
         id: spring
         dampingRatio: 0.82
         response: 0.42
+
+        onValueChanged: root.checkRest()
+        onRunningChanged: root.checkRest()
+    }
+
+    function checkRest(): void {
+        if (rested || dragActive || spring.target < 0.5) {
+            return;
+        }
+        if (!spring.running ? spring.value > 0.99 : Math.abs(spring.value - 1) < 0.01 && Math.abs(spring.velocity) < 0.1) {
+            rested = true;
+        }
     }
 
     function open(velocity: var): void {
@@ -35,6 +48,7 @@ Item {
     }
 
     function close(velocity: var): void {
+        rested = false;
         spring.animateTo(0, velocity === undefined ? spring.velocity : velocity);
     }
 
@@ -51,6 +65,7 @@ Item {
             return;
         }
         spring.stop();
+        rested = false;
         dragOrigin = spring.value;
         samples = [];
         dragActive = true;

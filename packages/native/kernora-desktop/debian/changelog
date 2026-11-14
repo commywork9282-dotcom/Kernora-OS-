@@ -1,3 +1,12 @@
+kernora-desktop (1.4.79) UNRELEASED; urgency=medium
+
+  * Quick settings turn frosted as soon as the sheet comes to rest
+    instead of a moment later, when the spring's last tiny movement has
+    died out, so the blur no longer pops in after the panel has visibly
+    stopped.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 14 Nov 2026 12:00:00 -0800
+
 kernora-desktop (1.4.78) UNRELEASED; urgency=medium
 
   * Use vertex antialiasing throughout the Plasma session so circular

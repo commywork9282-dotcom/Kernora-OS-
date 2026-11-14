@@ -78,7 +78,7 @@ AppWindow {
     readonly property bool special: whatsNew || kernelPanic
     readonly property var panic: kernelPanic ? SystemInfo.kernelPanic() : ({})
     property var notes: []
-    readonly property bool heroActive: whatsNew && notes.length > 0 && notes[0].hero === "ked2"
+    readonly property bool heroActive: whatsNew && notes.some(note => note.hero === "ked2")
 
     function cookie(centre: real, radius: real, depth: real, lobes: int): var {
         const points = [];
