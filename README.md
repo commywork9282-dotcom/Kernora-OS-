@@ -24,24 +24,24 @@ root folder ownership that caused it.
 
 ## Screenshots
 
-Taken in a VM with the default colour and dark theme.
+KED 2, taken in a VM right after a fresh install, default colour and dark theme (blur turned on, a real GPU does that by itself).
 
 <table>
   <tr>
-    <td><img src="docs/screenshots/launcher.png" alt="App launcher"></td>
+    <td><img src="docs/screenshots/launcher.png" alt="Apps menu"></td>
     <td><img src="docs/screenshots/quick-settings.png" alt="Quick settings"></td>
   </tr>
   <tr>
-    <td align="center">App launcher</td>
+    <td align="center">Apps menu</td>
     <td align="center">Quick settings</td>
   </tr>
   <tr>
     <td><img src="docs/screenshots/settings.png" alt="Settings, wallpaper and style"></td>
-    <td><img src="docs/screenshots/files.png" alt="Files with a folder selected"></td>
+    <td><img src="docs/screenshots/files.png" alt="Files, folders on top"></td>
   </tr>
   <tr>
     <td align="center">Settings</td>
-    <td align="center">Files, with the selection toolbar</td>
+    <td align="center">Files, folders on top like Google Drive</td>
   </tr>
   <tr>
     <td><img src="docs/screenshots/store.png" alt="Store"></td>
@@ -56,18 +56,24 @@ Taken in a VM with the default colour and dark theme.
 ## What's in it
 
 - Debian 13.7 from a fixed snapshot (2026-10-15), Linux 6.12, KDE Plasma 6.3
-- a Kernora shell on top of Plasma: see-through floating panel (you can make
-  it solid in Settings), app launcher, quick settings, notifications, lock
-  screen, Alt+Tab and power menu. Every colour comes from one seed colour,
-  `#ff6a1e`, and you can switch the whole look between Material Design 1, 2
-  and 3 in Settings
+- a Kernora shell on top of Plasma in KED 2 (Kernora Expressive Design 2),
+  which looks and works like Googlebook: status bar on top, square taskbar,
+  apps menu in the middle of the screen, quick settings and notifications
+  dropping down from the bar, app groups on the desktop, lock screen, Alt+Tab
+  and power menu. Windows have all four corners rounded, and quick settings,
+  notifications and the apps menu sit over a blurred background
+- Google Sans Flex as the system font, set up the way Pixel does it (Google
+  Sans covers Cyrillic)
+- colours: the theme follows your wallpaper like on Android, or you pick one
+  of 20 colours. You can also switch the whole look between Material Design
+  1, 2 and 3 in Settings
 - Kernora apps instead of the KDE ones: Settings, Store, Files, Text Editor,
   Photos, Media Player, Calculator, Screenshot, Terminal (Alacritty) and
   Welcome, plus a file chooser every app uses
 - Store for apps and games from Flathub and Debian, so you don't need the
   terminal to install stuff (see [docs/STORE.md](docs/STORE.md))
-- Material 3 desktop widgets and live wallpapers: Shapes, Rhythm, Starfall
-  and Pastel
+- Material 3 desktop widgets, live wallpapers (Shapes, Rhythm, Starfall,
+  Pastel, Ribbon) and picture wallpapers in collections like on Pixel
 - the usual terminal tools out of the box: git, curl, htop, fastfetch and co
 - LibreWolf as the browser. It's not in Debian, so the build installs one
   pinned version from the LibreWolf repo and installed systems update from
@@ -133,7 +139,8 @@ into it.
 
 - `packages/native/`: Kernora's own packages (`kernora-base`,
   `kernora-archive`, `kernora-desktop`, `kernora-apps`,
-  `kernora-quickshare`)
+  `kernora-quickshare`, `kernora-wallpapers`), plus `fonts-google-sans` and
+  `kwin-effect-rounded-corners`
 - `packages/derived/`: patched Debian packages (`base-files`, Calamares and
   `polkit-kde-agent-1`)
 - `configs/`: upstream pins, the live image and the system identity
