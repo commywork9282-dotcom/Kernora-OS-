@@ -3,7 +3,9 @@
 
 #include "greetersync.h"
 
+#include <QDir>
 #include <QFileInfo>
+#include <QImageReader>
 #include <QRegularExpression>
 #include <QStandardPaths>
 #include <QUrl>
@@ -37,6 +39,37 @@ static bool administrator()
         return false;
     }
     return std::find(groups.cbegin(), groups.cend(), sudo->gr_gid) != groups.cend();
+}
+
+static QString packageImage(const QString &path, bool dark)
+{
+    const QFileInfo package(path);
+    if (!package.isDir()) {
+        return path;
+    }
+    const QStringList folders = dark ? QStringList{QStringLiteral("images_dark"), QStringLiteral("images")} : QStringList{QStringLiteral("images")};
+    const QStringList filters{QStringLiteral("*.png"), QStringLiteral("*.jpg"), QStringLiteral("*.jpeg"), QStringLiteral("*.webp")};
+    for (const QString &folder : folders) {
+        const QDir images(package.absoluteFilePath() + QStringLiteral("/contents/") + folder);
+        QString best;
+        qint64 bestArea = -1;
+        for (const QFileInfo &file : images.entryInfoList(filters, QDir::Files)) {
+            const QStringList size = file.completeBaseName().split(QLatin1Char('x'));
+            qint64 area = size.size() == 2 ? size.at(0).toLongLong() * size.at(1).toLongLong() : 0;
+            if (area <= 0) {
+                const QSize read = QImageReader(file.absoluteFilePath()).size();
+                area = qint64(read.width()) * read.height();
+            }
+            if (area > bestArea) {
+                bestArea = area;
+                best = file.absoluteFilePath();
+            }
+        }
+        if (!best.isEmpty()) {
+            return best;
+        }
+    }
+    return {};
 }
 
 GreeterSync::GreeterSync()
@@ -129,6 +162,7 @@ GreeterSync::Wallpaper GreeterSync::desktopWallpaper() const
     const QRegularExpressionMatch schemeMatch = kernoraScheme.match(scheme);
     found.mode = schemeMatch.hasMatch() && schemeMatch.captured(1) == QLatin1String("Light") ? QStringLiteral("light") : QStringLiteral("dark");
     if (found.plugin == QLatin1String("org.kde.image")) {
+        found.image = packageImage(found.image, found.mode == QLatin1String("dark"));
         const QFileInfo picture(found.image);
         if (found.image.isEmpty() || !picture.isFile()) {
             return {};

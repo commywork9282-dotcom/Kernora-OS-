@@ -1,3 +1,14 @@
+kernora-apps (1.1.90) UNRELEASED; urgency=medium
+
+  * The login screen follows wallpapers picked in Plasma's own Desktop and
+    Wallpaper dialog too. That dialog stores the wallpaper package folder
+    instead of a picture, which the greeter sync skipped, so the new
+    collection wallpapers never reached the login screen that way. The
+    sync now takes the largest picture from the package, the dark variant
+    in the dark theme.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 14 Nov 2026 12:45:00 -0800
+
 kernora-apps (1.1.89) UNRELEASED; urgency=medium
 
   * Window blur sends its region to KWin right before the frame that

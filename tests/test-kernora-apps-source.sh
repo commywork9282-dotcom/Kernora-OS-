@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.89" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.90" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -189,6 +189,9 @@ grep -Fq 'AvatarSync avatar;' "$package_root/src/updatenotifier/main.cpp" \
   && grep -Fq 'kernora/faces/%1.png' "$package_root/src/updatenotifier/avatarsync.cpp" \
   && grep -Fq 'kernora/faces/%1.png' "$package_root/src/system/accounts.cpp" \
   || fail "the Kernora avatar does not follow the colour"
+grep -Fq 'found.image = packageImage(found.image, found.mode == QLatin1String("dark"));' "$package_root/src/updatenotifier/greetersync.cpp" \
+  && grep -Fq 'QStringLiteral("/contents/") + folder' "$package_root/src/updatenotifier/greetersync.cpp" \
+  || fail "the login screen skips wallpapers picked as a Plasma package"
 grep -Fq 'wallpaper.colour, wallpaper.mode' "$package_root/src/updatenotifier/greetersync.cpp" \
   || fail "the login screen does not get the colour and theme"
 grep -Fq '"/kdedefaults/kdeglobals"' "$package_root/src/updatenotifier/greetersync.cpp" \
