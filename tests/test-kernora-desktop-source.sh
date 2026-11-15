@@ -1617,13 +1617,21 @@ grep -Fxq 'data/folderview/HomeOptions.qml usr/share/plasma/plasmoids/org.kde.de
 grep -Fxq 'generated/picker/* usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/picker' "$package_root/debian/kernora-desktop.install" \
   && grep -Fxq 'data/folderview/HomeGrid.js usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui' "$package_root/debian/kernora-desktop.install" \
   && grep -Fq 'cp data/folderview/picker/*.qml data/explorer/WidgetPreview.qml' "$package_root/debian/rules" \
-  && grep -Fq 'explorer.addApplet(plugin);' "$data_root/folderview/picker/WidgetPicker.qml" \
+  && grep -Fq 'explorer.addApplet(HomeGrid.plugin(entry));' "$data_root/folderview/picker/WidgetPicker.qml" \
   && grep -Fq '"text/x-plasmoidservicename": cell.plugin' "$data_root/folderview/picker/WidgetCell.qml" \
   && grep -Fq 'property: "cellWidth"' "$data_root/folderview/FolderView.qml" \
   && grep -Fq 'longPressThreshold: 0.4' "$data_root/widgets/common/LiftHandler.qml" \
   && grep -Fq 'readonly property bool overRemove: dragging && removeTarget.hit(pointer)' "$data_root/editmode/ConfigOverlay.qml" \
   || fail "the Android widget picker or widget grid is missing"
-for widget in battery calendar clock cputemperature glance media note photo weather; do
+grep -Fq '"org.kernora.widget.clock#analog", "org.kernora.widget.clock#digital"' "$data_root/folderview/HomeGrid.js" \
+  && grep -Fq '"org.kernora.widget.clock#stacked", "org.kernora.widget.worldclock"' "$data_root/folderview/HomeGrid.js" \
+  && grep -Fq '0.965 + 0.033 * Math.cos(12 * angle)' "$data_root/widgets/common/ClockFace.qml" \
+  && grep -Fq 'face.dark ? M3.accent1_100 : M3.accent1_500' "$data_root/widgets/common/ClockFace.qml" \
+  && grep -Fq 'data/widgets/common/ClockFace.qml generated/picker/' "$package_root/debian/rules" \
+  && grep -Fq 'return first.concat(rest).slice(0, 8);' "$data_root/widgets/worldclock/contents/ui/ConfigCity.qml" \
+  && grep -Fq '<default>stacked</default>' "$data_root/widgets/clock/contents/config/main.xml" \
+  || fail "the clock widgets are not the Google Clock analog, digital, stacked and world clocks"
+for widget in battery calendar clock cputemperature glance media note photo weather worldclock; do
   grep -Fq 'LiftHandler {}' "$data_root/widgets/$widget/contents/ui/main.qml" || fail "the $widget widget has no long press"
 done
 grep -Fq 'taken.indexOf(shortcut) < 0' "$data_root/panel/layout.js" \
@@ -1812,7 +1820,7 @@ XDG_CONFIG_HOME="$menu_home" sh "$package_root/data/kconf_update/kernora-add-wid
   || fail "the desktop menu does not offer Add Widgets exactly once"
 rm -rf "$menu_home"
 sh -n "$package_root/data/crash/kernora-panic-report" || fail "the panic report does not parse"
-for widget in clock glance weather battery cputemperature calendar media photo note; do
+for widget in clock worldclock glance weather battery cputemperature calendar media photo note; do
   python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$package_root/data/widgets/$widget/metadata.json" \
     || fail "the $widget widget metadata is not JSON"
   xmllint --noout "$package_root/data/widgets/$widget/contents/config/main.xml" \

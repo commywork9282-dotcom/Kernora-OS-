@@ -21,7 +21,8 @@ PlasmaCore.Dialog {
     property real cellWidth: 144
     property real cellHeight: 100
 
-    signal adding(string plugin)
+    signal adding(string entry)
+    signal picked(string entry)
 
     type: PlasmaCore.Dialog.AppletPopup
     location: PlasmaCore.Types.Floating
@@ -55,6 +56,11 @@ PlasmaCore.Dialog {
             "photos": i18nd("kernora-ui", "Photos"),
             "taskmanager": i18nd("kernora-ui", "Task Manager"),
             "weather": i18nd("kernora-ui", "Weather")
+        })
+        readonly property var variantNames: ({
+            "org.kernora.widget.clock#analog": i18nd("kernora-ui", "Analog clock"),
+            "org.kernora.widget.clock#digital": i18nd("kernora-ui", "Digital clock"),
+            "org.kernora.widget.clock#stacked": i18nd("kernora-ui", "Stacked clock")
         })
         readonly property var categoryNames: ({
             "essentials": i18nd("kernora-ui", "Essentials"),
@@ -119,16 +125,24 @@ PlasmaCore.Dialog {
             info = found;
         }
 
-        function widgetName(plugin: string): string {
+        function widgetName(entry: string): string {
+            if (variantNames[entry]) {
+                return variantNames[entry];
+            }
+            const plugin = HomeGrid.plugin(entry);
             return info[plugin] ? info[plugin].name : plugin;
         }
 
-        function widgetDescription(plugin: string): string {
+        function widgetDescription(entry: string): string {
+            if (HomeGrid.variant(entry).length > 0) {
+                return "";
+            }
+            const plugin = HomeGrid.plugin(entry);
             return info[plugin] ? info[plugin].description : "";
         }
 
-        function installed(plugins: var): var {
-            return plugins.filter(plugin => !!info[plugin]);
+        function installed(entries: var): var {
+            return entries.filter(entry => !!info[HomeGrid.plugin(entry)]);
         }
 
         function matches(plugin: string): bool {
@@ -161,9 +175,9 @@ PlasmaCore.Dialog {
             return app ? [{ title: "", plugins: installed(app.plugins) }] : [];
         }
 
-        function add(plugin: string): void {
-            window.adding(plugin);
-            explorer.addApplet(plugin);
+        function add(entry: string): void {
+            window.adding(entry);
+            explorer.addApplet(HomeGrid.plugin(entry));
             hide();
         }
 
@@ -508,7 +522,7 @@ PlasmaCore.Dialog {
 
                                         delegate: WidgetCell {
                                             required property string modelData
-                                            plugin: modelData
+                                            plugin: HomeGrid.plugin(modelData)
                                             name: scene.widgetName(modelData)
                                             description: scene.widgetDescription(modelData)
                                             span: HomeGrid.span(modelData)
@@ -518,7 +532,10 @@ PlasmaCore.Dialog {
                                             showAdd: scene.addPlugin === modelData
                                             onTapped: scene.addPlugin = scene.addPlugin === modelData ? "" : modelData
                                             onAddRequested: scene.add(modelData)
-                                            onDragStarted: scene.dragging = true
+                                            onDragStarted: {
+                                                window.picked(modelData);
+                                                scene.dragging = true;
+                                            }
                                             onDragFinished: {
                                                 scene.shown = false;
                                                 scene.progress = 0;

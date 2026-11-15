@@ -17,7 +17,7 @@ Item {
 
     Timer {
         interval: 20000
-        running: root.visible && (root.kind === "clock" || root.kind === "glance" || root.kind === "calendar")
+        running: root.visible && (root.kind.indexOf("clock") === 0 || root.kind === "glance" || root.kind === "calendar")
         repeat: true
         onTriggered: root.now = new Date()
     }
@@ -27,6 +27,10 @@ Item {
         sourceComponent: {
             switch (root.kind) {
             case "clock":
+            case "clock-analog":
+            case "clock-digital":
+            case "clock-stacked":
+            case "worldclock":
                 return clock;
             case "glance":
                 return glance;
@@ -70,29 +74,16 @@ Item {
         }
     }
 
-    component Digits: Text {
-        color: M3.primary
-        font.family: M3.typeface
-        font.pixelSize: 44
-        font.weight: Font.Medium
-        font.letterSpacing: -2
-        font.features: { "tnum": 1 }
-        anchors.horizontalCenter: parent.horizontalCenter
-    }
-
     Component {
         id: clock
 
-        Column {
-            spacing: -12
-
-            Digits {
-                text: String(root.twelveHours ? (root.now.getHours() + 11) % 12 + 1 : root.now.getHours()).padStart(2, "0")
-            }
-            Digits {
-                text: String(root.now.getMinutes()).padStart(2, "0")
-                color: M3.tertiary
-            }
+        ClockFace {
+            width: root.width
+            height: root.height
+            style: root.kind === "worldclock" ? "world" : root.kind.indexOf("clock-") === 0 ? root.kind.substring(6) : "stacked"
+            now: root.kind === "worldclock" ? new Date(2026, 0, 7, 10, 30) : root.now
+            twelveHours: root.twelveHours
+            city: i18nd("kernora-ui", "London")
         }
     }
 

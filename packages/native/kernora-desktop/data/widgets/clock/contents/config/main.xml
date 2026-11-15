@@ -7,7 +7,7 @@
 
   <group name="General">
     <entry name="style" type="String">
-      <default>bold</default>
+      <default>stacked</default>
     </entry>
     <entry name="placed" type="Bool">
       <default>false</default>

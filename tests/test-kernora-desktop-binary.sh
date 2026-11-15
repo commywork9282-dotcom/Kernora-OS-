@@ -558,7 +558,7 @@ grep -Fxq 'X-KDE-Shortcuts=Meta+Ctrl+Alt+Shift+Space' "$temporary_root/desktop/u
 grep -Fq 'addWidget("org.kernora.clipboard", "Meta+.")' \
   "$temporary_root/desktop/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js" \
   || fail "the Kernora emoji tab does not open with Meta+."
-for widget in clock glance weather battery cputemperature calendar media photo note; do
+for widget in clock worldclock glance weather battery cputemperature calendar media photo note; do
   widget_root="$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.$widget"
   for path in metadata.json contents/ui/main.qml contents/ui/m3/M3.qml contents/ui/materialshapes.js \
       contents/ui/MaterialShape.qml contents/config/main.xml; do
@@ -576,6 +576,12 @@ for file in contents/ui/main.qml contents/ui/ConfigGeneral.qml contents/config/c
 done
 cmp "$package_root/data/widgets/common/TemperatureCard.qml" "$cpu_widget/contents/ui/TemperatureCard.qml" \
   || fail "the CPU temperature card is missing or stale"
+cmp "$package_root/data/widgets/common/ClockFace.qml" "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.worldclock/contents/ui/ClockFace.qml" \
+  && cmp "$package_root/data/widgets/common/ClockFace.qml" "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/picker/ClockFace.qml" \
+  && cmp "$package_root/data/widgets/common/ClockFace.qml" "$temporary_root/desktop/$shell/explorer/ClockFace.qml" \
+  || fail "the clock face is missing from the clock widgets or the widget pickers"
+grep -q 'accent1_500' "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.clock/contents/ui/m3/M3.qml" \
+  || fail "the colour tokens lack the Android tonal shades"
 cmp "$package_root/data/widgets/common/TemperatureCard.qml" "$temporary_root/desktop/$shell/explorer/TemperatureCard.qml" \
   || fail "the widget menu lacks the CPU temperature preview component"
 [[ -s "$temporary_root/desktop/usr/share/locale/ru/LC_MESSAGES/plasma_applet_org.kernora.widget.cputemperature.mo" ]] \

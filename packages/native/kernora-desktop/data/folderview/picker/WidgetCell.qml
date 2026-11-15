@@ -25,6 +25,7 @@ Item {
     signal dragFinished()
 
     readonly property real previewScale: 0.6
+    readonly property bool clock: kind.indexOf("clock") >= 0
     readonly property real cardWidth: Math.round((span[0] * cellWidth - 16) * previewScale)
     readonly property real cardHeight: Math.round((span[1] * cellHeight - 16) * previewScale)
 
@@ -49,14 +50,14 @@ Item {
                 width: cell.cardWidth
                 height: cell.cardHeight
                 radius: 28 * cell.previewScale
-                color: cell.kind === "glance" || cell.kind === "clock" || cell.kind === "weather" || cell.kind === "photo"
+                color: cell.clock || cell.kind === "glance" || cell.kind === "weather" || cell.kind === "photo"
                     ? "transparent" : M3.surfaceContainer
                 clip: true
 
                 WidgetPreview {
                     anchors.fill: parent
                     kind: cell.kind
-                    scale: Math.min(1, cell.cardHeight / 150, cell.cardWidth / 170)
+                    scale: cell.clock ? 1 : Math.min(1, cell.cardHeight / 150, cell.cardWidth / 170)
                 }
             }
 

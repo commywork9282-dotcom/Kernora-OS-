@@ -10,7 +10,8 @@ var prefix = "org.kernora.widget.";
 var apps = [
     { id: "battery", icon: "org.kernora.battery", plugins: ["org.kernora.widget.battery"] },
     { id: "calendar", icon: "org.kernora.calendar", plugins: ["org.kernora.widget.calendar"] },
-    { id: "clock", icon: "org.kernora.clock", plugins: ["org.kernora.widget.clock"] },
+    { id: "clock", icon: "org.kernora.clock", plugins: ["org.kernora.widget.clock#analog", "org.kernora.widget.clock#digital",
+                                                       "org.kernora.widget.clock#stacked", "org.kernora.widget.worldclock"] },
     { id: "kernora", icon: "kernora-logo", plugins: ["org.kernora.widget.glance"] },
     { id: "player", icon: "org.kernora.player", plugins: ["org.kernora.widget.media"] },
     { id: "notes", icon: "org.kernora.notes", plugins: ["org.kernora.widget.note"] },
@@ -20,7 +21,7 @@ var apps = [
 ];
 
 var suggestions = [
-    { id: "essentials", plugins: ["org.kernora.widget.clock", "org.kernora.widget.weather", "org.kernora.widget.glance",
+    { id: "essentials", plugins: ["org.kernora.widget.clock#analog", "org.kernora.widget.weather", "org.kernora.widget.glance",
                                   "org.kernora.widget.calendar", "org.kernora.widget.battery"] },
     { id: "others", plugins: ["org.kernora.widget.media", "org.kernora.widget.note", "org.kernora.widget.photo"] }
 ];
@@ -28,19 +29,40 @@ var suggestions = [
 var spans = {
     "org.kernora.widget.battery": [2, 2],
     "org.kernora.widget.calendar": [3, 3],
-    "org.kernora.widget.clock": [2, 2],
+    "org.kernora.widget.clock": [2, 3],
+    "org.kernora.widget.clock#analog": [2, 3],
+    "org.kernora.widget.clock#digital": [2, 2],
+    "org.kernora.widget.clock#stacked": [2, 3],
     "org.kernora.widget.cputemperature": [2, 3],
     "org.kernora.widget.glance": [4, 1],
     "org.kernora.widget.media": [3, 2],
     "org.kernora.widget.note": [2, 2],
     "org.kernora.widget.photo": [2, 2],
-    "org.kernora.widget.weather": [2, 2]
+    "org.kernora.widget.weather": [2, 2],
+    "org.kernora.widget.worldclock": [2, 2]
 };
 
-function span(pluginName) {
-    return spans[pluginName] || [2, 2];
+function plugin(entry) {
+    return String(entry).split("#")[0];
 }
 
-function kind(pluginName) {
-    return String(pluginName).indexOf(prefix) === 0 ? String(pluginName).substring(prefix.length) : "";
+function variant(entry) {
+    var parts = String(entry).split("#");
+    return parts.length > 1 ? parts[1] : "";
+}
+
+function config(entry) {
+    var style = variant(entry);
+    return style.length > 0 ? { style: style } : {};
+}
+
+function span(entry) {
+    return spans[entry] || spans[plugin(entry)] || [2, 2];
+}
+
+function kind(entry) {
+    var name = plugin(entry);
+    var base = name.indexOf(prefix) === 0 ? name.substring(prefix.length) : "";
+    var style = variant(entry);
+    return base.length > 0 && style.length > 0 ? base + "-" + style : base;
 }

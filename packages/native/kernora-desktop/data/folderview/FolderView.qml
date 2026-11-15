@@ -124,6 +124,35 @@ FocusScope {
     readonly property real homeCellHeight: homeRect.height > 0 ? Math.floor(homeRect.height / homeRows) : 100
     readonly property int homeGap: 8
     property string pendingAdd: ""
+    property string pendingEntry: ""
+    property var entrySpans: ({})
+
+    function claimEntry(): void {
+        const layout = root.appletsLayout;
+        if (!main.homeView || !layout || main.pendingEntry.length === 0) {
+            return;
+        }
+        const plugin = HomeGrid.plugin(main.pendingEntry);
+        for (const child of layout.children) {
+            if (child.applet === undefined || !child.applet || !child.applet.plasmoid) {
+                continue;
+            }
+            const plasmoid = child.applet.plasmoid;
+            if (String(plasmoid.pluginName) !== plugin || !plasmoid.configuration || plasmoid.configuration.placed !== false
+                    || main.entrySpans[plasmoid.id] !== undefined) {
+                continue;
+            }
+            const config = HomeGrid.config(main.pendingEntry);
+            for (const key in config) {
+                plasmoid.configuration[key] = config[key];
+            }
+            const spans = Object.assign({}, main.entrySpans);
+            spans[plasmoid.id] = HomeGrid.span(main.pendingEntry);
+            main.entrySpans = spans;
+            main.pendingEntry = "";
+            return;
+        }
+    }
 
     function firstFreeCell(layout: Item, columns: int, rows: int): point {
         for (let row = 0; row + rows <= main.homeRows; ++row) {
@@ -174,6 +203,7 @@ FocusScope {
         if (!main.homeView || !layout || layout.width <= 0 || layout.height <= 0) {
             return;
         }
+        main.claimEntry();
         const cellWidth = layout.cellWidth;
         const cellHeight = layout.cellHeight;
         for (const child of layout.children) {
@@ -185,7 +215,7 @@ FocusScope {
                 continue;
             }
             const fresh = !!child.applet.plasmoid.configuration && child.applet.plasmoid.configuration.placed === false;
-            const span = HomeGrid.span(plugin);
+            const span = main.entrySpans[child.applet.plasmoid.id] || HomeGrid.span(plugin);
             child.leftPadding = main.homeGap;
             child.topPadding = main.homeGap;
             child.rightPadding = main.homeGap;
@@ -241,6 +271,7 @@ FocusScope {
     Connections {
         target: main.homeView ? root.appletsLayout : null
         function onChildrenChanged(): void {
+            main.claimEntry();
             widgetTidy.restart();
         }
     }
@@ -257,7 +288,11 @@ FocusScope {
         id: widgetPicker
         active: main.homeView
         sourceComponent: Picker.WidgetPicker {
-            onAdding: plugin => main.pendingAdd = plugin
+            onAdding: entry => {
+                main.pendingAdd = HomeGrid.plugin(entry);
+                main.pendingEntry = entry;
+            }
+            onPicked: entry => main.pendingEntry = entry
         }
     }
 

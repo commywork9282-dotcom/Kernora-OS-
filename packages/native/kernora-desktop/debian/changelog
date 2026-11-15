@@ -15,6 +15,11 @@ kernora-desktop (1.4.81) UNRELEASED; urgency=medium
     touch and hold one to pick it up, drop it on Remove at the top to
     take it away, or let go to get the resize frame with four handles
     and a pencil for its settings. New widgets go to the first free spot.
+  * The clock widgets are Google Clock's: the round analog clock with
+    the scalloped dial and a seconds dot, the digital clock in a pill,
+    the stacked clock and a world clock for any city, each its own widget
+    in the picker. They use the Android tonal shades of the theme colour,
+    now part of the colour tokens, and turn dark with the dark theme.
 
  -- Kernora Developers <developers@kernora.invalid>  Sun, 15 Nov 2026 02:10:00 -0800
 

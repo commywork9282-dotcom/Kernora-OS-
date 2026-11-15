@@ -24,6 +24,17 @@
           "en": "Widgets in that menu opens a picker with the widgets of each app. Add one with a tap or drag it onto the desktop. Touch and hold a widget to move it, drop it on Remove to take it away, or let go to resize it.",
           "ru": "«Виджеты» в этом меню открывают список виджетов по приложениям. Добавьте виджет нажатием или перетащите на рабочий стол. Чтобы переместить виджет, нажмите и удерживайте его. Бросьте на «Убрать», чтобы удалить, или просто отпустите, чтобы изменить размер."
         }
+      },
+      {
+        "icon": "clock",
+        "title": {
+          "en": "Google Clock widgets",
+          "ru": "Часы как в Google"
+        },
+        "text": {
+          "en": "The Clock app in the widget picker now has the round analog clock with a scalloped dial, the digital and stacked clocks, and a world clock for any city. They take the colours of your theme and turn dark with the dark theme.",
+          "ru": "В разделе «Часы» списка виджетов теперь круглые аналоговые часы с волнистым циферблатом, цифровые и вертикальные часы, а также мировое время для любого города. Они берут цвета вашей темы и темнеют вместе с тёмной темой."
+        }
       }
     ]
   },

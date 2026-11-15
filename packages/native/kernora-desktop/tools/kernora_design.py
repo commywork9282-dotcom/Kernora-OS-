@@ -201,6 +201,7 @@ def _classic_scheme(generation: str, dark: bool) -> dict[str, str]:
         "positive": tonal["positive"],
         "negative": error,
         "neutralYellow": tonal["neutralYellow"],
+        **m3color.Scheme(SEED, dark=dark, chroma=SEED_CHROMA).shades(),
     }
 
 

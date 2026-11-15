@@ -447,6 +447,10 @@ def _rotated_hue(source: Hct, rotations) -> float:
     return source_hue
 
 
+ANDROID_SHADES = ((10, 99), (50, 95), (100, 90), (200, 80), (300, 70), (400, 60), (500, 50),
+                  (600, 40), (700, 30), (800, 20), (900, 10))
+
+
 class Scheme:
 
     def __init__(self, seed: str, dark: bool, contrast_boost: float = 0.0, chroma: float | None = None) -> None:
@@ -474,7 +478,16 @@ class Scheme:
             tone = max(0.0, min(100.0, tone + self._boost * (1 if self.dark else -1)))
         return palette.hex(tone)
 
+    def shades(self) -> dict[str, str]:
+        families = (("accent1", self.primary), ("accent2", self.secondary), ("accent3", self.tertiary),
+                    ("neutral1", self.neutral), ("neutral2", self.neutral_variant))
+        return {f"{name}_{shade}": palette.hex(tone)
+                for name, palette in families for shade, tone in ANDROID_SHADES}
+
     def roles(self) -> dict[str, str]:
+        return {**self._roles(), **self.shades()}
+
+    def _roles(self) -> dict[str, str]:
         p, s, t = self.primary, self.secondary, self.tertiary
         n, nv, e = self.neutral, self.neutral_variant, self.error
         return {

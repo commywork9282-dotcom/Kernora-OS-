@@ -189,6 +189,18 @@ msgstr "Диспетчер задач"
 msgid "Weather"
 msgstr "Погода"
 
+msgid "Analog clock"
+msgstr "Аналоговые часы"
+
+msgid "Digital clock"
+msgstr "Цифровые часы"
+
+msgid "Stacked clock"
+msgstr "Вертикальные часы"
+
+msgid "London"
+msgstr "Лондон"
+
 msgid "Essentials"
 msgstr "Основное"
 

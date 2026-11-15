@@ -12,6 +12,7 @@ var panelGroups = ["panel", "system", "time", "media", "input", "monitor", "file
 
 var widgets = {
     "org.kernora.widget.clock": { icon: "clock" },
+    "org.kernora.widget.worldclock": { icon: "clock" },
     "org.kernora.widget.glance": { icon: "weather-few-clouds" },
     "org.kernora.widget.weather": { icon: "weather-few-clouds" },
     "org.kernora.widget.calendar": { icon: "view-calendar" },

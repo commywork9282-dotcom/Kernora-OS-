@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Date and Time",
+        "Description": "The time in another city",
+        "Description[ru]": "Время в другом городе",
+        "Icon": "clock",
+        "Id": "org.kernora.widget.worldclock",
+        "License": "GPL-2.0+",
+        "Name": "World Clock",
+        "Name[ru]": "Мировое время"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-FormFactors": [
+        "desktop"
+    ]
+}

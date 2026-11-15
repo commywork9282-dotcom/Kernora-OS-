@@ -1,0 +1,23 @@
+# Russian translation of the Kernora World Clock.
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-desktop 1.4\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "City"
+msgstr "Город"
+
+msgid "Until you choose a city, the widget shows the local time."
+msgstr "Пока город не выбран, виджет показывает местное время."
+
+msgid "Choose another city"
+msgstr "Выбрать другой город"
+
+msgid "Search for a city"
+msgstr "Найти город"
+
+msgid "No city with this name."
+msgstr "Такого города нет."
