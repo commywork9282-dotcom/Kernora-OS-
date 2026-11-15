@@ -1609,12 +1609,23 @@ msgid "Apps, the panel, windows and the live wallpapers take on the chosen colou
 msgstr "Приложения, панель, окна и живые обои окрашиваются в выбранный цвет."
 
 #: apps/settings/qml/pages/AppearancePage.qml:285
+msgid "App icons"
+msgstr "Значки приложений"
+
 msgid "Themed app icons"
 msgstr "Тематические значки приложений"
 
 #: apps/settings/qml/pages/AppearancePage.qml:286
 msgid "Apps without a Kernora icon take on the colour too"
 msgstr "Приложения без значка Kernora тоже окрашиваются в цвет темы"
+
+#: apps/settings/qml/pages/AppearancePage.qml
+msgid "Original icon shapes"
+msgstr "Исходная форма значков"
+
+#: apps/settings/qml/pages/AppearancePage.qml
+msgid "Apps without a Kernora icon keep their own icon, without the circle"
+msgstr "Приложения без значка Kernora показывают свой обычный значок, без круга"
 
 #: apps/settings/qml/pages/AppearancePage.qml:305
 msgid "Style"

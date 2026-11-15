@@ -417,6 +417,10 @@ SettingsPage {
                 }
             }
         }
+    }
+
+    Group {
+        title: i18n("App icons")
 
         ListItem {
             title: i18n("Themed app icons")
@@ -424,10 +428,29 @@ SettingsPage {
             icon: "preferences-desktop-icons"
             iconStyle: "plain"
             checkable: true
-            checked: String(themedIcons.value) === "true"
-            enabled: !Appearance.busy
+            checked: String(themedIcons.value) === "true" && String(originalIcons.value) !== "true"
+            enabled: !Appearance.busy && String(originalIcons.value) !== "true"
             onToggled: on => themedIcons.value = on ? "true" : "false"
         }
+
+        ListItem {
+            title: i18n("Original icon shapes")
+            subtitle: i18n("Apps without a Kernora icon keep their own icon, without the circle")
+            icon: "window-maximize"
+            iconStyle: "plain"
+            checkable: true
+            checked: String(originalIcons.value) === "true"
+            enabled: !Appearance.busy
+            onToggled: on => originalIcons.value = on ? "true" : "false"
+        }
+    }
+
+    ConfigEntry {
+        id: originalIcons
+        file: "kernorarc"
+        group: "Icons"
+        key: "originalShapes"
+        defaultValue: "false"
     }
 
     ConfigEntry {

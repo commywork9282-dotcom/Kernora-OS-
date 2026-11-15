@@ -212,7 +212,8 @@ bool AppIconSync::syncNow()
         return false;
     }
     KConfig kernora(QStringLiteral("kernorarc"), KConfig::SimpleConfig);
-    const bool themed = kernora.group(QStringLiteral("Icons")).readEntry("themedApps", false);
+    const bool original = kernora.group(QStringLiteral("Icons")).readEntry("originalShapes", false);
+    const bool themed = !original && kernora.group(QStringLiteral("Icons")).readEntry("themedApps", false);
     const AppIcons::Palette colours = palette(theme);
     const QHash<QString, QString> sources = findSources(applicationIcons());
 
@@ -225,7 +226,7 @@ bool AppIconSync::syncNow()
 
     bool changed = false;
     QSet<QString> kept;
-    for (auto it = sources.cbegin(); it != sources.cend(); ++it) {
+    for (auto it = sources.cbegin(); !original && it != sources.cend(); ++it) {
         const QString &name = it.key();
         const QString &path = it.value();
         const QString file = target + QLatin1Char('/') + name + QStringLiteral(".svg");

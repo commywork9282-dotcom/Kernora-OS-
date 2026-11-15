@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-14-3",
+    "date": "2026-11-14",
+    "items": [
+      {
+        "icon": "preferences-desktop-icons",
+        "title": {
+          "en": "App icons the way they were",
+          "ru": "Значки приложений как раньше"
+        },
+        "text": {
+          "en": "Settings › Wallpaper & style now has Original icon shapes. Turn it on and apps without a Kernora icon show their own icon again, without the white circle. It stays off unless you turn it on.",
+          "ru": "В «Настройки › Обои и стиль» появился переключатель «Исходная форма значков». Если его включить, приложения без значка Kernora снова показывают свой обычный значок, без белого круга. Сам он выключен, пока вы его не включите."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-14-2",
     "date": "2026-11-14",
     "items": [

@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.91" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.92" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -422,4 +422,9 @@ grep -Fq 'add_subdirectory(src/terminal)' "$package_root/CMakeLists.txt" \
   && ! grep -Fq 'alacritty' "$package_root/apps/files/qml/Main.qml" \
   && grep -Fq '[ -f "src/apps/$name.cpp" ] && entry=' "$package_root/tools/extract-messages" \
   || fail "the Googlebook-style terminal is missing"
+grep -Fq 'readEntry("originalShapes", false)' "$package_root/src/updatenotifier/appiconsync.cpp" \
+  && grep -Fq 'const bool themed = !original &&' "$package_root/src/updatenotifier/appiconsync.cpp" \
+  && grep -Fq 'key: "originalShapes"' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
+  && grep -Fq 'defaultValue: "false"' <<<"$(grep -A4 'id: originalIcons' "$package_root/apps/settings/qml/pages/AppearancePage.qml")" \
+  || fail "the original icon shapes switch is missing or on by default"
 printf 'kernora-apps source test: OK\n'

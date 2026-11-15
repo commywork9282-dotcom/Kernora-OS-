@@ -1,3 +1,15 @@
+kernora-apps (1.1.92) UNRELEASED; urgency=medium
+
+  * Settings > Wallpaper & style has a new "Original icon shapes" switch,
+    off by default. When it is on, apps without a Kernora icon show their
+    own icon again, the way they looked before the round icons came in,
+    and the Kernora icons stay round. Themed app icons need the circle,
+    so that switch rests while this one is on.
+  * Both icon switches moved out of the colour list into their own
+    App icons section, so they no longer sit right under the swatches.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 14 Nov 2026 22:31:00 -0800
+
 kernora-apps (1.1.91) UNRELEASED; urgency=medium
 
   * New Terminal app in the Googlebook style, built on QTermWidget. The
