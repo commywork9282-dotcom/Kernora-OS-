@@ -8,6 +8,13 @@ kernora-desktop (1.4.81) UNRELEASED; urgency=medium
     them. A right click keeps the usual desktop menu.
   * Pages can put their back arrow in the top left corner, used by the
     full screen settings.
+  * Widgets work like on Android and Googlebook: Widgets in the long-press
+    menu opens a full-height picker with Suggestions and the widgets of
+    each app, each with its size in cells and an Add button, or drag a
+    preview onto the desktop. Widgets sit on a grid of cells with gaps,
+    touch and hold one to pick it up, drop it on Remove at the top to
+    take it away, or let go to get the resize frame with four handles
+    and a pencil for its settings. New widgets go to the first free spot.
 
  -- Kernora Developers <developers@kernora.invalid>  Sun, 15 Nov 2026 02:10:00 -0800
 

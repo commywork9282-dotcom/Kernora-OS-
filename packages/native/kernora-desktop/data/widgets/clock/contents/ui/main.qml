@@ -42,6 +42,8 @@ PlasmoidItem {
     }
 
     fullRepresentation: Item {
+        LiftHandler {}
+
         Layout.preferredWidth: root.analog ? 220 : 240
         Layout.preferredHeight: root.analog ? 220 : 250
         Layout.minimumWidth: 100

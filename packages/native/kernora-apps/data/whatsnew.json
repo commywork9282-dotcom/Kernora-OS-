@@ -13,6 +13,17 @@
           "en": "Touch and hold an empty spot on the desktop for the same menu as on Android: Wallpaper & style, Widgets and Home settings. Settings open full screen from it, and Home settings can put the icons of new apps on the desktop.",
           "ru": "Нажмите и удерживайте пустое место на рабочем столе, и откроется то же меню, что на Android: «Обои и стиль», «Виджеты» и «Главный экран». Настройки из него открываются на весь экран, а в «Главном экране» можно сделать так, чтобы значки новых приложений сами появлялись на рабочем столе."
         }
+      },
+      {
+        "icon": "preferences-desktop-widgets",
+        "title": {
+          "en": "Widgets like on Android",
+          "ru": "Виджеты как на Android"
+        },
+        "text": {
+          "en": "Widgets in that menu opens a picker with the widgets of each app. Add one with a tap or drag it onto the desktop. Touch and hold a widget to move it, drop it on Remove to take it away, or let go to resize it.",
+          "ru": "«Виджеты» в этом меню открывают список виджетов по приложениям. Добавьте виджет нажатием или перетащите на рабочий стол. Чтобы переместить виджет, нажмите и удерживайте его. Бросьте на «Убрать», чтобы удалить, или просто отпустите, чтобы изменить размер."
+        }
       }
     ]
   },

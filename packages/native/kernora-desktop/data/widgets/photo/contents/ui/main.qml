@@ -69,6 +69,7 @@ PlasmoidItem {
 
     fullRepresentation: Item {
         id: frame
+        LiftHandler {}
         Layout.preferredWidth: 230
         Layout.preferredHeight: 230
         Layout.minimumWidth: 120

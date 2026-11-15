@@ -80,6 +80,8 @@ data/folderview/KernoraIconLayout.qml usr/share/plasma/plasmoids/org.kde.desktop
 data/folderview/IconPlacement.js usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
 data/folderview/StatusBarProbe.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
 data/folderview/HomeOptions.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
+data/folderview/HomeGrid.js usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
+generated/picker/* usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/picker
 data/folderview/kernora-desktop-launchers usr/libexec
 data/editmode/ConfigOverlay.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
 data/panelspacer/main.qml usr/share/plasma/plasmoids/org.kde.plasma.panelspacer/contents/ui

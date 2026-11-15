@@ -8,6 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 msgid "Back"
 msgstr "Назад"
@@ -156,3 +157,65 @@ msgstr "Виджеты"
 
 msgid "Home settings"
 msgstr "Главный экран"
+
+msgctxt "drop target that takes a widget off the home screen"
+msgid "Remove"
+msgstr "Убрать"
+
+msgid "Change widget settings"
+msgstr "Изменить настройки виджета"
+
+msgid "Battery"
+msgstr "Батарея"
+
+msgid "Calendar"
+msgstr "Календарь"
+
+msgid "Clock"
+msgstr "Часы"
+
+msgid "Media Player"
+msgstr "Медиаплеер"
+
+msgid "Notes"
+msgstr "Заметки"
+
+msgid "Photos"
+msgstr "Фото"
+
+msgid "Task Manager"
+msgstr "Диспетчер задач"
+
+msgid "Weather"
+msgstr "Погода"
+
+msgid "Essentials"
+msgstr "Основное"
+
+msgid "Suggested for you"
+msgstr "Рекомендации"
+
+msgid "Suggestions"
+msgstr "Рекомендованные"
+
+msgid "Clear text from search box"
+msgstr "Удалить текст из окна поиска"
+
+msgid "%1 widget"
+msgid_plural "%1 widgets"
+msgstr[0] "%1 виджет"
+msgstr[1] "%1 виджета"
+msgstr[2] "%1 виджетов"
+
+msgid "No widgets found"
+msgstr "Виджеты не найдены"
+
+msgctxt "widget size in cells, width by height"
+msgid "%1 × %2"
+msgstr "%1 x %2"
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "Add %1 widget"
+msgstr "Добавить виджет «%1»"

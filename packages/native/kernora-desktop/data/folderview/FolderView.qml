@@ -20,6 +20,8 @@ import org.kde.plasma.plasma5support as P5Support
 import QtQuick.Window
 import org.kernora.bartint
 import "code/FolderTools.js" as FolderTools
+import "HomeGrid.js" as HomeGrid
+import "picker" as Picker
 
 FocusScope {
     id: main
@@ -115,17 +117,159 @@ FocusScope {
         when: target !== null
     }
 
+    readonly property rect homeRect: root.availableScreenRect ? root.availableScreenRect : Qt.rect(0, 0, 0, 0)
+    readonly property int homeColumns: Math.max(4, Math.round(homeRect.width / 144))
+    readonly property int homeRows: Math.max(4, Math.round(homeRect.height / 100))
+    readonly property real homeCellWidth: homeRect.width > 0 ? Math.floor(homeRect.width / homeColumns) : 144
+    readonly property real homeCellHeight: homeRect.height > 0 ? Math.floor(homeRect.height / homeRows) : 100
+    readonly property int homeGap: 8
+    property string pendingAdd: ""
+
+    function firstFreeCell(layout: Item, columns: int, rows: int): point {
+        for (let row = 0; row + rows <= main.homeRows; ++row) {
+            for (let column = 0; column + columns <= main.homeColumns; ++column) {
+                const x = column * layout.cellWidth;
+                const y = row * layout.cellHeight;
+                if (layout.isRectAvailable(x, y, columns * layout.cellWidth, rows * layout.cellHeight)) {
+                    return Qt.point(x, y);
+                }
+            }
+        }
+        return Qt.point(-1, -1);
+    }
+
+    onHomeCellWidthChanged: widgetTidy.restart()
+    onHomeCellHeightChanged: widgetTidy.restart()
+
+    Binding {
+        target: main.homeView ? root.appletsLayout : null
+        property: "cellWidth"
+        value: main.homeCellWidth
+        when: target !== null
+    }
+
+    Binding {
+        target: main.homeView ? root.appletsLayout : null
+        property: "cellHeight"
+        value: main.homeCellHeight
+        when: target !== null
+    }
+
+    Binding {
+        target: main.homeView ? root.appletsLayout : null
+        property: "defaultItemWidth"
+        value: main.homeCellWidth * 2
+        when: target !== null
+    }
+
+    Binding {
+        target: main.homeView ? root.appletsLayout : null
+        property: "defaultItemHeight"
+        value: main.homeCellHeight * 2
+        when: target !== null
+    }
+
+    function tidyWidgets(): void {
+        const layout = root.appletsLayout;
+        if (!main.homeView || !layout || layout.width <= 0 || layout.height <= 0) {
+            return;
+        }
+        const cellWidth = layout.cellWidth;
+        const cellHeight = layout.cellHeight;
+        for (const child of layout.children) {
+            if (child.applet === undefined || child.layout === undefined || child.editMode || !child.applet || !child.applet.plasmoid) {
+                continue;
+            }
+            const plugin = String(child.applet.plasmoid.pluginName);
+            if (!plugin.startsWith(HomeGrid.prefix)) {
+                continue;
+            }
+            const fresh = !!child.applet.plasmoid.configuration && child.applet.plasmoid.configuration.placed === false;
+            const span = HomeGrid.span(plugin);
+            child.leftPadding = main.homeGap;
+            child.topPadding = main.homeGap;
+            child.rightPadding = main.homeGap;
+            child.bottomPadding = main.homeGap;
+            const columns = Math.max(1, Math.min(main.homeColumns, fresh ? span[0] : Math.round(child.width / cellWidth)));
+            const rows = Math.max(1, Math.min(main.homeRows, fresh ? span[1] : Math.round(child.height / cellHeight)));
+            let x = Math.round(child.x / cellWidth) * cellWidth;
+            let y = Math.round(child.y / cellHeight) * cellHeight;
+            const placeFirst = fresh && plugin === main.pendingAdd;
+            if (!placeFirst && child.width === columns * cellWidth && child.height === rows * cellHeight && child.x === x && child.y === y) {
+                continue;
+            }
+            layout.releaseSpace(child);
+            if (placeFirst) {
+                main.pendingAdd = "";
+                const free = main.firstFreeCell(layout, columns, rows);
+                if (free.x >= 0) {
+                    x = free.x;
+                    y = free.y;
+                }
+            }
+            child.x = x;
+            child.y = y;
+            child.width = columns * cellWidth;
+            child.height = rows * cellHeight;
+            main.settling = main.settling.concat([child]);
+            widgetSettle.restart();
+        }
+    }
+
+    property var settling: []
+
+    Timer {
+        id: widgetSettle
+        interval: 300
+        onTriggered: {
+            const items = main.settling;
+            main.settling = [];
+            for (const item of items) {
+                if (item && item.layout) {
+                    item.layout.positionItem(item);
+                }
+            }
+        }
+    }
+
+    Timer {
+        id: widgetTidy
+        interval: 400
+        onTriggered: main.tidyWidgets()
+    }
+
+    Connections {
+        target: main.homeView ? root.appletsLayout : null
+        function onChildrenChanged(): void {
+            widgetTidy.restart();
+        }
+    }
+
     Loader {
         id: homeOptions
         active: main.homeView
         sourceComponent: HomeOptions {
-            onWidgetsRequested: {
-                const action = Plasmoid.internalAction("add widgets");
-                if (action) {
-                    action.trigger();
-                }
-            }
+            onWidgetsRequested: main.openWidgetPicker()
         }
+    }
+
+    Loader {
+        id: widgetPicker
+        active: main.homeView
+        sourceComponent: Picker.WidgetPicker {
+            onAdding: plugin => main.pendingAdd = plugin
+        }
+    }
+
+    function openWidgetPicker(): void {
+        if (!widgetPicker.item) {
+            return;
+        }
+        widgetPicker.item.area = main.homeArea();
+        widgetPicker.item.containment = Plasmoid;
+        widgetPicker.item.cellWidth = main.homeCellWidth;
+        widgetPicker.item.cellHeight = main.homeCellHeight;
+        widgetPicker.item.open();
     }
 
     function positionViewAtBeginning() {
@@ -1617,6 +1761,9 @@ FocusScope {
         }
         if (main.keepsLaunchers) {
             launcherTidy.restart();
+        }
+        if (main.homeView) {
+            widgetTidy.restart();
         }
     }
 }

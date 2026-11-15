@@ -55,6 +55,7 @@ PlasmoidItem {
 
     fullRepresentation: WidgetSurface {
         id: card
+        LiftHandler {}
         Layout.preferredWidth: 380
         Layout.preferredHeight: 156
         Layout.minimumWidth: 260

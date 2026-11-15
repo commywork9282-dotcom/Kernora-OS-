@@ -1614,6 +1614,18 @@ grep -Fxq 'data/folderview/HomeOptions.qml usr/share/plasma/plasmoids/org.kde.de
   && grep -Fq '"kernora-settings --fullscreen "' "$data_root/folderview/HomeOptions.qml" \
   && grep -Fq 'property bool edgeBack: false' "$data_root/ui/Page.qml" \
   || fail "the Android home menu is missing"
+grep -Fxq 'generated/picker/* usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/picker' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'data/folderview/HomeGrid.js usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq 'cp data/folderview/picker/*.qml data/explorer/WidgetPreview.qml' "$package_root/debian/rules" \
+  && grep -Fq 'explorer.addApplet(plugin);' "$data_root/folderview/picker/WidgetPicker.qml" \
+  && grep -Fq '"text/x-plasmoidservicename": cell.plugin' "$data_root/folderview/picker/WidgetCell.qml" \
+  && grep -Fq 'property: "cellWidth"' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'longPressThreshold: 0.4' "$data_root/widgets/common/LiftHandler.qml" \
+  && grep -Fq 'readonly property bool overRemove: dragging && removeTarget.hit(pointer)' "$data_root/editmode/ConfigOverlay.qml" \
+  || fail "the Android widget picker or widget grid is missing"
+for widget in battery calendar clock cputemperature glance media note photo weather; do
+  grep -Fq 'LiftHandler {}' "$data_root/widgets/$widget/contents/ui/main.qml" || fail "the $widget widget has no long press"
+done
 grep -Fq 'taken.indexOf(shortcut) < 0' "$data_root/panel/layout.js" \
   && grep -Fq 'launcher.writeConfig("reclaimShortcuts", true)' "$data_root/panel/layout.js" \
   && grep -Fq 'launcher.reloadConfig()' "$data_root/panel/layout.js" \
@@ -1863,8 +1875,8 @@ KERNORA_COLOUR=blue python3 "$tools_root/gen-icon-theme" "$package_root/data/sym
   || fail "gen-icon-theme fails for a colour"
 grep -Fxq 'Inherits=Kernora,breeze-dark,breeze,hicolor' "$icons/Kernora-blue/index.theme" \
   || fail "a colour's icons do not fall back to Kernora's"
-[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 17 ]] \
-  || fail "a colour's icon theme should hold only the seventeen app icons"
+[[ "$(find "$icons/Kernora-blue/scalable" -name '*.svg' -type f | wc -l)" -eq 22 ]] \
+  || fail "a colour's icon theme should hold only the twenty-two app icons"
 for icon in actions/kernora-quickshare status/kernora-tile-quickshare-on apps/org.kernora.quickshare; do
   [[ -e "$icons/Kernora/scalable/$icon.svg" ]] || fail "the icon theme has no $icon"
 done

@@ -60,6 +60,7 @@ PlasmoidItem {
 
     fullRepresentation: WidgetSurface {
         id: card
+        LiftHandler {}
         Layout.preferredWidth: Math.max(200, Math.min(4, Math.max(1, ringRow.count)) * 104 + 40)
         Layout.preferredHeight: 150
         Layout.minimumWidth: 140
