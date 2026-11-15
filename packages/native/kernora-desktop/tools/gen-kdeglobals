@@ -32,7 +32,7 @@ def render() -> str:
         "Theme=kernora",
         "",
         "[General]",
-        "TerminalApplication=alacritty --class org.kernora.terminal",
+        "TerminalApplication=kernora-terminal",
         "TerminalService=org.kernora.terminal.desktop",
         f"font={font(design.KDE_FONT_POINT_SIZE)}",
         f"menuFont={font(design.KDE_FONT_POINT_SIZE)}",

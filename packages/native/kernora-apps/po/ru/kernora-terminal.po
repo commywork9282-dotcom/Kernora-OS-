@@ -1,0 +1,209 @@
+# Russian translations for kernora-terminal package.
+# Copyright (C) 2026 THE kernora-terminal'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernora-terminal package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-terminal\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-11-14 14:13-0800\n"
+"PO-Revision-Date: 2026-11-14 14:13-0800\n"
+"Last-Translator: Kernora Developers\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: apps/terminal/qml/Settings.qml:35
+msgid "Settings"
+msgstr "Настройки"
+
+#: apps/terminal/qml/Settings.qml:46 apps/terminal/qml/Settings.qml:83
+msgid "Appearance"
+msgstr "Внешний вид"
+
+#: apps/terminal/qml/Settings.qml:52 apps/terminal/qml/Settings.qml:83
+msgid "Keyboard shortcuts"
+msgstr "Быстрые клавиши"
+
+#: apps/terminal/qml/Settings.qml:117
+msgid "Font"
+msgstr "Шрифт"
+
+#: apps/terminal/qml/Settings.qml:124
+msgid "Font size"
+msgstr "Размер шрифта"
+
+#: apps/terminal/qml/Settings.qml:130
+msgctxt "font size in points"
+msgid "%1 pt"
+msgstr "%1 пт"
+
+#: apps/terminal/qml/Settings.qml:134
+msgid "Background"
+msgstr "Фон"
+
+#: apps/terminal/qml/Settings.qml:137
+msgid "Black"
+msgstr "Чёрный"
+
+#: apps/terminal/qml/Settings.qml:138
+msgid "White"
+msgstr "Белый"
+
+#: apps/terminal/qml/Settings.qml:144
+msgid "Cursor"
+msgstr "Курсор"
+
+#: apps/terminal/qml/Settings.qml:147
+msgid "Block"
+msgstr "Блок"
+
+#: apps/terminal/qml/Settings.qml:148
+msgid "Bar"
+msgstr "Черта"
+
+#: apps/terminal/qml/Settings.qml:149
+msgid "Underline"
+msgstr "Подчёркивание"
+
+#: apps/terminal/qml/Settings.qml:166
+msgid "Off"
+msgstr "Выключено"
+
+#: apps/terminal/qml/Settings.qml:177
+msgid "Change shortcut"
+msgstr "Изменить сочетание"
+
+#: apps/terminal/qml/Settings.qml:198
+msgid "Save"
+msgstr "Сохранить"
+
+#: apps/terminal/qml/Settings.qml:224
+msgid "Press the new key combination."
+msgstr "Нажмите новое сочетание клавиш."
+
+#: apps/terminal/qml/Settings.qml:262
+msgid "Add Ctrl, Alt or Meta, otherwise the key would stop typing in the terminal."
+msgstr "Добавьте Ctrl, Alt или Meta, иначе эта клавиша перестанет печатать в терминале."
+
+#: apps/terminal/qml/Settings.qml:277
+msgid "Already used for “%1”."
+msgstr "Уже используется для «%1»."
+
+#: apps/terminal/qml/Settings.qml:282
+msgid "Restore default"
+msgstr "Вернуть как было"
+
+#: src/terminal/main.cpp:62
+msgctxt "@title application name"
+msgid "Terminal"
+msgstr "Терминал"
+
+#: src/terminal/main.cpp:63
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/terminal/terminalapp.cpp:27 src/terminal/terminalwindow.cpp:537
+msgctxt "@action"
+msgid "New window"
+msgstr "Новое окно"
+
+#: src/terminal/terminalapp.cpp:28 src/terminal/terminalwindow.cpp:533
+msgctxt "@action"
+msgid "New tab"
+msgstr "Новая вкладка"
+
+#: src/terminal/terminalapp.cpp:29
+msgctxt "@action"
+msgid "Close tab"
+msgstr "Закрыть вкладку"
+
+#: src/terminal/terminalapp.cpp:30
+msgctxt "@action"
+msgid "Next tab"
+msgstr "Следующая вкладка"
+
+#: src/terminal/terminalapp.cpp:31
+msgctxt "@action"
+msgid "Previous tab"
+msgstr "Предыдущая вкладка"
+
+#: src/terminal/terminalapp.cpp:32 src/terminal/terminalwindow.cpp:573
+msgctxt "@action"
+msgid "Copy"
+msgstr "Копировать"
+
+#: src/terminal/terminalapp.cpp:33 src/terminal/terminalwindow.cpp:578
+msgctxt "@action"
+msgid "Paste"
+msgstr "Вставить"
+
+#: src/terminal/terminalapp.cpp:34
+msgctxt "@action"
+msgid "Open settings"
+msgstr "Открыть настройки"
+
+#: src/terminal/terminalapp.cpp:35
+msgctxt "@action"
+msgid "Full screen"
+msgstr "Во весь экран"
+
+#: src/terminal/terminalapp.cpp:36
+msgctxt "@action"
+msgid "Increase font size"
+msgstr "Увеличить шрифт"
+
+#: src/terminal/terminalapp.cpp:37
+msgctxt "@action"
+msgid "Decrease font size"
+msgstr "Уменьшить шрифт"
+
+#: src/terminal/terminalapp.cpp:38
+msgctxt "@action"
+msgid "Reset font size"
+msgstr "Обычный размер шрифта"
+
+#: src/terminal/terminalwindow.cpp:118 src/terminal/terminalwindow.cpp:391
+msgctxt "@title:window"
+msgid "Terminal"
+msgstr "Терминал"
+
+#: src/terminal/terminalwindow.cpp:254 src/terminal/terminalwindow.cpp:379
+msgctxt "@title:tab"
+msgid "Terminal"
+msgstr "Терминал"
+
+#: src/terminal/terminalwindow.cpp:365 src/terminal/terminalwindow.cpp:501
+msgctxt "@title:tab"
+msgid "Settings"
+msgstr "Настройки"
+
+#: src/terminal/terminalwindow.cpp:512
+msgctxt "@action"
+msgid "Minimize"
+msgstr "Свернуть"
+
+#: src/terminal/terminalwindow.cpp:514
+msgctxt "@action"
+msgid "Maximize"
+msgstr "Развернуть"
+
+#: src/terminal/terminalwindow.cpp:514
+msgctxt "@action"
+msgid "Restore"
+msgstr "Восстановить"
+
+#: src/terminal/terminalwindow.cpp:520
+msgctxt "@action"
+msgid "Close window"
+msgstr "Закрыть окно"
+
+#: src/terminal/terminalwindow.cpp:542 src/terminal/terminalwindow.cpp:584
+msgctxt "@action"
+msgid "Settings"
+msgstr "Настройки"

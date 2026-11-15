@@ -116,4 +116,10 @@ done
 grep -l 'BluetoothDiscovery' "$temporary_root/$qml/"*.qmltypes >/dev/null \
   || fail "the Bluetooth discovery controller is not registered in QML"
 
+[[ -x "$temporary_root/usr/bin/kernora-terminal" ]] || fail "missing kernora-terminal"
+for file in qml/Header.qml qml/Settings.qml color-schemes/kernora-dark.colorscheme color-schemes/kernora-light.colorscheme; do
+  cmp -s "$package_root/apps/terminal/$file" "$temporary_root/usr/share/kernora/terminal/${file#qml/}" || fail "missing the terminal $file"
+done
+grep -Fq 'libqtermwidget6-2' <<<"$(dpkg-deb -f "$deb" Depends)" || fail "the terminal does not depend on QTermWidget"
+
 printf 'kernora-apps binary test: OK\n'

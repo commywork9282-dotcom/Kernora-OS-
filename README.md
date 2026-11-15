@@ -68,7 +68,7 @@ KED 2, taken in a VM right after a fresh install, default colour and dark theme 
   of 20 colours. You can also switch the whole look between Material Design
   1, 2 and 3 in Settings
 - Kernora apps instead of the KDE ones: Settings, Store, Files, Text Editor,
-  Photos, Media Player, Calculator, Screenshot, Terminal (Alacritty) and
+  Photos, Media Player, Calculator, Screenshot, Terminal and
   Welcome, plus a file chooser every app uses
 - Store for apps and games from Flathub and Debian, so you don't need the
   terminal to install stuff (see [docs/STORE.md](docs/STORE.md))

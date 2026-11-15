@@ -33,6 +33,8 @@ Depends:
 Recommends:
  plymouth,
  plymouth-label
+Breaks:
+ kernora-apps (<< 1.1.91)
 Description: Kernora OS desktop appearance and shell
  This package carries the Kernora OS desktop: a complete Material 3 design
  for Plasma, generated from one seed colour.

@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.90" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.91" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -395,4 +395,20 @@ grep -Fq 'readEntry("ReduceBlur", false)' "$package_root/src/shell/windowblur.cp
   && grep -Fq 'Config.write("kwinrc", "Plugins", "blurEnabled", !on, true);' "$package_root/apps/settings/qml/pages/AccessibilityPage.qml" \
   && grep -Fq 'WindowBlur {' "$package_root/apps/appgroup/qml/Main.qml" \
   || fail "Reduce blur or the app group blur is missing"
+grep -Fq 'add_subdirectory(src/terminal)' "$package_root/CMakeLists.txt" \
+  && grep -Fq 'libqtermwidget-dev' "$package_root/debian/control" \
+  && grep -Fq 'fonts-dejavu-mono' "$package_root/debian/control" \
+  && grep -Fq 'about.setDesktopFileName(QStringLiteral("org.kernora.terminal"));' "$package_root/src/terminal/main.cpp" \
+  && grep -Fq 'KDBusService service(KDBusService::Unique);' "$package_root/src/terminal/main.cpp" \
+  && grep -Fq 'QWidget(nullptr, Qt::Window | Qt::FramelessWindowHint)' "$package_root/src/terminal/terminalwindow.cpp" \
+  && grep -Fq 'connect(child, SIGNAL(configureRequest(QPoint)), this, SLOT(contextRequested(QPoint)));' "$package_root/src/terminal/terminalwindow.cpp" \
+  && grep -Fq 'windowHandle()->startSystemResize(edges);' "$package_root/src/terminal/terminalwindow.cpp" \
+  && grep -Fq 'm_shadow->setPadding(padding());' "$package_root/src/terminal/windowshadow.cpp" \
+  && grep -Fq 'PathArc { x: tab.width + 8; y: tab.height; radiusX: 8; radiusY: 8; direction: PathArc.Counterclockwise }' "$package_root/apps/terminal/qml/Header.qml" \
+  && grep -Fq 'Keys.onShortcutOverride: event => event.accepted = true' "$package_root/apps/terminal/qml/Settings.qml" \
+  && grep -Fxq 'Color=0,0,0' "$package_root/apps/terminal/color-schemes/kernora-dark.colorscheme" \
+  && grep -Fq 'Process.startDetached("kernora-terminal", ["--workdir", app.folderPath])' "$package_root/apps/files/qml/Main.qml" \
+  && ! grep -Fq 'alacritty' "$package_root/apps/files/qml/Main.qml" \
+  && grep -Fq '[ -f "src/apps/$name.cpp" ] && entry=' "$package_root/tools/extract-messages" \
+  || fail "the Googlebook-style terminal is missing"
 printf 'kernora-apps source test: OK\n'

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 cmake_minimum_required(VERSION 3.25)
-project(kernora-apps VERSION 1.1.90 LANGUAGES CXX)
+project(kernora-apps VERSION 1.1.91 LANGUAGES CXX)
 
 set(QT_MIN_VERSION 6.8)
 set(KF_MIN_VERSION 6.13)
@@ -20,7 +20,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
-    Core Gui Qml Quick QuickControls2 Widgets DBus Network Svg)
+    Core Gui Qml Quick QuickControls2 QuickWidgets Widgets DBus Network Svg)
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
     Archive Config CoreAddons DBusAddons I18n KIO Notifications Service WindowSystem)
 find_package(KF6Screen REQUIRED)
@@ -39,6 +39,7 @@ add_subdirectory(src/apps)
 add_subdirectory(src/filechooser)
 add_subdirectory(src/updatenotifier)
 add_subdirectory(src/settingsrunner)
+add_subdirectory(src/terminal)
 
 set(KERNORA_APPS settings files welcome editor photos player calculator screenshot store share taskmanager drivers apkinstaller appsplash androiddialog appgroup)
 foreach(app ${KERNORA_APPS})
@@ -47,6 +48,8 @@ foreach(app ${KERNORA_APPS})
 endforeach()
 
 install(DIRECTORY apps/filechooser/qml/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/filechooser)
+install(DIRECTORY apps/terminal/qml/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/terminal)
+install(DIRECTORY apps/terminal/color-schemes/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/terminal/color-schemes)
 install(FILES apps/taskmanager/org.kernora.taskmanager.desktop DESTINATION ${KDE_INSTALL_DATADIR}/kglobalaccel)
 
 install(FILES apps/welcome/org.kernora.welcome-autostart.desktop

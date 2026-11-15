@@ -23,7 +23,9 @@ for app in apps/*/; do
     name=$(basename "$app")
     extra=""
     [ -d "src/$name" ] && extra=$(find "src/$name" -name '*.cpp' | sort)
-    extract "kernora-$name" $(find "$app" -name '*.qml' -o -name '*.js' | sort) "src/apps/$name.cpp" src/apps/host.cpp $extra
+    entry=""
+    [ -f "src/apps/$name.cpp" ] && entry="src/apps/$name.cpp src/apps/host.cpp"
+    extract "kernora-$name" $(find "$app" -name '*.qml' -o -name '*.js' | sort) $entry $extra
 done
 extract kernora-system $(find src/system -name '*.cpp' | sort)
 rm -f po/*.pot

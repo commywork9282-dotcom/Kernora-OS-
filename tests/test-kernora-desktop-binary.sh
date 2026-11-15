@@ -460,7 +460,9 @@ grep -Fxq 'X-KDE-Shortcuts=Alt+F2,Search' "$temporary_root/desktop/usr/share/kgl
 grep -Fq 'addWidget("org.kernora.launcher", "Alt+Space")' \
   "$temporary_root/desktop/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js" \
   || fail "the Kernora launcher does not open with Alt+Space"
-grep -Fxq 'X-KDE-Shortcuts=Ctrl+Alt+T' "$temporary_root/desktop/usr/share/applications/org.kernora.terminal.desktop" \
+grep -Fxq 'Exec=kernora-terminal' "$temporary_root/desktop/usr/share/applications/org.kernora.terminal.desktop" \
+  && grep -Fxq 'TerminalApplication=kernora-terminal' "$temporary_root/desktop/etc/xdg/kdeglobals" \
+  && grep -Fxq 'X-KDE-Shortcuts=Ctrl+Alt+T' "$temporary_root/desktop/usr/share/applications/org.kernora.terminal.desktop" \
   || fail "Ctrl+Alt+T does not open the terminal"
 [[ "$(find "$temporary_root/desktop/usr/share/kernora/avatars" -name '*.png' | wc -l)" -eq 15 ]] \
   || fail "the Kernora profile pictures are missing"

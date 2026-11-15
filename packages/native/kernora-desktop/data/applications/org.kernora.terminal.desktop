@@ -7,8 +7,8 @@ GenericName[ru]=Командная строка
 Comment=Run commands
 Comment[ru]=Выполнение команд
 Icon=org.kernora.terminal
-Exec=alacritty --class org.kernora.terminal
-TryExec=alacritty
+Exec=kernora-terminal
+TryExec=kernora-terminal
 Categories=System;TerminalEmulator;
 Keywords=terminal;shell;console;command;терминал;консоль;командная строка;
 StartupNotify=true
@@ -19,4 +19,4 @@ Actions=New;
 [Desktop Action New]
 Name=New window
 Name[ru]=Новое окно
-Exec=alacritty --class org.kernora.terminal
+Exec=kernora-terminal

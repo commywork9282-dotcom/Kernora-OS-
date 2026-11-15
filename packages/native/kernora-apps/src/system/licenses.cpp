@@ -74,7 +74,7 @@ QVariantList Licenses::components() const
         {"network-manager", QStringLiteral("NetworkManager"), i18n("Network connections"), "https://networkmanager.dev"},
         {"pipewire", QStringLiteral("PipeWire"), i18n("Sound and screen sharing"), "https://pipewire.org"},
         {"mesa-vulkan-drivers", QStringLiteral("Mesa"), i18n("Graphics drivers"), "https://mesa3d.org"},
-        {"alacritty", QStringLiteral("Alacritty"), i18n("The terminal"), "https://alacritty.org"},
+        {"libqtermwidget6-2", QStringLiteral("QTermWidget"), i18n("The terminal"), "https://github.com/lxqt/qtermwidget"},
     };
     QVariantList list;
     for (const Component &component : notable) {

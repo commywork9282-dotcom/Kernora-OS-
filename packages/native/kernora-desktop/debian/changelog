@@ -1,3 +1,11 @@
+kernora-desktop (1.4.80) UNRELEASED; urgency=medium
+
+  * Terminal, Ctrl+Alt+T and the KDE default terminal open the new
+    Googlebook-style Kernora Terminal from kernora-apps 1.1.91 instead of
+    Alacritty. Alacritty stays installed.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 14 Nov 2026 14:20:00 -0800
+
 kernora-desktop (1.4.79) UNRELEASED; urgency=medium
 
   * Quick settings turn frosted as soon as the sheet comes to rest

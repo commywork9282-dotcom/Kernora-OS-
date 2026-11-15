@@ -27,7 +27,7 @@ of the shell: the same tokens, components, symbols and motion.
 | Drivers (`kernora-drivers`) | Settings' Drivers page | Install and remove drivers, every device and its driver, driver and firmware updates, a hardware report. See docs/DRIVERS.md |
 | Android App Installer (`kernora-apkinstaller`) | Waydroid's "Install in Waydroid" | Opens `.apk` files: reads name, version and icon from the APK itself, warns about ARM-only apps and newer Android, then installs through Waydroid. Settings › Android apps turns Android on and off ([ANDROID.md](ANDROID.md)). |
 | Screenshot (`kernora-screenshot`) | Spectacle | KWin ScreenShot2 (the desktop entry must name `/usr/bin/kernora-screenshot`), area/screen/window, saved and copied. Bound to Print. |
-| Terminal | Konsole | Alacritty started as `org.kernora.terminal`, with colours generated from the tokens and switched with the theme. Ctrl+Alt+T opens it (the entry is linked into `/usr/share/kglobalaccel`). |
+| Terminal (`kernora-terminal`) | Konsole | The Googlebook Terminal: QTermWidget pages in a frameless window whose Qt Quick header holds Chrome-style tabs, a round menu button and the window buttons. Settings open as a tab (font, size, black or white background, cursor, every shortcut can be switched off or changed, stored in `kernora-terminalrc`). One process for all windows; `-e COMMAND` and `--workdir DIR` work, and it is KDE's `TerminalApplication`. Ctrl+Alt+T opens it (the entry is linked into `/usr/share/kglobalaccel`). Alacritty stays installed. |
 | Welcome (`kernora-welcome`) | Plasma Welcome | Runs at the first logins of an installed system (`--first-run`, closes in the live session) until finished. |
 | File chooser (`kernora-filechooser`) | KDE's file dialog | Every program's open, save and folder dialogs; see below. |
 
@@ -129,9 +129,11 @@ built from Files' places, path bar and tiles.
 `Appearance.setDark()` in `org.kernora.system` switches everything together:
 the colour scheme (`KernoraDark`/`KernoraLight`), the Kvantum variant, the
 Plasma theme (`kernora`/`kernora-light`), the Aurorae frame
-(`kernora`/`kernora-light`) and the terminal colours
+(`kernora`/`kernora-light`) and the Alacritty colours
 (`~/.config/alacritty/kernora-colors.toml`). The shell and the applications
-follow through the palette.
+follow through the palette. The Kernora Terminal keeps a black field like a
+Googlebook in both themes (white is a choice in its settings), and its header
+follows the theme.
 
 ## Installer
 
