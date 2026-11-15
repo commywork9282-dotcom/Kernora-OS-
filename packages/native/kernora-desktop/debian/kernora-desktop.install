@@ -84,6 +84,8 @@ data/folderview/HomeGrid.js usr/share/plasma/plasmoids/org.kde.desktopcontainmen
 generated/picker/* usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/picker
 data/folderview/kernora-desktop-launchers usr/libexec
 data/editmode/ConfigOverlay.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
+data/editmode/HomeDrop.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
+data/editmode/GridReorder.js usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui
 data/panelspacer/main.qml usr/share/plasma/plasmoids/org.kde.plasma.panelspacer/contents/ui
 data/kwin-tabbox/org.kernora.switcher usr/share/kwin/tabbox
 data/kwin-scripts/kernora-android-place usr/share/kwin/scripts

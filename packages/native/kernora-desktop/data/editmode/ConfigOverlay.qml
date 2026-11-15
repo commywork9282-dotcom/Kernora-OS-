@@ -11,6 +11,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.plasma.private.containmentlayoutmanager as ContainmentLayoutManager
 import org.kernora.m3
 import org.kernora.bartint
+import "HomeGrid.js" as HomeGrid
 
 ContainmentLayoutManager.ConfigOverlay {
     id: overlay
@@ -23,12 +24,17 @@ ContainmentLayoutManager.ConfigOverlay {
     readonly property bool darkInk: BarTint.darkInk(Screen.name, "left")
     readonly property color accent: darkInk ? M3.primaryFixedContent : M3.primaryFixed
     readonly property color onAccent: darkInk ? M3.primaryFixed : M3.primaryFixedContent
-    readonly property bool canConfigure: !!applet && !!applet.plasmoid && applet.plasmoid.hasConfigurationInterface
+    readonly property string pluginName: applet && applet.plasmoid ? String(applet.plasmoid.pluginName) : ""
+    readonly property bool canConfigure: !!applet && !!applet.plasmoid
+        && (pluginName.startsWith(HomeGrid.prefix) ? HomeGrid.reconfigurable.indexOf(pluginName) >= 0
+                                                   : applet.plasmoid.hasConfigurationInterface)
         && !!applet.plasmoid.internalAction("configure")
     property QtObject appletSettings: null
     property point pointer: Qt.point(-1, -1)
     property bool dragging: false
     property bool removing: false
+    property point homeCell: Qt.point(0, 0)
+    property size dragSpan: Qt.size(1, 1)
     readonly property bool overRemove: dragging && removeTarget.hit(pointer)
 
     function ms(value: real): int {
@@ -110,8 +116,20 @@ ContainmentLayoutManager.ConfigOverlay {
     Connections {
         target: overlay.itemContainer
         function onUserDrag(newPosition: point, dragCenter: point): void {
+            const item = overlay.itemContainer;
+            const layout = item.layout;
+            if (!overlay.dragging && layout && layout.cellWidth > 0 && layout.cellHeight > 0) {
+                overlay.dragSpan = Qt.size(Math.max(1, Math.round(item.width / layout.cellWidth)),
+                                           Math.max(1, Math.round(item.height / layout.cellHeight)));
+                homeDrop.start(item, overlay.dragSpan.width, overlay.dragSpan.height);
+            }
             overlay.dragging = true;
             overlay.pointer = Qt.point(newPosition.x + dragCenter.x, newPosition.y + dragCenter.y);
+            if (overlay.overRemove) {
+                homeDrop.leave();
+            } else {
+                homeDrop.update(newPosition.x + item.width / 2, newPosition.y + item.height / 2);
+            }
         }
         function onDragActiveChanged(): void {
             if (overlay.itemContainer.dragActive) {
@@ -123,18 +141,47 @@ ContainmentLayoutManager.ConfigOverlay {
             const remove = overlay.overRemove;
             overlay.dragging = false;
             if (remove) {
+                homeDrop.cancel();
                 removeAnimation.restart();
             } else {
-                overlay.snap();
+                overlay.place(homeDrop.finish());
                 overlay.dismiss();
             }
         }
     }
 
     onOpenChanged: {
-        if (!open) {
-            dragging = false;
+        const item = overlay.itemContainer;
+        if (overlay.open && item && item.layout && item.layout.cellWidth > 0) {
+            overlay.homeCell = Qt.point(Math.round(item.x / item.layout.cellWidth), Math.round(item.y / item.layout.cellHeight));
         }
+        if (!overlay.open) {
+            overlay.dragging = false;
+            homeDrop.cancel();
+        }
+    }
+
+    function place(cell: var): void {
+        const item = overlay.itemContainer;
+        const layout = item ? item.layout : null;
+        if (!layout || layout.cellWidth <= 0 || layout.cellHeight <= 0) {
+            return;
+        }
+        const spot = cell !== null ? cell : overlay.homeCell;
+        const columns = overlay.dragSpan.width;
+        const rows = overlay.dragSpan.height;
+        layout.releaseSpace(item);
+        item.x = spot.x * layout.cellWidth;
+        item.y = spot.y * layout.cellHeight;
+        item.width = columns * layout.cellWidth;
+        item.height = rows * layout.cellHeight;
+        settle.restart();
+    }
+
+    HomeDrop {
+        id: homeDrop
+        layout: overlay.itemContainer ? overlay.itemContainer.layout : null
+        accent: overlay.accent
     }
 
     LayoutMirroring.enabled: false

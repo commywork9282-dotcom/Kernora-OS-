@@ -35,6 +35,17 @@
           "en": "The Clock app in the widget picker now has the round analog clock with a scalloped dial, the digital and stacked clocks, and a world clock for any city. They take the colours of your theme and turn dark with the dark theme.",
           "ru": "В разделе «Часы» списка виджетов теперь круглые аналоговые часы с волнистым циферблатом, цифровые и вертикальные часы, а также мировое время для любого города. Они берут цвета вашей темы и темнеют вместе с тёмной темой."
         }
+      },
+      {
+        "icon": "view-grid",
+        "title": {
+          "en": "An even grid like on a Pixel",
+          "ru": "Ровная сетка как на Pixel"
+        },
+        "text": {
+          "en": "Widgets sit on the cells of the grid. While you drag one, an outline shows where it will land, and widgets in the way move aside to make room. If there is no room, the widget goes back.",
+          "ru": "Виджеты стоят ровно по клеткам. Пока вы перетаскиваете виджет, контур показывает, куда он встанет, а мешающие виджеты отодвигаются, чтобы освободить место. Если места нет, виджет вернётся обратно."
+        }
       }
     ]
   },

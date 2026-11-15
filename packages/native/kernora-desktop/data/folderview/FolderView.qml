@@ -19,6 +19,7 @@ import org.kde.plasma.private.containmentlayoutmanager as ContainmentLayoutManag
 import org.kde.plasma.plasma5support as P5Support
 import QtQuick.Window
 import org.kernora.bartint
+import org.kernora.m3
 import "code/FolderTools.js" as FolderTools
 import "HomeGrid.js" as HomeGrid
 import "picker" as Picker
@@ -126,6 +127,59 @@ FocusScope {
     property string pendingAdd: ""
     property string pendingEntry: ""
     property var entrySpans: ({})
+    property bool pickerDragging: false
+    property string dropEntry: ""
+    property var dropCell: null
+
+    readonly property Item homePlaceHolder: root.appletsLayout ? root.appletsLayout.placeHolder : null
+
+    function dressPlaceHolder(): void {
+        if (!main.homePlaceHolder) {
+            return;
+        }
+        for (const child of main.homePlaceHolder.children) {
+            child.visible = !main.homeView;
+        }
+    }
+
+    onHomePlaceHolderChanged: dressPlaceHolder()
+    onHomeViewChanged: dressPlaceHolder()
+
+    HomeDrop {
+        id: pickerDrop
+        layout: main.homeView ? root.appletsLayout : null
+        reorder: false
+        accent: BarTint.darkInk(Screen.name, "left") ? M3.accent1_900 : M3.accent1_100
+    }
+
+    function followPlaceHolder(): void {
+        if (!main.pickerDragging || !pickerDrop.layout) {
+            return;
+        }
+        const holder = main.homePlaceHolder;
+        if (holder && holder.opacity > 0) {
+            if (!pickerDrop.active) {
+                const span = HomeGrid.span(main.dropEntry);
+                pickerDrop.start(null, span[0], span[1]);
+            }
+            pickerDrop.update(holder.x + holder.width / 2, holder.y + holder.height / 2);
+        } else if (pickerDrop.active) {
+            main.dropCell = pickerDrop.finish();
+        }
+    }
+
+    Connections {
+        target: main.homePlaceHolder
+        function onXChanged(): void {
+            main.followPlaceHolder();
+        }
+        function onYChanged(): void {
+            main.followPlaceHolder();
+        }
+        function onOpacityChanged(): void {
+            main.followPlaceHolder();
+        }
+    }
 
     function claimEntry(): void {
         const layout = root.appletsLayout;
@@ -211,25 +265,41 @@ FocusScope {
                 continue;
             }
             const plugin = String(child.applet.plasmoid.pluginName);
-            if (!plugin.startsWith(HomeGrid.prefix)) {
-                continue;
-            }
-            const fresh = !!child.applet.plasmoid.configuration && child.applet.plasmoid.configuration.placed === false;
+            const kernora = plugin.startsWith(HomeGrid.prefix);
+            const fresh = kernora && !!child.applet.plasmoid.configuration && child.applet.plasmoid.configuration.placed === false;
             const span = main.entrySpans[child.applet.plasmoid.id] || HomeGrid.span(plugin);
-            child.leftPadding = main.homeGap;
-            child.topPadding = main.homeGap;
-            child.rightPadding = main.homeGap;
-            child.bottomPadding = main.homeGap;
+            if (kernora) {
+                child.leftPadding = main.homeGap;
+                child.topPadding = main.homeGap;
+                child.rightPadding = main.homeGap;
+                child.bottomPadding = main.homeGap;
+            }
             const columns = Math.max(1, Math.min(main.homeColumns, fresh ? span[0] : Math.round(child.width / cellWidth)));
             const rows = Math.max(1, Math.min(main.homeRows, fresh ? span[1] : Math.round(child.height / cellHeight)));
             let x = Math.round(child.x / cellWidth) * cellWidth;
             let y = Math.round(child.y / cellHeight) * cellHeight;
             const placeFirst = fresh && plugin === main.pendingAdd;
-            if (!placeFirst && child.width === columns * cellWidth && child.height === rows * cellHeight && child.x === x && child.y === y) {
+            const placeDropped = fresh && !placeFirst && main.dropCell !== null && plugin === HomeGrid.plugin(main.dropEntry);
+            if (!placeFirst && !placeDropped && child.width === columns * cellWidth && child.height === rows * cellHeight
+                    && child.x === x && child.y === y) {
                 continue;
             }
             layout.releaseSpace(child);
-            if (placeFirst) {
+            if (placeDropped) {
+                const cell = main.dropCell;
+                main.dropCell = null;
+                main.dropEntry = "";
+                if (layout.isRectAvailable(cell.x * cellWidth, cell.y * cellHeight, columns * cellWidth, rows * cellHeight)) {
+                    x = cell.x * cellWidth;
+                    y = cell.y * cellHeight;
+                } else {
+                    const free = main.firstFreeCell(layout, columns, rows);
+                    if (free.x >= 0) {
+                        x = free.x;
+                        y = free.y;
+                    }
+                }
+            } else if (placeFirst) {
                 main.pendingAdd = "";
                 const free = main.firstFreeCell(layout, columns, rows);
                 if (free.x >= 0) {
@@ -292,7 +362,18 @@ FocusScope {
                 main.pendingAdd = HomeGrid.plugin(entry);
                 main.pendingEntry = entry;
             }
-            onPicked: entry => main.pendingEntry = entry
+            onPicked: entry => {
+                main.pendingEntry = entry;
+                main.dropEntry = entry;
+                main.dropCell = null;
+                main.pickerDragging = true;
+            }
+            onDragEnded: {
+                main.pickerDragging = false;
+                if (pickerDrop.active) {
+                    main.dropCell = pickerDrop.finish();
+                }
+            }
         }
     }
 

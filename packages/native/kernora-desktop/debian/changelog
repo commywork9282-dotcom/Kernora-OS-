@@ -20,6 +20,12 @@ kernora-desktop (1.4.81) UNRELEASED; urgency=medium
     the stacked clock and a world clock for any city, each its own widget
     in the picker. They use the Android tonal shades of the theme colour,
     now part of the colour tokens, and turn dark with the dark theme.
+  * Widgets move on the grid like on a Pixel: while you drag, an outline
+    shows the cells where the widget will land, widgets in the way shake
+    and then move aside, and a widget with no room goes back where it was.
+    Widgets dragged out of the picker get the same outline and land in it.
+    Every widget sits on whole cells, KDE ones too, and the pencil shows
+    only on widgets that have settings.
 
  -- Kernora Developers <developers@kernora.invalid>  Sun, 15 Nov 2026 02:10:00 -0800
 

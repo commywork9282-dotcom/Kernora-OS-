@@ -23,6 +23,7 @@ PlasmaCore.Dialog {
 
     signal adding(string entry)
     signal picked(string entry)
+    signal dragEnded()
 
     type: PlasmaCore.Dialog.AppletPopup
     location: PlasmaCore.Types.Floating
@@ -413,9 +414,23 @@ PlasmaCore.Dialog {
                                 }
                             }
 
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: 24
+                                visible: row.modelData.id === "kernora"
+                                color: M3.primaryContainer
+
+                                MIcon {
+                                    anchors.centerIn: parent
+                                    size: 28
+                                    source: "kernora-logo"
+                                    color: M3.primaryContainerContent
+                                }
+                            }
+
                             Kirigami.Icon {
                                 anchors.fill: parent
-                                visible: row.modelData.id !== "suggestions"
+                                visible: row.modelData.id !== "suggestions" && row.modelData.id !== "kernora"
                                 source: row.modelData.icon
                                 animated: false
                             }
@@ -537,6 +552,7 @@ PlasmaCore.Dialog {
                                                 scene.dragging = true;
                                             }
                                             onDragFinished: {
+                                                window.dragEnded();
                                                 scene.shown = false;
                                                 scene.progress = 0;
                                                 scene.finish();

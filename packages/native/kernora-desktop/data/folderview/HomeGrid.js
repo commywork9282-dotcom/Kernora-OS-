@@ -26,6 +26,9 @@ var suggestions = [
     { id: "others", plugins: ["org.kernora.widget.media", "org.kernora.widget.note", "org.kernora.widget.photo"] }
 ];
 
+var reconfigurable = ["org.kernora.widget.cputemperature", "org.kernora.widget.glance", "org.kernora.widget.photo",
+                      "org.kernora.widget.weather", "org.kernora.widget.worldclock"];
+
 var spans = {
     "org.kernora.widget.battery": [2, 2],
     "org.kernora.widget.calendar": [3, 3],

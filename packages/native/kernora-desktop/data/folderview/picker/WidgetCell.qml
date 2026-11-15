@@ -71,6 +71,7 @@ Item {
                 anchors.fill: parent
 
                 Drag.dragType: Drag.Automatic
+                Drag.hotSpot: Qt.point(Math.round(card.width / 2), Math.round(card.height / 2))
                 Drag.supportedActions: Qt.MoveAction | Qt.LinkAction
                 Drag.mimeData: {
                     "text/x-plasmoidservicename": cell.plugin

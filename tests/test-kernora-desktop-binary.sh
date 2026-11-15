@@ -377,6 +377,8 @@ for path in \
   usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/ConfigIcons.qml \
   usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/ConfigFilter.qml \
   usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/ConfigOverlay.qml \
+  usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/HomeDrop.qml \
+  usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/GridReorder.js \
   usr/share/plasma/plasmoids/org.kde.plasma.panelspacer/contents/ui/main.qml \
   "$shell/explorer/WidgetExplorer.qml" \
   "$shell/explorer/WidgetPreview.qml" \

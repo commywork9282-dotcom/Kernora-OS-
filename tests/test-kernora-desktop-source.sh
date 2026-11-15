@@ -1631,6 +1631,14 @@ grep -Fq '"org.kernora.widget.clock#analog", "org.kernora.widget.clock#digital"'
   && grep -Fq 'return first.concat(rest).slice(0, 8);' "$data_root/widgets/worldclock/contents/ui/ConfigCity.qml" \
   && grep -Fq '<default>stacked</default>' "$data_root/widgets/clock/contents/config/main.xml" \
   || fail "the clock widgets are not the Google Clock analog, digital, stacked and world clocks"
+grep -Fxq 'data/editmode/HomeDrop.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'data/editmode/GridReorder.js usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq 'function calculate(ctx, pixelX, pixelY, spanX, spanY)' "$data_root/editmode/GridReorder.js" \
+  && grep -Fq 'interval: 650' "$data_root/editmode/HomeDrop.qml" \
+  && grep -Fq 'overlay.place(homeDrop.finish());' "$data_root/editmode/ConfigOverlay.qml" \
+  && grep -Fq 'pickerDrop.update(holder.x + holder.width / 2, holder.y + holder.height / 2);' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'HomeGrid.reconfigurable.indexOf(pluginName) >= 0' "$data_root/editmode/ConfigOverlay.qml" \
+  || fail "widgets do not move on the grid like on a Pixel"
 for widget in battery calendar clock cputemperature glance media note photo weather worldclock; do
   grep -Fq 'LiftHandler {}' "$data_root/widgets/$widget/contents/ui/main.qml" || fail "the $widget widget has no long press"
 done
