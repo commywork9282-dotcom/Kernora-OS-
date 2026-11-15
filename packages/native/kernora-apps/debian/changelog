@@ -1,3 +1,16 @@
+kernora-apps (1.1.93) UNRELEASED; urgency=medium
+
+  * Settings can open one page full screen, like an Android settings
+    screen, with the back arrow in the top left corner. The desktop's
+    long-press menu uses it for Wallpaper & style and Home settings.
+  * New Home settings page: Notification dots, Add app icons to Home
+    screen (on by default, new apps get an icon on the desktop like on
+    Android), and the size, sorting and lock of the desktop icons.
+  * The Wallpaper & style preview shows wallpapers picked in Plasma's
+    own wallpaper dialog instead of an empty box.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 15 Nov 2026 02:10:00 -0800
+
 kernora-apps (1.1.92) UNRELEASED; urgency=medium
 
   * Settings > Wallpaper & style has a new "Original icon shapes" switch,

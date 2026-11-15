@@ -118,7 +118,7 @@ SettingsPage {
                 continue;
             }
             wallpaperPlugin = plugin;
-            wallpaperImage = Config.read(appletsrc, group + "/Wallpaper/org.kde.image/General", "Image", "");
+            wallpaperImage = Files.wallpaperPicture(Config.read(appletsrc, group + "/Wallpaper/org.kde.image/General", "Image", ""), page.dark);
             return;
         }
         wallpaperPlugin = "org.kernora.shapes";

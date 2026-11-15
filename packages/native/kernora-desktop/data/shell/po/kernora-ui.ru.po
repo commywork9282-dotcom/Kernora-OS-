@@ -147,3 +147,12 @@ msgstr "Ещё"
 
 msgid "Swipe up or start typing"
 msgstr "Проведите вверх или начните вводить пароль"
+
+msgid "Wallpaper & style"
+msgstr "Обои и стиль"
+
+msgid "Widgets"
+msgstr "Виджеты"
+
+msgid "Home settings"
+msgstr "Главный экран"

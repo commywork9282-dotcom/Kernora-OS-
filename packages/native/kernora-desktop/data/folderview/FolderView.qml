@@ -15,6 +15,7 @@ import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.kquickcontrolsaddons 2.0
 
 import org.kde.private.desktopcontainment.folder as Folder
+import org.kde.plasma.private.containmentlayoutmanager as ContainmentLayoutManager
 import org.kde.plasma.plasma5support as P5Support
 import QtQuick.Window
 import org.kernora.bartint
@@ -62,6 +63,70 @@ FocusScope {
     property Item editor: null
 
     property int previouslySelectedItemIndex: -1
+
+    readonly property bool homeView: root.isContainment && main.isRootView
+    property bool homeHeld: false
+    property real homeScale: homeOptions.item && homeOptions.item.away ? 0.97 : 1
+
+    Behavior on homeScale {
+        NumberAnimation {
+            duration: Math.max(1, Math.round(350 * (Kirigami.Units.longDuration > 1 ? Kirigami.Units.longDuration / 200 : 0)))
+            easing.type: Easing.Bezier
+            easing.bezierCurve: [0.215, 0.61, 0.355, 1, 1, 1]
+        }
+    }
+
+    function homeArea(): rect {
+        const screen = Plasmoid.containment.screenGeometry;
+        const rect = root.availableScreenRect;
+        return Qt.rect(screen.x + rect.x, screen.y + rect.y, rect.width, rect.height);
+    }
+
+    function canHoldForOptions(x: real, y: real): bool {
+        return main.homeView && homeOptions.item !== null && !homeOptions.item.visible
+            && !Plasmoid.containment.corona.editMode && !main.rubberBand && !(editor && editor.targetItem)
+            && x >= 8 && y >= 8 && x <= listener.width - 8 && y <= listener.height - 8;
+    }
+
+    function showHomeOptions(x: real, y: real): void {
+        if (!canHoldForOptions(x, y)) {
+            return;
+        }
+        main.homeHeld = true;
+        listener.clearPressState();
+        const point = listener.mapToItem(root, x, y);
+        const rect = root.availableScreenRect;
+        homeOptions.item.area = main.homeArea();
+        homeOptions.item.openAt(Qt.point(point.x - rect.x, point.y - rect.y));
+    }
+
+    Binding {
+        target: main.homeView ? root.appletsLayout : null
+        property: "editModeCondition"
+        value: Plasmoid.immutable ? ContainmentLayoutManager.AppletsLayout.Locked
+            : ContainmentLayoutManager.AppletsLayout.Manual
+        when: target !== null
+    }
+
+    Binding {
+        target: main.homeView ? root.appletsLayout : null
+        property: "scale"
+        value: main.homeScale
+        when: target !== null
+    }
+
+    Loader {
+        id: homeOptions
+        active: main.homeView
+        sourceComponent: HomeOptions {
+            onWidgetsRequested: {
+                const action = Plasmoid.internalAction("add widgets");
+                if (action) {
+                    action.trigger();
+                }
+            }
+        }
+    }
 
     function positionViewAtBeginning() {
         gridView.positionViewAtBeginning();
@@ -318,6 +383,14 @@ FocusScope {
         property bool doubleClickInProgress: false
         property bool renameByLabelClickInitiated: false
         property real zoomPending: 0
+        property real holdX: -1
+        property real holdY: -1
+
+        Timer {
+            id: homeHold
+            interval: 400
+            onTriggered: main.showHomeOptions(listener.holdX, listener.holdY)
+        }
 
         onWheelMoved: wheel => {
             if (!(wheel.modifiers & Qt.ControlModifier) || root.useListViewMode) {
@@ -354,6 +427,8 @@ FocusScope {
         }
 
         onPressed: mouse => {
+            homeHold.stop();
+            main.homeHeld = false;
 
             if (!scrollArea.viewport.contains(Qt.point(mouse.x, mouse.y))) {
                 return;
@@ -416,6 +491,10 @@ FocusScope {
                         dir.openContextMenu(main, mouse.modifiers);
                         mouse.accepted = true;
                     }
+                } else if ((mouse.buttons & Qt.LeftButton) && main.canHoldForOptions(mouse.x, mouse.y)) {
+                    holdX = mouse.x;
+                    holdY = mouse.y;
+                    homeHold.restart();
                 }
             } else {
                 pressedItem = hoveredItem;
@@ -460,7 +539,11 @@ FocusScope {
         onCanceled: pressCanceled()
 
         onReleased: mouse => {
-
+            homeHold.stop();
+            if (main.homeHeld) {
+                pressCanceled();
+                return;
+            }
 
             if (!gridView.cachedRectangleSelection && hoveredItem && !hoveredItem.blank && mouse.button !== Qt.RightButton) {
                 var pos = mapToItem(hoveredItem.actionsOverlay, mouse.x, mouse.y);
@@ -489,6 +572,11 @@ FocusScope {
 
         onClicked: mouse => {
             clearPressState();
+
+            if (main.homeHeld) {
+                main.homeHeld = false;
+                return;
+            }
 
             if (mouse.button === Qt.RightButton ||
                 (editor && childAt(mouse.x, mouse.y) === editor)) {
@@ -557,6 +645,12 @@ FocusScope {
         }
 
         onPositionChanged: mouse => {
+            if (homeHold.running && Math.hypot(mouse.x - holdX, mouse.y - holdY) > 16) {
+                homeHold.stop();
+            }
+            if (main.homeHeld) {
+                return;
+            }
             gridView.ctrlPressed = (mouse.modifiers & Qt.ControlModifier);
             gridView.shiftPressed = (mouse.modifiers & Qt.ShiftModifier);
 
@@ -700,6 +794,7 @@ FocusScope {
         }
 
         function pressCanceled() {
+            homeHold.stop();
             if (main.rubberBand) {
                 main.rubberBand.close();
                 main.rubberBand = null;

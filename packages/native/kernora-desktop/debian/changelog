@@ -1,3 +1,16 @@
+kernora-desktop (1.4.81) UNRELEASED; urgency=medium
+
+  * Touch and hold an empty spot on the desktop and the Android home
+    menu opens there, the way Pixel Launcher does it: Wallpaper & style,
+    Widgets and Home settings, grown from the finger with the same timing,
+    shape and placement. Wallpaper & style and Home settings open full
+    screen out of the tapped row, and the desktop gently shrinks behind
+    them. A right click keeps the usual desktop menu.
+  * Pages can put their back arrow in the top left corner, used by the
+    full screen settings.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 15 Nov 2026 02:10:00 -0800
+
 kernora-desktop (1.4.80) UNRELEASED; urgency=medium
 
   * Terminal, Ctrl+Alt+T and the KDE default terminal open the new

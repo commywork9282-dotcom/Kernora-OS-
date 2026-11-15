@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.80" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.81" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -1607,6 +1607,13 @@ grep -Fq 'readonly property string itemUrl: model.blank ? "" : String(model.url)
   && grep -Fq 'launcherHelper.connectSource("/usr/bin/kernora-appgroup drop "' "$data_root/folderview/FolderView.qml" \
   && grep -Fq 'if (row !== -1 && main.groupDrop(gridView.itemAt(dropPos.x, dropPos.y), event.mimeData)) {' "$data_root/folderview/FolderView.qml" \
   || fail "dropping an app onto another app does not make a group"
+grep -Fxq 'data/folderview/HomeOptions.qml usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fq 'interval: 400' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'ContainmentLayoutManager.AppletsLayout.Manual' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'readonly property real itemWidth: 216' "$data_root/folderview/HomeOptions.qml" \
+  && grep -Fq '"kernora-settings --fullscreen "' "$data_root/folderview/HomeOptions.qml" \
+  && grep -Fq 'property bool edgeBack: false' "$data_root/ui/Page.qml" \
+  || fail "the Android home menu is missing"
 grep -Fq 'taken.indexOf(shortcut) < 0' "$data_root/panel/layout.js" \
   && grep -Fq 'launcher.writeConfig("reclaimShortcuts", true)' "$data_root/panel/layout.js" \
   && grep -Fq 'launcher.reloadConfig()' "$data_root/panel/layout.js" \

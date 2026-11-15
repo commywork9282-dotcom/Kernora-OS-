@@ -77,6 +77,9 @@ int run(int &argc, char **argv, const Application &application, KLocalizedString
     QCommandLineOption kernelPanic(QStringLiteral("kernel-panic"));
     kernelPanic.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(kernelPanic);
+    QCommandLineOption fullscreen(QStringLiteral("fullscreen"));
+    fullscreen.setFlags(QCommandLineOption::HiddenFromHelp);
+    parser.addOption(fullscreen);
     parser.process(app);
     about.processCommandLine(&parser);
     QStringList arguments = normalised(parser.positionalArguments(), QDir::currentPath());
@@ -88,6 +91,9 @@ int run(int &argc, char **argv, const Application &application, KLocalizedString
     }
     if (parser.isSet(kernelPanic)) {
         arguments.prepend(QStringLiteral("--kernel-panic"));
+    }
+    if (parser.isSet(fullscreen)) {
+        arguments.prepend(QStringLiteral("--fullscreen"));
     }
 
     std::unique_ptr<KDBusService> service;

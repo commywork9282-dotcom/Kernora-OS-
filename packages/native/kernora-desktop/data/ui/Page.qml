@@ -14,6 +14,7 @@ Item {
     property string title
     property string subtitle
     property bool canGoBack: false
+    property bool edgeBack: false
     property int maximumContentWidth: 760
     property real cornerRadius: 0
     property alias flickable: flick
@@ -56,7 +57,7 @@ Item {
                 spacing: 8
 
                 IconButton {
-                    visible: root.canGoBack
+                    visible: root.canGoBack && !root.edgeBack
                     iconName: Qt.application.layoutDirection === Qt.RightToLeft ? "go-next" : "go-previous"
                     text: (typeof i18nd === "function" ? i18nd("kernora-ui", "Back") : qsTr("Back"))
                     onClicked: root.back()
@@ -109,6 +110,16 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.topMargin: compactBar.height
+    }
+
+    IconButton {
+        x: Qt.application.layoutDirection === Qt.RightToLeft ? root.width - width - 12 : 12
+        y: (compactBar.height - height) / 2
+        z: 1
+        visible: root.canGoBack && root.edgeBack && !compactBar.shown
+        iconName: Qt.application.layoutDirection === Qt.RightToLeft ? "go-next" : "go-previous"
+        text: (typeof i18nd === "function" ? i18nd("kernora-ui", "Back") : qsTr("Back"))
+        onClicked: root.back()
     }
 
     Rectangle {

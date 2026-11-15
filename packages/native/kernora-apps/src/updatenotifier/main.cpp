@@ -4,6 +4,7 @@
 #include "appiconsync.h"
 #include "avatarsync.h"
 #include "greetersync.h"
+#include "homeiconsync.h"
 
 #include <QDBusConnection>
 #include <QDBusMessage>
@@ -387,5 +388,6 @@ int main(int argc, char **argv)
     Notifier notifier;
     GreeterSync greeter;
     AvatarSync avatar;
+    HomeIconSync home;
     return app.exec();
 }

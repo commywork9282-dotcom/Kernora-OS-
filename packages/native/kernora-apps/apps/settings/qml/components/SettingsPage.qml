@@ -14,6 +14,7 @@ Page {
     readonly property var app: QQC2.ApplicationWindow.window
 
     canGoBack: app ? app.canGoBack && (QQC2.StackView.index > 0 || app.narrow) : false
+    edgeBack: app ? app.fullscreen === true : false
     cornerRadius: app && !app.narrow ? (M3.classic ? M3.cornerCard : 28) : 0
     onBack: app.goBack()
 

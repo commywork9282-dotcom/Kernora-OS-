@@ -59,6 +59,7 @@ public:
     Q_INVOKABLE void setLockScreenPlugin(const QString &plugin);
     Q_INVOKABLE void syncGreeterBackground(const QString &plugin, const QUrl &image = QUrl());
     Q_INVOKABLE QVariantList wallpapers() const;
+    Q_INVOKABLE QString wallpaperPicture(const QString &image, bool dark) const;
 
 private:
     void report(const QJSValue &callback, bool ok, const QString &message = QString());

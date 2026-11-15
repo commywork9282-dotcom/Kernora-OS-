@@ -20,9 +20,43 @@ AppWindow {
     minimumWidth: 380
     minimumHeight: 520
     color: M3.surfaceContainer
-    visible: true
+    visible: !startsFullscreen
 
     readonly property bool narrow: width < 880
+    readonly property bool startsFullscreen: (startArguments || []).some(argument => String(argument) === "--fullscreen")
+    property bool stayHidden: false
+    property FullscreenWindow fullscreenWindow: null
+
+    Component {
+        id: fullscreenComponent
+        FullscreenWindow {}
+    }
+
+    function openFullscreen(name: string): bool {
+        const target = catalog.resolve(name);
+        const category = target ? catalog.category(target.category) : null;
+        if (!category) {
+            return false;
+        }
+        const file = target.page && target.page.length > 0 ? target.page : category.page;
+        const previous = fullscreenWindow;
+        const window = fullscreenComponent.createObject(null, {
+            catalog: catalog,
+            owner: app,
+            currentCategory: target.category,
+            initialPage: file
+        });
+        if (!window) {
+            return false;
+        }
+        window.showMaximized();
+        window.requestActivate();
+        fullscreenWindow = window;
+        if (previous) {
+            previous.close();
+        }
+        return true;
+    }
 
     onClosing: close => {
         if (Appearance.busy) {
@@ -37,7 +71,7 @@ AppWindow {
         target: Appearance
         enabled: false
         function onBusyChanged(): void {
-            if (!Appearance.busy) {
+            if (!Appearance.busy && !(app.fullscreenWindow && app.fullscreenWindow.visible)) {
                 Qt.quit();
             }
         }
@@ -80,10 +114,16 @@ AppWindow {
     readonly property bool canGoBack: stack.depth > 1 || narrow
 
     function handleArguments(args: var): void {
+        const fullscreen = (args || []).some(argument => String(argument) === "--fullscreen");
+        stayHidden = false;
         for (const argument of args || []) {
             const name = String(argument);
             if (name.startsWith("-")) {
                 continue;
+            }
+            if (fullscreen && openFullscreen(name)) {
+                stayHidden = true;
+                return;
             }
             const target = catalog.resolve(name);
             if (target) {

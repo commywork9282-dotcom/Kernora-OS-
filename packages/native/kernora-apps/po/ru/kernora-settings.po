@@ -4196,3 +4196,62 @@ msgstr "Уменьшить размытие"
 
 msgid "Solid backgrounds behind quick settings, notifications, the apps menu and window overview"
 msgstr "Сплошной фон под быстрыми настройками, уведомлениями, меню приложений и обзором окон"
+
+msgid "Home settings"
+msgstr "Главный экран"
+
+msgid "Notification dots"
+msgstr "Значки уведомлений"
+
+msgctxt "notification dots"
+msgid "On"
+msgstr "Включены"
+
+msgctxt "notification dots"
+msgid "Off"
+msgstr "Отключены"
+
+msgid "Add app icons to Home screen"
+msgstr "Добавлять значки приложений на главный экран"
+
+msgid "For new apps"
+msgstr "Для новых приложений"
+
+msgid "Icons on the Home screen"
+msgstr "Значки на главном экране"
+
+msgid "Icon size"
+msgstr "Размер значков"
+
+msgid "%1 px"
+msgstr "%1 пикс."
+
+msgid "Sort icons"
+msgstr "Сортировка значков"
+
+msgid "Manually"
+msgstr "Вручную"
+
+msgid "By name"
+msgstr "По имени"
+
+msgid "By size"
+msgstr "По размеру"
+
+msgid "By type"
+msgstr "По типу"
+
+msgid "By date"
+msgstr "По дате"
+
+msgid "Lock icons in place"
+msgstr "Закрепить значки"
+
+msgid "Icons can't be moved by dragging"
+msgstr "Значки нельзя перетаскивать"
+
+msgid "The Home screen could not be changed."
+msgstr "Не удалось изменить главный экран."
+
+msgid "desktop icons notification dots badges add new apps sort size lock"
+msgstr "рабочий стол главный экран значки уведомления точки новые приложения сортировка размер закрепить"

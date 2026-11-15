@@ -15,7 +15,7 @@ for dependency in dpkg-parsechangelog grep; do
 done
 
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
-[[ "$version" == "1.1.92" ]] || fail "unexpected source version"
+[[ "$version" == "1.1.93" ]] || fail "unexpected source version"
 [[ "$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Distribution)" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] || fail "wrong source format"
@@ -71,8 +71,15 @@ done
 [[ -s "$package_root/src/apps/drivers.cpp" && -s "$package_root/po/ru/kernora-drivers.po" ]] \
   && grep -Fq 'Icon=org.kernora.drivers' "$package_root/apps/drivers/org.kernora.drivers.desktop" \
   && grep -Eq 'set\(KERNORA_APPS .* drivers ' "$package_root/CMakeLists.txt" \
-  && grep -Fq 'kernora-desktop (>= 1.4.78)' "$package_root/debian/control" \
+  && grep -Fq 'kernora-desktop (>= 1.4.81)' "$package_root/debian/control" \
   || fail "the Drivers app is not packaged"
+grep -Fq 'QStringLiteral("fullscreen")' "$package_root/src/apps/host.cpp" \
+  && grep -Fq 'function openFullscreen' "$package_root/apps/settings/qml/Main.qml" \
+  && grep -Fq 'flags: Qt.Window | Qt.FramelessWindowHint' "$package_root/apps/settings/qml/FullscreenWindow.qml" \
+  && grep -Fq '"home": ["appearance", "HomePage.qml"]' "$package_root/apps/settings/qml/components/Catalog.qml" \
+  && grep -Fq 'key: "addAppIcons"' "$package_root/apps/settings/qml/pages/HomePage.qml" \
+  && grep -Fq 'readEntry("addAppIcons", true)' "$package_root/src/updatenotifier/homeiconsync.cpp" \
+  || fail "the full screen settings or the Home settings page are missing"
 python3 - "$package_root" <<'PY' || fail "a Drivers string has no translation"
 import re
 import sys

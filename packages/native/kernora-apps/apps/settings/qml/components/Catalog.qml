@@ -58,6 +58,7 @@ QtObject {
             [i18n("Dark theme"), "appearance", "", i18n("light dark mode colour scheme night")],
             [i18n("Colour"), "appearance", "", i18n("accent palette material color red blue green purple")],
             [i18n("Wallpaper"), "appearance", "", i18n("background picture desktop live shapes")],
+            [i18n("Home settings"), "appearance", "HomePage.qml", i18n("desktop icons notification dots badges add new apps sort size lock")],
             [i18n("Text size"), "appearance", "", i18n("font size bigger smaller")],
             [i18n("Fonts"), "appearance", "FontsPage.qml", i18n("typeface font family monospace code terminal")],
             [i18n("Animations"), "appearance", "", i18n("speed effects motion")],
@@ -115,6 +116,7 @@ QtObject {
     }
 
     readonly property var modules: ({
+        "home": ["appearance", "HomePage.qml"],
         "kcm_networkmanagement": ["network", ""],
         "kcm_proxy": ["network", ""],
         "kcm_bluetooth": ["bluetooth", ""],

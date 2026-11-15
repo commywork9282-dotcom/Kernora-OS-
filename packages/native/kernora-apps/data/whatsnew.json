@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-15-1",
+    "date": "2026-11-15",
+    "items": [
+      {
+        "icon": "preferences-desktop-color",
+        "title": {
+          "en": "Touch and hold the desktop",
+          "ru": "Нажмите и удерживайте рабочий стол"
+        },
+        "text": {
+          "en": "Touch and hold an empty spot on the desktop for the same menu as on Android: Wallpaper & style, Widgets and Home settings. Settings open full screen from it, and Home settings can put the icons of new apps on the desktop.",
+          "ru": "Нажмите и удерживайте пустое место на рабочем столе, и откроется то же меню, что на Android: «Обои и стиль», «Виджеты» и «Главный экран». Настройки из него открываются на весь экран, а в «Главном экране» можно сделать так, чтобы значки новых приложений сами появлялись на рабочем столе."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-14-3",
     "date": "2026-11-14",
     "items": [

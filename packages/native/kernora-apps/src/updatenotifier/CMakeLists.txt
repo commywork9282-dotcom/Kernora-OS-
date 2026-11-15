@@ -4,11 +4,11 @@
 add_library(kernora-appicons STATIC appicons.cpp appicons.h appiconsync.cpp appiconsync.h)
 target_link_libraries(kernora-appicons PUBLIC Qt6::Gui Qt6::DBus KF6::ConfigCore KF6::Service)
 
-add_executable(kernora-update-notifier main.cpp avatarsync.cpp avatarsync.h greetersync.cpp greetersync.h)
+add_executable(kernora-update-notifier main.cpp avatarsync.cpp avatarsync.h greetersync.cpp greetersync.h homeiconsync.cpp homeiconsync.h)
 target_link_libraries(kernora-update-notifier PRIVATE
     kernora-appicons
     Qt6::Gui Qt6::DBus Qt6::Network
-    KF6::ConfigCore KF6::CoreAddons KF6::DBusAddons KF6::I18n KF6::Notifications
+    KF6::ConfigCore KF6::CoreAddons KF6::DBusAddons KF6::I18n KF6::Notifications KF6::Service
     PK::packagekitqt6)
 target_compile_definitions(kernora-update-notifier PRIVATE
     TRANSLATION_DOMAIN="kernora-update-notifier"

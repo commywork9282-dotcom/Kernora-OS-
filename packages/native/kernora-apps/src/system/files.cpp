@@ -644,6 +644,39 @@ QVariantList Files::liveWallpapers() const
     return list;
 }
 
+QString Files::wallpaperPicture(const QString &image, bool dark) const
+{
+    const QUrl url(image);
+    const QString path = url.isLocalFile() ? url.toLocalFile() : image;
+    const QFileInfo package(path);
+    if (path.isEmpty() || !package.isDir()) {
+        return image;
+    }
+    const QStringList folders = dark ? QStringList{QStringLiteral("images_dark"), QStringLiteral("images")} : QStringList{QStringLiteral("images")};
+    const QStringList filters{QStringLiteral("*.png"), QStringLiteral("*.jpg"), QStringLiteral("*.jpeg"), QStringLiteral("*.webp")};
+    for (const QString &folder : folders) {
+        const QDir images(package.absoluteFilePath() + QStringLiteral("/contents/") + folder);
+        QString best;
+        qint64 bestArea = -1;
+        for (const QFileInfo &file : images.entryInfoList(filters, QDir::Files)) {
+            const QStringList size = file.completeBaseName().split(QLatin1Char('x'));
+            qint64 area = size.size() == 2 ? size.at(0).toLongLong() * size.at(1).toLongLong() : 0;
+            if (area <= 0) {
+                const QSize read = QImageReader(file.absoluteFilePath()).size();
+                area = qint64(read.width()) * read.height();
+            }
+            if (area > bestArea) {
+                bestArea = area;
+                best = file.absoluteFilePath();
+            }
+        }
+        if (!best.isEmpty()) {
+            return QUrl::fromLocalFile(best).toString();
+        }
+    }
+    return image;
+}
+
 QVariantList Files::wallpapers() const
 {
     QVariantList list;
