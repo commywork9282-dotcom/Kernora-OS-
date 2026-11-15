@@ -2,15 +2,21 @@ kernora-apps (1.1.91) UNRELEASED; urgency=medium
 
   * New Terminal app in the Googlebook style, built on QTermWidget. The
     tabs sit in the title bar like in Chrome and the active one flows into
-    the black terminal, with a round menu button and the window buttons on
-    the right. Settings open as a tab: font, size, black or white
-    background, cursor shape, and every keyboard shortcut can be switched
-    off or changed. Ctrl+Shift+T/W/N, Ctrl+Tab, Ctrl+Shift+C/V, Ctrl+=/-/0
-    and F11 work like on a Googlebook. New tabs open in the folder of the
-    current one, and a tab shows the program running in it.
+    the terminal, with a round menu button and the window buttons on the
+    right. New tabs open in the folder of the current one, and a tab shows
+    the program running in it.
+  * Settings open as a tab with the same sections as on a Googlebook:
+    Appearance (a light and a dark color scheme with presets, more schemes
+    in Alacritty format, font family and size), Keyboard shortcuts (each
+    one can be switched off or changed), Security (port control: ports
+    that programs in the terminal open to the network stay closed until
+    you allow them, with a notification to accept or deny), Shared folders
+    (shown in /mnt/shared), Advanced (a memory limit for everything
+    started in the terminal, keep the computer awake) and Recovery (reset
+    the terminal and its shell files, with a backup).
   * Files opens the new terminal for "Open terminal here".
 
- -- Kernora Developers <developers@kernora.invalid>  Sat, 14 Nov 2026 14:12:00 -0800
+ -- Kernora Developers <developers@kernora.invalid>  Sat, 14 Nov 2026 17:40:00 -0800
 
 kernora-apps (1.1.90) UNRELEASED; urgency=medium
 

@@ -46,15 +46,6 @@ QString interfaceFile(const QString &name)
     return QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("kernora/terminal/") + name);
 }
 
-QString schemeDirectory()
-{
-    const QString override = qEnvironmentVariable("KERNORA_QML_TERMINAL");
-    if (!override.isEmpty()) {
-        return QDir(override).absoluteFilePath(QStringLiteral("../color-schemes"));
-    }
-    return QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("kernora/terminal/color-schemes"), QStandardPaths::LocateDirectory);
-}
-
 QString defaultShell()
 {
     const QString shell = qEnvironmentVariable("SHELL");
@@ -122,10 +113,7 @@ TerminalWindow::TerminalWindow(TerminalApp *app, const QString &directory, const
 
     static bool schemesAdded = false;
     if (!schemesAdded) {
-        const QString schemes = schemeDirectory();
-        if (!schemes.isEmpty()) {
-            QTermWidget::addCustomColorSchemeDir(schemes);
-        }
+        QTermWidget::addCustomColorSchemeDir(app->schemeDirectory());
         schemesAdded = true;
     }
 
@@ -193,9 +181,25 @@ bool TerminalWindow::maximized() const
     return isMaximized() || isFullScreen();
 }
 
-bool TerminalWindow::lightField() const
+QColor TerminalWindow::fieldColor() const
 {
-    return m_app->lightField();
+    return m_app->activeBackground();
+}
+
+QColor TerminalWindow::fieldInk() const
+{
+    return m_app->activeForeground();
+}
+
+QList<int> TerminalWindow::shellPids() const
+{
+    QList<int> result;
+    for (const Tab &tab : m_tabs) {
+        if (tab.terminal && tab.terminal->getShellPID() > 0) {
+            result.append(tab.terminal->getShellPID());
+        }
+    }
+    return result;
 }
 
 QObject *TerminalWindow::settings() const
@@ -207,13 +211,9 @@ void TerminalWindow::addTerminal(const QString &directory, const QStringList &co
 {
     auto *terminal = new QTermWidget(0, m_stack);
     terminal->setEnvironment({QStringLiteral("TERM=xterm-256color"), QStringLiteral("COLORTERM=truecolor")});
-    if (command.isEmpty()) {
-        terminal->setShellProgram(defaultShell());
-        terminal->setArgs({});
-    } else {
-        terminal->setShellProgram(command.first());
-        terminal->setArgs(command.mid(1));
-    }
+    const QStringList launch = command.isEmpty() ? m_app->shellCommand(defaultShell(), {}) : m_app->shellCommand(command.first(), command.mid(1));
+    terminal->setShellProgram(launch.first());
+    terminal->setArgs(launch.mid(1));
     const QString start = directory.isEmpty() || !QFileInfo(directory).isDir() ? QDir::homePath() : directory;
     terminal->setWorkingDirectory(start);
     terminal->setHistorySize(20000);
@@ -228,7 +228,7 @@ void TerminalWindow::addTerminal(const QString &directory, const QStringList &co
 
     if (auto *scroll = terminal->findChild<QScrollBar *>()) {
         connect(scroll, &QScrollBar::rangeChanged, terminal, [this, scroll](int, int maximum) {
-            scroll->setStyleSheet(QString::fromLatin1(scrollStyle(m_app->lightField(), maximum > 0)));
+            scroll->setStyleSheet(QString::fromLatin1(scrollStyle(m_app->activeBackground().lightness() >= 128, maximum > 0)));
         });
     }
 
@@ -255,24 +255,22 @@ void TerminalWindow::addTerminal(const QString &directory, const QStringList &co
     m_tabs.append({terminal, terminal, i18nc("@title:tab", "Terminal")});
     terminal->startShellProgram();
     Q_EMIT tabsChanged();
+    QTimer::singleShot(500, this, &TerminalWindow::shellsChanged);
     setCurrent(m_tabs.size() - 1);
     refreshTitles();
 }
 
 void TerminalWindow::applyAppearance(QTermWidget *terminal)
 {
-    QFont font(m_app->fontFamily());
-    font.setPointSize(std::clamp(m_app->fontSize() + m_zoom, 6, 48));
+    QFont font(m_app->effectiveFontFamily());
+    font.setPixelSize(std::clamp(m_app->fontSize() + m_zoom, 8, 64));
     font.setStyleHint(QFont::TypeWriter);
     font.setFixedPitch(true);
     font.setKerning(false);
     terminal->setTerminalFont(font);
-    const bool light = m_app->lightField();
-    terminal->setColorScheme(light ? QStringLiteral("kernora-light") : QStringLiteral("kernora-dark"));
-    const QString shape = m_app->cursorShape();
-    terminal->setKeyboardCursorShape(shape == QLatin1String("bar") ? QTermWidget::KeyboardCursorShape::IBeamCursor
-                                         : shape == QLatin1String("underline") ? QTermWidget::KeyboardCursorShape::UnderlineCursor
-                                                                               : QTermWidget::KeyboardCursorShape::BlockCursor);
+    const bool light = m_app->activeBackground().lightness() >= 128;
+    terminal->setColorScheme(m_app->activeScheme());
+    terminal->setKeyboardCursorShape(QTermWidget::KeyboardCursorShape::BlockCursor);
     if (auto *scroll = terminal->findChild<QScrollBar *>()) {
         scroll->setStyleSheet(QString::fromLatin1(scrollStyle(light, scroll->maximum() > 0)));
     }
@@ -281,7 +279,7 @@ void TerminalWindow::applyAppearance(QTermWidget *terminal)
 void TerminalWindow::applyAppearance()
 {
     QPalette palette = m_stack->palette();
-    palette.setColor(QPalette::Window, m_app->lightField() ? Qt::white : Qt::black);
+    palette.setColor(QPalette::Window, m_app->activeBackground());
     m_stack->setPalette(palette);
     for (const Tab &tab : std::as_const(m_tabs)) {
         if (tab.terminal) {
@@ -293,7 +291,7 @@ void TerminalWindow::applyAppearance()
 
 void TerminalWindow::zoom(int step)
 {
-    m_zoom = step == 0 ? 0 : std::clamp(m_zoom + step, 6 - m_app->fontSize(), 48 - m_app->fontSize());
+    m_zoom = step == 0 ? 0 : std::clamp(m_zoom + step, 8 - m_app->fontSize(), 64 - m_app->fontSize());
     for (const Tab &tab : std::as_const(m_tabs)) {
         if (tab.terminal) {
             applyAppearance(tab.terminal);
@@ -460,6 +458,7 @@ void TerminalWindow::removeTab(QWidget *page)
     }
     m_stack->removeWidget(page);
     page->deleteLater();
+    Q_EMIT shellsChanged();
     if (m_tabs.isEmpty()) {
         m_current = -1;
         close();

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<!-- SPDX-FileCopyrightText: 2026 Kernora Developers
+     SPDX-License-Identifier: GPL-2.0-or-later -->
+<policyconfig>
+  <vendor>Kernora OS</vendor>
+  <action id="org.kernora.terminal.ports">
+    <description>Close ports that programs in the terminal open to the network</description>
+    <description xml:lang="ru">Закрывать порты, которые программы в терминале открывают в сеть</description>
+    <message>The terminal controls which ports other devices can reach</message>
+    <message xml:lang="ru">Терминал управляет тем, к каким портам могут подключаться другие устройства</message>
+    <icon_name>org.kernora.terminal</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-terminal-ports</annotate>
+  </action>
+  <action id="org.kernora.terminal.shared-folders">
+    <description>Share folders in /mnt/shared</description>
+    <description xml:lang="ru">Показывать папки в /mnt/shared</description>
+    <message>Sharing a folder in /mnt/shared changes a system folder</message>
+    <message xml:lang="ru">Общие папки появляются в системной папке /mnt/shared</message>
+    <icon_name>folder</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-terminal-share</annotate>
+  </action>
+</policyconfig>

@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+[colors.primary]
+background = "#ffffff"
+foreground = "#1f1f1f"
+
+[colors.normal]
+black = "#2e3436"
+red = "#cc0000"
+green = "#3e8004"
+yellow = "#a08000"
+blue = "#3465a4"
+magenta = "#75507b"
+cyan = "#068082"
+white = "#787c76"
+
+[colors.bright]
+black = "#555753"
+red = "#be1414"
+green = "#346e02"
+yellow = "#8c6e00"
+blue = "#204a87"
+magenta = "#5c3566"
+cyan = "#046a6c"
+white = "#2e3436"

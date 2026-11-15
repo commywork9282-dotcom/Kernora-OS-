@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <QColor>
 #include <QList>
 #include <QPointer>
 #include <QVariantList>
@@ -23,7 +24,8 @@ class TerminalWindow : public QWidget
     Q_PROPERTY(int currentIndex READ currentIndex NOTIFY currentIndexChanged)
     Q_PROPERTY(bool active READ active NOTIFY stateChanged)
     Q_PROPERTY(bool maximized READ maximized NOTIFY stateChanged)
-    Q_PROPERTY(bool lightField READ lightField NOTIFY appearanceChanged)
+    Q_PROPERTY(QColor fieldColor READ fieldColor NOTIFY appearanceChanged)
+    Q_PROPERTY(QColor fieldInk READ fieldInk NOTIFY appearanceChanged)
     Q_PROPERTY(QObject *settings READ settings CONSTANT)
 
 public:
@@ -34,7 +36,9 @@ public:
     int currentIndex() const;
     bool active() const;
     bool maximized() const;
-    bool lightField() const;
+    QColor fieldColor() const;
+    QColor fieldInk() const;
+    QList<int> shellPids() const;
     QObject *settings() const;
 
     Q_INVOKABLE void newTab();
@@ -54,6 +58,7 @@ Q_SIGNALS:
     void currentIndexChanged();
     void stateChanged();
     void appearanceChanged();
+    void shellsChanged();
 
 private Q_SLOTS:
     void contextRequested(const QPoint &position);

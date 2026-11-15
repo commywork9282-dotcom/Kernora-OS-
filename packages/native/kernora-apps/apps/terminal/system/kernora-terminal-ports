@@ -1,0 +1,26 @@
+#!/bin/bash
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+set -eu
+(( EUID == 0 )) || { echo "kernora-terminal-ports: run as root" >&2; exit 1; }
+uid=${PKEXEC_UID:-0}
+[[ $uid =~ ^[0-9]+$ ]] || exit 1
+ports=()
+for port in "$@"; do
+  [[ $port =~ ^[0-9]{1,5}$ ]] && (( 10#$port >= 1 && 10#$port <= 65535 )) || { echo "kernora-terminal-ports: invalid port $port" >&2; exit 2; }
+  ports+=("$((10#$port))")
+done
+command -v nft >/dev/null 2>&1 || { echo "kernora-terminal-ports: nft is missing" >&2; exit 3; }
+table=kernora_terminal_$uid
+nft list table inet "$table" >/dev/null 2>&1 && nft delete table inet "$table"
+(( ${#ports[@]} )) || exit 0
+list=$(IFS=,; printf '%s' "${ports[*]}")
+nft -f - <<RULES
+table inet $table {
+  chain input {
+    type filter hook input priority filter; policy accept;
+    iifname "lo" accept
+    tcp dport { $list } ct state new drop
+  }
+}
+RULES

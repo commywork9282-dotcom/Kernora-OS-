@@ -117,9 +117,15 @@ grep -l 'BluetoothDiscovery' "$temporary_root/$qml/"*.qmltypes >/dev/null \
   || fail "the Bluetooth discovery controller is not registered in QML"
 
 [[ -x "$temporary_root/usr/bin/kernora-terminal" ]] || fail "missing kernora-terminal"
-for file in qml/Header.qml qml/Settings.qml color-schemes/kernora-dark.colorscheme color-schemes/kernora-light.colorscheme; do
+for file in qml/Header.qml qml/Settings.qml schemes/standard_dark.toml schemes/standard_light.toml schemes/dracula.toml; do
   cmp -s "$package_root/apps/terminal/$file" "$temporary_root/usr/share/kernora/terminal/${file#qml/}" || fail "missing the terminal $file"
 done
 grep -Fq 'libqtermwidget6-2' <<<"$(dpkg-deb -f "$deb" Depends)" || fail "the terminal does not depend on QTermWidget"
+grep -Fq 'nftables' <<<"$(dpkg-deb -f "$deb" Depends)" || fail "Port control cannot close ports without nftables"
+for path in usr/libexec/kernora-terminal-ports usr/libexec/kernora-terminal-share; do
+  [[ -x "$temporary_root/$path" ]] || fail "missing $path"
+done
+[[ -s "$temporary_root/usr/share/polkit-1/actions/org.kernora.terminal.policy" ]] || fail "missing the terminal polkit policy"
+[[ -s "$temporary_root/usr/share/knotifications6/kernora-terminal.notifyrc" ]] || fail "missing the terminal notifications"
 
 printf 'kernora-apps binary test: OK\n'

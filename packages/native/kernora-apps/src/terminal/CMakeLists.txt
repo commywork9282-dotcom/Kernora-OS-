@@ -10,12 +10,14 @@ set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${terminal_definitions}
 
 add_executable(kernora-terminal
     main.cpp
+    colorschemes.cpp colorschemes.h
+    portcontrol.cpp portcontrol.h
     terminalapp.cpp terminalapp.h
     terminalwindow.cpp terminalwindow.h
     windowshadow.cpp windowshadow.h)
 target_link_libraries(kernora-terminal PRIVATE
-    Qt6::Widgets Qt6::Qml Qt6::Quick Qt6::QuickWidgets Qt6::QuickControls2
-    KF6::ConfigCore KF6::CoreAddons KF6::DBusAddons KF6::I18n KF6::I18nQml KF6::WindowSystem
+    Qt6::Widgets Qt6::DBus Qt6::Qml Qt6::Quick Qt6::QuickWidgets Qt6::QuickControls2
+    KF6::ConfigCore KF6::CoreAddons KF6::DBusAddons KF6::I18n KF6::I18nQml KF6::Notifications KF6::WindowSystem
     qtermwidget6)
 target_compile_definitions(kernora-terminal PRIVATE
     TRANSLATION_DOMAIN="kernora-terminal"

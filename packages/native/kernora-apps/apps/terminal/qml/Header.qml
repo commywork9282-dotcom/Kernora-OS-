@@ -17,9 +17,8 @@ Rectangle {
     readonly property var tabs: terminal ? terminal.tabs : []
     readonly property int currentIndex: terminal ? terminal.currentIndex : -1
     readonly property bool active: terminal ? terminal.active : true
-    readonly property bool lightField: terminal ? terminal.lightField : false
-    readonly property color fieldColor: lightField ? "#ffffff" : "#000000"
-    readonly property color fieldInk: lightField ? "#1f1f1f" : "#ffffff"
+    readonly property color fieldColor: terminal ? terminal.fieldColor : "#000000"
+    readonly property color fieldInk: terminal ? terminal.fieldInk : "#ffffff"
     readonly property int stripStart: 80
     readonly property int tabHeight: 34
     readonly property int tabWidth: Math.max(72, Math.min(168, Math.floor((tabArea.width - 44) / Math.max(1, tabs.length))))

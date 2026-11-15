@@ -10,8 +10,8 @@
           "ru": "Новый Терминал"
         },
         "text": {
-          "en": "The Terminal now looks and works like the one on a Googlebook. Tabs sit at the top of the window like in Chrome, new tabs open in the same folder, and a tab shows what is running in it. The menu button opens Settings as a tab: font, size, a black or white background and your own keyboard shortcuts.",
-          "ru": "Терминал теперь выглядит и работает как на Googlebook. Вкладки стоят наверху окна, как в Chrome, новая вкладка открывается в той же папке, а на вкладке видно, что в ней сейчас запущено. Кнопка меню открывает настройки отдельной вкладкой: шрифт, размер, чёрный или белый фон и свои сочетания клавиш."
+          "en": "The Terminal now looks and works like the one on a Googlebook. Tabs sit at the top of the window like in Chrome, and a tab shows what is running in it. Settings open as a tab: color schemes for the light and dark theme, font, your own keyboard shortcuts, ports that programs open to the network, shared folders, a memory limit, keep awake and a reset.",
+          "ru": "Терминал теперь выглядит и работает как на Googlebook. Вкладки стоят наверху окна, как в Chrome, а на вкладке видно, что в ней сейчас запущено. Настройки открываются отдельной вкладкой: цветовые схемы для светлой и тёмной темы, шрифт, свои сочетания клавиш, порты, которые программы открывают в сеть, общие папки, ограничение памяти, режим без сна и сброс."
         }
       }
     ]

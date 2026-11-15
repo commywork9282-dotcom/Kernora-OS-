@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kernora-terminal\n"
 "Report-Msgid-Bugs-To: dev@kernora.invalid\n"
-"POT-Creation-Date: 2026-11-14 14:13-0800\n"
+"POT-Creation-Date: 2026-11-14 17:19-0800\n"
 "PO-Revision-Date: 2026-11-14 14:13-0800\n"
 "Last-Translator: Kernora Developers\n"
 "Language-Team: none\n"
@@ -17,84 +17,219 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: apps/terminal/qml/Settings.qml:35
-msgid "Settings"
-msgstr "Настройки"
-
-#: apps/terminal/qml/Settings.qml:46 apps/terminal/qml/Settings.qml:83
+#: apps/terminal/qml/Settings.qml:21
 msgid "Appearance"
 msgstr "Внешний вид"
 
-#: apps/terminal/qml/Settings.qml:52 apps/terminal/qml/Settings.qml:83
+#: apps/terminal/qml/Settings.qml:22
 msgid "Keyboard shortcuts"
 msgstr "Быстрые клавиши"
 
-#: apps/terminal/qml/Settings.qml:117
+#: apps/terminal/qml/Settings.qml:23
+msgid "Security"
+msgstr "Безопасность"
+
+#: apps/terminal/qml/Settings.qml:24
+msgid "Shared folders"
+msgstr "Общие папки"
+
+#: apps/terminal/qml/Settings.qml:25
+msgid "Advanced"
+msgstr "Дополнительно"
+
+#: apps/terminal/qml/Settings.qml:26
+msgid "Recovery"
+msgstr "Восстановление"
+
+#: apps/terminal/qml/Settings.qml:39 apps/terminal/qml/Settings.qml:431
+msgctxt "color scheme name"
+msgid "%1 (preset)"
+msgstr "%1 (готовая)"
+
+#: apps/terminal/qml/Settings.qml:60
+msgid "Settings"
+msgstr "Настройки"
+
+#: apps/terminal/qml/Settings.qml:122 apps/terminal/qml/Settings.qml:269
+msgid "Add"
+msgstr "Добавить"
+
+#: apps/terminal/qml/Settings.qml:133
+msgid "Color scheme"
+msgstr "Цветовая схема"
+
+#: apps/terminal/qml/Settings.qml:136 apps/terminal/qml/Settings.qml:430
+msgid "Light"
+msgstr "Светлая"
+
+#: apps/terminal/qml/Settings.qml:141 apps/terminal/qml/Settings.qml:430
+msgid "Dark"
+msgstr "Тёмная"
+
+#: apps/terminal/qml/Settings.qml:146
+msgid "Download more color schemes"
+msgstr "Загрузить другие схемы"
+
+#: apps/terminal/qml/Settings.qml:147
+msgid "Please download color schemes in Alacritty format."
+msgstr "Скачайте цветовые схемы в формате Alacritty."
+
+#: apps/terminal/qml/Settings.qml:158
 msgid "Font"
 msgstr "Шрифт"
 
-#: apps/terminal/qml/Settings.qml:124
+#: apps/terminal/qml/Settings.qml:161 apps/terminal/qml/Settings.qml:421
+msgid "Font family"
+msgstr "Семейство шрифта"
+
+#: apps/terminal/qml/Settings.qml:162 apps/terminal/qml/Settings.qml:422
+msgid "System default"
+msgstr "Системный"
+
+#: apps/terminal/qml/Settings.qml:166 apps/terminal/qml/Settings.qml:445
 msgid "Font size"
 msgstr "Размер шрифта"
 
-#: apps/terminal/qml/Settings.qml:130
-msgctxt "font size in points"
-msgid "%1 pt"
-msgstr "%1 пт"
-
-#: apps/terminal/qml/Settings.qml:134
-msgid "Background"
-msgstr "Фон"
-
-#: apps/terminal/qml/Settings.qml:137
-msgid "Black"
-msgstr "Чёрный"
-
-#: apps/terminal/qml/Settings.qml:138
-msgid "White"
-msgstr "Белый"
-
-#: apps/terminal/qml/Settings.qml:144
-msgid "Cursor"
-msgstr "Курсор"
-
-#: apps/terminal/qml/Settings.qml:147
-msgid "Block"
-msgstr "Блок"
-
-#: apps/terminal/qml/Settings.qml:148
-msgid "Bar"
-msgstr "Черта"
-
-#: apps/terminal/qml/Settings.qml:149
-msgid "Underline"
-msgstr "Подчёркивание"
-
-#: apps/terminal/qml/Settings.qml:166
-msgid "Off"
-msgstr "Выключено"
-
-#: apps/terminal/qml/Settings.qml:177
+#: apps/terminal/qml/Settings.qml:194
 msgid "Change shortcut"
 msgstr "Изменить сочетание"
 
-#: apps/terminal/qml/Settings.qml:198
+#: apps/terminal/qml/Settings.qml:214
+msgid "Port control: allow or deny listening ports. Other devices on your network can reach a port only after you allow it."
+msgstr "Контроль портов: разрешайте или запрещайте порты, которые слушают программы. Другие устройства в сети смогут подключиться к порту, только когда вы его разрешите."
+
+#: apps/terminal/qml/Settings.qml:221
+msgid "The network rules could not be changed."
+msgstr "Не удалось изменить правила сети."
+
+#: apps/terminal/qml/Settings.qml:225
+msgid "Listening ports"
+msgstr "Порты, которые слушают программы"
+
+#: apps/terminal/qml/Settings.qml:230
+msgid "No program in the terminal is waiting for connections."
+msgstr "Сейчас ни одна программа в терминале не ждёт подключений."
+
+#: apps/terminal/qml/Settings.qml:237
+msgctxt "port and program"
+msgid "%1 (%2)"
+msgstr "%1 (%2)"
+
+#: apps/terminal/qml/Settings.qml:250
+msgid "Saved allowed ports"
+msgstr "Сохранённые разрешённые порты"
+
+#: apps/terminal/qml/Settings.qml:262
+msgctxt "@action"
+msgid "Delete %1"
+msgstr "Удалить %1"
+
+#: apps/terminal/qml/Settings.qml:288
+msgid "Folders added here will be visible within /mnt/shared."
+msgstr "Папки, добавленные сюда, будут доступны в /mnt/shared."
+
+#: apps/terminal/qml/Settings.qml:301
+msgid "No folders are shared."
+msgstr "Нет общих папок."
+
+#: apps/terminal/qml/Settings.qml:321
+msgctxt "@action"
+msgid "Stop sharing"
+msgstr "Больше не показывать"
+
+#: apps/terminal/qml/Settings.qml:334 apps/terminal/qml/Settings.qml:335
+msgid "Memory size"
+msgstr "Объём памяти"
+
+#: apps/terminal/qml/Settings.qml:343 apps/terminal/qml/Settings.qml:344
+msgid "Keep awake"
+msgstr "Не переходить в спящий режим"
+
+#: apps/terminal/qml/Settings.qml:348
+msgid "Off"
+msgstr "Выкл."
+
+#: apps/terminal/qml/Settings.qml:349
+msgid "On"
+msgstr "Вкл."
+
+#: apps/terminal/qml/Settings.qml:360
+msgid "Reset to initial version"
+msgstr "Восстановить исходную версию"
+
+#: apps/terminal/qml/Settings.qml:361
+msgid "Remove all data"
+msgstr "Удалить все данные"
+
+#: apps/terminal/qml/Settings.qml:367
+msgid "Remove backup data"
+msgstr "Удалить данные резервного копирования"
+
+#: apps/terminal/qml/Settings.qml:368
+msgid "Remove %1"
+msgstr "Удалить %1"
+
+#: apps/terminal/qml/Settings.qml:375
+msgid "Backup data removed"
+msgstr "Резервная копия удалена"
+
+#: apps/terminal/qml/Settings.qml:446
+msgid "OK"
+msgstr "ОК"
+
+#: apps/terminal/qml/Settings.qml:462
+msgid "Decrease font size"
+msgstr "Уменьшить шрифт"
+
+#: apps/terminal/qml/Settings.qml:487
+msgid "Increase font size"
+msgstr "Увеличить шрифт"
+
+#: apps/terminal/qml/Settings.qml:498
+msgid "Allow a new port"
+msgstr "Разрешить новый порт"
+
+#: apps/terminal/qml/Settings.qml:499 apps/terminal/qml/Settings.qml:577
 msgid "Save"
 msgstr "Сохранить"
 
-#: apps/terminal/qml/Settings.qml:224
+#: apps/terminal/qml/Settings.qml:521
+msgid "Enter a new port number"
+msgstr "Введите номер порта"
+
+#: apps/terminal/qml/Settings.qml:530
+msgid "Reset terminal"
+msgstr "Сброс настроек терминала"
+
+#: apps/terminal/qml/Settings.qml:531
+msgid "Data will be removed"
+msgstr "Данные будут удалены."
+
+#: apps/terminal/qml/Settings.qml:532
+msgid "Reset"
+msgstr "Сбросить"
+
+#: apps/terminal/qml/Settings.qml:543
+msgid "Terminal reset to the initial version"
+msgstr "Терминал восстановлен до исходной версии"
+
+#: apps/terminal/qml/Settings.qml:558
+msgid "Back up data to %1"
+msgstr "Сохранить резервную копию в %1"
+
+#: apps/terminal/qml/Settings.qml:603
 msgid "Press the new key combination."
 msgstr "Нажмите новое сочетание клавиш."
 
-#: apps/terminal/qml/Settings.qml:262
+#: apps/terminal/qml/Settings.qml:640
 msgid "Add Ctrl, Alt or Meta, otherwise the key would stop typing in the terminal."
 msgstr "Добавьте Ctrl, Alt или Meta, иначе эта клавиша перестанет печатать в терминале."
 
-#: apps/terminal/qml/Settings.qml:277
+#: apps/terminal/qml/Settings.qml:655
 msgid "Already used for “%1”."
 msgstr "Уже используется для «%1»."
 
-#: apps/terminal/qml/Settings.qml:282
+#: apps/terminal/qml/Settings.qml:660
 msgid "Restore default"
 msgstr "Вернуть как было"
 
@@ -108,77 +243,191 @@ msgctxt "@info:credit"
 msgid "© 2026 Kernora OS"
 msgstr "© 2026 Kernora OS"
 
-#: src/terminal/terminalapp.cpp:27 src/terminal/terminalwindow.cpp:537
+#: src/terminal/portcontrol.cpp:247
+msgctxt "@title notification"
+msgid "Terminal is requesting to open a new port"
+msgstr "Терминал просит открыть новый порт"
+
+#: src/terminal/portcontrol.cpp:248
+msgctxt "@info"
+msgid "Port requested: %1"
+msgstr "Запрашиваемый порт: %1"
+
+#: src/terminal/portcontrol.cpp:249
+msgctxt "@info"
+msgid "Port requested: %1 (%2)"
+msgstr "Запрашиваемый порт: %1 (%2)"
+
+#: src/terminal/portcontrol.cpp:250
+msgctxt "@action"
+msgid "Accept"
+msgstr "Разрешить"
+
+#: src/terminal/portcontrol.cpp:251
+msgctxt "@action"
+msgid "Deny"
+msgstr "Не разрешать"
+
+#: src/terminal/terminalapp.cpp:68 src/terminal/terminalwindow.cpp:315
 msgctxt "@action"
 msgid "New window"
 msgstr "Новое окно"
 
-#: src/terminal/terminalapp.cpp:28 src/terminal/terminalwindow.cpp:533
+#: src/terminal/terminalapp.cpp:69 src/terminal/terminalwindow.cpp:319
 msgctxt "@action"
 msgid "New tab"
 msgstr "Новая вкладка"
 
-#: src/terminal/terminalapp.cpp:29
+#: src/terminal/terminalapp.cpp:70 src/terminal/terminalwindow.cpp:320
 msgctxt "@action"
 msgid "Close tab"
 msgstr "Закрыть вкладку"
 
-#: src/terminal/terminalapp.cpp:30
+#: src/terminal/terminalapp.cpp:71 src/terminal/terminalwindow.cpp:321
 msgctxt "@action"
 msgid "Next tab"
 msgstr "Следующая вкладка"
 
-#: src/terminal/terminalapp.cpp:31
+#: src/terminal/terminalapp.cpp:72 src/terminal/terminalwindow.cpp:326
 msgctxt "@action"
 msgid "Previous tab"
 msgstr "Предыдущая вкладка"
 
-#: src/terminal/terminalapp.cpp:32 src/terminal/terminalwindow.cpp:573
-msgctxt "@action"
-msgid "Copy"
-msgstr "Копировать"
-
-#: src/terminal/terminalapp.cpp:33 src/terminal/terminalwindow.cpp:578
-msgctxt "@action"
-msgid "Paste"
-msgstr "Вставить"
-
-#: src/terminal/terminalapp.cpp:34
+#: src/terminal/terminalapp.cpp:73
 msgctxt "@action"
 msgid "Open settings"
 msgstr "Открыть настройки"
 
-#: src/terminal/terminalapp.cpp:35
-msgctxt "@action"
-msgid "Full screen"
-msgstr "Во весь экран"
-
-#: src/terminal/terminalapp.cpp:36
+#: src/terminal/terminalapp.cpp:74 src/terminal/terminalwindow.cpp:343
 msgctxt "@action"
 msgid "Increase font size"
 msgstr "Увеличить шрифт"
 
-#: src/terminal/terminalapp.cpp:37
+#: src/terminal/terminalapp.cpp:75 src/terminal/terminalwindow.cpp:344
 msgctxt "@action"
 msgid "Decrease font size"
 msgstr "Уменьшить шрифт"
 
-#: src/terminal/terminalapp.cpp:38
+#: src/terminal/terminalapp.cpp:76 src/terminal/terminalwindow.cpp:345
 msgctxt "@action"
 msgid "Reset font size"
-msgstr "Обычный размер шрифта"
+msgstr "Сбросить размер шрифта"
 
-#: src/terminal/terminalwindow.cpp:118 src/terminal/terminalwindow.cpp:391
+#: src/terminal/terminalapp.cpp:77 src/terminal/terminalwindow.cpp:331
+msgctxt "@action"
+msgid "Copy"
+msgstr "Копировать"
+
+#: src/terminal/terminalapp.cpp:78 src/terminal/terminalwindow.cpp:336
+msgctxt "@action"
+msgid "Paste"
+msgstr "Вставить"
+
+#: src/terminal/terminalapp.cpp:79 src/terminal/terminalwindow.cpp:342
+msgctxt "@action"
+msgid "Full screen"
+msgstr "Во весь экран"
+
+#: src/terminal/terminalapp.cpp:284
+msgctxt "@title:window"
+msgid "Color schemes"
+msgstr "Цветовые схемы"
+
+#: src/terminal/terminalapp.cpp:285
+msgctxt "file filter"
+msgid "Alacritty color schemes (*.toml *.yml *.yaml)"
+msgstr "Цветовые схемы Alacritty (*.toml *.yml *.yaml)"
+
+#: src/terminal/terminalapp.cpp:293
+msgctxt "@info"
+msgid "“%1” is not a color scheme in Alacritty format."
+msgstr "«%1» — это не цветовая схема в формате Alacritty."
+
+#: src/terminal/terminalapp.cpp:295
+msgctxt "@info"
+msgid "Added %2"
+msgid_plural "Added %1 color schemes"
+msgstr[0] "Добавлена %1 схема: %2"
+msgstr[1] "Добавлены %1 схемы: %2"
+msgstr[2] "Добавлено %1 схем: %2"
+
+#: src/terminal/terminalapp.cpp:527
+msgctxt "@item memory limit"
+msgid "No limit"
+msgstr "Без ограничения"
+
+#: src/terminal/terminalapp.cpp:529
+msgctxt "@item memory size in gigabytes"
+msgid "%1 GB"
+msgstr "%1 ГБ"
+
+#: src/terminal/terminalapp.cpp:557
+msgctxt "@info systemd unit description"
+msgid "Terminal tab"
+msgstr "Вкладка терминала"
+
+#: src/terminal/terminalapp.cpp:582
+msgctxt "@info sleep inhibition reason"
+msgid "Terminal keeps the computer awake"
+msgstr "Терминал не даёт компьютеру уснуть"
+
+#: src/terminal/terminalapp.cpp:644
+msgctxt "@info"
+msgid "Please enter a number"
+msgstr "Введите число"
+
+#: src/terminal/terminalapp.cpp:647
+msgctxt "@info"
+msgid "Invalid port number"
+msgstr "Неверный номер порта"
+
+#: src/terminal/terminalapp.cpp:650
+msgctxt "@info"
+msgid "Port already exists"
+msgstr "Такой порт уже есть"
+
+#: src/terminal/terminalapp.cpp:676
+msgctxt "@info"
+msgid "The shared folders could not be changed."
+msgstr "Не удалось изменить общие папки."
+
+#: src/terminal/terminalapp.cpp:688
+msgctxt "@title:window"
+msgid "Share a folder"
+msgstr "Общая папка"
+
+#: src/terminal/terminalapp.cpp:724 src/terminal/terminalapp.cpp:728
+#: src/terminal/terminalapp.cpp:732
+msgctxt "@info"
+msgid "Failed to recover due to a backup error"
+msgstr "Не удалось выполнить восстановление из-за ошибки резервного копирования."
+
+#: src/terminal/terminalapp.cpp:761
+msgctxt "@info"
+msgid "Recovery failed"
+msgstr "Ошибка восстановления."
+
+#: src/terminal/terminalapp.cpp:767
+msgctxt "@info"
+msgid "Failed to remove backup data"
+msgstr "Не получилось удалить резервную копию данных."
+
+#: src/terminal/terminalwindow.cpp:110 src/terminal/terminalwindow.cpp:390
 msgctxt "@title:window"
 msgid "Terminal"
 msgstr "Терминал"
 
-#: src/terminal/terminalwindow.cpp:254 src/terminal/terminalwindow.cpp:379
+#: src/terminal/terminalwindow.cpp:255 src/terminal/terminalwindow.cpp:378
 msgctxt "@title:tab"
 msgid "Terminal"
 msgstr "Терминал"
 
-#: src/terminal/terminalwindow.cpp:365 src/terminal/terminalwindow.cpp:501
+#: src/terminal/terminalwindow.cpp:341
+msgctxt "@action"
+msgid "Settings"
+msgstr "Настройки"
+
+#: src/terminal/terminalwindow.cpp:364 src/terminal/terminalwindow.cpp:501
 msgctxt "@title:tab"
 msgid "Settings"
 msgstr "Настройки"
@@ -203,7 +452,27 @@ msgctxt "@action"
 msgid "Close window"
 msgstr "Закрыть окно"
 
-#: src/terminal/terminalwindow.cpp:542 src/terminal/terminalwindow.cpp:584
-msgctxt "@action"
-msgid "Settings"
-msgstr "Настройки"
+#~ msgctxt "font size in points"
+#~ msgid "%1 pt"
+#~ msgstr "%1 пт"
+
+#~ msgid "Background"
+#~ msgstr "Фон"
+
+#~ msgid "Black"
+#~ msgstr "Чёрный"
+
+#~ msgid "White"
+#~ msgstr "Белый"
+
+#~ msgid "Cursor"
+#~ msgstr "Курсор"
+
+#~ msgid "Block"
+#~ msgstr "Блок"
+
+#~ msgid "Bar"
+#~ msgstr "Черта"
+
+#~ msgid "Underline"
+#~ msgstr "Подчёркивание"

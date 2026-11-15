@@ -49,7 +49,10 @@ endforeach()
 
 install(DIRECTORY apps/filechooser/qml/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/filechooser)
 install(DIRECTORY apps/terminal/qml/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/terminal)
-install(DIRECTORY apps/terminal/color-schemes/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/terminal/color-schemes)
+install(DIRECTORY apps/terminal/schemes/ DESTINATION ${KDE_INSTALL_DATADIR}/kernora/terminal/schemes)
+install(PROGRAMS apps/terminal/system/kernora-terminal-ports apps/terminal/system/kernora-terminal-share DESTINATION libexec)
+install(FILES apps/terminal/system/org.kernora.terminal.policy DESTINATION ${KDE_INSTALL_DATADIR}/polkit-1/actions)
+install(FILES apps/terminal/system/kernora-terminal.notifyrc DESTINATION ${KDE_INSTALL_KNOTIFYRCDIR})
 install(FILES apps/taskmanager/org.kernora.taskmanager.desktop DESTINATION ${KDE_INSTALL_DATADIR}/kglobalaccel)
 
 install(FILES apps/welcome/org.kernora.welcome-autostart.desktop

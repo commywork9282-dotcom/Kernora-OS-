@@ -406,7 +406,18 @@ grep -Fq 'add_subdirectory(src/terminal)' "$package_root/CMakeLists.txt" \
   && grep -Fq 'm_shadow->setPadding(padding());' "$package_root/src/terminal/windowshadow.cpp" \
   && grep -Fq 'PathArc { x: tab.width + 8; y: tab.height; radiusX: 8; radiusY: 8; direction: PathArc.Counterclockwise }' "$package_root/apps/terminal/qml/Header.qml" \
   && grep -Fq 'Keys.onShortcutOverride: event => event.accepted = true' "$package_root/apps/terminal/qml/Settings.qml" \
-  && grep -Fxq 'Color=0,0,0' "$package_root/apps/terminal/color-schemes/kernora-dark.colorscheme" \
+  && grep -Fxq 'background = "#000000"' "$package_root/apps/terminal/schemes/standard_dark.toml" \
+  && grep -Fxq 'background = "#ffffff"' "$package_root/apps/terminal/schemes/standard_light.toml" \
+  && [[ "$(find "$package_root/apps/terminal/schemes" -name '*.toml' | wc -l)" -ge 12 ]] \
+  && bash -n "$package_root/apps/terminal/system/kernora-terminal-ports" \
+  && bash -n "$package_root/apps/terminal/system/kernora-terminal-share" \
+  && grep -Fq 'tcp dport { $list } ct state new drop' "$package_root/apps/terminal/system/kernora-terminal-ports" \
+  && grep -Fq '<annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/kernora-terminal-ports</annotate>' "$package_root/apps/terminal/system/org.kernora.terminal.policy" \
+  && grep -Fq 'root=/mnt/shared' "$package_root/apps/terminal/system/kernora-terminal-share" \
+  && grep -Fq '{ id: "recovery", title: i18n("Recovery"), icon: "view-history" }' "$package_root/apps/terminal/qml/Settings.qml" \
+  && grep -Fq 'QStringLiteral("--slice=") + slice' "$package_root/src/terminal/terminalapp.cpp" \
+  && grep -Fq 'org.freedesktop.PowerManagement.Inhibit' "$package_root/src/terminal/terminalapp.cpp" \
+  && grep -Fq 'nftables' "$package_root/debian/control" \
   && grep -Fq 'Process.startDetached("kernora-terminal", ["--workdir", app.folderPath])' "$package_root/apps/files/qml/Main.qml" \
   && ! grep -Fq 'alacritty' "$package_root/apps/files/qml/Main.qml" \
   && grep -Fq '[ -f "src/apps/$name.cpp" ] && entry=' "$package_root/tools/extract-messages" \

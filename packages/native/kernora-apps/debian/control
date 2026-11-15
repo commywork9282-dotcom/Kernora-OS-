@@ -38,6 +38,7 @@ Depends:
  ${shlibs:Depends},
  accountsservice,
  fonts-dejavu-mono,
+ nftables,
  appstream,
  flatpak,
  kde-cli-tools,

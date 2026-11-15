@@ -1,0 +1,34 @@
+#!/bin/bash
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+set -eu
+(( EUID == 0 )) || { echo "kernora-terminal-share: run as root" >&2; exit 1; }
+uid=${PKEXEC_UID:?}
+[[ $uid =~ ^[0-9]+$ ]] || exit 1
+user=$(getent passwd "$uid" | cut -d: -f1)
+[[ -n $user ]] || exit 1
+root=/mnt/shared
+state=/var/lib/kernora/terminal-shared
+install -d -m 0755 "$root" "$state"
+list=$state/$uid
+if [[ -f $list ]]; then
+  while IFS= read -r name; do
+    [[ -n $name && $name != */* && -L $root/$name ]] && rm -f -- "$root/$name"
+  done < "$list"
+fi
+: > "$list.new"
+for folder in "$@"; do
+  [[ $folder == /* && $folder != *$'\n'* && -d $folder ]] || continue
+  runuser -u "$user" -- test -r "$folder" -a -x "$folder" || continue
+  base=$(basename -- "$folder")
+  [[ -n $base && $base != / ]] || base=root
+  name=$base
+  count=2
+  while [[ -e $root/$name || -L $root/$name ]]; do
+    name="$base ($count)"
+    count=$((count + 1))
+  done
+  ln -s -- "$folder" "$root/$name"
+  printf '%s\n' "$name" >> "$list.new"
+done
+mv -f "$list.new" "$list"

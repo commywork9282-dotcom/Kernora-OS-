@@ -1,0 +1,15 @@
+[Global]
+IconName=org.kernora.terminal
+Name=Terminal
+Name[ru]=Терминал
+Comment=Kernora Terminal
+Comment[ru]=Терминал Kernora
+DesktopEntry=org.kernora.terminal
+
+[Event/portRequest]
+Name=A program opened a port
+Name[ru]=Программа открыла порт
+Comment=A program started in the terminal waits for connections from other devices
+Comment[ru]=Программа из терминала ждёт подключений от других устройств
+Action=Popup
+Urgency=Normal
