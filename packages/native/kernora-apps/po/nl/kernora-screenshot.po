@@ -1,0 +1,101 @@
+# Dutch translation of Kernora Screenshot.
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-2.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: kernora-screenshot\n"
+"Report-Msgid-Bugs-To: dev@kernora.invalid\n"
+"POT-Creation-Date: 2026-10-31 13:44+0100\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/screenshot/qml/Main.qml:27
+msgid "Screenshot"
+msgstr "Schermafbeelding"
+
+#: apps/screenshot/qml/Main.qml:103
+msgid "The screen could not be captured."
+msgstr "Het scherm kon niet worden vastgelegd."
+
+#: apps/screenshot/qml/Main.qml:112
+msgid "The screenshot could not be saved."
+msgstr "De schermafbeelding kon niet worden opgeslagen."
+
+#: apps/screenshot/qml/Main.qml:199
+msgid "Take a screenshot"
+msgstr "Een schermafbeelding maken"
+
+#: apps/screenshot/qml/Main.qml:340
+msgid "Area"
+msgstr "Gebied"
+
+#
+#: apps/screenshot/qml/Main.qml:341
+msgid "Screen"
+msgstr "Scherm"
+
+#: apps/screenshot/qml/Main.qml:342
+msgid "Window"
+msgstr "Venster"
+
+#
+#: apps/screenshot/qml/Main.qml:353
+msgid "Take the screenshot"
+msgstr "De schermafbeelding maken"
+
+#
+#: apps/screenshot/qml/Main.qml:354
+msgid "Take the screenshot (Enter)"
+msgstr "De schermafbeelding maken (Enter)"
+
+#
+#: apps/screenshot/qml/Main.qml:377
+msgid "Cancel (Esc)"
+msgstr "Annuleren (Esc)"
+
+#: apps/screenshot/qml/Main.qml:413
+msgid "No screenshot"
+msgstr "Geen schermafbeelding"
+
+#: apps/screenshot/qml/Main.qml:422
+msgid "Saved and copied"
+msgstr "Opgeslagen en gekopieerd"
+
+#
+#: apps/screenshot/qml/Main.qml:436
+msgid "Take another"
+msgstr "Nog een maken"
+
+#: apps/screenshot/qml/Main.qml:445
+msgid "Open"
+msgstr "Openen"
+
+#: apps/screenshot/qml/Main.qml:451
+msgid "Show in Files"
+msgstr "Tonen in Bestanden"
+
+#: apps/screenshot/qml/Main.qml:457
+msgid "Delete"
+msgstr "Verwijderen"
+
+#
+#: apps/screenshot/qml/Main.qml:471
+msgid "Screenshot taken"
+msgstr "Schermafbeelding gemaakt"
+
+#: src/apps/host.cpp:59
+msgctxt "@info:credit"
+msgid "© 2026 Kernora OS"
+msgstr "© 2026 Kernora OS"
+
+#: src/apps/host.cpp:67
+msgid "Files or pages to open."
+msgstr "Bestanden of pagina's om te openen."
+
+#: src/apps/screenshot.cpp:8
+msgctxt "@title application name"
+msgid "Screenshot"
+msgstr "Schermafbeelding"
