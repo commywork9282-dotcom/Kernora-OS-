@@ -43,8 +43,8 @@
           "ru": "Ровная сетка как на Pixel"
         },
         "text": {
-          "en": "Widgets sit on the cells of the grid. While you drag one, an outline shows where it will land, and widgets in the way move aside to make room. If there is no room, the widget goes back.",
-          "ru": "Виджеты стоят ровно по клеткам. Пока вы перетаскиваете виджет, контур показывает, куда он встанет, а мешающие виджеты отодвигаются, чтобы освободить место. Если места нет, виджет вернётся обратно."
+          "en": "Widgets sit on the cells of the grid. While you drag or resize one, an outline shows where it will land and widgets in the way move aside to make room. If there is no room, the widget goes back.",
+          "ru": "Виджеты стоят ровно по клеткам. Пока вы перетаскиваете или растягиваете виджет, контур показывает, куда он встанет, а мешающие виджеты отодвигаются. Если места нет, виджет вернётся обратно."
         }
       }
     ]

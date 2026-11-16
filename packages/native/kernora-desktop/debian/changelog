@@ -23,7 +23,10 @@ kernora-desktop (1.4.81) UNRELEASED; urgency=medium
   * Widgets move on the grid like on a Pixel: while you drag, an outline
     shows the cells where the widget will land, widgets in the way shake
     and then move aside, and a widget with no room goes back where it was.
-    Widgets dragged out of the picker get the same outline and land in it.
+    Resizing pushes widgets aside the same way, and widgets dragged out of
+    the picker get the same outline and make room too. The picker drag
+    starts only after the sheet is out of the way, so drops no longer get
+    lost on it.
     Every widget sits on whole cells, KDE ones too, and the pencil shows
     only on widgets that have settings.
 

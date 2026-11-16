@@ -148,36 +148,36 @@ FocusScope {
     HomeDrop {
         id: pickerDrop
         layout: main.homeView ? root.appletsLayout : null
-        reorder: false
         accent: BarTint.darkInk(Screen.name, "left") ? M3.accent1_900 : M3.accent1_100
     }
 
-    function followPlaceHolder(): void {
+    function followPicker(x: real, y: real): void {
         if (!main.pickerDragging || !pickerDrop.layout) {
             return;
         }
-        const holder = main.homePlaceHolder;
-        if (holder && holder.opacity > 0) {
-            if (!pickerDrop.active) {
-                const span = HomeGrid.span(main.dropEntry);
-                pickerDrop.start(null, span[0], span[1]);
-            }
-            pickerDrop.update(holder.x + holder.width / 2, holder.y + holder.height / 2);
-        } else if (pickerDrop.active) {
-            main.dropCell = pickerDrop.finish();
+        if (!pickerDrop.active) {
+            const span = HomeGrid.span(main.dropEntry);
+            pickerDrop.start(null, span[0], span[1]);
         }
+        pickerDrop.update(x, y);
     }
 
     Connections {
-        target: main.homePlaceHolder
-        function onXChanged(): void {
-            main.followPlaceHolder();
+        target: main.homeView ? root.fullRepresentationItem : null
+        ignoreUnknownSignals: true
+        function onDragEnter(event): void {
+            main.followPicker(event.x, event.y);
         }
-        function onYChanged(): void {
-            main.followPlaceHolder();
+        function onDragMove(event): void {
+            main.followPicker(event.x, event.y);
         }
-        function onOpacityChanged(): void {
-            main.followPlaceHolder();
+        function onDragLeave(event): void {
+            pickerDrop.cancel();
+        }
+        function onDrop(event): void {
+            if (main.pickerDragging && pickerDrop.active) {
+                main.dropCell = pickerDrop.finish();
+            }
         }
     }
 
@@ -370,9 +370,7 @@ FocusScope {
             }
             onDragEnded: {
                 main.pickerDragging = false;
-                if (pickerDrop.active) {
-                    main.dropCell = pickerDrop.finish();
-                }
+                pickerDrop.cancel();
             }
         }
     }

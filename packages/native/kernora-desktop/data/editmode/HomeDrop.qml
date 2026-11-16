@@ -152,6 +152,46 @@ Item {
         return result ? Qt.point(result.x, result.y) : null;
     }
 
+    property var room: null
+
+    function makeRoom(rect: var, direction: var): bool {
+        if (!drop.active) {
+            return false;
+        }
+        const solution = GridReorder.makeRoom(drop.context(), rect, direction);
+        if (!solution) {
+            return false;
+        }
+        drop.room = solution;
+        drop.show(solution.state);
+        drop.preview(solution.state);
+        return true;
+    }
+
+    function commitRoom(): void {
+        const solution = drop.room;
+        drop.room = null;
+        if (solution) {
+            const moved = [];
+            for (const id in solution.state) {
+                const from = drop.origin[id];
+                const to = solution.state[id];
+                if (from.x !== to.x || from.y !== to.y) {
+                    drop.layout.releaseSpace(drop.items[Number(id)]);
+                    moved.push(drop.items[Number(id)]);
+                }
+            }
+            drop.show(solution.state);
+            drop.settling = drop.settling.concat(moved);
+            settle.restart();
+        } else {
+            drop.show(GridReorder.clone(drop.origin));
+        }
+        drop.settleShakes();
+        drop.active = false;
+        drop.target = null;
+    }
+
     function cancel(): void {
         if (!drop.active) {
             return;

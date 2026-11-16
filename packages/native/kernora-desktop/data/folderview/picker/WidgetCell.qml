@@ -23,6 +23,15 @@ Item {
     signal addRequested()
     signal dragStarted()
     signal dragFinished()
+    signal dragCancelled()
+
+    function startDrag(): void {
+        if (dragHandler.active) {
+            dragSource.Drag.active = true;
+        } else {
+            cell.dragCancelled();
+        }
+    }
 
     readonly property real previewScale: 0.6
     readonly property bool clock: kind.indexOf("clock") >= 0
@@ -95,7 +104,6 @@ Item {
                             }
                             dragSource.Drag.imageSource = result.url;
                             cell.dragStarted();
-                            dragSource.Drag.active = true;
                         }, Qt.size(Math.round(card.width), Math.round(card.height)));
                     }
                 }

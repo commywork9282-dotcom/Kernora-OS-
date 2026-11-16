@@ -1636,7 +1636,10 @@ grep -Fxq 'data/editmode/HomeDrop.qml usr/share/plasma/plasmoids/org.kde.desktop
   && grep -Fq 'function calculate(ctx, pixelX, pixelY, spanX, spanY)' "$data_root/editmode/GridReorder.js" \
   && grep -Fq 'interval: 650' "$data_root/editmode/HomeDrop.qml" \
   && grep -Fq 'overlay.place(homeDrop.finish());' "$data_root/editmode/ConfigOverlay.qml" \
-  && grep -Fq 'pickerDrop.update(holder.x + holder.width / 2, holder.y + holder.height / 2);' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'main.followPicker(event.x, event.y);' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'function makeRoom(ctx, rect, direction)' "$data_root/editmode/GridReorder.js" \
+  && grep -Fq 'if (!homeDrop.makeRoom(rect, direction)) {' "$data_root/editmode/ConfigOverlay.qml" \
+  && grep -Fq 'scene.waitForShrink(widgetCell);' "$data_root/folderview/picker/WidgetPicker.qml" \
   && grep -Fq 'HomeGrid.reconfigurable.indexOf(pluginName) >= 0' "$data_root/editmode/ConfigOverlay.qml" \
   || fail "widgets do not move on the grid like on a Pixel"
 for widget in battery calendar clock cputemperature glance media note photo weather worldclock; do

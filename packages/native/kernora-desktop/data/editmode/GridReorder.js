@@ -436,3 +436,44 @@ function calculate(ctx, pixelX, pixelY, spanX, spanY) {
     }
     return null;
 }
+
+function makeRoom(ctx, rect, direction) {
+    var state = clone(ctx.state);
+    var grid = occupancy(ctx, state);
+    var result = { intersecting: [] };
+    if (rearrangement(ctx, rect, direction.slice(), state, grid, result)) {
+        return { x: rect.x, y: rect.y, w: rect.w, h: rect.h, state: state, intersecting: result.intersecting };
+    }
+    return null;
+}
+
+function spanIncrement(fraction) {
+    return Math.abs(fraction) > 0.66 ? Math.round(fraction) : 0;
+}
+
+function bound(start, end, moveStart, moveEnd, delta, minSize, maxSize, maxEnd) {
+    var outStart = moveStart ? start + delta : start;
+    var outEnd = moveEnd ? end + delta : end;
+    if (outStart < 0) {
+        outStart = 0;
+    }
+    if (outEnd > maxEnd) {
+        outEnd = maxEnd;
+    }
+    if (outEnd - outStart < minSize) {
+        if (moveStart) {
+            outStart = outEnd - minSize;
+        } else if (moveEnd) {
+            outEnd = outStart + minSize;
+        }
+    }
+    if (outEnd - outStart > maxSize) {
+        if (moveStart) {
+            outStart = outEnd - maxSize;
+        } else if (moveEnd) {
+            outEnd = outStart + maxSize;
+        }
+    }
+    var change = moveEnd ? (outEnd - outStart) - (end - start) : (end - start) - (outEnd - outStart);
+    return { start: outStart, end: outEnd, delta: change };
+}

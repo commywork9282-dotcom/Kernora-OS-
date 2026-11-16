@@ -81,6 +81,39 @@ PlasmaCore.Dialog {
         width: dragging ? 1 : window.area.width
         height: dragging ? 1 : window.area.height
 
+        property Item dragCell: null
+        property int swaps: 0
+
+        function waitForShrink(cell: Item): void {
+            scene.dragCell = cell;
+            scene.swaps = 0;
+            shrinkTimeout.restart();
+        }
+
+        function beginDrag(): void {
+            shrinkTimeout.stop();
+            const cell = scene.dragCell;
+            scene.dragCell = null;
+            if (cell) {
+                cell.startDrag();
+            }
+        }
+
+        Connections {
+            target: window
+            function onFrameSwapped(): void {
+                if (scene.dragCell && ++scene.swaps >= 2) {
+                    scene.beginDrag();
+                }
+            }
+        }
+
+        Timer {
+            id: shrinkTimeout
+            interval: 250
+            onTriggered: scene.beginDrag()
+        }
+
         function ms(value: real): int {
             return Math.max(1, Math.round(value * M3.motionScale));
         }
@@ -536,6 +569,7 @@ PlasmaCore.Dialog {
                                         model: section.modelData.plugins
 
                                         delegate: WidgetCell {
+                                            id: widgetCell
                                             required property string modelData
                                             plugin: HomeGrid.plugin(modelData)
                                             name: scene.widgetName(modelData)
@@ -550,6 +584,11 @@ PlasmaCore.Dialog {
                                             onDragStarted: {
                                                 window.picked(modelData);
                                                 scene.dragging = true;
+                                                scene.waitForShrink(widgetCell);
+                                            }
+                                            onDragCancelled: {
+                                                scene.dragging = false;
+                                                window.dragEnded();
                                             }
                                             onDragFinished: {
                                                 window.dragEnded();

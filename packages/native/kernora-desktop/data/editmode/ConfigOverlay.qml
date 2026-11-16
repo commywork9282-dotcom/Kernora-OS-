@@ -12,6 +12,7 @@ import org.kde.plasma.private.containmentlayoutmanager as ContainmentLayoutManag
 import org.kernora.m3
 import org.kernora.bartint
 import "HomeGrid.js" as HomeGrid
+import "GridReorder.js" as GridReorder
 
 ContainmentLayoutManager.ConfigOverlay {
     id: overlay
@@ -54,22 +55,6 @@ ContainmentLayoutManager.ConfigOverlay {
         if (overlay.itemContainer && !overlay.handlePressed() && !overlay.removing) {
             overlay.itemContainer.editMode = false;
         }
-    }
-
-    function snap(): void {
-        const item = overlay.itemContainer;
-        const layout = item ? item.layout : null;
-        if (!layout || layout.cellWidth <= 0 || layout.cellHeight <= 0) {
-            return;
-        }
-        const columns = Math.max(1, Math.round(item.width / layout.cellWidth));
-        const rows = Math.max(1, Math.round(item.height / layout.cellHeight));
-        layout.releaseSpace(item);
-        item.x = Math.round(item.x / layout.cellWidth) * layout.cellWidth;
-        item.y = Math.round(item.y / layout.cellHeight) * layout.cellHeight;
-        item.width = columns * layout.cellWidth;
-        item.height = rows * layout.cellHeight;
-        settle.restart();
     }
 
     Timer {
@@ -247,11 +232,180 @@ ContainmentLayoutManager.ConfigOverlay {
         }
     }
 
+    property bool frameFree: false
+    property real frameLeft: 0
+    property real frameTop: 0
+    property real frameWidth: 0
+    property real frameHeight: 0
+    readonly property real frameX: frameFree && itemContainer ? frameLeft - itemContainer.x : 0
+    readonly property real frameY: frameFree && itemContainer ? frameTop - itemContainer.y : 0
+    readonly property real frameW: frameFree ? frameWidth : width
+    readonly property real frameH: frameFree ? frameHeight : height
+
+    property int resizeEdge: 0
+    property point resizePress: Qt.point(0, 0)
+    property rect resizeBase: Qt.rect(0, 0, 0, 0)
+    property var resizeCells: null
+    property int runningH: 0
+    property int runningV: 0
+
+    readonly property int edgeLeft: 1
+    readonly property int edgeTop: 2
+    readonly property int edgeRight: 4
+    readonly property int edgeBottom: 8
+
+    function cellsOf(item: Item): var {
+        const layout = item.layout;
+        return {
+            x: Math.round(item.x / layout.cellWidth),
+            y: Math.round(item.y / layout.cellHeight),
+            w: Math.max(1, Math.round(item.width / layout.cellWidth)),
+            h: Math.max(1, Math.round(item.height / layout.cellHeight))
+        };
+    }
+
+    function beginResize(edge: int, point: point): void {
+        const item = overlay.itemContainer;
+        const layout = item ? item.layout : null;
+        if (!layout || layout.cellWidth <= 0 || layout.cellHeight <= 0) {
+            return;
+        }
+        frameSnap.stop();
+        overlay.resizeEdge = edge;
+        overlay.resizePress = point;
+        overlay.resizeBase = Qt.rect(item.x, item.y, item.width, item.height);
+        overlay.frameLeft = item.x;
+        overlay.frameTop = item.y;
+        overlay.frameWidth = item.width;
+        overlay.frameHeight = item.height;
+        overlay.frameFree = true;
+        overlay.resizeCells = overlay.cellsOf(item);
+        overlay.runningH = 0;
+        overlay.runningV = 0;
+        homeDrop.start(item, overlay.resizeCells.w, overlay.resizeCells.h);
+        layout.releaseSpace(item);
+    }
+
+    function moveResize(point: point): void {
+        const item = overlay.itemContainer;
+        const layout = item ? item.layout : null;
+        if (!layout || overlay.resizeEdge === 0) {
+            return;
+        }
+        const base = overlay.resizeBase;
+        const touch = overlay.touchInteraction ? 40 : 24;
+        const left = overlay.resizeEdge === overlay.edgeLeft;
+        const right = overlay.resizeEdge === overlay.edgeRight;
+        const top = overlay.resizeEdge === overlay.edgeTop;
+        const bottom = overlay.resizeEdge === overlay.edgeBottom;
+        let dx = point.x - overlay.resizePress.x;
+        let dy = point.y - overlay.resizePress.y;
+        if (left) {
+            dx = Math.max(-base.x, Math.min(base.width - 2 * touch, dx));
+        } else if (right) {
+            dx = Math.max(2 * touch - base.width, Math.min(layout.width - base.x - base.width, dx));
+        } else {
+            dx = 0;
+        }
+        if (top) {
+            dy = Math.max(-base.y, Math.min(base.height - 2 * touch, dy));
+        } else if (bottom) {
+            dy = Math.max(2 * touch - base.height, Math.min(layout.height - base.y - base.height, dy));
+        } else {
+            dy = 0;
+        }
+        overlay.frameLeft = left ? base.x + dx : base.x;
+        overlay.frameWidth = left ? base.width - dx : (right ? base.width + dx : base.width);
+        overlay.frameTop = top ? base.y + dy : base.y;
+        overlay.frameHeight = top ? base.height - dy : (bottom ? base.height + dy : base.height);
+
+        const hInc = GridReorder.spanIncrement(dx / layout.cellWidth - overlay.runningH);
+        const vInc = GridReorder.spanIncrement(dy / layout.cellHeight - overlay.runningV);
+        if (hInc === 0 && vInc === 0) {
+            return;
+        }
+        const cells = overlay.resizeCells;
+        const columns = homeDrop.columns;
+        const rows = homeDrop.rows;
+        const h = GridReorder.bound(cells.x, cells.x + cells.w, left, right, hInc, 1, columns, columns);
+        const v = GridReorder.bound(cells.y, cells.y + cells.h, top, bottom, vInc, 1, rows, rows);
+        if (h.delta === 0 && v.delta === 0) {
+            return;
+        }
+        const direction = [h.delta !== 0 ? (left ? -1 : 1) : 0, v.delta !== 0 ? (top ? -1 : 1) : 0];
+        const rect = { x: h.start, y: v.start, w: h.end - h.start, h: v.end - v.start };
+        if (!homeDrop.makeRoom(rect, direction)) {
+            return;
+        }
+        overlay.resizeCells = rect;
+        overlay.runningH += h.delta;
+        overlay.runningV += v.delta;
+        item.x = rect.x * layout.cellWidth;
+        item.y = rect.y * layout.cellHeight;
+        item.width = rect.w * layout.cellWidth;
+        item.height = rect.h * layout.cellHeight;
+    }
+
+    function endResize(): void {
+        const item = overlay.itemContainer;
+        if (overlay.resizeEdge === 0 || !item) {
+            return;
+        }
+        overlay.resizeEdge = 0;
+        homeDrop.commitRoom();
+        settle.restart();
+        frameSnap.toLeft = item.x;
+        frameSnap.toTop = item.y;
+        frameSnap.toWidth = item.width;
+        frameSnap.toHeight = item.height;
+        frameSnap.restart();
+    }
+
+    ParallelAnimation {
+        id: frameSnap
+
+        property real toLeft
+        property real toTop
+        property real toWidth
+        property real toHeight
+
+        onFinished: overlay.frameFree = false
+
+        NumberAnimation {
+            target: overlay
+            property: "frameLeft"
+            to: frameSnap.toLeft
+            duration: overlay.ms(150)
+            easing.type: Easing.InOutSine
+        }
+        NumberAnimation {
+            target: overlay
+            property: "frameTop"
+            to: frameSnap.toTop
+            duration: overlay.ms(150)
+            easing.type: Easing.InOutSine
+        }
+        NumberAnimation {
+            target: overlay
+            property: "frameWidth"
+            to: frameSnap.toWidth
+            duration: overlay.ms(150)
+            easing.type: Easing.InOutSine
+        }
+        NumberAnimation {
+            target: overlay
+            property: "frameHeight"
+            to: frameSnap.toHeight
+            duration: overlay.ms(150)
+            easing.type: Easing.InOutSine
+        }
+    }
+
     Rectangle {
-        x: overlay.insetLeft - 1
-        y: overlay.insetTop - 1
-        width: overlay.width - overlay.insetLeft - overlay.insetRight + 2
-        height: overlay.height - overlay.insetTop - overlay.insetBottom + 2
+        x: overlay.frameX + overlay.insetLeft - 1
+        y: overlay.frameY + overlay.insetTop - 1
+        width: overlay.frameW - overlay.insetLeft - overlay.insetRight + 2
+        height: overlay.frameH - overlay.insetTop - overlay.insetBottom + 2
         radius: overlay.frameRadius + 1
         color: "transparent"
         border.width: 2
@@ -260,20 +414,19 @@ ContainmentLayoutManager.ConfigOverlay {
         antialiasing: true
     }
 
-    component Handle: ContainmentLayoutManager.ResizeHandle {
+    component Handle: Item {
         id: handle
+
+        property int resizeCorner
+        readonly property bool pressed: handleMouse.pressed
+        readonly property bool active: overlay.resizeEdge === resizeCorner
 
         width: overlay.touchInteraction ? 40 : 24
         height: width
         z: 999
         visible: !overlay.dragging && !overlay.removing
         scale: overlay.open ? 1 : 0
-
-        onPressedChanged: {
-            if (!pressed) {
-                overlay.snap();
-            }
-        }
+        opacity: overlay.resizeEdge === 0 || active ? 1 : 0
 
         Behavior on scale {
             NumberAnimation {
@@ -288,7 +441,7 @@ ContainmentLayoutManager.ConfigOverlay {
             width: handle.pressed ? 16 : 12
             height: width
             radius: width / 2
-            color: handle.resizeBlocked ? M3.error : overlay.accent
+            color: overlay.accent
             antialiasing: true
 
             Behavior on width {
@@ -297,34 +450,57 @@ ContainmentLayoutManager.ConfigOverlay {
                 }
             }
         }
+
+        MouseArea {
+            id: handleMouse
+
+            anchors.fill: parent
+            preventStealing: true
+            cursorShape: handle.resizeCorner === overlay.edgeLeft || handle.resizeCorner === overlay.edgeRight
+                ? Qt.SizeHorCursor : Qt.SizeVerCursor
+            onPressed: mouse => {
+                const layout = overlay.itemContainer ? overlay.itemContainer.layout : null;
+                if (layout) {
+                    overlay.beginResize(handle.resizeCorner, handleMouse.mapToItem(layout, mouse.x, mouse.y));
+                }
+            }
+            onPositionChanged: mouse => {
+                const layout = overlay.itemContainer ? overlay.itemContainer.layout : null;
+                if (layout && pressed) {
+                    overlay.moveResize(handleMouse.mapToItem(layout, mouse.x, mouse.y));
+                }
+            }
+            onReleased: overlay.endResize()
+            onCanceled: overlay.endResize()
+        }
     }
 
     Handle {
-        resizeCorner: ContainmentLayoutManager.ResizeHandle.Left
-        x: overlay.insetLeft - width / 2
-        anchors.verticalCenter: parent.verticalCenter
+        resizeCorner: overlay.edgeLeft
+        x: overlay.frameX + overlay.insetLeft - width / 2
+        y: overlay.frameY + overlay.frameH / 2 - height / 2
     }
     Handle {
-        resizeCorner: ContainmentLayoutManager.ResizeHandle.Top
-        y: overlay.insetTop - height / 2
-        anchors.horizontalCenter: parent.horizontalCenter
+        resizeCorner: overlay.edgeTop
+        x: overlay.frameX + overlay.frameW / 2 - width / 2
+        y: overlay.frameY + overlay.insetTop - height / 2
     }
     Handle {
-        resizeCorner: ContainmentLayoutManager.ResizeHandle.Right
-        x: overlay.width - overlay.insetRight - width / 2
-        anchors.verticalCenter: parent.verticalCenter
+        resizeCorner: overlay.edgeRight
+        x: overlay.frameX + overlay.frameW - overlay.insetRight - width / 2
+        y: overlay.frameY + overlay.frameH / 2 - height / 2
     }
     Handle {
-        resizeCorner: ContainmentLayoutManager.ResizeHandle.Bottom
-        y: overlay.height - overlay.insetBottom - height / 2
-        anchors.horizontalCenter: parent.horizontalCenter
+        resizeCorner: overlay.edgeBottom
+        x: overlay.frameX + overlay.frameW / 2 - width / 2
+        y: overlay.frameY + overlay.frameH - overlay.insetBottom - height / 2
     }
 
     Rectangle {
         id: reconfigure
 
-        x: overlay.width - overlay.insetRight - width - 8
-        y: overlay.height - overlay.insetBottom - height - 8
+        x: overlay.frameX + overlay.frameW - overlay.insetRight - width - 8
+        y: overlay.frameY + overlay.frameH - overlay.insetBottom - height - 8
         width: 36
         height: 36
         radius: 14
