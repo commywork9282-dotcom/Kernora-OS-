@@ -35,6 +35,8 @@ Item {
             case "glance":
                 return glance;
             case "weather":
+            case "weather-current":
+            case "weather-forecast":
                 return weather;
             case "cputemperature":
                 return cpuTemperature;
@@ -122,18 +124,36 @@ Item {
     Component {
         id: weather
 
-        MaterialShape {
-            width: 92
-            height: 92
-            shape: "sunny"
-            color: M3.primaryContainer
-
-            MText {
-                anchors.centerIn: parent
-                role: "headlineSmall"
-                text: "18°"
-                color: M3.primaryContainerContent
-            }
+        WeatherFace {
+            width: root.width
+            height: root.height
+            style: root.kind === "weather-forecast" ? "forecast" : "current"
+            temperature: 24
+            feelsLike: 25
+            high: 26
+            low: 17
+            kind: "mostly"
+            city: i18nd("kernora-ui", "London")
+            condition: i18nd("kernora-ui", "Mostly sunny")
+            feelsText: i18nd("kernora-ui", "Feels like %1", "25°")
+            sourceText: i18nd("kernora-ui", "Source: Open-Meteo")
+            hours: [i18nd("kernora-ui", "Now"), 13, 14, 15, 16, 17].map((label, index) => ({
+                label: index === 0 ? label : (root.twelveHours ? (label - 12) + " " + Qt.locale().pmText : label + ":00"),
+                temperature: [24, 25, 26, 26, 25, 23][index],
+                kind: index < 2 ? "mostly" : "clear",
+                day: true
+            }))
+            days: [1, 2, 3, 4, 5].map(offset => {
+                const date = new Date();
+                date.setDate(date.getDate() + offset);
+                const name = Qt.locale().standaloneDayName(date.getDay(), Locale.LongFormat);
+                return {
+                    label: name.charAt(0).toUpperCase() + name.slice(1),
+                    high: [26, 24, 22, 23, 25][offset - 1],
+                    low: [17, 16, 14, 15, 16][offset - 1],
+                    kind: ["clear", "partly", "rain", "cloudy", "mostly"][offset - 1]
+                };
+            })
         }
     }
 

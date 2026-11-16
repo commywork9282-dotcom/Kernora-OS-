@@ -5,10 +5,9 @@
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Effects
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
-import "m3"
+import "weather.js" as Weather
 
 PlasmoidItem {
     id: root
@@ -17,14 +16,17 @@ PlasmoidItem {
     preferredRepresentation: inPanel ? null : fullRepresentation
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
 
-    switchWidth: Plasmoid.configuration.placed ? 0 : 209
-    switchHeight: Plasmoid.configuration.placed ? 0 : 209
+    switchWidth: Plasmoid.configuration.placed ? 0 : 120
+    switchHeight: Plasmoid.configuration.placed ? 0 : 120
 
     Timer {
         running: !Plasmoid.configuration.placed
         interval: 2000
         onTriggered: Plasmoid.configuration.placed = true
     }
+
+    readonly property string style: Plasmoid.configuration.style === "forecast" ? "forecast" : "current"
+    readonly property bool twelveHours: Qt.locale().timeFormat(Locale.ShortFormat).toLowerCase().indexOf("ap") >= 0
 
     toolTipMainText: weather.configured ? weather.city : i18n("Weather")
     toolTipSubText: weather.ready ? weather.condition : ""
@@ -33,112 +35,65 @@ PlasmoidItem {
         id: weather
     }
 
+    function hourLabel(time: string): string {
+        const hour = Number(String(time).substring(11, 13));
+        if (root.twelveHours) {
+            return (hour % 12 === 0 ? 12 : hour % 12) + " " + (hour < 12 ? Qt.locale().amText : Qt.locale().pmText);
+        }
+        return String(hour).padStart(2, "0") + ":00";
+    }
+
+    function dayLabel(date: string): string {
+        const day = new Date(String(date) + "T12:00:00");
+        const name = Qt.locale().standaloneDayName(day.getDay(), Locale.LongFormat);
+        return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+
+    readonly property var hourItems: {
+        const items = [{ label: i18n("Now"), temperature: weather.temperature, kind: weather.kind, day: weather.day }];
+        for (let i = 1; i < weather.hours.length; ++i) {
+            const hour = weather.hours[i];
+            items.push({ label: root.hourLabel(hour.time), temperature: hour.temperature, kind: Weather.kind(hour.code),
+                         day: hour.day });
+        }
+        return items;
+    }
+
+    readonly property var dayItems: weather.days.slice(1).map(entry => ({
+        label: root.dayLabel(entry.date),
+        high: entry.high,
+        low: entry.low,
+        kind: Weather.kind(entry.code)
+    }))
+
     fullRepresentation: Item {
-        id: card
         LiftHandler {}
-        Layout.preferredWidth: 210
-        Layout.preferredHeight: 210
+
+        Layout.preferredWidth: root.inPanel ? (root.style === "forecast" ? 416 : 272) : -1
+        Layout.preferredHeight: root.inPanel ? 287 : -1
         Layout.minimumWidth: 120
         Layout.minimumHeight: 120
         Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity
         Layout.maximumHeight: root.inPanel ? Layout.preferredHeight : Infinity
 
-        readonly property real side: Math.min(width, height)
-        readonly property real room: ({ puffy: 0.56, pill: 0.62, sunny: 0.64, softBurst: 0.66 })[backdrop.shape] || 0.72
-
-        MaterialShape {
-            id: backdrop
+        WeatherFace {
             anchors.fill: parent
-            shape: weather.ready ? weather.shape : "cookie9"
-            color: M3.primaryContainer
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowOpacity: 0.3
-                shadowBlur: 0.5
-                shadowVerticalOffset: 2
-            }
-        }
-
-        ColumnLayout {
-            id: reading
-            anchors.centerIn: parent
-            width: card.side * 0.6
-            spacing: 0
-            visible: weather.ready
-            scale: implicitHeight > 0 ? Math.min(1, card.side * card.room / implicitHeight) : 1
-
-            Text {
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                text: weather.city
-                color: M3.primaryContainerContent
-                font.family: M3.typeface
-                font.pixelSize: Math.round(card.side * 0.06)
-                font.weight: Font.Medium
-                fontSizeMode: Text.HorizontalFit
-                minimumPixelSize: Math.round(card.side * 0.045)
-                elide: Text.ElideRight
-            }
-            MIcon {
-                Layout.alignment: Qt.AlignHCenter
-                size: Math.round(card.side * 0.13)
-                source: weather.icon
-                color: M3.primaryContainerContent
-            }
-            Text {
-                Layout.alignment: Qt.AlignHCenter
-                text: weather.degrees
-                color: M3.primaryContainerContent
-                font.family: M3.typeface
-                font.pixelSize: Math.round(card.side * 0.24)
-                font.weight: Font.Medium
-            }
-            Text {
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                text: weather.condition
-                color: M3.primaryContainerContent
-                font.family: M3.typeface
-                font.pixelSize: Math.round(card.side * 0.075)
-                fontSizeMode: Text.HorizontalFit
-                minimumPixelSize: Math.round(card.side * 0.05)
-                elide: Text.ElideRight
-            }
-            Text {
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                text: Math.round(weather.high) + "° / " + Math.round(weather.low) + "°"
-                color: M3.primaryContainerContent
-                opacity: 0.8
-                font.family: M3.typeface
-                font.pixelSize: Math.round(card.side * 0.06)
-                elide: Text.ElideRight
-            }
-        }
-
-        ColumnLayout {
-            anchors.centerIn: parent
-            width: card.side * 0.66
-            spacing: 6
-            visible: !weather.ready
-
-            MIcon {
-                Layout.alignment: Qt.AlignHCenter
-                size: Math.round(card.side * 0.2)
-                source: "weather-few-clouds"
-                color: M3.primaryContainerContent
-            }
-            Text {
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.Wrap
-                text: !weather.configured ? i18n("Choose a city")
-                    : weather.failed ? i18n("No connection to the weather service") : i18n("Loading…")
-                color: M3.primaryContainerContent
-                font.family: M3.typeface
-                font.pixelSize: Math.round(card.side * 0.075)
-            }
+            style: root.style
+            ready: weather.ready
+            message: !weather.configured ? i18n("Choose a city")
+                : weather.failed ? i18n("No connection to the weather service") : i18n("Loading…")
+            temperature: weather.temperature
+            feelsLike: weather.feelsLike
+            high: weather.high
+            low: weather.low
+            kind: weather.kind
+            day: weather.day
+            city: weather.city
+            condition: weather.condition
+            hours: root.hourItems
+            days: root.dayItems
+            feelsText: i18n("Feels like %1", Math.round(weather.feelsLike) + "°")
+            sourceText: i18n("Source: Open-Meteo")
         }
 
         MouseArea {

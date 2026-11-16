@@ -64,8 +64,8 @@ PlasmoidItem {
     fullRepresentation: Item {
         id: glance
         LiftHandler {}
-        Layout.preferredWidth: 440
-        Layout.preferredHeight: 110
+        Layout.preferredWidth: root.inPanel ? 440 : -1
+        Layout.preferredHeight: root.inPanel ? 110 : -1
         Layout.minimumWidth: 200
         Layout.minimumHeight: 64
         Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity

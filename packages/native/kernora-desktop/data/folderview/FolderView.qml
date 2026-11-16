@@ -224,6 +224,30 @@ FocusScope {
     onHomeCellWidthChanged: widgetTidy.restart()
     onHomeCellHeightChanged: widgetTidy.restart()
 
+    property bool homeSteady: false
+
+    onHomeRectChanged: {
+        main.homeSteady = false;
+        homeSteadyTimer.restart();
+    }
+
+    Timer {
+        id: homeSteadyTimer
+        interval: 1200
+        running: true
+        onTriggered: {
+            main.homeSteady = true;
+            widgetTidy.restart();
+        }
+    }
+
+    Binding {
+        target: main.homeView ? root.appletsLayout : null
+        property: "relayoutLock"
+        value: true
+        when: target !== null && !main.homeSteady
+    }
+
     Binding {
         target: main.homeView ? root.appletsLayout : null
         property: "cellWidth"
@@ -254,7 +278,7 @@ FocusScope {
 
     function tidyWidgets(): void {
         const layout = root.appletsLayout;
-        if (!main.homeView || !layout || layout.width <= 0 || layout.height <= 0) {
+        if (!main.homeView || !main.homeSteady || !layout || layout.width <= 0 || layout.height <= 0) {
             return;
         }
         main.claimEntry();

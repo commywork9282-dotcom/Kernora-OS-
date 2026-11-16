@@ -152,7 +152,8 @@ grep -Fq 'dpkg-trigger --no-await update-initramfs' "$package_root/debian/kernor
 grep -Fq 'Keys.onReturnPressed: event => event.accepted = true' "$package_root/data/widgets/common/CityPicker.qml" \
   || fail "Enter in the city search closes the widget settings"
 grep -Fq 'property Timer watch' "$package_root/data/widgets/common/WeatherModel.qml" \
-  && grep -Fq 'text: weather.city' "$package_root/data/widgets/weather/contents/ui/main.qml" \
+  && grep -Fq 'city: weather.city' "$package_root/data/widgets/weather/contents/ui/main.qml" \
+  && grep -Fq 'text: face.city' "$package_root/data/widgets/common/WeatherFace.qml" \
   || fail "the weather widget does not show the chosen city"
 grep -Fq 'function commit()' "$package_root/data/widgets/common/CityPicker.qml" \
   && grep -Fq 'picker.commit()' "$package_root/data/widgets/weather/contents/ui/ConfigLocation.qml" \
@@ -1627,7 +1628,7 @@ grep -Fq '"org.kernora.widget.clock#analog", "org.kernora.widget.clock#digital"'
   && grep -Fq '"org.kernora.widget.clock#stacked", "org.kernora.widget.worldclock"' "$data_root/folderview/HomeGrid.js" \
   && grep -Fq '0.965 + 0.033 * Math.cos(12 * angle)' "$data_root/widgets/common/ClockFace.qml" \
   && grep -Fq 'face.dark ? M3.accent1_100 : M3.accent1_500' "$data_root/widgets/common/ClockFace.qml" \
-  && grep -Fq 'data/widgets/common/ClockFace.qml generated/picker/' "$package_root/debian/rules" \
+  && grep -Fq 'data/widgets/common/ClockFace.qml data/widgets/common/WeatherFace.qml' "$package_root/debian/rules" \
   && grep -Fq 'return first.concat(rest).slice(0, 8);' "$data_root/widgets/worldclock/contents/ui/ConfigCity.qml" \
   && grep -Fq '<default>stacked</default>' "$data_root/widgets/clock/contents/config/main.xml" \
   || fail "the clock widgets are not the Google Clock analog, digital, stacked and world clocks"
@@ -1642,6 +1643,22 @@ grep -Fxq 'data/editmode/HomeDrop.qml usr/share/plasma/plasmoids/org.kde.desktop
   && grep -Fq 'scene.waitForShrink(widgetCell);' "$data_root/folderview/picker/WidgetPicker.qml" \
   && grep -Fq 'HomeGrid.reconfigurable.indexOf(pluginName) >= 0' "$data_root/editmode/ConfigOverlay.qml" \
   || fail "widgets do not move on the grid like on a Pixel"
+grep -Fq 'property: "relayoutLock"' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'if (!main.homeView || !main.homeSteady || !layout' "$data_root/folderview/FolderView.qml" \
+  || fail "widgets in the bottom row shrink while the panels load at login"
+grep -Fq '"org.kernora.widget.weather#current",' "$data_root/folderview/HomeGrid.js" \
+  && grep -Fq '"org.kernora.widget.weather#forecast"' "$data_root/folderview/HomeGrid.js" \
+  && grep -Fq 'readonly property real r: side * 0.4293' "$data_root/widgets/common/WeatherFace.qml" \
+  && grep -Fq 'MaterialShapes.shapes.sunny.path' "$data_root/widgets/common/WeatherGlyph.qml" \
+  && grep -Fq '&hourly=temperature_2m,weather_code,is_day&forecast_hours=8' "$data_root/widgets/common/WeatherModel.qml" \
+  && grep -Fq 'data/widgets/common/WeatherFace.qml data/widgets/common/WeatherGlyph.qml generated/picker/' "$package_root/debian/rules" \
+  && grep -Fq '<default>current</default>' "$data_root/widgets/weather/contents/config/main.xml" \
+  || fail "the weather widgets are not Google's current weather and forecast widgets"
+for widget_qml in "$data_root"/widgets/*/contents/ui/main.qml; do
+  if grep -E '^        Layout\.preferred(Width|Height): ' "$widget_qml" | grep -vq 'root.inPanel ?'; then
+    fail "$(basename "$(dirname "$(dirname "$(dirname "$widget_qml")")")") asks for a desktop size, so Plasma resizes it on login"
+  fi
+done
 for widget in battery calendar clock cputemperature glance media note photo weather worldclock; do
   grep -Fq 'LiftHandler {}' "$data_root/widgets/$widget/contents/ui/main.qml" || fail "the $widget widget has no long press"
 done
@@ -2078,7 +2095,8 @@ grep -Fq 'motionScale: Kirigami.Units.longDuration > 1 ? Kirigami.Units.longDura
 grep -Fq 'function dismiss()' "$package_root/data/editmode/ConfigOverlay.qml" \
   && grep -Fq 'if (!appletsLayout.editMode)' "$package_root/data/editmode/ConfigOverlay.qml" \
   || fail "widget toolbars stay open outside edit mode"
-grep -Fq 'readonly property real room:' "$package_root/data/widgets/weather/contents/ui/main.qml" \
+grep -Fq 'elide: Text.ElideRight' "$package_root/data/widgets/common/WeatherFace.qml" \
+  && grep -Fq 'width: Math.max(0, card.tempRight - 255 * card.s - x)' "$package_root/data/widgets/common/WeatherFace.qml" \
   || fail "weather text overflows narrow shapes"
 ! grep -rFq 'filterByScreen: true' "$package_root/data/wallpaper" \
   && grep -Fq 'x >= screen.x && x < screen.x + screen.width' "$package_root/data/wallpaper/org.kernora.starfall/contents/ui/main.qml" \

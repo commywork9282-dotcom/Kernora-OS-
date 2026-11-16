@@ -116,10 +116,10 @@ override_dh_auto_build:
 	cp data/shell/shade/contents/ui/sources/MediaSource.qml data/shell/shade/contents/ui/WavyProgress.qml \
 	  generated/plasmoids/org.kernora.widget.media/contents/ui/
 	install -d generated/explorer
-	cp data/explorer/*.qml data/explorer/*.js data/widgets/common/MaterialShape.qml data/widgets/common/TemperatureCard.qml data/widgets/common/ClockFace.qml generated/explorer/
+	cp data/explorer/*.qml data/explorer/*.js data/widgets/common/MaterialShape.qml data/widgets/common/TemperatureCard.qml data/widgets/common/ClockFace.qml data/widgets/common/WeatherFace.qml data/widgets/common/WeatherGlyph.qml generated/explorer/
 	cp generated/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js generated/explorer/
 	install -d generated/picker
-	cp data/folderview/picker/*.qml data/explorer/WidgetPreview.qml data/widgets/common/MaterialShape.qml data/widgets/common/TemperatureCard.qml data/widgets/common/ClockFace.qml generated/picker/
+	cp data/folderview/picker/*.qml data/explorer/WidgetPreview.qml data/widgets/common/MaterialShape.qml data/widgets/common/TemperatureCard.qml data/widgets/common/ClockFace.qml data/widgets/common/WeatherFace.qml data/widgets/common/WeatherGlyph.qml generated/picker/
 	cp generated/wallpapers/org.kernora.shapes/contents/ui/materialshapes.js generated/picker/
 	set -e; for colour in $(EXTRA_COLOURS); do \
 	  KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-wallpaper-assets generated/wallpapers/org.kernora.shapes/contents/ui; \

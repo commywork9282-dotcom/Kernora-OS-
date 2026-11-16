@@ -78,8 +78,8 @@ PlasmoidItem {
     fullRepresentation: Item {
         LiftHandler {}
 
-        Layout.preferredWidth: 262
-        Layout.preferredHeight: 190
+        Layout.preferredWidth: root.inPanel ? 262 : -1
+        Layout.preferredHeight: root.inPanel ? 190 : -1
         Layout.minimumWidth: 80
         Layout.minimumHeight: 80
         Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity

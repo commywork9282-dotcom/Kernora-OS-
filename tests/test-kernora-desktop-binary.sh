@@ -582,6 +582,10 @@ cmp "$package_root/data/widgets/common/ClockFace.qml" "$temporary_root/desktop/u
   && cmp "$package_root/data/widgets/common/ClockFace.qml" "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/picker/ClockFace.qml" \
   && cmp "$package_root/data/widgets/common/ClockFace.qml" "$temporary_root/desktop/$shell/explorer/ClockFace.qml" \
   || fail "the clock face is missing from the clock widgets or the widget pickers"
+cmp "$package_root/data/widgets/common/WeatherFace.qml" "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.weather/contents/ui/WeatherFace.qml" \
+  && cmp "$package_root/data/widgets/common/WeatherGlyph.qml" "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/picker/WeatherGlyph.qml" \
+  && cmp "$package_root/data/widgets/common/WeatherFace.qml" "$temporary_root/desktop/$shell/explorer/WeatherFace.qml" \
+  || fail "the weather faces are missing from the weather widget or the widget pickers"
 grep -q 'accent1_500' "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.clock/contents/ui/m3/M3.qml" \
   || fail "the colour tokens lack the Android tonal shades"
 cmp "$package_root/data/widgets/common/TemperatureCard.qml" "$temporary_root/desktop/$shell/explorer/TemperatureCard.qml" \

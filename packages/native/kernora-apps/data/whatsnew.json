@@ -46,6 +46,17 @@
           "en": "Widgets sit on the cells of the grid. While you drag or resize one, an outline shows where it will land and widgets in the way move aside to make room. If there is no room, the widget goes back.",
           "ru": "Виджеты стоят ровно по клеткам. Пока вы перетаскиваете или растягиваете виджет, контур показывает, куда он встанет, а мешающие виджеты отодвигаются. Если места нет, виджет вернётся обратно."
         }
+      },
+      {
+        "icon": "weather-few-clouds",
+        "title": {
+          "en": "Weather like Google Weather",
+          "ru": "Погода как в Google"
+        },
+        "text": {
+          "en": "The Weather app in the widget picker has Current weather and Forecasted weather. The forecast shows how warm it feels, the next hours and the coming days, and the more room you give it, the more days it shows.",
+          "ru": "В разделе «Погода» списка виджетов теперь «Текущая погода» и «Прогноз погоды». Прогноз показывает, как ощущается температура, ближайшие часы и следующие дни, а чем больше виджет, тем больше дней в нём видно."
+        }
       }
     ]
   },

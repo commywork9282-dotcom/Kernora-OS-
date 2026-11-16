@@ -27,6 +27,14 @@ kernora-desktop (1.4.81) UNRELEASED; urgency=medium
     the picker get the same outline and make room too. The picker drag
     starts only after the sheet is out of the way, so drops no longer get
     lost on it.
+  * Widgets keep their size and place at login: the desktop waits until
+    the panels have settled before it restores the layout, so widgets in
+    the bottom row are no longer squeezed to one row, and Kernora widgets
+    no longer ask Plasma for a desktop size.
+  * The weather widgets are Google Weather's: Current weather on the
+    diagonal capsule or a pill, and Forecasted weather with the city,
+    feels like, high and low, an hourly strip and the coming days, with
+    Google's sun, cloud, rain and moon drawings in the theme colours.
     Every widget sits on whole cells, KDE ones too, and the pencil shows
     only on widgets that have settings.
 

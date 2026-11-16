@@ -17,17 +17,33 @@ var apps = [
     { id: "notes", icon: "org.kernora.notes", plugins: ["org.kernora.widget.note"] },
     { id: "photos", icon: "org.kernora.photos", plugins: ["org.kernora.widget.photo"] },
     { id: "taskmanager", icon: "org.kernora.taskmanager", plugins: ["org.kernora.widget.cputemperature"] },
-    { id: "weather", icon: "org.kernora.weather", plugins: ["org.kernora.widget.weather"] }
+    { id: "weather", icon: "org.kernora.weather", plugins: ["org.kernora.widget.weather#current",
+                                                           "org.kernora.widget.weather#forecast"] }
 ];
 
 var suggestions = [
-    { id: "essentials", plugins: ["org.kernora.widget.clock#analog", "org.kernora.widget.weather", "org.kernora.widget.glance",
+    { id: "essentials", plugins: ["org.kernora.widget.clock#analog", "org.kernora.widget.weather#current", "org.kernora.widget.glance",
                                   "org.kernora.widget.calendar", "org.kernora.widget.battery"] },
     { id: "others", plugins: ["org.kernora.widget.media", "org.kernora.widget.note", "org.kernora.widget.photo"] }
 ];
 
 var reconfigurable = ["org.kernora.widget.cputemperature", "org.kernora.widget.glance", "org.kernora.widget.photo",
                       "org.kernora.widget.weather", "org.kernora.widget.worldclock"];
+
+var minimumSpans = {
+    "org.kernora.widget.battery": [2, 2],
+    "org.kernora.widget.calendar": [2, 3],
+    "org.kernora.widget.cputemperature": [2, 3],
+    "org.kernora.widget.glance": [2, 1],
+    "org.kernora.widget.media": [2, 2],
+    "org.kernora.widget.note": [2, 2],
+    "org.kernora.widget.photo": [1, 2],
+    "org.kernora.widget.weather": [2, 2]
+};
+
+function minimumSpan(entry) {
+    return minimumSpans[plugin(entry)] || [1, 1];
+}
 
 var spans = {
     "org.kernora.widget.battery": [2, 2],
@@ -41,7 +57,9 @@ var spans = {
     "org.kernora.widget.media": [3, 2],
     "org.kernora.widget.note": [2, 2],
     "org.kernora.widget.photo": [2, 2],
-    "org.kernora.widget.weather": [2, 2],
+    "org.kernora.widget.weather": [2, 3],
+    "org.kernora.widget.weather#current": [2, 3],
+    "org.kernora.widget.weather#forecast": [3, 3],
     "org.kernora.widget.worldclock": [2, 2]
 };
 

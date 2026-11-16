@@ -49,8 +49,8 @@ PlasmoidItem {
     fullRepresentation: Item {
         LiftHandler {}
 
-        Layout.preferredWidth: root.style === "digital" ? 262 : root.style === "stacked" ? 196 : 270
-        Layout.preferredHeight: root.style === "digital" ? 190 : 270
+        Layout.preferredWidth: root.inPanel ? (root.style === "digital" ? 262 : root.style === "stacked" ? 196 : 270) : -1
+        Layout.preferredHeight: root.inPanel ? (root.style === "digital" ? 190 : 270) : -1
         Layout.minimumWidth: 80
         Layout.minimumHeight: 80
         Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity

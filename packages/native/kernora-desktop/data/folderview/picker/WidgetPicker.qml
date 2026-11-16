@@ -61,7 +61,9 @@ PlasmaCore.Dialog {
         readonly property var variantNames: ({
             "org.kernora.widget.clock#analog": i18nd("kernora-ui", "Analog clock"),
             "org.kernora.widget.clock#digital": i18nd("kernora-ui", "Digital clock"),
-            "org.kernora.widget.clock#stacked": i18nd("kernora-ui", "Stacked clock")
+            "org.kernora.widget.clock#stacked": i18nd("kernora-ui", "Stacked clock"),
+            "org.kernora.widget.weather#current": i18nd("kernora-ui", "Current weather"),
+            "org.kernora.widget.weather#forecast": i18nd("kernora-ui", "Forecasted weather")
         })
         readonly property var categoryNames: ({
             "essentials": i18nd("kernora-ui", "Essentials"),

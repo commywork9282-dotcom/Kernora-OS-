@@ -7,8 +7,8 @@
             }
         ],
         "Category": "Environment and Weather",
-        "Description": "The weather where you are, on a shape that changes with the sky",
-        "Description[ru]": "Погода в вашем городе на фигуре, которая меняется вместе с небом",
+        "Description": "The current weather or a forecast for your city",
+        "Description[ru]": "Текущая погода или прогноз для вашего города",
         "Icon": "weather-few-clouds",
         "Id": "org.kernora.widget.weather",
         "License": "GPL-2.0+",

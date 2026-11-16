@@ -66,3 +66,18 @@ msgstr "Гроза"
 
 msgid "Cloudy"
 msgstr "Облачно"
+
+msgid "Mostly sunny"
+msgstr "Преимущественно солнечно"
+
+msgid "Mostly clear"
+msgstr "Преимущественно ясно"
+
+msgid "Now"
+msgstr "Сейчас"
+
+msgid "Feels like %1"
+msgstr "Ощущается как %1"
+
+msgid "Source: Open-Meteo"
+msgstr "Источник: Open-Meteo"

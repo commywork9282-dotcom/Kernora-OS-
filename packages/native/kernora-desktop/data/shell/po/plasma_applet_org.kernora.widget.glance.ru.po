@@ -66,3 +66,9 @@ msgstr "Гроза"
 
 msgid "Cloudy"
 msgstr "Облачно"
+
+msgid "Mostly sunny"
+msgstr "Преимущественно солнечно"
+
+msgid "Mostly clear"
+msgstr "Преимущественно ясно"

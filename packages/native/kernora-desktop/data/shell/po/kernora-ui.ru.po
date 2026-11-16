@@ -201,6 +201,24 @@ msgstr "Вертикальные часы"
 msgid "London"
 msgstr "Лондон"
 
+msgid "Current weather"
+msgstr "Текущая погода"
+
+msgid "Forecasted weather"
+msgstr "Прогноз погоды"
+
+msgid "Mostly sunny"
+msgstr "Преимущественно солнечно"
+
+msgid "Now"
+msgstr "Сейчас"
+
+msgid "Feels like %1"
+msgstr "Ощущается как %1"
+
+msgid "Source: Open-Meteo"
+msgstr "Источник: Open-Meteo"
+
 msgid "Essentials"
 msgstr "Основное"
 

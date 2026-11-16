@@ -48,8 +48,8 @@ PlasmoidItem {
     fullRepresentation: WidgetSurface {
         id: card
         LiftHandler {}
-        Layout.preferredWidth: 300
-        Layout.preferredHeight: 310
+        Layout.preferredWidth: root.inPanel ? 300 : -1
+        Layout.preferredHeight: root.inPanel ? 310 : -1
         Layout.minimumWidth: 220
         Layout.minimumHeight: 230
         Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity

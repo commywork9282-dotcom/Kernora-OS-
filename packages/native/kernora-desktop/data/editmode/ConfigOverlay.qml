@@ -6,6 +6,7 @@
 
 import QtQuick
 import QtQuick.Window
+import QtQuick.Shapes
 import org.kde.plasma.plasmoid
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.private.containmentlayoutmanager as ContainmentLayoutManager
@@ -248,6 +249,7 @@ ContainmentLayoutManager.ConfigOverlay {
     property var resizeCells: null
     property int runningH: 0
     property int runningV: 0
+    property size minimumSpan: Qt.size(1, 1)
 
     readonly property int edgeLeft: 1
     readonly property int edgeTop: 2
@@ -282,6 +284,8 @@ ContainmentLayoutManager.ConfigOverlay {
         overlay.resizeCells = overlay.cellsOf(item);
         overlay.runningH = 0;
         overlay.runningV = 0;
+        const minimum = HomeGrid.minimumSpan(overlay.pluginName);
+        overlay.minimumSpan = Qt.size(minimum[0], minimum[1]);
         homeDrop.start(item, overlay.resizeCells.w, overlay.resizeCells.h);
         layout.releaseSpace(item);
     }
@@ -327,8 +331,10 @@ ContainmentLayoutManager.ConfigOverlay {
         const cells = overlay.resizeCells;
         const columns = homeDrop.columns;
         const rows = homeDrop.rows;
-        const h = GridReorder.bound(cells.x, cells.x + cells.w, left, right, hInc, 1, columns, columns);
-        const v = GridReorder.bound(cells.y, cells.y + cells.h, top, bottom, vInc, 1, rows, rows);
+        const h = GridReorder.bound(cells.x, cells.x + cells.w, left, right, hInc,
+                                    Math.min(overlay.minimumSpan.width, cells.w), columns, columns);
+        const v = GridReorder.bound(cells.y, cells.y + cells.h, top, bottom, vInc,
+                                    Math.min(overlay.minimumSpan.height, cells.h), rows, rows);
         if (h.delta === 0 && v.delta === 0) {
             return;
         }
@@ -525,11 +531,28 @@ ContainmentLayoutManager.ConfigOverlay {
             pressPoint: Qt.point(reconfigureMouse.mouseX, reconfigureMouse.mouseY)
         }
 
-        MIcon {
+        Item {
             anchors.centerIn: parent
-            size: 24
-            source: "document-edit"
-            color: overlay.onAccent
+            width: 24
+            height: 24
+
+            Shape {
+                y: 24
+                width: 960
+                height: 960
+                scale: 0.025
+                transformOrigin: Item.TopLeft
+                preferredRendererType: Shape.CurveRenderer
+
+                ShapePath {
+                    strokeWidth: -1
+                    strokeColor: "transparent"
+                    fillColor: overlay.onAccent
+                    PathSvg {
+                        path: "M200-200h57l391-391-57-57-391 391v57Zm-40 80q-17 0-28.5-11.5T120-160v-97q0-16 6-30.5t17-25.5l505-504q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L313-143q-11 11-25.5 17t-30.5 6h-97Zm600-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"
+                    }
+                }
+            }
         }
 
         MouseArea {

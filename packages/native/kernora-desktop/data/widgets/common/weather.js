@@ -4,7 +4,10 @@ function kind(code) {
     if (code === 0) {
         return "clear";
     }
-    if (code === 1 || code === 2) {
+    if (code === 1) {
+        return "mostly";
+    }
+    if (code === 2) {
         return "partly";
     }
     if (code === 3) {
@@ -29,6 +32,7 @@ function icon(kind, day) {
     switch (kind) {
     case "clear":
         return day ? "weather-clear" : "weather-clear-night";
+    case "mostly":
     case "partly":
         return day ? "weather-few-clouds" : "weather-few-clouds-night";
     case "fog":
@@ -48,6 +52,7 @@ function shape(kind) {
     switch (kind) {
     case "clear":
         return "sunny";
+    case "mostly":
     case "partly":
         return "cookie12";
     case "fog":

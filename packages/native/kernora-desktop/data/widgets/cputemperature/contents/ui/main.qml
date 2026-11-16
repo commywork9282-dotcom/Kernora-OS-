@@ -56,8 +56,8 @@ PlasmoidItem {
     fullRepresentation: TemperatureCard {
         LiftHandler {}
 
-        Layout.preferredWidth: 280
-        Layout.preferredHeight: 256
+        Layout.preferredWidth: root.inPanel ? 280 : -1
+        Layout.preferredHeight: root.inPanel ? 256 : -1
         Layout.minimumWidth: 240
         Layout.minimumHeight: 220
         Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity

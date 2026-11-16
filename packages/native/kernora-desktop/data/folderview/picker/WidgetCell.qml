@@ -34,7 +34,7 @@ Item {
     }
 
     readonly property real previewScale: 0.6
-    readonly property bool clock: kind.indexOf("clock") >= 0
+    readonly property bool clock: kind.indexOf("clock") >= 0 || kind.indexOf("weather") === 0
     readonly property real cardWidth: Math.round((span[0] * cellWidth - 16) * previewScale)
     readonly property real cardHeight: Math.round((span[1] * cellHeight - 16) * previewScale)
 
@@ -59,7 +59,7 @@ Item {
                 width: cell.cardWidth
                 height: cell.cardHeight
                 radius: 28 * cell.previewScale
-                color: cell.clock || cell.kind === "glance" || cell.kind === "weather" || cell.kind === "photo"
+                color: cell.clock || cell.kind === "glance" || cell.kind.indexOf("weather") === 0 || cell.kind === "photo"
                     ? "transparent" : M3.surfaceContainer
                 clip: true
 
