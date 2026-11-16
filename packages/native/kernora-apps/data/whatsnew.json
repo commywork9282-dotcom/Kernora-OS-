@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-11-16-1",
+    "date": "2026-11-16",
+    "items": [
+      {
+        "icon": "memory",
+        "title": {
+          "en": "More room in memory",
+          "ru": "Больше места в памяти"
+        },
+        "text": {
+          "en": "Kernora now compresses what sits idle in memory, the way Android and ChromeOS do. On a computer with 4 GB of RAM, almost twice as many apps and tabs fit before things slow down. If memory still runs out, only the process that ate it is closed, like a single browser tab, and the system no longer freezes.",
+          "ru": "Kernora теперь сжимает то, что без дела лежит в памяти, как это делают Android и ChromeOS. На компьютере с 4 ГБ памяти до первых тормозов помещается почти вдвое больше программ и вкладок. Если память всё-таки кончится, закроется только процесс, который её съел, например одна вкладка браузера, а система не зависнет."
+        }
+      },
+      {
+        "icon": "speedometer",
+        "title": {
+          "en": "Smoother on older computers",
+          "ru": "Плавнее на старых компьютерах"
+        },
+        "text": {
+          "en": "The desktop answers faster while the computer is busy. A hard drive or memory card no longer makes everything wait while something copies or installs, and apps opened right after login start sooner.",
+          "ru": "Рабочий стол быстрее откликается, когда компьютер занят. Жёсткий диск или карта памяти больше не тормозят всю систему во время копирования и установки, а программы, открытые сразу после входа, запускаются быстрее."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-15-1",
     "date": "2026-11-15",
     "items": [

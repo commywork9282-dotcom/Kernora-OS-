@@ -1,4 +1,4 @@
-kernora-base=1.6.3
+kernora-base=1.6.4
 linux-image-amd64=6.12.111-1
 live-boot=1:20250815~deb13u1
 systemd-sysv=257.13-1~deb13u1
@@ -22,9 +22,9 @@ kwin-x11
 xserver-xorg
 libpam-fprintd
 
-kernora-desktop=1.4.81
-kernora-calamares=1.4.81
-kernora-apps=1.1.93
+kernora-desktop=1.4.82
+kernora-calamares=1.4.82
+kernora-apps=1.1.94
 kernora-quickshare=1.0.2
 kernora-wallpapers=1.0
 fonts-google-sans=1.0

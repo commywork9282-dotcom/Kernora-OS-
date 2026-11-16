@@ -13,6 +13,7 @@ Depends:
  breeze-gtk-theme,
  fonts-roboto-unhinted,
  kwin-common,
+ libcap2-bin,
  locales,
  python3,
  plasma-desktop,

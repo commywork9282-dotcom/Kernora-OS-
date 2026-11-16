@@ -1,3 +1,26 @@
+kernora-base (1.6.4) UNRELEASED; urgency=medium
+
+  * Older computers keep up for longer when memory runs short:
+    - compressed swap in RAM (zram, zstd, up to the size of the RAM,
+      at most 8 GB) is used before the swap on disk, like on Android
+      and ChromeOS;
+    - memory settings made for zram: swappiness 180, no swap
+      read-ahead, and earlier background reclaim;
+    - the kernel protects the last second of the working set
+      (MGLRU min_ttl_ms 1000). When memory really runs out, it closes
+      the process that ate it instead of freezing the whole system;
+    - only that process is closed, not the whole app it runs in, so a
+      browser loses one tab, not every window.
+  * Hard drives and memory cards (eMMC, SD) use the BFQ disk scheduler,
+    so the desktop stays responsive while something copies or
+    installs. SSDs and NVMe keep their schedulers.
+  * Writes are flushed in smaller steps (64 MB in the background,
+    256 MB at most). Copying to a USB stick no longer stalls the
+    system at the end. Folder caches are kept longer.
+  * The system journal stays under 256 MB.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 16 Nov 2026 12:00:00 -0800
+
 kernora-base (1.6.3) UNRELEASED; urgency=medium
 
   * Bring lspci (pciutils), lsusb (usbutils) and iw, so "what wifi card is

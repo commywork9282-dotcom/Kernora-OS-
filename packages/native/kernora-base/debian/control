@@ -23,6 +23,7 @@ Depends:
  openssh-client,
  pciutils,
  rsync,
+ systemd-zram-generator,
  tree,
  unzip,
  usbutils,
@@ -34,6 +35,12 @@ Description: Kernora OS base system and hardware defaults
  that keep it updated. It also brings everyday command-line tools: git,
  curl, wget, htop, fastfetch, archivers, SSH, and lspci, lsusb and iw
  for checking hardware.
+ .
+ It sets up memory and disk defaults that help older computers: a
+ compressed swap in RAM (zram) with matching memory settings, a kernel
+ that closes the process that ran out of memory instead of freezing,
+ the BFQ disk scheduler for hard drives and memory cards, and a size
+ limit for the system journal.
  .
  It also provides optional hardware workarounds, including a NetworkManager
  power-saving example for the Realtek RTL8852CE wireless adapter. Examples

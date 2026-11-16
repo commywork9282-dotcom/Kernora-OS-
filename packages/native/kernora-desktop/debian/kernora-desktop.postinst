@@ -38,6 +38,9 @@ if [ "$1" = configure ]; then
 fi
 
 if [ "$1" = configure ] || [ "$1" = triggered ]; then
+    if [ -x /usr/bin/kwin_wayland ] && command -v setcap >/dev/null 2>&1; then
+        setcap cap_sys_nice=ep /usr/bin/kwin_wayland || true
+    fi
     /usr/libexec/kernora-efi-fallback || true
 fi
 

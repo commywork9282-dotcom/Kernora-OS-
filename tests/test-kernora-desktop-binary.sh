@@ -221,7 +221,7 @@ fi
 grep -Fq 'pragma Singleton' \
   "$temporary_root/desktop/usr/lib/x86_64-linux-gnu/qt6/qml/org/kernora/desktop/impl/M3.qml" \
   || fail "Qt Quick style carries no design-token singleton"
-for field in fonts-roboto-unhinted plasma-workspace qt-style-kvantum kwin-common \
+for field in fonts-roboto-unhinted plasma-workspace qt-style-kvantum kwin-common libcap2-bin \
   qml6-module-org-kde-desktop qml6-module-qtquick-shapes kernora-wallpapers fonts-google-sans kwin-effect-rounded-corners; do
   dpkg-deb --field "$desktop_deb" Depends | grep -Fq "$field" \
     || fail "desktop package does not depend on $field"
@@ -262,6 +262,9 @@ dpkg-deb --field "$installer_deb" Depends | grep -Fq pkexec \
   || fail "installer package does not depend on pkexec, which starts Calamares"
 grep -Fxq 'interest-noawait /usr/lib/shim' <<<"$(dpkg-deb -I "$desktop_deb" triggers)" \
   || fail "desktop package does not refresh the EFI fallback after shim updates"
+grep -Fxq 'interest-noawait /usr/bin/kwin_wayland' <<<"$(dpkg-deb -I "$desktop_deb" triggers)" \
+  && grep -Fq 'setcap cap_sys_nice=ep /usr/bin/kwin_wayland' <<<"$(dpkg-deb -I "$desktop_deb" postinst)" \
+  || fail "desktop package does not give KWin realtime scheduling back after kwin updates"
 
 for path in \
   etc/alacritty/alacritty.toml \

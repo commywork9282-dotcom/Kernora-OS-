@@ -26,7 +26,7 @@ done
 [[ "$(dpkg-deb --field "$deb" Section)" == "admin" ]] \
   || fail "wrong package section"
 depends=$(dpkg-deb --field "$deb" Depends)
-[[ "$depends" == "base-files (= 13.8+deb13u7+kernora2), kernora-archive (>= 1.0), 7zip, bash-completion, curl, fastfetch, git, htop, iw, lsof, man-db, openssh-client, pciutils, rsync, tree, unzip, usbutils, wget, zip" ]] \
+[[ "$depends" == "base-files (= 13.8+deb13u7+kernora2), kernora-archive (>= 1.0), 7zip, bash-completion, curl, fastfetch, git, htop, iw, lsof, man-db, openssh-client, pciutils, rsync, systemd-zram-generator, tree, unzip, usbutils, wget, zip" ]] \
   || fail "wrong binary dependency: $depends"
 essential=$(dpkg-deb --field "$deb" Essential)
 [[ "$essential" == "no" || -z "$essential" ]] \
@@ -42,6 +42,12 @@ if find "$temporary_root/root" -type f \
   ! -path "$temporary_root/root/usr/share/kernora/fastfetch/kernora-small.txt" \
   ! -path "$temporary_root/root/etc/xdg/fastfetch/config.jsonc" \
   ! -path "$temporary_root/root/usr/share/fastfetch/presets/kernora-small.jsonc" \
+  ! -path "$temporary_root/root/usr/lib/systemd/zram-generator.conf.d/kernora.conf" \
+  ! -path "$temporary_root/root/usr/lib/sysctl.d/70-kernora.conf" \
+  ! -path "$temporary_root/root/usr/lib/tmpfiles.d/kernora-memory.conf" \
+  ! -path "$temporary_root/root/usr/lib/udev/rules.d/60-kernora-ioscheduler.rules" \
+  ! -path "$temporary_root/root/usr/lib/systemd/journald.conf.d/kernora.conf" \
+  ! -path "$temporary_root/root/usr/lib/systemd/user.conf.d/kernora.conf" \
   -print -quit | grep -q .; then
   fail "base package contains an unexpected file"
 fi
@@ -58,6 +64,17 @@ done
 cmp "$package_root/data/fastfetch/config.jsonc" "$temporary_root/root/etc/xdg/fastfetch/config.jsonc" \
   && cmp "$package_root/data/fastfetch/kernora-small.jsonc" "$temporary_root/root/usr/share/fastfetch/presets/kernora-small.jsonc" \
   || fail "fastfetch config is missing or changed during packaging"
+
+for pair in 'zram/kernora.conf usr/lib/systemd/zram-generator.conf.d/kernora.conf' \
+  'sysctl/70-kernora.conf usr/lib/sysctl.d/70-kernora.conf' \
+  'tmpfiles/kernora-memory.conf usr/lib/tmpfiles.d/kernora-memory.conf' \
+  'udev/60-kernora-ioscheduler.rules usr/lib/udev/rules.d/60-kernora-ioscheduler.rules' \
+  'journald/kernora.conf usr/lib/systemd/journald.conf.d/kernora.conf' \
+  'systemd/kernora.conf usr/lib/systemd/user.conf.d/kernora.conf'; do
+  read -r source target <<< "$pair"
+  cmp "$package_root/data/$source" "$temporary_root/root/$target" \
+    || fail "$target is missing or changed during packaging"
+done
 
 dpkg-deb --control "$deb" "$temporary_root/control"
 grep -Fxq '/etc/xdg/fastfetch/config.jsonc' "$temporary_root/control/conffiles" \

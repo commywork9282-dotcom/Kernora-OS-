@@ -1,2 +1,3 @@
 interest-noawait /usr/lib/grub/x86_64-efi-signed
 interest-noawait /usr/lib/shim
+interest-noawait /usr/bin/kwin_wayland

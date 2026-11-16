@@ -3,3 +3,9 @@ data/fastfetch/kernora.txt usr/share/kernora/fastfetch
 data/fastfetch/kernora-small.txt usr/share/kernora/fastfetch
 data/fastfetch/config.jsonc etc/xdg/fastfetch
 data/fastfetch/kernora-small.jsonc usr/share/fastfetch/presets
+data/zram/kernora.conf usr/lib/systemd/zram-generator.conf.d
+data/sysctl/70-kernora.conf usr/lib/sysctl.d
+data/tmpfiles/kernora-memory.conf usr/lib/tmpfiles.d
+data/udev/60-kernora-ioscheduler.rules usr/lib/udev/rules.d
+data/journald/kernora.conf usr/lib/systemd/journald.conf.d
+data/systemd/kernora.conf usr/lib/systemd/user.conf.d

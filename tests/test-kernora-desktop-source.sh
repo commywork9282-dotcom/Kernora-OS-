@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.81" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.82" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -146,6 +146,15 @@ grep -Fxq 'Theme=org.kernora.desktop' "$defaults" \
 grep -Fq 'loglevel=3' "$package_root/data/grub/kernora.cfg" \
   && grep -Fq 'update-grub' "$package_root/debian/kernora-desktop.postinst" \
   || fail "installed systems print kernel errors over the boot splash"
+grep -Fq 'GRUB_CMDLINE_LINUX_DEFAULT="$GRUB_CMDLINE_LINUX_DEFAULT preempt=full"' "$package_root/data/grub/kernora.cfg" \
+  && grep -Fq '*" preempt="*) ;;' "$package_root/data/grub/kernora.cfg" \
+  || fail "the kernel does not use full preemption for a responsive desktop"
+grep -Fq 'setcap cap_sys_nice=ep /usr/bin/kwin_wayland || true' "$package_root/debian/kernora-desktop.postinst" \
+  && grep -Fxq 'interest-noawait /usr/bin/kwin_wayland' "$package_root/debian/kernora-desktop.triggers" \
+  && grep -Fxq ' libcap2-bin,' "$package_root/debian/control" \
+  || fail "KWin cannot use realtime scheduling, or loses it when kwin updates"
+cfg_test=$(GRUB_CMDLINE_LINUX_DEFAULT="quiet preempt=voluntary" bash -c '. "$1" >/dev/null 2>&1; printf %s "$GRUB_CMDLINE_LINUX_DEFAULT"' _ "$package_root/data/grub/kernora.cfg")
+[[ "$cfg_test" != *"preempt=full"* ]] || fail "a preempt= chosen by the user is overridden"
 grep -Fq 'dpkg-trigger --no-await update-initramfs' "$package_root/debian/kernora-desktop.postinst" \
   && grep -Fq '/var/lib/kernora/plymouth-theme' "$package_root/debian/kernora-desktop.postrm" \
   || fail "a changed boot splash does not reach the initramfs on upgrade"

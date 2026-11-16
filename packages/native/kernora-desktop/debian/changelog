@@ -1,3 +1,14 @@
+kernora-desktop (1.4.82) UNRELEASED; urgency=medium
+
+  * The kernel runs with full preemption (preempt=full), so the pointer,
+    windows and animations answer right away even while the processor
+    is busy. A preempt= already set in GRUB is kept.
+  * KWin may use realtime scheduling (CAP_SYS_NICE on kwin_wayland,
+    which the Debian package leaves out), so frames keep coming on time
+    under load. The capability is set again whenever kwin is updated.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 16 Nov 2026 12:00:00 -0800
+
 kernora-desktop (1.4.81) UNRELEASED; urgency=medium
 
   * Touch and hold an empty spot on the desktop and the Android home

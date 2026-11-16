@@ -97,6 +97,8 @@ grep -qx 'org.freedesktop.impl.portal.FileChooser=kernora;kde;' "$temporary_root
   || fail "the portal does not use the Kernora file chooser under Plasma"
 grep -qx 'default=kde' "$temporary_root/etc/xdg-desktop-portal/kde-portals.conf" \
   || fail "the other portals no longer come from KDE"
+grep -qx 'org.freedesktop.impl.portal.Lockdown=none' "$temporary_root/etc/xdg-desktop-portal/kde-portals.conf" \
+  || fail "the portal waits for the GTK Lockdown portal at login"
 grep -qx 'export PLASMA_INTEGRATION_USE_PORTAL=1' "$temporary_root/etc/xdg/plasma-workspace/env/kernora-file-dialogs.sh" \
   || fail "Qt programs do not use the portal for their file dialogs"
 grep -qx 'wmclass=org.kernora.filechooser' "$temporary_root/etc/xdg/kwinrulesrc" \

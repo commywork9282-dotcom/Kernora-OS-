@@ -1,3 +1,14 @@
+kernora-apps (1.1.94) UNRELEASED; urgency=medium
+
+  * Portals are ready seconds sooner after login: the Lockdown portal,
+    which only GNOME uses, is turned off, so xdg-desktop-portal no
+    longer waits for the GTK portal before it starts the KDE one. Apps
+    opened right after login no longer hang on their first file dialog
+    or theme lookup.
+  * What's new: Kernora on older computers.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 16 Nov 2026 12:00:00 -0800
+
 kernora-apps (1.1.93) UNRELEASED; urgency=medium
 
   * Settings can open one page full screen, like an Android settings
