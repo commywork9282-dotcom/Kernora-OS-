@@ -1,3 +1,10 @@
+kernora-apps (1.1.95) UNRELEASED; urgency=medium
+
+  * What's new: Stopwatch and Timer starter widgets, photo shapes and
+    the widget sheet on long press.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 16 Nov 2026 21:00:00 -0800
+
 kernora-apps (1.1.94) UNRELEASED; urgency=medium
 
   * Portals are ready seconds sooner after login: the Lockdown portal,

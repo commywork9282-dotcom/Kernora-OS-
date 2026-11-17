@@ -399,6 +399,68 @@ FocusScope {
         }
     }
 
+    Loader {
+        id: appWidgets
+        active: false
+        sourceComponent: Picker.AppWidgets {
+            onApplied: entry => main.applyVariant(entry)
+            onAdding: entry => {
+                main.pendingAdd = HomeGrid.plugin(entry);
+                main.pendingEntry = entry;
+            }
+        }
+    }
+
+    property QtObject variantTarget: null
+
+    function openAppWidgets(container: Item): void {
+        if (!main.homeView || !container || !container.applet || !container.applet.plasmoid) {
+            return;
+        }
+        const plasmoid = container.applet.plasmoid;
+        const name = String(plasmoid.pluginName);
+        const app = HomeGrid.appOf(name);
+        if (!app || app.plugins.length < 2) {
+            return;
+        }
+        appWidgets.active = true;
+        const sheet = appWidgets.item;
+        if (!sheet) {
+            return;
+        }
+        main.variantTarget = plasmoid;
+        sheet.area = main.homeArea();
+        sheet.containment = Plasmoid;
+        sheet.cellWidth = main.homeCellWidth;
+        sheet.cellHeight = main.homeCellHeight;
+        sheet.app = app.id;
+        sheet.entries = app.plugins;
+        sheet.current = HomeGrid.entryOf(name, plasmoid.configuration);
+        const corner = container.mapToGlobal(0, 0);
+        sheet.avoid = Qt.rect(corner.x, corner.y, container.width, container.height);
+        sheet.open();
+    }
+
+    function closeAppWidgets(): void {
+        if (appWidgets.item) {
+            appWidgets.item.close();
+        }
+    }
+
+    function applyVariant(entry: string): void {
+        const plasmoid = main.variantTarget;
+        if (!plasmoid || String(plasmoid.pluginName) !== HomeGrid.plugin(entry)) {
+            return;
+        }
+        const config = HomeGrid.config(entry);
+        for (const key in config) {
+            plasmoid.configuration[key] = config[key];
+        }
+        if (appWidgets.item) {
+            appWidgets.item.current = entry;
+        }
+    }
+
     function openWidgetPicker(): void {
         if (!widgetPicker.item) {
             return;

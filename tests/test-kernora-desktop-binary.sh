@@ -563,7 +563,7 @@ grep -Fxq 'X-KDE-Shortcuts=Meta+Ctrl+Alt+Shift+Space' "$temporary_root/desktop/u
 grep -Fq 'addWidget("org.kernora.clipboard", "Meta+.")' \
   "$temporary_root/desktop/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js" \
   || fail "the Kernora emoji tab does not open with Meta+."
-for widget in clock worldclock glance weather battery cputemperature calendar media photo note; do
+for widget in clock worldclock stopwatch timer glance weather battery cputemperature calendar media photo note; do
   widget_root="$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.$widget"
   for path in metadata.json contents/ui/main.qml contents/ui/m3/M3.qml contents/ui/materialshapes.js \
       contents/ui/MaterialShape.qml contents/config/main.xml; do
@@ -589,6 +589,20 @@ cmp "$package_root/data/widgets/common/WeatherFace.qml" "$temporary_root/desktop
   && cmp "$package_root/data/widgets/common/WeatherGlyph.qml" "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/picker/WeatherGlyph.qml" \
   && cmp "$package_root/data/widgets/common/WeatherFace.qml" "$temporary_root/desktop/$shell/explorer/WeatherFace.qml" \
   || fail "the weather faces are missing from the weather widget or the widget pickers"
+for face in StopwatchFace TimerFace SymbolIcon ShapedPhoto; do
+  cmp "$package_root/data/widgets/common/$face.qml" "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/picker/$face.qml" \
+    && cmp "$package_root/data/widgets/common/$face.qml" "$temporary_root/desktop/$shell/explorer/$face.qml" \
+    || fail "$face is missing from the widget pickers"
+done
+for file in AppWidgets WidgetNames; do
+  [[ -s "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/picker/$file.qml" ]] \
+    || fail "the widget picker lacks $file.qml"
+done
+[[ -s "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.timer/contents/ui/TimerKeypad.qml" ]] \
+  && grep -Fq 'Sound=alarm-clock-elapsed' "$temporary_root/desktop/usr/share/knotifications6/kernora-clock.notifyrc" \
+  && [[ -s "$temporary_root/desktop/usr/share/locale/ru/LC_MESSAGES/plasma_applet_org.kernora.widget.timer.mo" ]] \
+  && [[ -s "$temporary_root/desktop/usr/share/locale/ru/LC_MESSAGES/plasma_applet_org.kernora.widget.stopwatch.mo" ]] \
+  || fail "the timer widget lacks its keypad, alarm or translation"
 grep -q 'accent1_500' "$temporary_root/desktop/usr/share/plasma/plasmoids/org.kernora.widget.clock/contents/ui/m3/M3.qml" \
   || fail "the colour tokens lack the Android tonal shades"
 cmp "$package_root/data/widgets/common/TemperatureCard.qml" "$temporary_root/desktop/$shell/explorer/TemperatureCard.qml" \

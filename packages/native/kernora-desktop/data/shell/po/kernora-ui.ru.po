@@ -249,3 +249,34 @@ msgstr "Добавить"
 
 msgid "Add %1 widget"
 msgstr "Добавить виджет «%1»"
+
+msgid "Lap %1"
+msgstr "Круг %1"
+
+msgid "Timers"
+msgstr "Таймеры"
+
+msgctxt "@label timer length"
+msgid "%1m"
+msgstr "%1 мин"
+
+msgid "Cookie"
+msgstr "Печенье"
+
+msgid "Star"
+msgstr "Звезда"
+
+msgid "Flower"
+msgstr "Цветок"
+
+msgid "Circle"
+msgstr "Круг"
+
+msgid "Square"
+msgstr "Квадрат"
+
+msgid "Pill"
+msgstr "Таблетка"
+
+msgid "Full size"
+msgstr "Во весь размер"

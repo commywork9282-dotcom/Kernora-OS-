@@ -1,0 +1,15 @@
+[Global]
+IconName=org.kernora.clock
+Name=Clock
+Name[ru]=Часы
+Comment=Timers and stopwatch
+Comment[ru]=Таймеры и секундомер
+
+[Event/timerFinished]
+Name=Timer finished
+Name[ru]=Таймер закончился
+Comment=A timer from the Timer starter widget ran out
+Comment[ru]=Закончилось время на таймере из виджета
+Action=Popup|Sound
+Sound=alarm-clock-elapsed
+Urgency=High

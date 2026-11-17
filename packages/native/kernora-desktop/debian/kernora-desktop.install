@@ -46,6 +46,7 @@ data/plasma-env/kernora-qtquick-style.sh etc/xdg/plasma-workspace/env
 data/xdg-kwinrc/kwinrc etc/xdg
 data/xdg-klipperrc/klipperrc etc/xdg
 data/knotifications/kernora-devices.notifyrc usr/share/knotifications6
+data/knotifications/kernora-clock.notifyrc usr/share/knotifications6
 data/skel-config/kglobalshortcutsrc etc/skel/.config
 data/skel-config/gtk-3.0 etc/skel/.config
 data/skel-config/gtk-4.0 etc/skel/.config

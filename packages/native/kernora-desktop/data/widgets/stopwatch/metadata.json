@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Date and Time",
+        "Description": "Start, pause and lap a stopwatch right on the desktop",
+        "Description[ru]": "Запускайте, ставьте на паузу и отмечайте круги прямо на рабочем столе",
+        "Icon": "chronometer",
+        "Id": "org.kernora.widget.stopwatch",
+        "License": "GPL-2.0+",
+        "Name": "Stopwatch",
+        "Name[ru]": "Секундомер"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-FormFactors": [
+        "desktop"
+    ]
+}

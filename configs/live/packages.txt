@@ -22,9 +22,9 @@ kwin-x11
 xserver-xorg
 libpam-fprintd
 
-kernora-desktop=1.4.82
-kernora-calamares=1.4.82
-kernora-apps=1.1.94
+kernora-desktop=1.4.83
+kernora-calamares=1.4.83
+kernora-apps=1.1.95
 kernora-quickshare=1.0.2
 kernora-wallpapers=1.0
 fonts-google-sans=1.0

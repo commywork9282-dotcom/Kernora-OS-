@@ -18,6 +18,8 @@ Item {
     property real cellWidth: 144
     property real cellHeight: 100
     property bool showAdd: false
+    property bool current: false
+    property bool draggable: true
 
     signal tapped()
     signal addRequested()
@@ -34,7 +36,7 @@ Item {
     }
 
     readonly property real previewScale: 0.6
-    readonly property bool clock: kind.indexOf("clock") >= 0 || kind.indexOf("weather") === 0
+    readonly property bool clock: kind.indexOf("clock") >= 0 || kind.indexOf("weather") === 0 || kind === "stopwatch" || kind === "timer"
     readonly property real cardWidth: Math.round((span[0] * cellWidth - 16) * previewScale)
     readonly property real cardHeight: Math.round((span[1] * cellHeight - 16) * previewScale)
 
@@ -59,7 +61,7 @@ Item {
                 width: cell.cardWidth
                 height: cell.cardHeight
                 radius: 28 * cell.previewScale
-                color: cell.clock || cell.kind === "glance" || cell.kind.indexOf("weather") === 0 || cell.kind === "photo"
+                color: cell.clock || cell.kind === "glance" || cell.kind.indexOf("weather") === 0 || cell.kind.indexOf("photo") === 0
                     ? "transparent" : M3.surfaceContainer
                 clip: true
 
@@ -68,6 +70,16 @@ Item {
                     kind: cell.kind
                     scale: cell.clock ? 1 : Math.min(1, cell.cardHeight / 150, cell.cardWidth / 170)
                 }
+            }
+
+            Rectangle {
+                anchors.fill: card
+                anchors.margins: -5
+                visible: cell.current
+                radius: card.radius + 5
+                color: "transparent"
+                border.width: 3
+                border.color: M3.primary
             }
 
             TapHandler {
@@ -94,6 +106,7 @@ Item {
                 DragHandler {
                     id: dragHandler
                     target: null
+                    enabled: cell.draggable
                     onActiveChanged: {
                         if (!active) {
                             return;

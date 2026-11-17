@@ -11,11 +11,15 @@ var apps = [
     { id: "battery", icon: "org.kernora.battery", plugins: ["org.kernora.widget.battery"] },
     { id: "calendar", icon: "org.kernora.calendar", plugins: ["org.kernora.widget.calendar"] },
     { id: "clock", icon: "org.kernora.clock", plugins: ["org.kernora.widget.clock#analog", "org.kernora.widget.clock#digital",
-                                                       "org.kernora.widget.clock#stacked", "org.kernora.widget.worldclock"] },
+                                                       "org.kernora.widget.clock#stacked", "org.kernora.widget.stopwatch",
+                                                       "org.kernora.widget.timer", "org.kernora.widget.worldclock"] },
     { id: "kernora", icon: "kernora-logo", plugins: ["org.kernora.widget.glance"] },
     { id: "player", icon: "org.kernora.player", plugins: ["org.kernora.widget.media"] },
     { id: "notes", icon: "org.kernora.notes", plugins: ["org.kernora.widget.note"] },
-    { id: "photos", icon: "org.kernora.photos", plugins: ["org.kernora.widget.photo"] },
+    { id: "photos", icon: "org.kernora.photos", plugins: ["org.kernora.widget.photo#cookie9", "org.kernora.widget.photo#sunny",
+                                                         "org.kernora.widget.photo#flower", "org.kernora.widget.photo#circle",
+                                                         "org.kernora.widget.photo#square", "org.kernora.widget.photo#pill",
+                                                         "org.kernora.widget.photo#fill"] },
     { id: "taskmanager", icon: "org.kernora.taskmanager", plugins: ["org.kernora.widget.cputemperature"] },
     { id: "weather", icon: "org.kernora.weather", plugins: ["org.kernora.widget.weather#current",
                                                            "org.kernora.widget.weather#forecast"] }
@@ -38,6 +42,8 @@ var minimumSpans = {
     "org.kernora.widget.media": [2, 2],
     "org.kernora.widget.note": [2, 2],
     "org.kernora.widget.photo": [1, 2],
+    "org.kernora.widget.stopwatch": [2, 2],
+    "org.kernora.widget.timer": [1, 1],
     "org.kernora.widget.weather": [2, 2]
 };
 
@@ -57,6 +63,15 @@ var spans = {
     "org.kernora.widget.media": [3, 2],
     "org.kernora.widget.note": [2, 2],
     "org.kernora.widget.photo": [2, 2],
+    "org.kernora.widget.photo#cookie9": [2, 3],
+    "org.kernora.widget.photo#sunny": [2, 3],
+    "org.kernora.widget.photo#flower": [2, 3],
+    "org.kernora.widget.photo#circle": [2, 3],
+    "org.kernora.widget.photo#square": [2, 3],
+    "org.kernora.widget.photo#pill": [2, 3],
+    "org.kernora.widget.photo#fill": [3, 3],
+    "org.kernora.widget.stopwatch": [2, 3],
+    "org.kernora.widget.timer": [2, 3],
     "org.kernora.widget.weather": [2, 3],
     "org.kernora.widget.weather#current": [2, 3],
     "org.kernora.widget.weather#forecast": [3, 3],
@@ -72,9 +87,17 @@ function variant(entry) {
     return parts.length > 1 ? parts[1] : "";
 }
 
+var variantKeys = {
+    "org.kernora.widget.photo": "shape"
+};
+
 function config(entry) {
     var style = variant(entry);
-    return style.length > 0 ? { style: style } : {};
+    var result = {};
+    if (style.length > 0) {
+        result[variantKeys[plugin(entry)] || "style"] = style;
+    }
+    return result;
 }
 
 function span(entry) {
@@ -86,4 +109,34 @@ function kind(entry) {
     var base = name.indexOf(prefix) === 0 ? name.substring(prefix.length) : "";
     var style = variant(entry);
     return base.length > 0 && style.length > 0 ? base + "-" + style : base;
+}
+
+function variantKey(name) {
+    return variantKeys[plugin(name)] || "style";
+}
+
+function appOf(name) {
+    var target = plugin(name);
+    for (var i = 0; i < apps.length; ++i) {
+        for (var j = 0; j < apps[i].plugins.length; ++j) {
+            if (plugin(apps[i].plugins[j]) === target) {
+                return apps[i];
+            }
+        }
+    }
+    return null;
+}
+
+function entryOf(name, configuration) {
+    var app = appOf(name);
+    if (!app) {
+        return "";
+    }
+    var target = plugin(name);
+    var value = configuration ? configuration[variantKey(target)] : undefined;
+    if (value !== undefined && value !== null && String(value).length > 0
+            && app.plugins.indexOf(target + "#" + value) >= 0) {
+        return target + "#" + value;
+    }
+    return app.plugins.indexOf(target) >= 0 ? target : "";
 }

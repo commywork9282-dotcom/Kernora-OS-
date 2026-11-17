@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.82" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.83" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -1634,7 +1634,8 @@ grep -Fxq 'generated/picker/* usr/share/plasma/plasmoids/org.kde.desktopcontainm
   && grep -Fq 'readonly property bool overRemove: dragging && removeTarget.hit(pointer)' "$data_root/editmode/ConfigOverlay.qml" \
   || fail "the Android widget picker or widget grid is missing"
 grep -Fq '"org.kernora.widget.clock#analog", "org.kernora.widget.clock#digital"' "$data_root/folderview/HomeGrid.js" \
-  && grep -Fq '"org.kernora.widget.clock#stacked", "org.kernora.widget.worldclock"' "$data_root/folderview/HomeGrid.js" \
+  && grep -Fq '"org.kernora.widget.clock#stacked", "org.kernora.widget.stopwatch",' "$data_root/folderview/HomeGrid.js" \
+  && grep -Fq '"org.kernora.widget.timer", "org.kernora.widget.worldclock"] },' "$data_root/folderview/HomeGrid.js" \
   && grep -Fq '0.965 + 0.033 * Math.cos(12 * angle)' "$data_root/widgets/common/ClockFace.qml" \
   && grep -Fq 'face.dark ? M3.accent1_100 : M3.accent1_500' "$data_root/widgets/common/ClockFace.qml" \
   && grep -Fq 'data/widgets/common/ClockFace.qml data/widgets/common/WeatherFace.qml' "$package_root/debian/rules" \
@@ -1652,6 +1653,39 @@ grep -Fxq 'data/editmode/HomeDrop.qml usr/share/plasma/plasmoids/org.kde.desktop
   && grep -Fq 'scene.waitForShrink(widgetCell);' "$data_root/folderview/picker/WidgetPicker.qml" \
   && grep -Fq 'HomeGrid.reconfigurable.indexOf(pluginName) >= 0' "$data_root/editmode/ConfigOverlay.qml" \
   || fail "widgets do not move on the grid like on a Pixel"
+grep -Fq 'data/widgets/common/TimerFace.qml data/widgets/common/SymbolIcon.qml data/widgets/common/ShapedPhoto.qml generated/picker/' "$package_root/debian/rules" \
+  && grep -Fq 'data/widgets/common/TimerFace.qml data/widgets/common/SymbolIcon.qml data/widgets/common/ShapedPhoto.qml generated/explorer/' "$package_root/debian/rules" \
+  && grep -Fq 'lapText: i18n("Lap %1", Plasmoid.configuration.laps + 1)' "$data_root/widgets/stopwatch/contents/ui/main.qml" \
+  && grep -Fq '<entry name="startedAt" type="Double">' "$data_root/widgets/stopwatch/contents/config/main.xml" \
+  && grep -Fq '<default>600,60,300</default>' "$data_root/widgets/timer/contents/config/main.xml" \
+  && grep -Fq 'flags: Notification.Persistent | Notification.LoopSound' "$data_root/widgets/timer/contents/ui/main.qml" \
+  && grep -Fq 'eventId: "timerFinished"' "$data_root/widgets/timer/contents/ui/main.qml" \
+  && grep -Fq 'Sound=alarm-clock-elapsed' "$data_root/knotifications/kernora-clock.notifyrc" \
+  && grep -Fxq 'data/knotifications/kernora-clock.notifyrc usr/share/knotifications6' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq ' qml6-module-org-kde-notifications,' "$package_root/debian/control" \
+  && grep -Fq 'Plasmoid.configuration.presets = list.join(",");' "$data_root/widgets/timer/contents/ui/main.qml" \
+  && grep -Fq 'state.state === "running" && state.endsAt <= time - 60000' "$data_root/widgets/timer/contents/ui/main.qml" \
+  && grep -Fq 'mode === "columns" && bodyHeight >= 2 * 52 + gap' "$data_root/widgets/common/TimerFace.qml" \
+  && grep -Fq 'Keys.onPressed: event => {' "$data_root/widgets/timer/contents/ui/TimerKeypad.qml" \
+  || fail "the clock app lacks Google Clock's Stopwatch and Timer starter widgets"
+grep -Fq '"org.kernora.widget.photo#cookie9", "org.kernora.widget.photo#sunny",' "$data_root/folderview/HomeGrid.js" \
+  && grep -Fq '"org.kernora.widget.photo#fill"] },' "$data_root/folderview/HomeGrid.js" \
+  && grep -Fq '"org.kernora.widget.photo": "shape"' "$data_root/folderview/HomeGrid.js" \
+  && grep -Fq 'visible: root.fill' "$data_root/widgets/common/ShapedPhoto.qml" \
+  && grep -Fq 'ShapedPhoto {' "$data_root/widgets/photo/contents/ui/main.qml" \
+  && grep -Fq '"square", "pill", "fill"' "$data_root/widgets/photo/contents/ui/ConfigGeneral.qml" \
+  && grep -Fq 'kernora-landscapes-snowy-peaks/contents/images/3840x2160.jpg' "$data_root/explorer/WidgetPreview.qml" \
+  || fail "photo shapes are not offered in the widget picker like in Google Photos"
+grep -Fq 'sourceComponent: Picker.AppWidgets {' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'appWidgets.active = true;' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'sheet.current = HomeGrid.entryOf(name, plasmoid.configuration);' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'function entryOf(name, configuration)' "$data_root/folderview/HomeGrid.js" \
+  && grep -Fq 'overlay.openVariants();' "$data_root/editmode/ConfigOverlay.qml" \
+  && grep -Fq 'overlay.closeVariants();' "$data_root/editmode/ConfigOverlay.qml" \
+  && grep -Fq 'readonly property bool atTop: avoid.height > 0 && coverTop < coverBottom' "$data_root/folderview/picker/AppWidgets.qml" \
+  && grep -Fq 'WidgetNames {' "$data_root/folderview/picker/WidgetPicker.qml" \
+  && grep -Fq 'property bool current: false' "$data_root/folderview/picker/WidgetCell.qml" \
+  || fail "a long press on a widget does not offer the other widgets of its app"
 grep -Fq 'property: "relayoutLock"' "$data_root/folderview/FolderView.qml" \
   && grep -Fq 'if (!main.homeView || !main.homeSteady || !layout' "$data_root/folderview/FolderView.qml" \
   || fail "widgets in the bottom row shrink while the panels load at login"
@@ -1660,7 +1694,7 @@ grep -Fq '"org.kernora.widget.weather#current",' "$data_root/folderview/HomeGrid
   && grep -Fq 'readonly property real r: side * 0.4293' "$data_root/widgets/common/WeatherFace.qml" \
   && grep -Fq 'MaterialShapes.shapes.sunny.path' "$data_root/widgets/common/WeatherGlyph.qml" \
   && grep -Fq '&hourly=temperature_2m,weather_code,is_day&forecast_hours=8' "$data_root/widgets/common/WeatherModel.qml" \
-  && grep -Fq 'data/widgets/common/WeatherFace.qml data/widgets/common/WeatherGlyph.qml generated/picker/' "$package_root/debian/rules" \
+  && grep -Fq 'data/widgets/common/WeatherFace.qml data/widgets/common/WeatherGlyph.qml data/widgets/common/StopwatchFace.qml' "$package_root/debian/rules" \
   && grep -Fq '<default>current</default>' "$data_root/widgets/weather/contents/config/main.xml" \
   || fail "the weather widgets are not Google's current weather and forecast widgets"
 for widget_qml in "$data_root"/widgets/*/contents/ui/main.qml; do
@@ -1668,7 +1702,7 @@ for widget_qml in "$data_root"/widgets/*/contents/ui/main.qml; do
     fail "$(basename "$(dirname "$(dirname "$(dirname "$widget_qml")")")") asks for a desktop size, so Plasma resizes it on login"
   fi
 done
-for widget in battery calendar clock cputemperature glance media note photo weather worldclock; do
+for widget in battery calendar clock cputemperature glance media note photo stopwatch timer weather worldclock; do
   grep -Fq 'LiftHandler {}' "$data_root/widgets/$widget/contents/ui/main.qml" || fail "the $widget widget has no long press"
 done
 grep -Fq 'taken.indexOf(shortcut) < 0' "$data_root/panel/layout.js" \
@@ -1857,7 +1891,7 @@ XDG_CONFIG_HOME="$menu_home" sh "$package_root/data/kconf_update/kernora-add-wid
   || fail "the desktop menu does not offer Add Widgets exactly once"
 rm -rf "$menu_home"
 sh -n "$package_root/data/crash/kernora-panic-report" || fail "the panic report does not parse"
-for widget in clock worldclock glance weather battery cputemperature calendar media photo note; do
+for widget in clock worldclock stopwatch timer glance weather battery cputemperature calendar media photo note; do
   python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$package_root/data/widgets/$widget/metadata.json" \
     || fail "the $widget widget metadata is not JSON"
   xmllint --noout "$package_root/data/widgets/$widget/contents/config/main.xml" \

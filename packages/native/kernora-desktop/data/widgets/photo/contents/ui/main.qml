@@ -5,7 +5,6 @@
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Effects
 import QtCore
 import Qt.labs.folderlistmodel
 import org.kde.plasma.core as PlasmaCore
@@ -77,39 +76,26 @@ PlasmoidItem {
         Layout.maximumWidth: root.inPanel ? Layout.preferredWidth : Infinity
         Layout.maximumHeight: root.inPanel ? Layout.preferredHeight : Infinity
 
-        readonly property bool shown: photo.status === Image.Ready
+        readonly property bool shown: shaped.ready
+        readonly property bool fill: Plasmoid.configuration.shape === "fill"
 
-        Image {
-            id: photo
+        ShapedPhoto {
+            id: shaped
             anchors.fill: parent
             source: root.current
-            fillMode: Image.PreserveAspectCrop
-            asynchronous: true
-            sourceSize: Qt.size(Math.max(width, height) * 2, Math.max(width, height) * 2)
-            visible: false
-        }
-        MaterialShape {
-            id: mask
-            anchors.fill: parent
             shape: Plasmoid.configuration.shape
-            color: "white"
-            visible: false
-            layer.enabled: true
-        }
-        MultiEffect {
-            anchors.fill: parent
-            visible: frame.shown
-            source: photo
-            maskEnabled: true
-            maskSource: mask
-            maskThresholdMin: 0.5
-            maskSpreadAtMin: 1.0
         }
 
         MaterialShape {
             anchors.fill: parent
-            visible: !frame.shown
+            visible: !frame.shown && !frame.fill
             shape: Plasmoid.configuration.shape
+            color: M3.primaryContainer
+        }
+        Rectangle {
+            anchors.fill: parent
+            visible: !frame.shown && frame.fill
+            radius: 28
             color: M3.primaryContainer
         }
         ColumnLayout {

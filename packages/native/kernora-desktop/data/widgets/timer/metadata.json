@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Kernora Developers"
+            }
+        ],
+        "Category": "Date and Time",
+        "Description": "Start a timer with one tap",
+        "Description[ru]": "Запускайте таймер одним нажатием",
+        "Icon": "chronometer",
+        "Id": "org.kernora.widget.timer",
+        "License": "GPL-2.0+",
+        "Name": "Timer starter",
+        "Name[ru]": "Быстрый таймер"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-FormFactors": [
+        "desktop"
+    ]
+}

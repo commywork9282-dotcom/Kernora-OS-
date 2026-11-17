@@ -47,24 +47,12 @@ PlasmaCore.Dialog {
     mainItem: Item {
         id: scene
 
-        readonly property var appNames: ({
-            "battery": i18nd("kernora-ui", "Battery"),
-            "calendar": i18nd("kernora-ui", "Calendar"),
-            "clock": i18nd("kernora-ui", "Clock"),
-            "kernora": "Kernora",
-            "player": i18nd("kernora-ui", "Media Player"),
-            "notes": i18nd("kernora-ui", "Notes"),
-            "photos": i18nd("kernora-ui", "Photos"),
-            "taskmanager": i18nd("kernora-ui", "Task Manager"),
-            "weather": i18nd("kernora-ui", "Weather")
-        })
-        readonly property var variantNames: ({
-            "org.kernora.widget.clock#analog": i18nd("kernora-ui", "Analog clock"),
-            "org.kernora.widget.clock#digital": i18nd("kernora-ui", "Digital clock"),
-            "org.kernora.widget.clock#stacked": i18nd("kernora-ui", "Stacked clock"),
-            "org.kernora.widget.weather#current": i18nd("kernora-ui", "Current weather"),
-            "org.kernora.widget.weather#forecast": i18nd("kernora-ui", "Forecasted weather")
-        })
+        WidgetNames {
+            id: names
+        }
+
+        readonly property var appNames: names.apps
+        readonly property var variantNames: names.variants
         readonly property var categoryNames: ({
             "essentials": i18nd("kernora-ui", "Essentials"),
             "others": i18nd("kernora-ui", "Suggested for you")

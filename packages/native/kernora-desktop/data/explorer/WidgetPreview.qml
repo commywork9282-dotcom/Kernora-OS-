@@ -32,6 +32,10 @@ Item {
             case "clock-stacked":
             case "worldclock":
                 return clock;
+            case "stopwatch":
+                return stopwatch;
+            case "timer":
+                return timers;
             case "glance":
                 return glance;
             case "weather":
@@ -48,6 +52,14 @@ Item {
                 return media;
             case "photo":
                 return photo;
+            case "photo-cookie9":
+            case "photo-sunny":
+            case "photo-flower":
+            case "photo-circle":
+            case "photo-square":
+            case "photo-pill":
+            case "photo-fill":
+                return shapedPhoto;
             case "note":
                 return note;
             default:
@@ -86,6 +98,38 @@ Item {
             now: root.kind === "worldclock" ? new Date(2026, 0, 7, 10, 30) : root.now
             twelveHours: root.twelveHours
             city: i18nd("kernora-ui", "London")
+        }
+    }
+
+    Component {
+        id: stopwatch
+
+        StopwatchFace {
+            width: root.width
+            height: root.height
+            elapsed: 302000
+            running: true
+            laps: 1
+            interactive: false
+            lapText: i18nd("kernora-ui", "Lap %1", 2)
+        }
+    }
+
+    Component {
+        id: timers
+
+        TimerFace {
+            width: 272
+            height: 284
+            scale: Math.min(root.width / width, root.height / height)
+            interactive: false
+            title: i18nd("kernora-ui", "Timers")
+            items: [10, 1, 5].map(minutes => ({
+                label: i18ndc("kernora-ui", "@label timer length", "%1m", minutes),
+                state: "idle",
+                remaining: minutes * 60000,
+                total: minutes * 60000
+            }))
         }
     }
 
@@ -341,6 +385,39 @@ Item {
                 size: 36
                 source: "image-x-generic"
                 color: M3.tertiaryContainerContent
+            }
+        }
+    }
+
+    Component {
+        id: shapedPhoto
+
+        Item {
+            readonly property string shape: root.kind.substring(6)
+
+            width: root.width
+            height: root.height
+
+            MaterialShape {
+                anchors.fill: parent
+                visible: !sample.ready && parent.shape !== "fill"
+                shape: parent.shape
+                color: M3.tertiaryContainer
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                visible: !sample.ready && parent.shape === "fill"
+                radius: 28 * 0.6
+                color: M3.tertiaryContainer
+            }
+
+            ShapedPhoto {
+                id: sample
+                anchors.fill: parent
+                shape: parent.shape
+                radius: 28 * 0.6
+                source: "file:///usr/share/wallpapers/kernora-landscapes-snowy-peaks/contents/images/3840x2160.jpg"
             }
         }
     }

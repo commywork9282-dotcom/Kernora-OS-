@@ -1,5 +1,33 @@
 [
   {
+    "id": "2026-11-16-2",
+    "date": "2026-11-16",
+    "items": [
+      {
+        "icon": "chronometer",
+        "title": {
+          "en": "Stopwatch and timers",
+          "ru": "Секундомер и таймеры"
+        },
+        "text": {
+          "en": "The Clock app in the widget list now has all six widgets of Google Clock. The Stopwatch starts, pauses and counts laps right on the desktop. The Timer starter runs 10, 1 or 5 minutes with one tap, and + opens a keypad for any time. When time is up an alarm rings until you stop it.",
+          "ru": "В разделе «Часы» списка виджетов теперь все шесть виджетов Google Часов. Секундомер запускается, ставится на паузу и считает круги прямо на рабочем столе. Быстрый таймер запускает 10, 1 или 5 минут одним нажатием, а «+» открывает клавиатуру для любого времени. Когда время выходит, звенит будильник, пока вы его не остановите."
+        }
+      },
+      {
+        "icon": "view-preview",
+        "title": {
+          "en": "More widget styles",
+          "ru": "Больше стилей виджетов"
+        },
+        "text": {
+          "en": "Photos offers its shapes right in the widget list: cookie, star, flower, circle, square, pill and full size. Touch and hold a widget and let go to see the other widgets of its app, and tap another style to change it in place.",
+          "ru": "Фото предлагает формы прямо в списке виджетов: печенье, звезда, цветок, круг, квадрат, таблетка и во весь размер. Нажмите и удерживайте виджет, потом отпустите, и появятся другие виджеты этого приложения. Нажмите на другой стиль, и виджет сразу изменится."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-16-1",
     "date": "2026-11-16",
     "items": [

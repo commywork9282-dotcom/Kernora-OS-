@@ -1,3 +1,24 @@
+kernora-desktop (1.4.83) UNRELEASED; urgency=medium
+
+  * Clock has all six widgets of Google Clock. New are the Stopwatch, a
+    round dial with a big time, a start and pause button and a pill with
+    Lap and Reset, and the Timer starter: tap 10m, 1m or 5m to start a
+    timer, tap again to pause, tap + for a keypad like the one in Google
+    Clock. Like in Google Clock, the layout follows the size: one button,
+    a column, or three columns. When time is up an alarm rings until you
+    stop it from the notification. Both keep running across restarts.
+  * Photos offers its shapes right in the widget list, like Google
+    Photos: cookie, star, flower, circle, square, pill and full size,
+    each shown with a sample picture.
+  * Touch and hold a widget and let go: a sheet with the other widgets
+    of the same app opens, like the widgets sheet of Pixel Launcher. Tap
+    another style of the same widget and it changes in place; other
+    widgets of the app can be added from there. The sheet opens at the
+    top or bottom, wherever it hides less of the widget, and closes when
+    you start dragging.
+
+ -- Kernora Developers <developers@kernora.invalid>  Mon, 16 Nov 2026 21:00:00 -0800
+
 kernora-desktop (1.4.82) UNRELEASED; urgency=medium
 
   * The kernel runs with full preemption (preempt=full), so the pointer,

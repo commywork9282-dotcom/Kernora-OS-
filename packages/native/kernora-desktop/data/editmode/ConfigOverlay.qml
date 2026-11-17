@@ -122,6 +122,7 @@ ContainmentLayoutManager.ConfigOverlay {
                 return;
             }
             if (!overlay.dragging) {
+                overlay.openVariants();
                 return;
             }
             const remove = overlay.overRemove;
@@ -136,14 +137,66 @@ ContainmentLayoutManager.ConfigOverlay {
         }
     }
 
+    function homeView(): var {
+        const layout = overlay.itemContainer ? overlay.itemContainer.layout : null;
+        if (!layout) {
+            return null;
+        }
+        for (const child of layout.children) {
+            if (child.view && typeof child.view.openAppWidgets === "function") {
+                return child.view;
+            }
+        }
+        return null;
+    }
+
+    function closeVariants(): void {
+        variantsDelay.stop();
+        const home = overlay.homeView();
+        if (home) {
+            home.closeAppWidgets();
+        }
+    }
+
+    Timer {
+        id: variantsDelay
+        interval: 250
+        onTriggered: {
+            const item = overlay.itemContainer;
+            if (item && !item.dragActive) {
+                overlay.openVariants();
+            }
+        }
+    }
+
+    function openVariants(): void {
+        const item = overlay.itemContainer;
+        if (!overlay.open || overlay.dragging || !item || item.dragActive) {
+            return;
+        }
+        const home = overlay.homeView();
+        if (home) {
+            home.openAppWidgets(item);
+        }
+    }
+
+    onDraggingChanged: {
+        if (overlay.dragging) {
+            overlay.closeVariants();
+        }
+    }
+
     onOpenChanged: {
         const item = overlay.itemContainer;
         if (overlay.open && item && item.layout && item.layout.cellWidth > 0) {
             overlay.homeCell = Qt.point(Math.round(item.x / item.layout.cellWidth), Math.round(item.y / item.layout.cellHeight));
         }
-        if (!overlay.open) {
+        if (overlay.open) {
+            variantsDelay.restart();
+        } else {
             overlay.dragging = false;
             homeDrop.cancel();
+            overlay.closeVariants();
         }
     }
 
@@ -267,6 +320,7 @@ ContainmentLayoutManager.ConfigOverlay {
     }
 
     function beginResize(edge: int, point: point): void {
+        overlay.closeVariants();
         const item = overlay.itemContainer;
         const layout = item ? item.layout : null;
         if (!layout || layout.cellWidth <= 0 || layout.cellHeight <= 0) {

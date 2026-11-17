@@ -23,7 +23,7 @@ ColumnLayout {
         return i18nd("plasma_applet_org.kernora.widget.photo", text);
     }
 
-    readonly property var shapes: ["cookie9", "sunny", "arch", "clover4", "flower", "heart", "circle", "puffy"]
+    readonly property var shapes: ["cookie9", "sunny", "flower", "circle", "square", "pill", "fill", "arch", "clover4", "heart", "puffy"]
 
     spacing: 16
 
@@ -51,11 +51,21 @@ ColumnLayout {
                         border.width: root.cfg_shape === tile.modelData ? 2 : 0
                         border.color: M3.primary
                     }
-                    contentItem: MaterialShape {
-                        anchors.fill: parent
-                        anchors.margins: 10
-                        shape: tile.modelData
-                        color: M3.primary
+                    contentItem: Item {
+                        MaterialShape {
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            visible: tile.modelData !== "fill"
+                            shape: tile.modelData
+                            color: M3.primary
+                        }
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            visible: tile.modelData === "fill"
+                            radius: 10
+                            color: M3.primary
+                        }
                     }
                 }
             }
