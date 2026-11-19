@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Kernora setup style
+Name[ru]=Стиль из настройки Kernora
+Exec=/usr/libexec/kernora-setup-apply
+NoDisplay=true
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=2

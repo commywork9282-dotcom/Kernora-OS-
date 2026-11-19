@@ -8,18 +8,19 @@ import io.calamares.ui 1.0
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 import org.kernora.m3
 import org.kernora.ui
 import "keymaps.js" as Keymaps
 
-Item {
+PixelPage {
     id: summary
 
+    icon: "check_circle"
+    title: qsTr("Ready to install")
+    description: qsTr("Check that everything is right. When you press Install, the disk will be changed.")
+    primaryAction: () => confirm.open()
+
     property string language: Qt.locale().name.split("_")[0]
-    function onActivate() {
-        language = Qt.locale().name.split("_")[0];
-    }
 
     function localized(title: string, message: string): string {
         const table = Keymaps.names[language];
@@ -43,73 +44,61 @@ Item {
         return result;
     }
 
-    Rectangle {
-        anchors.fill: parent
-        color: M3.surface
-    }
-
     ListView {
         id: list
+
         anchors.fill: parent
-        anchors.leftMargin: 40
-        anchors.rightMargin: 40
-        topMargin: 32
-        bottomMargin: 24
         spacing: 2
         clip: true
         model: config.summaryModel
         boundsBehavior: Flickable.StopAtBounds
         ScrollBar.vertical: ScrollBar {}
 
-        header: MText {
-            width: list.width
-            bottomPadding: 20
-            role: "headlineSmall"
-            text: config.message
-            wrapMode: Text.Wrap
-        }
-
         delegate: Rectangle {
             id: card
+
             required property int index
             required property string title
             required property string message
             readonly property bool first: index === 0
             readonly property bool last: index === list.count - 1
+            readonly property string symbolName: ["language", "keyboard", "hard_drive", "person", "settings"][Math.min(index, 4)]
 
             width: list.width
-            implicitHeight: row.implicitHeight + 32
-            color: M3.surfaceContainer
-            topLeftRadius: first ? 20 : 4
-            topRightRadius: first ? 20 : 4
-            bottomLeftRadius: last ? 20 : 4
-            bottomRightRadius: last ? 20 : 4
+            implicitHeight: row.implicitHeight + 36
+            color: M3.surfaceContainerHigh
+            topLeftRadius: first ? 24 : 6
+            topRightRadius: first ? 24 : 6
+            bottomLeftRadius: last ? 24 : 6
+            bottomRightRadius: last ? 24 : 6
 
-            RowLayout {
+            Row {
                 id: row
-                anchors.left: parent.left
-                anchors.right: parent.right
+
+                x: 20
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.leftMargin: 16
-                anchors.rightMargin: 16
+                width: parent.width - 40
                 spacing: 16
 
-                IconCircle {
-                    Layout.alignment: Qt.AlignTop
-                    accent: [3, 2, 1, 0, 5][card.index % 5]
-                    icon: ["preferences-desktop-locale", "input-keyboard", "drive-harddisk", "user-identity", "configure"][Math.min(card.index, 4)]
+                MIcon {
+                    size: 24
+                    source: summary.symbol(card.symbolName)
+                    color: M3.primary
                 }
-                ColumnLayout {
-                    Layout.fillWidth: true
+
+                Column {
+                    width: parent.width - 40
                     spacing: 4
+
                     MText {
-                        Layout.fillWidth: true
+                        width: parent.width
                         role: "titleMedium"
                         text: card.title
                         wrapMode: Text.Wrap
                     }
+
                     Text {
-                        Layout.fillWidth: true
+                        width: parent.width
                         text: summary.localized(card.title, card.message)
                         textFormat: Text.StyledText
                         wrapMode: Text.Wrap
@@ -120,6 +109,23 @@ Item {
                 }
             }
         }
+    }
+
+    Dialog {
+        id: confirm
+        title: qsTr("Start installing?")
+        text: qsTr("The changes to the disk can't be undone.")
+        acceptText: summary.plain(ViewManager.nextLabel)
+        rejectText: qsTr("Cancel")
+        destructive: true
+        onAccepted: {
+            close();
+            ViewManager.next();
+        }
+    }
+
+    function onActivate() {
+        language = Qt.locale().name.split("_")[0];
     }
 
     function onLeave() {}

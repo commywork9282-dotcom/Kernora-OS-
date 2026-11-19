@@ -13,6 +13,9 @@ THEME_APPS = generated/icon-theme/scalable/apps
 
 TOOLS = tools
 SYMBOLS = data/symbols
+SETUP_SYMBOLS = account_circle arrow_back arrow_forward check check_circle computer error folder hard_drive image \
+  keyboard lan language lock music_note network_wifi_1_bar network_wifi_2_bar network_wifi_3_bar password person \
+  photo_library settings signal_wifi_4_bar visibility visibility_off wifi
 APPLETS = launcher:org.kernora.launcher shade:org.kernora.quicksettings clipboard:org.kernora.clipboard datetime:org.kernora.datetime
 WIDGETS = clock worldclock stopwatch timer glance weather battery cputemperature calendar media photo note
 COLOURS := $(shell cd $(TOOLS) && python3 -c 'import kernora_design as d; print(" ".join(d.COLOURS))')
@@ -34,6 +37,10 @@ override_dh_auto_build:
 	python3 $(TOOLS)/gen-qm data/calamares/lang/calamares-kernora_ru.ts \
 	  generated/branding/lang/calamares-kernora_ru.qm
 	python3 $(TOOLS)/gen-installer-icons $(SYMBOLS) generated/branding/images
+	install -d generated/branding/symbols
+	set -e; for symbol in $(SETUP_SYMBOLS); do \
+	  install -m 0644 $(SYMBOLS)/$${symbol}_24px.svg generated/branding/symbols/; \
+	done
 	python3 $(TOOLS)/gen-installer-style data/calamares/stylesheet.qss.in \
 	  generated/branding/stylesheet.qss
 	python3 $(TOOLS)/gen-avatar $(LOGO) generated/skel/face.svg

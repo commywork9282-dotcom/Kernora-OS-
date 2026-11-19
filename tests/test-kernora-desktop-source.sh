@@ -2309,10 +2309,16 @@ for script in kernora-desktop.preinst kernora-desktop.postrm; do
     && grep -Fq '/usr/bin/kvantummanager' "$package_root/debian/$script" \
     || fail "theme reset tools are still around ($script)"
 done
-grep -Fxq 'Exec=/usr/bin/kernora-installer --autostart' "$package_root/data/installer/org.kernora.installer-autostart.desktop" \
-  && grep -Fxq 'data/installer/org.kernora.installer-autostart.desktop etc/xdg/autostart' "$package_root/debian/kernora-calamares.install" \
-  && grep -Fq "grep -qw 'boot=live' /proc/cmdline" "$package_root/data/installer/kernora-installer" \
-  || fail "the live session does not open the installer"
+grep -Fxq 'Exec=/usr/lib/x86_64-linux-gnu/libexec/plasma-dbus-run-session-if-needed /usr/libexec/kernora-setup-session' \
+    "$package_root/data/installer/kernora-setup.desktop" \
+  && grep -Fxq 'data/installer/kernora-setup.desktop usr/share/wayland-sessions' "$package_root/debian/kernora-calamares.install" \
+  && grep -Fxq 'data/installer/kernora-setup-session usr/libexec' "$package_root/debian/kernora-calamares.install" \
+  && [[ -x "$package_root/data/installer/kernora-setup-session" ]] \
+  && grep -Fq -- '--exit-with-session=/usr/bin/kernora-installer' "$package_root/data/installer/kernora-setup-session" \
+  && grep -Fq '/usr/bin/startplasma-wayland' "$package_root/data/installer/kernora-setup-session" \
+  && grep -Fq 'org.kde.Shutdown.logout' "$package_root/data/installer/kernora-installer" \
+  && [[ ! -e "$package_root/data/installer/org.kernora.installer-autostart.desktop" ]] \
+  || fail "the live image does not start in the separate setup session"
 grep -Fxq 'Id=kernora_welcome_retired' "$package_root/data/kconf_update/kernora-welcome-retired.upd" \
   && grep -Fxq 'data/kconf_update/kernora-welcome-retired.sh usr/share/kconf_update' "$package_root/debian/kernora-desktop.install" \
   && [[ -x "$package_root/data/kconf_update/kernora-welcome-retired.sh" ]] \

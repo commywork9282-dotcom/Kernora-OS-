@@ -68,3 +68,54 @@ QMessageBox QLabel#qt_msgboxex_icon_label {
 QMessageBox QLabel#qt_msgbox_label {
     color: @onSurface@;
 }
+
+#pixelPage {
+    background-color: @surface@;
+}
+
+#pixelPage QLabel#pixelTitle {
+    background: transparent;
+    color: @onSurface@;
+    font-size: 36px;
+}
+
+#pixelPage QLabel#pixelDescription {
+    background: transparent;
+    color: @onSurfaceVariant@;
+    font-size: 16px;
+}
+
+#pixelPage QToolButton#pixelBack {
+    background-color: @surfaceContainerHigh@;
+    border: none;
+    border-radius: 24px;
+}
+
+#pixelPage QToolButton#pixelBack:hover {
+    background-color: @surfaceContainerHighest@;
+}
+
+#pixelPage QPushButton#pixelPrimary {
+    background-color: @primary@;
+    color: @onPrimary@;
+    border: none;
+    border-radius: 28px;
+    padding: 0px 24px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+#pixelPage QPushButton#pixelPrimary:hover {
+    background-color: @primaryFixed@;
+}
+
+#pixelPage QPushButton#pixelPrimary:disabled {
+    background-color: @surfaceContainerHighest@;
+    color: @outline@;
+}
+
+#slideshow QTabWidget::pane {
+    border: none;
+    margin: 0px;
+    padding: 0px;
+}

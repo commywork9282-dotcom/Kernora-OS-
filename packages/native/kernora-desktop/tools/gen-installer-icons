@@ -21,6 +21,11 @@ ICONS = {
     "partition-partition.svg": ("pie_chart", "teal"),
 }
 
+GLYPHS = {
+    "pixel-arrow-back.svg": ("arrow_back", "onSurface"),
+    "pixel-hard-drive.svg": ("hard_drive", "primary"),
+}
+
 
 def main(argv: list[str]) -> int:
     if len(argv) != 3:
@@ -45,7 +50,20 @@ def main(argv: list[str]) -> int:
             "</svg>\n",
             encoding="utf-8",
         )
-    print(f"installer icons: {len(ICONS)} in {output}")
+    for image, (symbol, role) in GLYPHS.items():
+        drawing = (symbols / f"{symbol}_24px.svg").read_text(encoding="utf-8")
+        paths = re.findall(r'<path d="([^"]+)"', drawing)
+        if not paths:
+            print(f"gen-installer-icons: no path in {symbol}", file=sys.stderr)
+            return 1
+        glyphs = "".join(f'<path d="{d}"/>' for d in paths)
+        (output / image).write_text(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960">'
+            f'<g fill="{design.DARK[role]}">{glyphs}</g>'
+            "</svg>\n",
+            encoding="utf-8",
+        )
+    print(f"installer icons: {len(ICONS) + len(GLYPHS)} in {output}")
     return 0
 
 

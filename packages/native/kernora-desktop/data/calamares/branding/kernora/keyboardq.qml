@@ -13,13 +13,12 @@ import org.kernora.m3
 import org.kernora.ui
 import "keymaps.js" as Keymaps
 
-Item {
+PixelPage {
     id: keyboardPage
 
-    Rectangle {
-        anchors.fill: parent
-        color: M3.surface
-    }
+    icon: "keyboard"
+    title: qsTr("Choose a keyboard layout")
+    description: qsTr("Press a few keys to check that the letters match your keyboard.")
 
     readonly property var layoutsModel: config.keyboardLayoutsModel
     readonly property var variantsModel: config.keyboardVariantsModel
@@ -116,35 +115,52 @@ Item {
         return text.replace(/[:\s]+$/, "");
     }
 
-    ColumnLayout {
-        anchors.fill: parent
-        anchors.leftMargin: 32
-        anchors.rightMargin: 32
-        anchors.topMargin: 24
-        anchors.bottomMargin: 16
-        spacing: 14
+    below: Group {
+        width: parent ? parent.width : 400
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 12
-            SelectField {
-                Layout.preferredWidth: 3
-                label: qsTr("Layout", "@label")
-                value: keyboardPage.layoutRow ? keyboardPage.named(keyboardPage.layoutRow.label) : ""
-                onClicked: layoutDialog.open()
-            }
-            SelectField {
-                Layout.preferredWidth: 2
-                label: qsTr("Variant", "@label")
-                value: keyboardPage.variantRow ? keyboardPage.named(keyboardPage.variantRow.label) : ""
-                enabled: keyboardPage.variantRows.length > 1
-                onClicked: variantDialog.open()
-            }
+        ListItem {
+            title: qsTr("Layout", "@label")
+            subtitle: keyboardPage.layoutRow ? keyboardPage.named(keyboardPage.layoutRow.label) : ""
+            icon: "input-keyboard"
+            iconStyle: "plain"
+            chevron: true
+            onClicked: layoutDialog.open()
         }
+        ListItem {
+            visible: keyboardPage.variantRows.length > 1
+            title: qsTr("Variant", "@label")
+            subtitle: keyboardPage.variantRow ? keyboardPage.named(keyboardPage.variantRow.label) : ""
+            icon: "preferences-desktop"
+            iconStyle: "plain"
+            chevron: true
+            onClicked: variantDialog.open()
+        }
+        ListItem {
+            visible: !keyboardPage.latin
+            title: keyboardPage.withoutColon(qsTranslate("Page_Keyboard", "Switch Keyboard:"))
+            subtitle: keyboardPage.switcherRow ? keyboardPage.named(keyboardPage.switcherRow.label) : ""
+            icon: "kernora-install-replace"
+            iconStyle: "plain"
+            chevron: true
+            onClicked: switcherDialog.open()
+        }
+        ListItem {
+            title: keyboardPage.withoutColon(qsTranslate("Page_Keyboard", "Keyboard model:"))
+            subtitle: keyboardPage.modelRow ? keyboardPage.named(keyboardPage.modelRow.label) : ""
+            icon: "computer"
+            iconStyle: "plain"
+            chevron: true
+            onClicked: modelDialog.open()
+        }
+    }
+
+    Column {
+        anchors.fill: parent
+        spacing: 16
 
         Rectangle {
             id: keyboard
-            Layout.fillWidth: true
+            width: parent.width
             implicitHeight: keyHeight * 5 + gap * 4 + padding * 2
             radius: 28
             color: M3.surfaceContainer
@@ -192,7 +208,7 @@ Item {
 
         Rectangle {
             id: trial
-            Layout.fillWidth: true
+            width: parent.width
             implicitHeight: 56
             radius: 12
             color: M3.surfaceContainerHighest
@@ -249,28 +265,6 @@ Item {
                 }
                 onActiveFocusChanged: if (!activeFocus) keyboardPage.held = ({})
             }
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 12
-            SelectField {
-                Layout.preferredWidth: 3
-                label: keyboardPage.withoutColon(qsTranslate("Page_Keyboard", "Keyboard model:"))
-                value: keyboardPage.modelRow ? keyboardPage.named(keyboardPage.modelRow.label) : ""
-                onClicked: modelDialog.open()
-            }
-            SelectField {
-                Layout.preferredWidth: 2
-                visible: !keyboardPage.latin
-                label: keyboardPage.withoutColon(qsTranslate("Page_Keyboard", "Switch Keyboard:"))
-                value: keyboardPage.switcherRow ? keyboardPage.named(keyboardPage.switcherRow.label) : ""
-                onClicked: switcherDialog.open()
-            }
-        }
-
-        Item {
-            Layout.fillHeight: true
         }
     }
 
@@ -368,56 +362,6 @@ Item {
                 font.family: M3.typeface
                 font.pixelSize: Math.round(key.height * 0.3)
                 renderType: Text.QtRendering
-            }
-        }
-    }
-
-    component SelectField: AbstractButton {
-        id: select
-        property string label
-        property string value
-        Layout.fillWidth: true
-        implicitHeight: 56
-        padding: 0
-        opacity: enabled ? 1 : 0.6
-        Accessible.name: label + ": " + value
-
-        background: Rectangle {
-            radius: 12
-            color: M3.surfaceContainerHighest
-            border.width: select.visualFocus ? 2 : 0
-            border.color: M3.primary
-            MStateLayer {
-                radius: 12
-                hovered: select.hovered && select.enabled
-                pressed: select.pressed
-            }
-        }
-        contentItem: Item {
-            MText {
-                x: 16
-                y: 8
-                width: parent.width - 60
-                role: "bodySmall"
-                text: select.label
-                elide: Text.ElideRight
-                color: M3.surfaceVariantContent
-            }
-            MText {
-                x: 16
-                y: 26
-                width: parent.width - 60
-                role: "bodyLarge"
-                text: select.value
-                elide: Text.ElideRight
-            }
-            MIcon {
-                anchors.right: parent.right
-                anchors.rightMargin: 12
-                anchors.verticalCenter: parent.verticalCenter
-                size: 24
-                source: "arrow-down"
-                color: M3.surfaceVariantContent
             }
         }
     }

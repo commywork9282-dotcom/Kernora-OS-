@@ -411,4 +411,231 @@
         <translation>Очистить</translation>
     </message>
 </context>
+<context>
+    <name>welcomeq</name>
+    <message>
+        <source>Try without installing</source>
+        <translation>Попробовать без установки</translation>
+    </message>
+    <message>
+        <source>Checking this computer…</source>
+        <translation>Проверяем компьютер…</translation>
+    </message>
+    <message>
+        <source>Installation cannot continue yet</source>
+        <translation>Пока нельзя продолжить установку</translation>
+    </message>
+    <message>
+        <source>You can continue with these warnings</source>
+        <translation>Можно продолжить, но есть замечания</translation>
+    </message>
+    <message>
+        <source>A system check did not complete successfully.</source>
+        <translation>Одна из проверок не прошла.</translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation>Далее</translation>
+    </message>
+</context>
+<context>
+    <name>localeq</name>
+    <message>
+        <source>Choose your language</source>
+        <translation>Выберите язык</translation>
+    </message>
+    <message>
+        <source>Kernora will use this language. You can change it later in Settings.</source>
+        <translation>На этом языке будет вся Kernora. Его можно поменять позже в Настройках.</translation>
+    </message>
+    <message>
+        <source>Suggested</source>
+        <translation>Рекомендуемые</translation>
+    </message>
+    <message>
+        <source>All languages</source>
+        <translation>Все языки</translation>
+    </message>
+    <message>
+        <source>Time zone</source>
+        <translation>Часовой пояс</translation>
+    </message>
+    <message>
+        <source>Formats</source>
+        <translation>Форматы</translation>
+    </message>
+    <message>
+        <source>Search languages</source>
+        <translation>Поиск языка</translation>
+    </message>
+</context>
+<context>
+    <name>keyboardq</name>
+    <message>
+        <source>Choose a keyboard layout</source>
+        <translation>Выберите раскладку</translation>
+    </message>
+    <message>
+        <source>Press a few keys to check that the letters match your keyboard.</source>
+        <translation>Нажмите несколько клавиш и проверьте, что буквы совпадают с клавиатурой.</translation>
+    </message>
+</context>
+<context>
+    <name>usersq</name>
+    <message>
+        <source>Create your account</source>
+        <translation>Создайте аккаунт</translation>
+    </message>
+    <message>
+        <source>You will use it to sign in to Kernora and to install apps.</source>
+        <translation>С ним вы будете входить в Kernora и устанавливать приложения.</translation>
+    </message>
+    <message>
+        <source>Computer name</source>
+        <translation>Имя компьютера</translation>
+    </message>
+    <message>
+        <source>Weak password</source>
+        <translation>Слабый пароль</translation>
+    </message>
+    <message>
+        <source>Fair password</source>
+        <translation>Средний пароль</translation>
+    </message>
+    <message>
+        <source>Strong password</source>
+        <translation>Надёжный пароль</translation>
+    </message>
+    <message>
+        <source>Choose a picture</source>
+        <translation>Выберите картинку</translation>
+    </message>
+    <message>
+        <source>Images</source>
+        <translation>Изображения</translation>
+    </message>
+</context>
+<context>
+    <name>summaryq</name>
+    <message>
+        <source>Start installing?</source>
+        <translation>Начать установку?</translation>
+    </message>
+    <message>
+        <source>The changes to the disk can't be undone.</source>
+        <translation>Изменения на диске нельзя будет отменить.</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <source>Ready to install</source>
+        <translation>Всё готово к установке</translation>
+    </message>
+    <message>
+        <source>Check that everything is right. When you press Install, the disk will be changed.</source>
+        <translation>Проверьте, что всё верно. После нажатия «Установить» диск будет изменён.</translation>
+    </message>
+</context>
+<context>
+    <name>show</name>
+    <message>
+        <source>Getting your computer ready…</source>
+        <translation>Подготавливаем компьютер…</translation>
+    </message>
+    <message>
+        <source>This takes a few minutes. You can leave the computer alone: when everything is ready, Kernora will ask you to restart.</source>
+        <translation>Это займёт несколько минут. Компьютер можно не трогать: когда всё будет готово, Kernora попросит перезагрузиться.</translation>
+    </message>
+</context>
+<context>
+    <name>finishedq</name>
+    <message>
+        <source>All set</source>
+        <translation>Всё готово</translation>
+    </message>
+    <message>
+        <source>%1 is installed. Restart the computer and sign in to your account.</source>
+        <translation>%1 установлена. Перезагрузите компьютер и войдите в свой аккаунт.</translation>
+    </message>
+    <message>
+        <source>Restart now</source>
+        <translation>Перезагрузить</translation>
+    </message>
+    <message>
+        <source>Later</source>
+        <translation>Позже</translation>
+    </message>
+</context>
+<context>
+    <name>PartitionViewStep</name>
+    <message>
+        <source>Manual partitioning</source>
+        <comment>@title</comment>
+        <translation>Ручная разметка</translation>
+    </message>
+    <message>
+        <source>Create, resize or delete partitions yourself. %1 needs a partition mounted at /.</source>
+        <comment>@info</comment>
+        <translation>Создавайте, меняйте и удаляйте разделы сами. Для %1 нужен раздел, подключённый в /.</translation>
+    </message>
+    <message>
+        <source>Where to install %1</source>
+        <comment>@title</comment>
+        <translation>Куда установить %1</translation>
+    </message>
+    <message>
+        <source>Choose how to place %1 on the disk. Before installing, you will see what changes.</source>
+        <comment>@info</comment>
+        <translation>Выберите, как разместить %1 на диске. Перед установкой вы увидите, что изменится.</translation>
+    </message>
+</context>
+<context>
+    <name>wifiq</name>
+    <message>
+        <source>Connect to Wi‑Fi</source>
+        <translation>Подключитесь к Wi‑Fi</translation>
+    </message>
+    <message>
+        <source>Kernora will get the latest updates and set the time. You can skip this and connect later.</source>
+        <translation>Так Kernora получит свежие обновления и настроит время. Можно пропустить и подключиться позже.</translation>
+    </message>
+    <message>
+        <source>Skip</source>
+        <translation>Пропустить</translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation>Подключено</translation>
+    </message>
+    <message>
+        <source>Connecting…</source>
+        <translation>Подключение…</translation>
+    </message>
+    <message>
+        <source>Saved</source>
+        <translation>Сохранено</translation>
+    </message>
+    <message>
+        <source>Open network</source>
+        <translation>Открытая сеть</translation>
+    </message>
+    <message>
+        <source>This computer has no Wi‑Fi. Connect a network cable or skip this step.</source>
+        <translation>На этом компьютере нет Wi‑Fi. Подключите сетевой кабель или пропустите этот шаг.</translation>
+    </message>
+    <message>
+        <source>Network cable</source>
+        <translation>Сетевой кабель</translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation>Пароль</translation>
+    </message>
+    <message>
+        <source>Connect</source>
+        <translation>Подключить</translation>
+    </message>
+</context>
 </TS>

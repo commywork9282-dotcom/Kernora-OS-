@@ -3,125 +3,166 @@
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 
+import io.calamares.core 1.0
+
 import QtQuick
-import QtQuick.Layouts
 import calamares.slideshow 1.0
 import org.kernora.m3
-import org.kernora.ui
 
 Presentation {
     id: presentation
 
-    readonly property bool russian: Qt.locale().name.startsWith("ru")
+    property real progress: 0
+    property string message
 
-    readonly property var texts: russian ? [
-        ["Kernora устанавливается", "Это займёт несколько минут. Пока идёт установка, живой системой можно пользоваться как обычно."],
-        ["Всё в одном месте", "«Настройки» собирают вместе Wi-Fi, звук, экраны, аккаунт и обновления — с поиском по любому параметру."],
-        ["Приложения на каждый день", "«Файлы», «Фото», «Медиаплеер», «Текстовый редактор», «Калькулятор» и «Снимок экрана» готовы с первого запуска."],
-        ["Светлая или тёмная", "Оформление выбирается в «Обоях и стиле», а «Фигуры Kernora» спокойно движутся за окнами."],
-        ["На прочной основе", "Kernora собрана из закреплённого снимка Debian и KDE Plasma; обновления приходят через «Настройки»."]
-    ] : [
-        ["Kernora is being installed", "This takes a few minutes. You can keep using the live system while it works."],
-        ["Everything in one place", "Settings brings Wi-Fi, sound, displays, your account and updates together, with search for any option."],
-        ["Apps for every day", "Files, Photos, Media Player, Text Editor, Calculator and Screenshot are ready from the first start."],
-        ["Light or dark", "Pick your look in Wallpaper & style, while Kernora Shapes drift quietly behind your windows."],
-        ["On solid ground", "Kernora is built from a pinned Debian snapshot and KDE Plasma; updates arrive through Settings."]
-    ]
+    readonly property bool wide: width >= 960
+    readonly property real margin: wide ? Math.round(Math.max(40, Math.min(72, width * 0.05))) : 24
+    readonly property real topSpace: Math.round(Math.max(88, Math.min(136, height * 0.15)))
+
+    function symbol(name: string): url {
+        return Qt.resolvedUrl("symbols/" + name + "_24px.svg");
+    }
+
+    function refresh(): void {
+        const value = Number(Global.value("kernoraProgress"));
+        presentation.progress = isNaN(value) ? 0 : Math.max(0, Math.min(1, value));
+        const text = Global.value("kernoraProgressMessage");
+        presentation.message = text ? String(text) : "";
+    }
+
+    Connections {
+        target: Global
+        function onChanged() {
+            Qt.callLater(presentation.refresh);
+        }
+    }
 
     Rectangle {
         anchors.fill: parent
         color: M3.surface
     }
 
-    Timer {
-        interval: 12000
-        repeat: true
-        running: presentation.activatedInCalamares
-        onTriggered: presentation.goToNextSlide()
+    Column {
+        x: presentation.margin
+        y: presentation.topSpace
+        width: presentation.wide ? presentation.width / 2 - presentation.margin - 40 : presentation.width - 2 * presentation.margin
+        spacing: 0
+
+        MText {
+            width: parent.width
+            role: "displaySmall"
+            text: qsTr("Getting your computer ready…")
+            wrapMode: Text.Wrap
+            lineHeightMode: Text.ProportionalHeight
+            lineHeight: 1.1
+        }
+
+        Item {
+            width: 1
+            height: 20
+        }
+
+        MText {
+            width: parent.width
+            role: "bodyLarge"
+            text: qsTr("This takes a few minutes. You can leave the computer alone: when everything is ready, Kernora will ask you to restart.")
+            color: M3.surfaceVariantContent
+            wrapMode: Text.Wrap
+            lineHeightMode: Text.ProportionalHeight
+            lineHeight: 1.25
+        }
+
+        Item {
+            width: 1
+            height: 40
+        }
+
+        MLinearProgress {
+            width: parent.width
+            value: presentation.progress
+            indeterminate: presentation.progress <= 0
+            thickness: 6
+        }
+
+        Item {
+            width: 1
+            height: 12
+        }
+
+        MText {
+            width: parent.width
+            role: "bodyMedium"
+            text: presentation.message.length > 0 ? presentation.message + " · " + Math.round(presentation.progress * 100) + "%" : ""
+            color: M3.surfaceVariantContent
+            elide: Text.ElideRight
+        }
     }
 
-    Repeater {
-        model: presentation.texts
+    Item {
+        id: art
 
-        delegate: Slide {
-            id: slide
-            required property var modelData
-            required property int index
+        visible: presentation.wide
+        x: presentation.width / 2 + 24
+        y: presentation.topSpace
+        width: presentation.width / 2 - presentation.margin - 24
+        height: presentation.height - presentation.topSpace - 120
 
-            RoundedClip {
-                id: card
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.margins: 24
-                height: parent.height * 0.58
-                radius: 28
+        readonly property real unit: Math.min(width / 2.2, height / 2.4)
 
-                Rectangle {
-                    anchors.fill: parent
-                    color: M3.surfaceContainerHigh
-                }
-                Loader {
-                    id: scene
-                    anchors.fill: parent
-                    active: slide.visible
-                    source: "file:///usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/Scene.qml"
-                    property real phase: 0.15 + slide.index * 0.17
-                    NumberAnimation on phase {
-                        running: slide.visible
-                        from: 0.15 + slide.index * 0.17
-                        to: 0.25 + slide.index * 0.17
-                        duration: 12000
+        Repeater {
+            model: [
+                { shape: "cookie9", x: 0.10, y: 0.12, size: 1.0, tone: "primary", icon: "folder" },
+                { shape: "circle", x: 0.58, y: 0.0, size: 0.6, tone: "tertiary", icon: "image" },
+                { shape: "sunny", x: 0.62, y: 0.46, size: 0.72, tone: "secondary", icon: "settings" },
+                { shape: "pill", x: 0.18, y: 0.66, size: 0.52, tone: "neutral", icon: "music_note" }
+            ]
+
+            MShape {
+                id: blob
+
+                required property var modelData
+                required property int index
+
+                x: art.width * modelData.x
+                y: art.height * modelData.y
+                width: art.unit * modelData.size * 1.3
+                height: width
+                shape: modelData.shape
+                color: modelData.tone === "primary" ? M3.primaryContainer : modelData.tone === "tertiary" ? M3.tertiaryContainer
+                    : modelData.tone === "secondary" ? M3.secondaryContainer : M3.surfaceContainerHighest
+
+                SequentialAnimation on rotation {
+                    running: presentation.activatedInCalamares
+                    loops: Animation.Infinite
+                    NumberAnimation {
+                        from: blob.index % 2 ? -6 : 6
+                        to: blob.index % 2 ? 6 : -6
+                        duration: 3000 + blob.index * 500
+                        easing.type: Easing.InOutSine
                     }
-                    onLoaded: {
-                        item.intro = 1;
-                        item.phase = Qt.binding(() => scene.phase % 1);
+                    NumberAnimation {
+                        from: blob.index % 2 ? 6 : -6
+                        to: blob.index % 2 ? -6 : 6
+                        duration: 3000 + blob.index * 500
+                        easing.type: Easing.InOutSine
                     }
                 }
-            }
 
-            ColumnLayout {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: card.bottom
-                anchors.leftMargin: 40
-                anchors.rightMargin: 40
-                anchors.topMargin: 24
-                spacing: 8
-
-                MText {
-                    Layout.fillWidth: true
-                    role: "headlineSmall"
-                    text: slide.modelData[0]
-                    wrapMode: Text.Wrap
-                }
-                MText {
-                    Layout.fillWidth: true
-                    role: "bodyLarge"
-                    color: M3.surfaceVariantContent
-                    text: slide.modelData[1]
-                    wrapMode: Text.Wrap
-                }
-                Row {
-                    Layout.topMargin: 12
-                    spacing: 6
-                    Repeater {
-                        model: presentation.texts.length
-                        delegate: Rectangle {
-                            required property int index
-                            width: index === slide.index ? 20 : 6
-                            height: 6
-                            radius: 3
-                            color: index === slide.index ? M3.primary : M3.surfaceContainerHighest
-                        }
-                    }
+                MIcon {
+                    anchors.centerIn: parent
+                    rotation: -blob.rotation
+                    size: Math.round(blob.width * 0.32)
+                    source: presentation.symbol(blob.modelData.icon)
+                    color: blob.modelData.tone === "primary" ? M3.primaryContainerContent : blob.modelData.tone === "tertiary" ? M3.tertiaryContainerContent
+                        : blob.modelData.tone === "secondary" ? M3.secondaryContainerContent : M3.surfaceVariantContent
                 }
             }
         }
     }
 
     function onActivate() {
-        presentation.currentSlide = 0;
+        presentation.refresh();
     }
+
     function onLeave() {}
 }

@@ -8,196 +8,234 @@ import io.calamares.ui 1.0
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 import org.kernora.m3
 import org.kernora.ui
 
-Item {
-    id: locationPage
+PixelPage {
+    id: page
 
-    Rectangle {
-        anchors.fill: parent
-        color: M3.surface
+    icon: "language"
+    title: qsTr("Choose your language")
+    description: qsTr("Kernora will use this language. You can change it later in Settings.")
+
+    property string query
+    property var regionNames: ({})
+    property var zones: []
+
+    function nameOf(code: string): string {
+        const locale = Qt.locale(code.split(".")[0].split("@")[0]);
+        let name = locale.nativeLanguageName;
+        if (name.length === 0 || locale.name === "C") {
+            return "";
+        }
+        name = name.charAt(0).toLocaleUpperCase() + name.slice(1);
+        const territory = locale.nativeTerritoryName;
+        return territory.length > 0 ? name + " (" + territory + ")" : name;
     }
 
-    property string region: config.currentLocation ? config.currentLocation.region : ""
-    Component.onCompleted: config.regionalZonesModel.region = region
-    onRegionChanged: config.regionalZonesModel.region = region
-    Connections {
-        target: config.regionalZonesModel
-        function onDataChanged() { sortCities.restart(); }
+    readonly property var languages: {
+        const seen = {};
+        const list = [];
+        for (const code of config.supportedLocales) {
+            const name = nameOf(code);
+            if (name.length > 0 && !seen[name]) {
+                seen[name] = true;
+                list.push({ code: code, name: name, country: code.split(".")[0].split("_")[1] || "" });
+            }
+        }
+        list.sort((a, b) => a.name.localeCompare(b.name));
+        return list;
     }
 
-    property var cities: []
+    readonly property var rows: {
+        const needle = query.trim().toLocaleLowerCase();
+        if (needle.length > 0) {
+            return languages.filter(l => l.name.toLocaleLowerCase().indexOf(needle) >= 0 || l.code.toLowerCase().indexOf(needle) >= 0);
+        }
+        const country = config.currentLocation ? config.currentLocation.countryCode : "";
+        const current = config.currentLanguageCode;
+        const common = ["en", "ru", "uk", "de", "fr", "es", "pt", "it", "pl", "tr", "zh", "ja", "ko", "ar", "nl", "sv", "cs", "ro", "hu", "el", "he", "fi", "da", "nb", "kk", "be", "id", "vi", "th", "hi", "fa", "bg", "sr", "hr", "sk", "lt", "lv", "et", "ka", "hy", "az", "uz"];
+        const major = l => common.indexOf(l.code.split("_")[0]) >= 0;
+        const suggested = languages.filter(l => l.code === current || (country.length > 0 && l.country === country && major(l)) || l.code.indexOf("en_US") === 0);
+        suggested.sort((a, b) => (b.code === current) - (a.code === current));
+        const result = [{ header: qsTr("Suggested") }].concat(suggested.slice(0, 4));
+        return result.concat([{ header: qsTr("All languages") }]).concat(languages);
+    }
+
     Instantiator {
-        id: cityModel
-        model: config.regionalZonesModel
+        model: config.regionModel
         delegate: QtObject {
             required property string name
             required property string key
+            Component.onCompleted: {
+                const names = Object.assign({}, page.regionNames);
+                names[key] = name;
+                page.regionNames = names;
+            }
         }
-        onObjectAdded: sortCities.restart()
-        onObjectRemoved: sortCities.restart()
     }
+
+    Instantiator {
+        id: zoneObjects
+        model: config.zonesModel
+        delegate: QtObject {
+            required property string name
+            required property string key
+            required property string region
+        }
+        onObjectAdded: zoneTimer.restart()
+    }
+
     Timer {
-        id: sortCities
+        id: zoneTimer
         interval: 0
         onTriggered: {
             const list = [];
-            for (let i = 0; i < cityModel.count; ++i) {
-                const city = cityModel.objectAt(i);
-                if (city) {
-                    list.push({ name: city.name, key: city.key });
+            for (let i = 0; i < zoneObjects.count; ++i) {
+                const zone = zoneObjects.objectAt(i);
+                if (zone) {
+                    list.push({ value: zone.region + "/" + zone.key, label: zone.name + ", " + (page.regionNames[zone.region] || zone.region) });
                 }
             }
-            list.sort((a, b) => a.name.localeCompare(b.name));
-            locationPage.cities = list;
+            list.sort((a, b) => a.label.localeCompare(b.label));
+            page.zones = list;
         }
     }
-    onCitiesChanged: {
-        const here = config.currentLocation;
-        const zone = here && here.region === region ? here.zone : "";
-        const index = cities.findIndex(city => city.key === zone);
-        Qt.callLater(() => index >= 0 ? zones.positionViewAtIndex(index, ListView.Center) : zones.positionViewAtBeginning());
+
+    below: Group {
+        width: parent ? parent.width : 400
+
+        ListItem {
+            title: qsTr("Time zone")
+            subtitle: config.currentLocation ? config.currentLocation.name + ", " + (page.regionNames[config.currentLocation.region] || config.currentLocation.region) : ""
+            icon: "preferences-system-time"
+            iconStyle: "plain"
+            chevron: true
+            onClicked: zoneDialog.open()
+        }
+
+        ListItem {
+            title: qsTr("Formats")
+            subtitle: page.nameOf(config.currentLCCode) || config.currentLCStatus
+            icon: "office-calendar"
+            iconStyle: "plain"
+            chevron: true
+            onClicked: formatsDialog.open()
+        }
     }
 
-    ColumnLayout {
+    Column {
         anchors.fill: parent
-        anchors.leftMargin: 32
-        anchors.rightMargin: 32
-        anchors.topMargin: 24
-        anchors.bottomMargin: 16
-        spacing: 14
+        spacing: 16
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 16
-            IconCircle {
-                size: 48
-                icon: "preferences-system-time"
-                accent: 3
-            }
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 0
-                MText {
-                    Layout.fillWidth: true
-                    role: "headlineSmall"
-                    text: config.currentLocation ? config.currentLocation.name : ""
-                }
-                MText {
-                    Layout.fillWidth: true
-                    role: "bodyMedium"
-                    color: M3.surfaceVariantContent
-                    text: config.currentTimezoneName
-                }
-            }
+        SearchField {
+            id: search
+            width: parent.width
+            placeholderText: qsTr("Search languages")
+            onTextChanged: page.query = text
         }
 
-        Flow {
-            Layout.fillWidth: true
-            spacing: 8
-            Repeater {
-                model: config.regionModel
-                delegate: AbstractButton {
-                    id: chip
-                    required property string name
-                    required property string key
-                    readonly property bool chosen: key === locationPage.region
-                    implicitWidth: chipLabel.implicitWidth + 32
-                    implicitHeight: 34
-                    onClicked: locationPage.region = key
-                    background: Rectangle {
-                        radius: 8
-                        color: chip.chosen ? M3.secondaryContainer : "transparent"
-                        border.width: chip.chosen ? 0 : 1
-                        border.color: M3.outline
-                        MStateLayer {
-                            radius: 8
-                            hovered: chip.hovered
-                            pressed: chip.pressed
-                        }
-                    }
-                    contentItem: MText {
-                        id: chipLabel
-                        role: "labelLarge"
-                        horizontalAlignment: Text.AlignHCenter
-                        text: chip.name
-                        color: chip.chosen ? M3.secondaryContainerContent : M3.surfaceVariantContent
-                    }
-                }
-            }
-        }
+        ListView {
+            id: list
 
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            radius: 20
-            color: M3.surfaceContainer
+            width: parent.width
+            height: parent.height - search.height - parent.spacing
             clip: true
+            spacing: 2
+            boundsBehavior: Flickable.StopAtBounds
+            model: page.rows
+            ScrollBar.vertical: ScrollBar {}
 
-            ListView {
-                id: zones
-                anchors.fill: parent
-                anchors.margins: 6
-                model: locationPage.cities
-                spacing: 2
-                boundsBehavior: Flickable.StopAtBounds
-                ScrollBar.vertical: ScrollBar {}
-                delegate: RadioRow {
-                    required property var modelData
-                    width: zones.width
-                    title: modelData.name
-                    checked: config.currentLocation && config.currentLocation.region === locationPage.region
-                        && config.currentLocation.zone === modelData.key
-                    onClicked: config.setCurrentLocation(locationPage.region, modelData.key)
+            delegate: Item {
+                id: row
+
+                required property int index
+                required property var modelData
+                readonly property bool header: modelData.header !== undefined
+                readonly property bool selected: !header && modelData.code === config.currentLanguageCode
+                readonly property bool first: index === 0 || page.rows[index - 1].header !== undefined
+                readonly property bool last: index === page.rows.length - 1 || page.rows[index + 1].header !== undefined
+
+                width: list.width
+                height: header ? (index === 0 ? 36 : 56) : 60
+
+                MText {
+                    visible: row.header
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 10
+                    x: 4
+                    role: "titleSmall"
+                    text: row.header ? row.modelData.header : ""
+                    color: M3.primary
                 }
-            }
-        }
 
-        Group {
-            Layout.fillWidth: true
-            ListItem {
-                title: config.currentLanguageStatus
-                icon: "preferences-desktop-locale"
-                iconStyle: "plain"
-                maximumSubtitleLines: 2
-                trailing: Component {
-                    Button {
-                        text: qsTr("Change", "@button")
-                        onClicked: languageDialog.open()
+                Rectangle {
+                    visible: !row.header
+                    anchors.fill: parent
+                    color: row.selected ? M3.secondaryContainer : M3.surfaceContainerHigh
+                    topLeftRadius: row.first ? 24 : 6
+                    topRightRadius: row.first ? 24 : 6
+                    bottomLeftRadius: row.last ? 24 : 6
+                    bottomRightRadius: row.last ? 24 : 6
+
+                    MText {
+                        x: 24
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width - 80
+                        role: "bodyLarge"
+                        text: row.header ? "" : row.modelData.name
+                        horizontalAlignment: Text.AlignLeft
+                        elide: Text.ElideRight
+                        color: row.selected ? M3.secondaryContainerContent : M3.surfaceContent
+                    }
+
+                    MIcon {
+                        visible: row.selected
+                        anchors.right: parent.right
+                        anchors.rightMargin: 20
+                        anchors.verticalCenter: parent.verticalCenter
+                        size: 24
+                        source: page.symbol("check")
+                        color: M3.secondaryContainerContent
+                    }
+
+                    MStateLayer {
+                        anchors.fill: parent
+                        radius: 6
+                        color: M3.surfaceContent
+                        hovered: rowMouse.containsMouse
+                        pressed: rowMouse.pressed
+                    }
+
+                    MouseArea {
+                        id: rowMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: config.currentLanguageCode = row.modelData.code
                     }
                 }
-                interactive: false
-            }
-            ListItem {
-                title: config.currentLCStatus
-                icon: "office-calendar"
-                iconStyle: "plain"
-                trailing: Component {
-                    Button {
-                        text: qsTr("Change", "@button")
-                        onClicked: formatsDialog.open()
-                    }
-                }
-                interactive: false
             }
         }
     }
 
     ChoiceDialog {
-        id: languageDialog
-        title: config.currentLanguageStatus
+        id: zoneDialog
+        title: qsTr("Time zone")
         searchable: true
-        options: config.supportedLocales.map(l => ({ value: l, label: l }))
-        currentValue: config.currentLanguageCode
-        onChosen: value => config.currentLanguageCode = value
+        options: page.zones
+        currentValue: config.currentLocation ? config.currentLocation.region + "/" + config.currentLocation.zone : ""
+        onChosen: value => {
+            const cut = value.indexOf("/");
+            config.setCurrentLocation(value.slice(0, cut), value.slice(cut + 1));
+        }
     }
+
     ChoiceDialog {
         id: formatsDialog
-        title: config.currentLCStatus
+        title: qsTr("Formats")
         searchable: true
-        options: config.supportedLocales.map(l => ({ value: l, label: l }))
+        options: page.languages.map(l => ({ value: l.code, label: l.name }))
         currentValue: config.currentLCCode
         onChosen: value => config.currentLCCode = value
     }

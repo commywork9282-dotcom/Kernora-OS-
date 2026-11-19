@@ -1,3 +1,12 @@
+calamares (3.3.14-1kernora3) UNRELEASED; urgency=medium
+
+  * Separate full-screen setup: real full-screen window, quit without asking
+    on the first page, Global.insert for QML pages, zone regions in QML and
+    install progress in the global storage for the slideshow; the partition
+    page in the same Pixel frame with back and next buttons.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 19 Nov 2026 12:00:00 -0800
+
 calamares (3.3.14-1kernora2) UNRELEASED; urgency=medium
 
   * Refresh translated timezone models and status when the language changes.

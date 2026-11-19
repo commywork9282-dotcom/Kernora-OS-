@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Kernora Setup
+Name[ru]=Настройка Kernora
+Comment=Set up Kernora OS before the desktop starts
+Comment[ru]=Настройка Kernora OS до запуска рабочего стола
+Exec=/usr/lib/x86_64-linux-gnu/libexec/plasma-dbus-run-session-if-needed /usr/libexec/kernora-setup-session
+TryExec=/usr/bin/startplasma-wayland
+DesktopNames=KDE
+NoDisplay=true

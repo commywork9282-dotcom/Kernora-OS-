@@ -3,12 +3,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 set -eu
 
-if [ "${1:-}" = --autostart ]; then
-    grep -qw 'boot=live' /proc/cmdline 2>/dev/null || [ -d /run/live/medium ] || exit 0
-    shift
-fi
-
 if [ "$(id -u)" != 0 ]; then
+    state="${XDG_RUNTIME_DIR:-/nonexistent}/kernora-setup"
+    if [ -z "${KERNORA_SETUP_STAGE:-}" ] && [ -e "$state/loop" ]; then
+        : > "$state/again"
+        exec dbus-send --session --type=method_call --dest=org.kde.Shutdown /Shutdown org.kde.Shutdown.logout
+    fi
     exec pkexec /usr/bin/kernora-installer --session "${LANG:-C.UTF-8}" "${LANGUAGE:-}"
 fi
 

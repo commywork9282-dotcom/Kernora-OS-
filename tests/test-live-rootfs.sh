@@ -51,8 +51,9 @@ for module in kcm_lookandfeel kcm_desktoptheme kcm_colors kcm_style kcm_icons kc
 done
 [[ ! -e /usr/bin/lookandfeeltool && ! -e /usr/bin/plasma-apply-lookandfeel ]] \
   || fail "KDE global theme tools are still installed"
-grep -Fxq 'Exec=/usr/bin/kernora-installer --autostart' /etc/xdg/autostart/org.kernora.installer-autostart.desktop \
-  || fail "the live session does not open the installer on login"
+[[ -x /usr/libexec/kernora-setup-session && -s /usr/share/wayland-sessions/kernora-setup.desktop ]] \
+  && [[ ! -e /etc/xdg/autostart/org.kernora.installer-autostart.desktop ]] \
+  || fail "the live image does not start in the separate setup session"
 fastfetch_out=$(fastfetch --pipe true 2>/dev/null)
 grep -Fq ',o000000000oo,,' <<<"$fastfetch_out" && grep -Fq 'Kernel' <<<"$fastfetch_out" \
   || fail "fastfetch does not show the Kernora logo with the system info"

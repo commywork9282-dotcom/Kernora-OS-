@@ -51,7 +51,7 @@ bluez-firmware
 amd64-microcode
 intel-microcode
 
-calamares=3.3.14-1kernora2
+calamares=3.3.14-1kernora3
 squashfs-tools
 grub-common
 grub2-common

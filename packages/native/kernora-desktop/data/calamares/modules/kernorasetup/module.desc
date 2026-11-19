@@ -1,0 +1,6 @@
+---
+type: job
+name: kernorasetup
+interface: python
+script: main.py
+noconfig: true

@@ -7,83 +7,59 @@ import io.calamares.core 1.0
 import io.calamares.ui 1.0
 
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
 import org.kernora.m3
-import org.kernora.ui
 
-Item {
-    id: finished
+PixelPage {
+    id: page
 
-    Rectangle {
-        anchors.fill: parent
-        color: M3.surface
+    icon: config.failed ? "error" : "check_circle"
+    title: config.failed ? qsTr("Installation Failed") : qsTr("All set")
+    description: config.failed ? config.failureMessage
+        : qsTr("%1 is installed. Restart the computer and sign in to your account.").arg(Branding.string(Branding.ShortProductName))
+    showBack: false
+    primaryText: config.failed ? qsTr("Close Installer") : qsTr("Restart now")
+    primaryEnabled: true
+    primaryAction: () => config.failed ? ViewManager.quit() : config.doRestart(true)
+    secondaryText: config.failed ? "" : qsTr("Later")
+    secondaryAction: () => ViewManager.quit()
+
+    below: Text {
+        visible: config.failed && text.length > 0
+        width: parent ? parent.width : 400
+        text: config.failureDetails
+        textFormat: Text.StyledText
+        wrapMode: Text.Wrap
+        font: M3.bodyMedium
+        color: M3.surfaceVariantContent
     }
 
-    readonly property string doneText: qsTr("%1 has been installed on your computer.<br/>
-            You may now restart into your new system, or continue using the Live environment.")
-            .arg(Branding.string(Branding.ProductName))
+    Item {
+        anchors.fill: parent
 
-    ColumnLayout {
-        anchors.centerIn: parent
-        width: Math.min(parent.width - 80, 560)
-        spacing: 16
-
-        Rectangle {
+        MShape {
             id: badge
-            Layout.alignment: Qt.AlignHCenter
-            implicitWidth: 128
-            implicitHeight: 128
-            radius: 64 - 24 * arrive.value
-            rotation: -45 * (1 - arrive.value)
+
+            anchors.centerIn: parent
+            width: Math.min(parent.width, parent.height) * 0.62
+            height: width
+            shape: config.failed ? "cookie4" : "sunny"
             color: config.failed ? M3.errorContainer : M3.primaryContainer
+            rotation: -30 * (1 - arrive.value)
+            scale: 0.6 + 0.4 * arrive.value
+
             MMorph {
                 id: arrive
-                active: finished.visible
+                active: page.visible
                 dampingRatio: 0.55
                 response: 0.6
             }
+
             MIcon {
                 anchors.centerIn: parent
                 rotation: -badge.rotation
-                size: 64
-                source: config.failed ? "dialog-error" : "checkmark"
+                size: Math.round(badge.width * 0.36)
+                source: page.symbol(config.failed ? "error" : "check")
                 color: config.failed ? M3.errorContainerContent : M3.primaryContainerContent
-            }
-        }
-
-        MText {
-            Layout.fillWidth: true
-            Layout.topMargin: 12
-            role: "headlineMedium"
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.Wrap
-            text: config.failed ? config.failureMessage : qsTr("Installation Completed")
-        }
-        Text {
-            Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.Wrap
-            textFormat: Text.StyledText
-            font: M3.bodyLarge
-            color: M3.surfaceVariantContent
-            text: config.failed ? config.failureDetails : finished.doneText.replace(/<br\/>\s*/g, " ")
-        }
-
-        RowLayout {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.topMargin: 20
-            spacing: 12
-            Button {
-                text: qsTr("Close Installer")
-                flat: true
-                onClicked: ViewManager.quit()
-            }
-            Button {
-                visible: !config.failed
-                text: qsTr("Restart System")
-                highlighted: true
-                onClicked: config.doRestart(true)
             }
         }
     }

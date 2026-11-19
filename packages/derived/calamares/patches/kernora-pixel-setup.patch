@@ -1,0 +1,387 @@
+Description: Separate full-screen setup for Kernora OS
+ Kernora runs the installer as its own full-screen setup before the desktop
+ starts, drawn like the Pixel setup wizard:
+  - a branding with windowExpanding: fullscreen shows a real full-screen
+    window instead of a maximized one;
+  - leaving from the first page (Try without installing) quits without the
+    cancel question, nothing has been chosen there yet;
+  - QML pages can store their choices with Global.insert / Global.remove;
+  - the zones model tells QML the region of each zone;
+  - the install page hides its own progress bar and log button and writes
+    the progress to the global storage (kernoraProgress, kernoraProgressMessage)
+    so the slideshow draws it;
+  - the partition page sits in the same Pixel frame as the QML pages: back
+    button, title and text on the left, the choices on the right and the
+    Next button at the bottom, because the window has no navigation bar.
+Author: Kernora Developers <developers@kernora.invalid>
+Forwarded: not-needed
+Last-Update: 2026-11-19
+---
+--- a/src/calamares/CalamaresApplication.cpp
++++ b/src/calamares/CalamaresApplication.cpp
+@@ -274,7 +274,7 @@
+     if ( Calamares::Branding::instance()->windowMaximize() )
+     {
+         m_mainwindow->setWindowFlag( Qt::FramelessWindowHint );
+-        m_mainwindow->showMaximized();
++        m_mainwindow->showFullScreen();
+     }
+     else
+     {
+--- a/src/libcalamares/GlobalStorage.h
++++ b/src/libcalamares/GlobalStorage.h
+@@ -62,7 +62,7 @@
+      * already exists in the store, its existing value is overwritten.
+      * The changed() signal is emitted regardless.
+      */
+-    void insert( const QString& key, const QVariant& value );
++    Q_INVOKABLE void insert( const QString& key, const QVariant& value );
+     /** @brief Removes a key and its value
+      *
+      * The @p key is removed from the store. If the @p key does not
+@@ -70,7 +70,7 @@
+      *
+      * @return the number of keys remaining
+      */
+-    int remove( const QString& key );
++    Q_INVOKABLE int remove( const QString& key );
+ 
+     /// @brief Clears all keys in this GS object
+     void clear();
+--- a/src/libcalamares/locale/TimeZone.cpp
++++ b/src/libcalamares/locale/TimeZone.cpp
+@@ -366,7 +366,7 @@
+ QHash< int, QByteArray >
+ ZonesModel::roleNames() const
+ {
+-    return { { NameRole, "name" }, { KeyRole, "key" } };
++    return { { NameRole, "name" }, { KeyRole, "key" }, { RegionRole, "region" } };
+ }
+ 
+ const TimeZoneData*
+--- a/src/libcalamaresui/ViewManager.cpp
++++ b/src/libcalamaresui/ViewManager.cpp
+@@ -535,6 +535,11 @@
+         return Confirmation::EndOfInstallation;
+     }
+ 
++    if ( m_currentStep == 0 )
++    {
++        return Confirmation::CancelInstallation;
++    }
++
+     // Not at the very end, cancel/quit might be disabled
+     if ( settings->disableCancel() )
+     {
+--- a/src/libcalamaresui/viewpages/ExecutionViewStep.cpp
++++ b/src/libcalamaresui/viewpages/ExecutionViewStep.cpp
+@@ -16,6 +16,7 @@
+ #include "Branding.h"
+ #include "CalamaresConfig.h"
+ #include "Job.h"
++#include "GlobalStorage.h"
+ #include "JobQueue.h"
+ #include "Settings.h"
+ #include "ViewManager.h"
+@@ -108,6 +109,10 @@
+     barLayout->addWidget( m_progressBar );
+     barLayout->addWidget( toolBar );
+ 
++    m_progressBar->hide();
++    m_label->hide();
++    toolBar->hide();
++
+     connect( JobQueue::instance(), &JobQueue::progress, this, &ExecutionViewStep::updateFromJobQueue );
+ }
+ 
+@@ -217,6 +222,15 @@
+     {
+         m_label->setText( message );
+     }
++    auto* storage = JobQueue::instance()->globalStorage();
++    if ( storage )
++    {
++        if ( !message.isEmpty() )
++        {
++            storage->insert( QStringLiteral( "kernoraProgressMessage" ), message );
++        }
++        storage->insert( QStringLiteral( "kernoraProgress" ), percent );
++    }
+ }
+ 
+ void
+--- a/src/modules/partition/CMakeLists.txt
++++ b/src/modules/partition/CMakeLists.txt
+@@ -82,6 +82,7 @@
+             gui/PartitionLabelsView.cpp
+             gui/PartitionSizeController.cpp
+             gui/PartitionSplitterWidget.cpp
++            gui/PixelFrame.cpp
+             gui/ResizeVolumeGroupDialog.cpp
+             gui/ScanningDialog.cpp
+             gui/VolumeGroupBaseDialog.cpp
+--- a/src/modules/partition/gui/PixelFrame.cpp
++++ b/src/modules/partition/gui/PixelFrame.cpp
+@@ -0,0 +1,135 @@
++/* === This file is part of Calamares - <https://calamares.io> ===
++ *
++ *   SPDX-FileCopyrightText: 2026 Kernora Developers
++ *   SPDX-License-Identifier: GPL-3.0-or-later
++ *
++ *   Calamares is Free Software: see the License-Identifier above.
++ *
++ */
++
++#include "PixelFrame.h"
++
++#include "Branding.h"
++#include "ViewManager.h"
++
++#include <QIcon>
++#include <QLabel>
++#include <QPushButton>
++#include <QResizeEvent>
++#include <QToolButton>
++
++#include <algorithm>
++
++static int
++bounded( double value, int low, int high )
++{
++    return int( std::max< double >( low, std::min< double >( high, value ) ) );
++}
++
++PixelFrame::PixelFrame( QWidget* content, QWidget* parent )
++    : QWidget( parent )
++    , m_content( content )
++    , m_back( new QToolButton( this ) )
++    , m_icon( new QLabel( this ) )
++    , m_title( new QLabel( this ) )
++    , m_description( new QLabel( this ) )
++    , m_next( new QPushButton( this ) )
++{
++    setObjectName( QStringLiteral( "pixelPage" ) );
++    setAttribute( Qt::WA_StyledBackground, true );
++    m_content->setParent( this );
++
++    const auto* branding = Calamares::Branding::instance();
++    m_back->setObjectName( QStringLiteral( "pixelBack" ) );
++    m_back->setIcon( QIcon( branding->image( QStringLiteral( "images/pixel-arrow-back.svg" ), QSize( 48, 48 ) ) ) );
++    m_back->setIconSize( QSize( 24, 24 ) );
++    m_back->setFixedSize( 48, 48 );
++    m_back->setCursor( Qt::PointingHandCursor );
++    m_back->setFocusPolicy( Qt::TabFocus );
++
++    m_icon->setObjectName( QStringLiteral( "pixelIcon" ) );
++    QPixmap icon = branding->image( QStringLiteral( "images/pixel-hard-drive.svg" ), QSize( 80, 80 ) );
++    icon.setDevicePixelRatio( 2.0 );
++    m_icon->setPixmap( icon );
++    m_icon->setFixedSize( 40, 40 );
++
++    m_title->setObjectName( QStringLiteral( "pixelTitle" ) );
++    m_title->setWordWrap( true );
++    m_description->setObjectName( QStringLiteral( "pixelDescription" ) );
++    m_description->setWordWrap( true );
++
++    m_next->setObjectName( QStringLiteral( "pixelPrimary" ) );
++    m_next->setCursor( Qt::PointingHandCursor );
++
++    auto* manager = Calamares::ViewManager::instance();
++    connect( m_back, &QToolButton::clicked, manager, &Calamares::ViewManager::back );
++    connect( m_next, &QPushButton::clicked, manager, &Calamares::ViewManager::next );
++    connect( manager, &Calamares::ViewManager::nextEnabledChanged, m_next, &QPushButton::setEnabled );
++    connect( manager, &Calamares::ViewManager::backEnabledChanged, m_back, &QToolButton::setVisible );
++    connect( manager,
++             &Calamares::ViewManager::nextLabelChanged,
++             this,
++             [ this ]( const QString& label )
++             {
++                 m_next->setText( label );
++                 layoutChildren();
++             } );
++    m_next->setEnabled( manager->nextEnabled() );
++    m_back->setVisible( manager->backEnabled() );
++    m_next->setText( manager->nextLabel() );
++}
++
++void
++PixelFrame::setHeader( const QString& title, const QString& description )
++{
++    m_title->setText( title );
++    m_description->setText( description );
++    layoutChildren();
++}
++
++void
++PixelFrame::resizeEvent( QResizeEvent* event )
++{
++    QWidget::resizeEvent( event );
++    layoutChildren();
++}
++
++void
++PixelFrame::showEvent( QShowEvent* event )
++{
++    QWidget::showEvent( event );
++    layoutChildren();
++}
++
++void
++PixelFrame::layoutChildren()
++{
++    const int w = width();
++    const int h = height();
++    const bool wide = w >= 960;
++    const int margin = wide ? bounded( w * 0.05, 40, 72 ) : 24;
++    const int top = bounded( h * 0.15, 88, 136 );
++    const int bottom = bounded( h * 0.053, 24, 48 );
++    const int pane = wide ? w / 2 - margin - 24 : w - 2 * margin;
++    const int corner = margin / 2 - 8;
++
++    m_back->move( corner, corner );
++
++    const int headerWidth = std::max( 0, pane - ( wide ? 16 : 0 ) );
++    int y = top;
++    m_icon->setGeometry( margin, y, 40, 40 );
++    y += 40 + 28;
++    const int titleHeight = m_title->heightForWidth( headerWidth );
++    m_title->setGeometry( margin, y, headerWidth, titleHeight );
++    y += titleHeight + 20;
++    const int textHeight = m_description->heightForWidth( headerWidth );
++    m_description->setGeometry( margin, y, headerWidth, textHeight );
++    y += textHeight;
++
++    const int nextWidth = std::max( 148, m_next->sizeHint().width() + 16 );
++    m_next->setGeometry( w - margin - nextWidth, h - bottom - 56, nextWidth, 56 );
++
++    const int contentTop = wide ? top : y + 24;
++    const int contentLeft = wide ? w / 2 + 24 : margin;
++    m_content->setGeometry( contentLeft, contentTop, pane, std::max( 0, h - contentTop - 56 - bottom - 24 ) );
++}
+--- a/src/modules/partition/gui/PixelFrame.h
++++ b/src/modules/partition/gui/PixelFrame.h
+@@ -0,0 +1,42 @@
++/* === This file is part of Calamares - <https://calamares.io> ===
++ *
++ *   SPDX-FileCopyrightText: 2026 Kernora Developers
++ *   SPDX-License-Identifier: GPL-3.0-or-later
++ *
++ *   Calamares is Free Software: see the License-Identifier above.
++ *
++ */
++
++#ifndef PARTITION_GUI_PIXELFRAME_H
++#define PARTITION_GUI_PIXELFRAME_H
++
++#include <QWidget>
++
++class QLabel;
++class QPushButton;
++class QToolButton;
++
++class PixelFrame : public QWidget
++{
++    Q_OBJECT
++public:
++    explicit PixelFrame( QWidget* content, QWidget* parent = nullptr );
++
++    void setHeader( const QString& title, const QString& description );
++
++protected:
++    void resizeEvent( QResizeEvent* event ) override;
++    void showEvent( QShowEvent* event ) override;
++
++private:
++    void layoutChildren();
++
++    QWidget* m_content;
++    QToolButton* m_back;
++    QLabel* m_icon;
++    QLabel* m_title;
++    QLabel* m_description;
++    QPushButton* m_next;
++};
++
++#endif
+--- a/src/modules/partition/PartitionViewStep.cpp
++++ b/src/modules/partition/PartitionViewStep.cpp
+@@ -21,6 +21,7 @@
+ #include "gui/PartitionBarsView.h"
+ #include "gui/PartitionLabelsView.h"
+ #include "gui/PartitionPage.h"
++#include "gui/PixelFrame.h"
+ #include "partition/FileSystem.h"
+ 
+ #include "Branding.h"
+@@ -47,6 +48,7 @@
+     , m_config( new Config( this ) )
+     , m_core( nullptr )
+     , m_widget( new QStackedWidget() )
++    , m_frame( new PixelFrame( m_widget ) )
+     , m_choicePage( nullptr )
+     , m_manualPartitionPage( nullptr )
+ {
+@@ -57,6 +59,9 @@
+     CALAMARES_RETRANSLATE(
+         if ( m_waitingWidget ) { m_waitingWidget->setText( tr( "Gathering system information…", "@status" ) ); } );
+ 
++    connect( m_widget, &QStackedWidget::currentChanged, this, &PartitionViewStep::updatePixelHeader );
++    CALAMARES_RETRANSLATE_SLOT( &PartitionViewStep::updatePixelHeader );
++
+     m_core = new PartitionCoreModule( this );  // Unusable before init is complete!
+     // We're not done loading, but we need the configuration map first.
+ }
+@@ -363,7 +368,26 @@
+ QWidget*
+ PartitionViewStep::widget()
+ {
+-    return m_widget;
++    return m_frame;
++}
++
++void
++PartitionViewStep::updatePixelHeader()
++{
++    const QString product = Calamares::Branding::instance()->string( Calamares::Branding::ShortProductName );
++    const bool manual = m_manualPartitionPage && m_widget->currentWidget() == m_manualPartitionPage;
++    if ( manual )
++    {
++        m_frame->setHeader( tr( "Manual partitioning", "@title" ),
++                            tr( "Create, resize or delete partitions yourself. %1 needs a partition mounted at /.", "@info" )
++                                .arg( product ) );
++    }
++    else
++    {
++        m_frame->setHeader(
++            tr( "Where to install %1", "@title" ).arg( product ),
++            tr( "Choose how to place %1 on the disk. Before installing, you will see what changes.", "@info" ).arg( product ) );
++    }
+ }
+ 
+ void
+--- a/src/modules/partition/PartitionViewStep.h
++++ b/src/modules/partition/PartitionViewStep.h
+@@ -25,6 +25,7 @@
+ class PartitionPage;
+ class PartitionCoreModule;
+ class QStackedWidget;
++class PixelFrame;
+ class WaitingWidget;
+ 
+ template < typename T >
+@@ -82,6 +83,7 @@
+     Calamares::RequirementsList checkRequirements() override;
+ 
+ private:
++    void updatePixelHeader();
+     void initPartitionCoreModule();
+     void continueLoading();
+ 
+@@ -92,6 +94,7 @@
+ 
+     PartitionCoreModule* m_core;
+     QStackedWidget* m_widget;
++    PixelFrame* m_frame;
+     ChoicePage* m_choicePage;
+     PartitionPage* m_manualPartitionPage;
+ 

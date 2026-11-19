@@ -7,159 +7,276 @@ import io.calamares.core 1.0
 import io.calamares.ui 1.0
 
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
 import org.kernora.m3
-import org.kernora.ui
 
 Item {
-    id: welcome
+    id: hello
+
+    readonly property var greetings: ["Hello", "Привет", "Hola", "Bonjour", "Hallo", "Olá", "Привіт", "Cześć", "Merhaba", "你好", "こんにちは", "Ciao"]
+    readonly property bool checking: !ViewManager.nextEnabled && failures.count === 0
+    readonly property bool blocking: !checking && !config.requirementsModel.satisfiedMandatory
+    property int shown: Qt.locale().name.indexOf("ru") === 0 ? 1 : 0
+
+    function symbol(name: string): url {
+        return Qt.resolvedUrl("symbols/" + name + "_24px.svg");
+    }
 
     Rectangle {
         anchors.fill: parent
         color: M3.surface
     }
 
-    readonly property string welcomeText: qsTr("<h3>Welcome to the %1 <quote>%2</quote> installer</h3>
-            <p>This program will ask you some questions and set up %1 on your computer.</p>")
-            .arg(Branding.string(Branding.ProductName)).arg(Branding.string(Branding.Version))
-    function part(tag: string): string {
-        const match = welcomeText.match(new RegExp("<" + tag + ">([\\s\\S]*?)</" + tag + ">"));
-        const text = match ? match[1] : "";
-        const version = Branding.string(Branding.Version);
-        const quoted = /^[0-9.]+$/.test(version) ? ["", ""] : ["«", "»"];
-        return text.replace(/<quote>/g, quoted[0]).replace(/<\/quote>/g, quoted[1]).replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+    MShape {
+        x: hello.width - hello.height * 0.62
+        y: -hello.height * 0.37
+        width: hello.height * 1.09
+        height: width
+        shape: "puffy"
+        color: M3.primaryContainer
+        opacity: 0.85
+
+        RotationAnimation on rotation {
+            from: 12
+            to: 372
+            duration: 240000
+            loops: Animation.Infinite
+        }
     }
 
-    RoundedClip {
-        id: hero
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.margins: 16
-        height: parent.height * 0.46
-        radius: 28
+    MShape {
+        x: -hello.height * 0.4
+        y: hello.height * 0.48
+        width: hello.height * 0.91
+        height: width
+        shape: "cookie12"
+        color: M3.tertiaryContainer
+        opacity: 0.8
+
+        RotationAnimation on rotation {
+            from: -18
+            to: -378
+            duration: 300000
+            loops: Animation.Infinite
+        }
+    }
+
+    Item {
+        id: tryButton
+
+        x: 32
+        y: 32
+        width: tryLabel.implicitWidth + 40
+        height: 48
+        activeFocusOnTab: true
+
+        Accessible.role: Accessible.Button
+        Accessible.name: tryLabel.text
+        Keys.onReturnPressed: ViewManager.quit()
+        Keys.onSpacePressed: ViewManager.quit()
 
         Rectangle {
             anchors.fill: parent
+            radius: height / 2
             color: M3.surfaceContainerHigh
         }
-        Loader {
-            id: scene
-            anchors.fill: parent
-            source: "file:///usr/share/plasma/wallpapers/org.kernora.shapes/contents/ui/Scene.qml"
-            property real phase: 0.3
-            NumberAnimation on phase {
-                from: 0.3
-                to: 1.3
-                duration: 300000
-                loops: Animation.Infinite
-            }
-            onLoaded: {
-                item.intro = 1;
-                item.phase = Qt.binding(() => scene.phase % 1);
-            }
-        }
-        Rectangle {
+
+        MText {
+            id: tryLabel
             anchors.centerIn: parent
-            width: 104
-            height: 104
-            radius: 52
-            color: M3.primary
-            MIcon {
-                anchors.centerIn: parent
-                size: 64
-                source: "kernora-logo"
-                color: M3.primaryContent
-            }
+            role: "labelLarge"
+            text: qsTr("Try without installing")
+            color: M3.surfaceContent
+        }
+
+        MStateLayer {
+            anchors.fill: parent
+            radius: height / 2
+            color: M3.surfaceContent
+            hovered: tryMouse.containsMouse
+            pressed: tryMouse.pressed
+            focused: tryButton.activeFocus
+        }
+
+        MouseArea {
+            id: tryMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: ViewManager.quit()
         }
     }
 
-    ColumnLayout {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: hero.bottom
-        anchors.bottom: parent.bottom
-        anchors.leftMargin: 40
-        anchors.rightMargin: 40
-        anchors.topMargin: 24
-        anchors.bottomMargin: 16
-        spacing: 10
+    Item {
+        id: greeting
 
-        MText {
-            Layout.fillWidth: true
-            role: "headlineMedium"
-            text: welcome.part("h3")
-            wrapMode: Text.Wrap
-        }
-        MText {
-            Layout.fillWidth: true
-            role: "bodyLarge"
-            color: M3.surfaceVariantContent
-            text: welcome.part("p")
-            wrapMode: Text.Wrap
-        }
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: Math.round(hello.height * 0.5 - height / 2)
+        width: hello.width
+        height: 150
 
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.topMargin: 12
-            spacing: 16
-            IconCircle {
-                icon: "preferences-desktop-locale"
-                accent: 3
-            }
-            ComboBox {
-                Layout.fillWidth: true
-                Layout.maximumWidth: 420
-                model: config.languagesModel
-                textRole: "label"
-                currentIndex: config.localeIndex
-                onActivated: index => config.localeIndex = index
-            }
-        }
+        Repeater {
+            model: 2
 
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.topMargin: 8
-            visible: !config.requirementsModel.satisfiedRequirements
-            implicitHeight: requirements.implicitHeight + 32
-            radius: 20
-            color: config.requirementsModel.satisfiedMandatory ? M3.tertiaryContainer : M3.errorContainer
-            readonly property color ink: config.requirementsModel.satisfiedMandatory ? M3.tertiaryContainerContent : M3.errorContainerContent
+            MText {
+                required property int index
+                readonly property bool current: (hello.shown % 2) === index
+                property string label: hello.greetings[index]
 
-            ColumnLayout {
-                id: requirements
-                anchors.fill: parent
-                anchors.margins: 16
-                spacing: 6
-                Repeater {
-                    model: config.requirementsModel
-                    delegate: RowLayout {
-                        required property bool satisfied
-                        required property bool mandatory
-                        required property string negatedText
-                        visible: !satisfied
-                        spacing: 10
-                        MIcon {
-                            size: 20
-                            source: mandatory ? "dialog-error" : "dialog-warning"
-                            color: requirements.parent.ink
-                        }
-                        MText {
-                            Layout.fillWidth: true
-                            role: "bodyMedium"
-                            text: negatedText
-                            wrapMode: Text.Wrap
-                            color: requirements.parent.ink
-                        }
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.verticalCenterOffset: current ? 0 : 24
+                role: "displayLarge"
+                font.pixelSize: Math.round(Math.max(72, Math.min(112, hello.height * 0.125)))
+                font.weight: Font.Normal
+                text: label
+                color: M3.surfaceContent
+                opacity: current ? 1 : 0
+
+                Component.onCompleted: label = hello.greetings[(hello.shown + (current ? 0 : 1)) % hello.greetings.length]
+                onCurrentChanged: if (current) label = hello.greetings[hello.shown % hello.greetings.length]
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 600
+                        easing.type: Easing.Bezier
+                        easing.bezierCurve: [0.2, 0, 0, 1, 1, 1]
+                    }
+                }
+
+                Behavior on anchors.verticalCenterOffset {
+                    NumberAnimation {
+                        duration: 600
+                        easing.type: Easing.Bezier
+                        easing.bezierCurve: [0.2, 0, 0, 1, 1, 1]
                     }
                 }
             }
         }
-
-        Item { Layout.fillHeight: true }
     }
 
-    function onActivate() {}
+    Timer {
+        interval: 2600
+        running: hello.visible
+        repeat: true
+        onTriggered: hello.shown = hello.shown + 1
+    }
+
+    Rectangle {
+        id: notice
+
+        visible: hello.checking || failures.count > 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: next.top
+        anchors.bottomMargin: 32
+        width: Math.min(560, hello.width - 64)
+        height: noticeBody.implicitHeight + 40
+        radius: 28
+        color: hello.checking ? M3.surfaceContainerHigh : hello.blocking ? M3.errorContainer : M3.tertiaryContainer
+
+        readonly property color ink: hello.checking ? M3.surfaceContent
+            : hello.blocking ? M3.errorContainerContent : M3.tertiaryContainerContent
+
+        Column {
+            id: noticeBody
+
+            x: 24
+            y: 20
+            width: parent.width - 48
+            spacing: 10
+
+            MText {
+                width: parent.width
+                role: "titleMedium"
+                text: hello.checking ? qsTr("Checking this computer…")
+                    : hello.blocking ? qsTr("Installation cannot continue yet")
+                    : qsTr("You can continue with these warnings")
+                color: notice.ink
+                wrapMode: Text.Wrap
+            }
+
+            MLinearProgress {
+                visible: hello.checking
+                width: parent.width
+                indeterminate: true
+            }
+
+            Repeater {
+                id: failures
+
+                model: config.unsatisfiedRequirements
+
+                delegate: MText {
+                    required property string negatedText
+
+                    width: noticeBody.width
+                    role: "bodyMedium"
+                    text: negatedText.length > 0 ? negatedText : qsTr("A system check did not complete successfully.")
+                    color: notice.ink
+                    wrapMode: Text.Wrap
+                }
+            }
+        }
+    }
+
+    Item {
+        id: next
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: Math.round(Math.max(40, Math.min(72, hello.height * 0.08)))
+        width: 280
+        height: 96
+        enabled: ViewManager.nextEnabled
+        opacity: enabled ? 1 : 0.38
+        activeFocusOnTab: true
+        focus: true
+
+        Accessible.role: Accessible.Button
+        Accessible.name: qsTr("Next")
+        Keys.onReturnPressed: ViewManager.next()
+        Keys.onEnterPressed: ViewManager.next()
+        Keys.onSpacePressed: ViewManager.next()
+
+        MMorph {
+            id: nextMorph
+            active: nextMouse.pressed
+        }
+
+        Rectangle {
+            id: nextShape
+            anchors.fill: parent
+            radius: height / 2 + (24 - height / 2) * nextMorph.value
+            color: M3.primary
+        }
+
+        MIcon {
+            anchors.centerIn: parent
+            size: 36
+            source: hello.symbol("arrow_forward")
+            color: M3.primaryContent
+        }
+
+        MStateLayer {
+            anchors.fill: parent
+            radius: nextShape.radius
+            color: M3.primaryContent
+            hovered: nextMouse.containsMouse
+            pressed: nextMouse.pressed
+            focused: next.activeFocus
+        }
+
+        MouseArea {
+            id: nextMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: ViewManager.next()
+        }
+    }
+
+    function onActivate() {
+        next.forceActiveFocus();
+    }
+
     function onLeave() {}
 }

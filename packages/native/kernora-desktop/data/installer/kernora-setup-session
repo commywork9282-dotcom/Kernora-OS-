@@ -1,0 +1,18 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -u
+
+state="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/kernora-setup"
+mkdir -p "$state"
+: > "$state/loop"
+
+export XDG_CURRENT_DESKTOP=KDE KDE_FULL_SESSION=true KDE_SESSION_VERSION=6
+
+while :; do
+    rm -f "$state/again"
+    KERNORA_SETUP_STAGE=1 /usr/bin/kwin_wayland_wrapper --xwayland --no-lockscreen --no-global-shortcuts \
+        --no-kactivities --exit-with-session=/usr/bin/kernora-installer > "$state/kwin.log" 2>&1
+    XDG_SESSION_DESKTOP=KDE DESKTOP_SESSION=plasma /usr/bin/startplasma-wayland
+    [ -e "$state/again" ] || break
+done

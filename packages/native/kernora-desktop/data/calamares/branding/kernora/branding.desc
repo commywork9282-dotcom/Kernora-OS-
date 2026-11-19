@@ -3,7 +3,7 @@ componentName: kernora
 
 welcomeStyleCalamares: true
 welcomeExpandingLogo: true
-windowExpanding: normal
+windowExpanding: fullscreen
 windowSize: 1040px,720px
 windowPlacement: center
 
@@ -16,8 +16,8 @@ strings:
     shortVersionedName:  Kernora 1
     bootloaderEntryName: Kernora
 
-sidebar: qml
-navigation: qml
+sidebar: none
+navigation: none
 
 images:
     productLogo:    "kernora-logo.png"
