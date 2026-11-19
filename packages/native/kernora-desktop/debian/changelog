@@ -1,3 +1,22 @@
+kernora-desktop (1.4.84) UNRELEASED; urgency=medium
+
+  * Desktop shortcuts no longer get pushed off the screen. With the
+    widget grid, a shortcut only found a cell that was completely free
+    of widgets, so on a busy desktop it was put below the screen. The
+    desktop then scrolled, dragging scrolled it instead of selecting
+    icons, and the long press for the home menu could be cancelled. A
+    shortcut now takes a cell whose middle is free, stays on the screen
+    when there is no such cell, and shortcuts that were already pushed
+    off come back.
+  * A widget that ended up past the edge of the screen, for example
+    after dropping it from Add or Manage Widgets near the bottom, moves
+    back to the nearest free place on the desktop.
+  * The sheet with the other widgets of an app no longer opens while
+    hovering widgets in the Plasma edit mode, where it covered the Done
+    button.
+
+ -- Kernora Developers <developers@kernora.invalid>  Wed, 18 Nov 2026 12:00:00 -0800
+
 kernora-desktop (1.4.83) UNRELEASED; urgency=medium
 
   * Clock has all six widgets of Google Clock. New are the Stopwatch, a

@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.83" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.84" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -1686,6 +1686,16 @@ grep -Fq 'sourceComponent: Picker.AppWidgets {' "$data_root/folderview/FolderVie
   && grep -Fq 'WidgetNames {' "$data_root/folderview/picker/WidgetPicker.qml" \
   && grep -Fq 'property bool current: false' "$data_root/folderview/picker/WidgetCell.qml" \
   || fail "a long press on a widget does not offer the other widgets of its app"
+grep -Fq 'const insetX = cellWidth * 0.15;' "$data_root/folderview/IconPlacement.js" \
+  && grep -Fq 'if (item.index < capacity && !blocked.has(item.index)) {' "$data_root/folderview/IconPlacement.js" \
+  && grep -Fq 'const candidate = cover[i] * 1000' "$data_root/folderview/IconPlacement.js" \
+  && grep -Fq 'no off-screen icons while room is left' "$project_root/tests/desktop-icon-layout/placement.cjs" \
+  || fail "desktop shortcuts can be pushed below the screen, which makes the desktop scroll"
+grep -Fq 'const outside = inside.x !== x || inside.y !== y;' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'const free = main.nearestFreeCell(layout, columns, rows, x, y);' "$data_root/folderview/FolderView.qml" \
+  || fail "a widget past the edge of the screen stays there"
+grep -Fq '!item.layout || item.layout.editMode) {' "$data_root/editmode/ConfigOverlay.qml" \
+  || fail "the widgets sheet opens on hover in the Plasma edit mode"
 grep -Fq 'property: "relayoutLock"' "$data_root/folderview/FolderView.qml" \
   && grep -Fq 'if (!main.homeView || !main.homeSteady || !layout' "$data_root/folderview/FolderView.qml" \
   || fail "widgets in the bottom row shrink while the panels load at login"

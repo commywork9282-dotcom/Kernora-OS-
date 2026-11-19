@@ -171,7 +171,7 @@ ContainmentLayoutManager.ConfigOverlay {
 
     function openVariants(): void {
         const item = overlay.itemContainer;
-        if (!overlay.open || overlay.dragging || !item || item.dragActive) {
+        if (!overlay.open || overlay.dragging || !item || item.dragActive || !item.layout || item.layout.editMode) {
             return;
         }
         const home = overlay.homeView();

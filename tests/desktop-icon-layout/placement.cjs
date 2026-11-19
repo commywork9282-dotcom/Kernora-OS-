@@ -31,14 +31,23 @@ for (let test = 0; test < 2000; ++test) {
     assert.equal(placed.length, items.length);
     assert.equal(new Set(placed.map(item => item.to)).size, items.length);
     assert.deepEqual(Array.from(placed, item => item.source).sort((a, b) => a - b), items.map(item => item.source));
-    for (const item of placed) {
+    const capacity = columns * rows;
+    const covered = index => {
         const stripe = horizontal ? columns : rows;
-        const column = horizontal ? item.to % stripe : Math.floor(item.to / stripe);
-        const x = (rtl ? columns - 1 - column : column) * 100;
-        const y = (horizontal ? Math.floor(item.to / stripe) : item.to % stripe) * 100;
-        if (item.to < columns * rows) {
-            assert(!rectangles.some(rect => x < rect.x + rect.width && x + 100 > rect.x
-                                        && y < rect.y + rect.height && y + 100 > rect.y));
+        const column = horizontal ? index % stripe : Math.floor(index / stripe);
+        const x = (rtl ? columns - 1 - column : column) * 100 + 15;
+        const y = (horizontal ? Math.floor(index / stripe) : index % stripe) * 100 + 15;
+        return rectangles.some(rect => x < rect.x + rect.width && x + 70 > rect.x
+                               && y < rect.y + rect.height && y + 70 > rect.y);
+    };
+    if (items.length <= capacity) {
+        assert(placed.every(item => item.to < capacity));
+    }
+    const used = new Set(placed.map(item => item.to));
+    const cleanLeft = Array.from({length: capacity}, (_, i) => i).some(i => !used.has(i) && !covered(i));
+    for (const item of placed) {
+        if (item.to < capacity && covered(item.to)) {
+            assert(!cleanLeft);
         }
     }
     if (sorted) {
@@ -50,5 +59,5 @@ for (let test = 0; test < 2000; ++test) {
 }
 const stable = context.arrange([{index: 6, source: 0}, {index: 3, source: 1}], [], 400, 300, 100, 100, true, false, false);
 assert(Array.from(stable).every(item => item.from === item.to));
-console.log('PASS: 2000 layouts, both grid flows/directions, sorting, overflow, conservation and stability');
+console.log('PASS: 2000 layouts, both grid flows/directions, sorting, no off-screen icons while room is left, conservation and stability');
 module.exports = {status: 'PASS', layouts: 2000};

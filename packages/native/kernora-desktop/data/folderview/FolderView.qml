@@ -221,6 +221,23 @@ FocusScope {
         return Qt.point(-1, -1);
     }
 
+    function nearestFreeCell(layout: Item, columns: int, rows: int, x: real, y: real): point {
+        let best = Qt.point(-1, -1);
+        let distance = Infinity;
+        for (let row = 0; row + rows <= main.homeRows; ++row) {
+            for (let column = 0; column + columns <= main.homeColumns; ++column) {
+                const cx = column * layout.cellWidth;
+                const cy = row * layout.cellHeight;
+                const d = Math.abs(cx - x) + Math.abs(cy - y);
+                if (d < distance && layout.isRectAvailable(cx, cy, columns * layout.cellWidth, rows * layout.cellHeight)) {
+                    best = Qt.point(cx, cy);
+                    distance = d;
+                }
+            }
+        }
+        return best;
+    }
+
     onHomeCellWidthChanged: widgetTidy.restart()
     onHomeCellHeightChanged: widgetTidy.restart()
 
@@ -302,6 +319,11 @@ FocusScope {
             const rows = Math.max(1, Math.min(main.homeRows, fresh ? span[1] : Math.round(child.height / cellHeight)));
             let x = Math.round(child.x / cellWidth) * cellWidth;
             let y = Math.round(child.y / cellHeight) * cellHeight;
+            const inside = Qt.point(Math.max(0, Math.min(x, (main.homeColumns - columns) * cellWidth)),
+                                    Math.max(0, Math.min(y, (main.homeRows - rows) * cellHeight)));
+            const outside = inside.x !== x || inside.y !== y;
+            x = inside.x;
+            y = inside.y;
             const placeFirst = fresh && plugin === main.pendingAdd;
             const placeDropped = fresh && !placeFirst && main.dropCell !== null && plugin === HomeGrid.plugin(main.dropEntry);
             if (!placeFirst && !placeDropped && child.width === columns * cellWidth && child.height === rows * cellHeight
@@ -326,6 +348,12 @@ FocusScope {
             } else if (placeFirst) {
                 main.pendingAdd = "";
                 const free = main.firstFreeCell(layout, columns, rows);
+                if (free.x >= 0) {
+                    x = free.x;
+                    y = free.y;
+                }
+            } else if (outside && !layout.isRectAvailable(x, y, columns * cellWidth, rows * cellHeight)) {
+                const free = main.nearestFreeCell(layout, columns, rows, x, y);
                 if (free.x >= 0) {
                     x = free.x;
                     y = free.y;
