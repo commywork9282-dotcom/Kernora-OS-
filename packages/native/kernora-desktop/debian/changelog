@@ -14,6 +14,12 @@ kernora-desktop (1.4.84) UNRELEASED; urgency=medium
   * The sheet with the other widgets of an app no longer opens while
     hovering widgets in the Plasma edit mode, where it covered the Done
     button.
+  * Plasma widgets (system monitor, clipboard and others) keep the same
+    gap from their neighbours as Kernora widgets, like on Android. Their
+    card used to fill the whole grid cell, so two of them touched. Their
+    card is now inset by the grid gap and the edit frame follows the
+    card. Widgets that grow after loading are snapped to the grid again
+    and kept on the screen.
 
  -- Kernora Developers <developers@kernora.invalid>  Wed, 18 Nov 2026 12:00:00 -0800
 

@@ -1696,6 +1696,11 @@ grep -Fq 'const outside = inside.x !== x || inside.y !== y;' "$data_root/folderv
   || fail "a widget past the edge of the screen stays there"
 grep -Fq '!item.layout || item.layout.editMode) {' "$data_root/editmode/ConfigOverlay.qml" \
   || fail "the widgets sheet opens on hover in the Plasma edit mode"
+grep -Fq 'main.insetCard(child);' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'card.anchors.margins = gap;' "$data_root/folderview/FolderView.qml" \
+  && grep -Fq 'itemContainer ? Math.min(itemContainer.leftPadding, 8) : 0' "$data_root/editmode/ConfigOverlay.qml" \
+  && grep -Fq 'function onHeightChanged(): void {' "$data_root/folderview/FolderView.qml" \
+  || fail "Plasma widgets touch each other instead of keeping the grid gap"
 grep -Fq 'property: "relayoutLock"' "$data_root/folderview/FolderView.qml" \
   && grep -Fq 'if (!main.homeView || !main.homeSteady || !layout' "$data_root/folderview/FolderView.qml" \
   || fail "widgets in the bottom row shrink while the panels load at login"

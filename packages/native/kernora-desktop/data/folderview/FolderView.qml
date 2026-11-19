@@ -221,6 +221,27 @@ FocusScope {
         return Qt.point(-1, -1);
     }
 
+    function insetCard(child: Item): void {
+        const card = child.background;
+        const gap = main.homeGap;
+        const margins = card && card.margins ? card.margins : null;
+        const left = gap + (margins ? margins.left : 0);
+        const top = gap + (margins ? margins.top : 0);
+        const right = gap + (margins ? margins.right : 0);
+        const bottom = gap + (margins ? margins.bottom : 0);
+        if (child.leftPadding !== left || child.topPadding !== top || child.rightPadding !== right || child.bottomPadding !== bottom) {
+            child.leftPadding = left;
+            child.topPadding = top;
+            child.rightPadding = right;
+            child.bottomPadding = bottom;
+        }
+        if (card && (card.anchors.fill !== child || card.anchors.margins !== gap || card.x !== gap || card.y !== gap)) {
+            card.anchors.fill = undefined;
+            card.anchors.fill = child;
+            card.anchors.margins = gap;
+        }
+    }
+
     function nearestFreeCell(layout: Item, columns: int, rows: int, x: real, y: real): point {
         let best = Qt.point(-1, -1);
         let distance = Infinity;
@@ -314,6 +335,8 @@ FocusScope {
                 child.topPadding = main.homeGap;
                 child.rightPadding = main.homeGap;
                 child.bottomPadding = main.homeGap;
+            } else {
+                main.insetCard(child);
             }
             const columns = Math.max(1, Math.min(main.homeColumns, fresh ? span[0] : Math.round(child.width / cellWidth)));
             const rows = Math.max(1, Math.min(main.homeRows, fresh ? span[1] : Math.round(child.height / cellHeight)));
@@ -395,6 +418,25 @@ FocusScope {
         function onChildrenChanged(): void {
             main.claimEntry();
             widgetTidy.restart();
+        }
+    }
+
+    Instantiator {
+        model: main.homeView && root.appletsLayout ? root.appletsLayout.children : []
+        delegate: Connections {
+            required property var modelData
+            target: modelData
+            ignoreUnknownSignals: true
+            function onWidthChanged(): void {
+                if (modelData.applet) {
+                    widgetTidy.restart();
+                }
+            }
+            function onHeightChanged(): void {
+                if (modelData.applet) {
+                    widgetTidy.restart();
+                }
+            }
         }
     }
 

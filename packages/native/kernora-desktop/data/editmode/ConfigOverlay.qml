@@ -18,10 +18,10 @@ import "GridReorder.js" as GridReorder
 ContainmentLayoutManager.ConfigOverlay {
     id: overlay
 
-    readonly property real insetLeft: itemContainer ? itemContainer.leftPadding : 0
-    readonly property real insetTop: itemContainer ? itemContainer.topPadding : 0
-    readonly property real insetRight: itemContainer ? itemContainer.rightPadding : 0
-    readonly property real insetBottom: itemContainer ? itemContainer.bottomPadding : 0
+    readonly property real insetLeft: itemContainer ? Math.min(itemContainer.leftPadding, 8) : 0
+    readonly property real insetTop: itemContainer ? Math.min(itemContainer.topPadding, 8) : 0
+    readonly property real insetRight: itemContainer ? Math.min(itemContainer.rightPadding, 8) : 0
+    readonly property real insetBottom: itemContainer ? Math.min(itemContainer.bottomPadding, 8) : 0
     readonly property real frameRadius: 28
     readonly property bool darkInk: BarTint.darkInk(Screen.name, "left")
     readonly property color accent: darkInk ? M3.primaryFixedContent : M3.primaryFixed
