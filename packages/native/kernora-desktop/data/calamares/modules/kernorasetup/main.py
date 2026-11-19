@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import gettext
+import json
 import os
 import shutil
 
@@ -115,7 +116,15 @@ def hide_welcome(root, name):
     if not os.path.isdir(config):
         os.makedirs(config)
         os.chown(config, uid, gid)
-    set_entry(os.path.join(config, "kernora-welcomerc"), "General", "ShowOnLogin", "false", uid, gid)
+    welcome = os.path.join(config, "kernora-welcomerc")
+    set_entry(welcome, "General", "ShowOnLogin", "false", uid, gid)
+    try:
+        with open(os.path.join(root, "usr/share/kernora/whatsnew.json"), encoding="utf-8") as notes:
+            latest = json.load(notes)[0]["id"]
+    except (OSError, ValueError, LookupError, TypeError):
+        latest = ""
+    if latest:
+        set_entry(welcome, "WhatsNew", "Seen", str(latest), uid, gid)
 
 
 def run():
@@ -131,6 +140,11 @@ def run():
         except OSError as error:
             libcalamares.utils.warning("kernorasetup: avatar not copied: {}".format(error))
     style = storage.value("kernoraStyle")
+    if isinstance(style, str):
+        try:
+            style = json.loads(style)
+        except ValueError:
+            style = None
     if isinstance(style, dict):
         try:
             install_style(root, name, style)

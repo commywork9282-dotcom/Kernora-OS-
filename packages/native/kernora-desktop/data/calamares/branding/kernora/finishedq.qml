@@ -19,9 +19,19 @@ PixelPage {
     showBack: false
     primaryText: config.failed ? qsTr("Close Installer") : qsTr("Restart now")
     primaryEnabled: true
-    primaryAction: () => config.failed ? ViewManager.quit() : config.doRestart(true)
+    primaryAction: () => {
+        if (config.failed) {
+            config.restartNowWanted = false;
+            ViewManager.quit();
+        } else {
+            config.doRestart(true);
+        }
+    }
     secondaryText: config.failed ? "" : qsTr("Later")
-    secondaryAction: () => ViewManager.quit()
+    secondaryAction: () => {
+        config.restartNowWanted = false;
+        ViewManager.quit();
+    }
 
     below: Text {
         visible: config.failed && text.length > 0

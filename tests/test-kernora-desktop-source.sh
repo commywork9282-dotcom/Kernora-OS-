@@ -2408,7 +2408,7 @@ grep -Fxq 'windowExpanding: fullscreen' "$branding/branding.desc" \
   && grep -Fq 'onClicked: page.primaryAction ? page.primaryAction() : ViewManager.next()' "$branding/PixelPage.qml" \
   && grep -Fq 'Qt.callLater(presentation.refresh)' "$branding/show.qml" \
   && grep -Fq 'Global.insert("kernoraAvatar"' "$branding/usersq.qml" \
-  && grep -Fq 'Global.insert("kernoraStyle"' "$branding/styleq.qml" \
+  && grep -Fq 'Global.insert("kernoraStyle", JSON.stringify({' "$branding/styleq.qml" \
   && grep -Fq 'handler.addAndActivateConnection(row.modelData.devicePath, row.modelData.specificPath, secret.text)' "$branding/wifiq.qml" \
   && grep -Fxq '  - notesqml@wifi' "$package_root/data/calamares/settings.conf" \
   && grep -Fxq '  - notesqml@style' "$package_root/data/calamares/settings.conf" \
@@ -2447,12 +2447,16 @@ with tempfile.TemporaryDirectory() as root:
     with open(os.path.join(root, "etc/passwd"), "w") as passwd:
         passwd.write("ann:x:%d:%d:Ann:/home/ann:/bin/bash\n" % (os.getuid(), os.getgid()))
     code["install_style"](root, "ann", {"wallpaper": "org.kernora.ribbon", "colour": "blue", "dark": False, "originalShapes": True})
+    os.makedirs(os.path.join(root, "usr/share/kernora"))
+    with open(os.path.join(root, "usr/share/kernora/whatsnew.json"), "w") as notes:
+        notes.write('[{"id": "2026-11-19-1"}, {"id": "2026-11-16-2"}]')
     code["hide_welcome"](root, "ann")
     config = os.path.join(root, "home/ann/.config")
     style = open(os.path.join(config, "kernora-setup-style")).read()
     assert "wallpaper=org.kernora.ribbon" in style and "colour=blue" in style and "dark=false" in style, style
     assert "originalShapes=true" in open(os.path.join(config, "kernorarc")).read()
-    assert "ShowOnLogin=false" in open(os.path.join(config, "kernora-welcomerc")).read()
+    welcome = open(os.path.join(config, "kernora-welcomerc")).read()
+    assert "ShowOnLogin=false" in welcome and "Seen=2026-11-19-1" in welcome, welcome
     os.remove(os.path.join(config, "kernora-setup-style"))
     code["install_style"](root, "ann", {"wallpaper": "org.kernora.shapes", "colour": "kernora", "dark": True})
     assert not os.path.exists(os.path.join(config, "kernora-setup-style"))

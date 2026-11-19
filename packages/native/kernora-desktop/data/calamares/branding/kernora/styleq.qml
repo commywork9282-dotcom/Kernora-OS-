@@ -34,12 +34,12 @@ PixelPage {
     readonly property var current: wallpapers.find(entry => entry.id === wallpaper) || null
 
     function store(): void {
-        Global.insert("kernoraStyle", {
+        Global.insert("kernoraStyle", JSON.stringify({
             wallpaper: page.wallpaper,
             colour: page.colour,
             dark: page.dark,
             originalShapes: !page.sameShapes
-        });
+        }));
     }
 
     onWallpaperChanged: Qt.callLater(store)
