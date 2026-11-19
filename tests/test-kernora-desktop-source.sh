@@ -2399,8 +2399,52 @@ if unshare -r true 2>/dev/null; then
 fi
 ! grep -qi 'ember' "$package_root/data/calamares/branding/kernora/branding.desc" \
   || fail "the installer still says Ember"
-grep -Fq '/^[0-9.]+$/.test(version) ? ["", ""] : ["«", "»"]' "$package_root/data/calamares/branding/kernora/welcomeq.qml" \
-  || fail "the installer puts quotes around a plain version number"
+branding="$package_root/data/calamares/branding/kernora"
+grep -Fxq 'windowExpanding: fullscreen' "$branding/branding.desc" \
+  && grep -Fxq 'sidebar: none' "$branding/branding.desc" \
+  && grep -Fxq 'navigation: none' "$branding/branding.desc" \
+  && grep -Fq 'onClicked: ViewManager.quit()' "$branding/welcomeq.qml" \
+  && grep -Fq 'model: config.unsatisfiedRequirements' "$branding/welcomeq.qml" \
+  && grep -Fq 'onClicked: page.primaryAction ? page.primaryAction() : ViewManager.next()' "$branding/PixelPage.qml" \
+  && grep -Fq 'Qt.callLater(presentation.refresh)' "$branding/show.qml" \
+  && grep -Fq 'Global.insert("kernoraAvatar"' "$branding/usersq.qml" \
+  && grep -Fq 'Global.insert("kernoraStyle"' "$branding/styleq.qml" \
+  && grep -Fq 'handler.addAndActivateConnection(row.modelData.devicePath, row.modelData.specificPath, secret.text)' "$branding/wifiq.qml" \
+  && grep -Fxq '  - notesqml@wifi' "$package_root/data/calamares/settings.conf" \
+  && grep -Fxq '  - notesqml@style' "$package_root/data/calamares/settings.conf" \
+  && grep -Fxq '  - kernorasetup' "$package_root/data/calamares/settings.conf" \
+  && grep -Fxq 'prompt-install: false' "$package_root/data/calamares/settings.conf" \
+  && grep -Fxq 'qmlFilename: wifiq' "$package_root/data/calamares/modules/notesqml-wifi.conf" \
+  && grep -Fxq 'qmlFilename: styleq' "$package_root/data/calamares/modules/notesqml-style.conf" \
+  && grep -Fxq 'generated/branding/symbols etc/calamares/branding/kernora' "$package_root/debian/kernora-calamares.install" \
+  || fail "the installer is not the Pixel-style setup"
+for page in welcomeq localeq keyboardq wifiq usersq styleq summaryq finishedq; do
+  for symbol in $(grep -o 'symbol("[a-z_0-9]*")\|icon: "[a-z_0-9]*"\|symbol: "[a-z_0-9]*"' "$branding/$page.qml" | grep -o '"[a-z_0-9]*"' | tr -d '"'); do
+    grep -Eq "SETUP_SYMBOLS = .*\\b$symbol\\b|^  .*\\b$symbol\\b" "$package_root/debian/rules" \
+      || fail "the setup page $page uses the symbol $symbol, which the package does not install"
+  done
+done
+python3 -I - "$package_root/data/calamares/modules/kernorasetup/main.py" <<'PY' || fail "the setup job does not write the new user's settings"
+import os, sys, tempfile, types
+sys.modules["libcalamares"] = types.SimpleNamespace(utils=types.SimpleNamespace(gettext_path=lambda: "", gettext_languages=lambda: []))
+code = {}
+exec(compile(open(sys.argv[1], encoding="utf-8").read(), sys.argv[1], "exec"), code)
+with tempfile.TemporaryDirectory() as root:
+    os.makedirs(os.path.join(root, "etc"))
+    os.makedirs(os.path.join(root, "home/ann"))
+    with open(os.path.join(root, "etc/passwd"), "w") as passwd:
+        passwd.write("ann:x:%d:%d:Ann:/home/ann:/bin/bash\n" % (os.getuid(), os.getgid()))
+    code["install_style"](root, "ann", {"wallpaper": "org.kernora.ribbon", "colour": "blue", "dark": False, "originalShapes": True})
+    code["hide_welcome"](root, "ann")
+    config = os.path.join(root, "home/ann/.config")
+    style = open(os.path.join(config, "kernora-setup-style")).read()
+    assert "wallpaper=org.kernora.ribbon" in style and "colour=blue" in style and "dark=false" in style, style
+    assert "originalShapes=true" in open(os.path.join(config, "kernorarc")).read()
+    assert "ShowOnLogin=false" in open(os.path.join(config, "kernora-welcomerc")).read()
+    os.remove(os.path.join(config, "kernora-setup-style"))
+    code["install_style"](root, "ann", {"wallpaper": "org.kernora.shapes", "colour": "kernora", "dark": True})
+    assert not os.path.exists(os.path.join(config, "kernora-setup-style"))
+PY
 grep -Fq 'source: parent.user ? parent.user.picture : ""' "$greeter_qml" \
   && ! grep -Fq '"file://" + parent.user.picture' "$greeter_qml" \
   || fail "the login screen breaks the avatar url sddm already gives it"
