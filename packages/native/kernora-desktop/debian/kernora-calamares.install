@@ -5,6 +5,7 @@ generated/branding/kernora-logo.png etc/calamares/branding/kernora
 generated/branding/lang etc/calamares/branding/kernora
 generated/branding/images etc/calamares/branding/kernora
 generated/branding/symbols etc/calamares/branding/kernora
+generated/branding/setupdata.js etc/calamares/branding/kernora
 generated/branding/stylesheet.qss etc/calamares/branding/kernora
 data/installer/kernora-installer usr/bin
 data/installer/org.kernora.installer.policy usr/share/polkit-1/actions

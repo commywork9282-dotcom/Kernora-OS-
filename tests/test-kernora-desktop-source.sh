@@ -2417,7 +2417,19 @@ grep -Fxq 'windowExpanding: fullscreen' "$branding/branding.desc" \
   && grep -Fxq 'qmlFilename: wifiq' "$package_root/data/calamares/modules/notesqml-wifi.conf" \
   && grep -Fxq 'qmlFilename: styleq' "$package_root/data/calamares/modules/notesqml-style.conf" \
   && grep -Fxq 'generated/branding/symbols etc/calamares/branding/kernora' "$package_root/debian/kernora-calamares.install" \
+  && grep -Fxq 'generated/branding/setupdata.js etc/calamares/branding/kernora' "$package_root/debian/kernora-calamares.install" \
+  && ! grep -q 'org.kernora.system' "$branding/styleq.qml" \
   || fail "the installer is not the Pixel-style setup"
+setup_data=$(mktemp -d)
+for colour in kernora blue; do
+  (cd "$package_root/tools" && KERNORA_COLOUR=$colour python3 gen-qml-tokens --palette "$setup_data/palettes/$colour.conf" >/dev/null)
+done
+python3 "$package_root/tools/gen-setup-data" "$setup_data/palettes" "$package_root/data/wallpaper" "$setup_data/setupdata.js" >/dev/null \
+  && grep -q '"id": "blue"' "$setup_data/setupdata.js" \
+  && grep -q '"id": "org.kernora.ribbon"' "$setup_data/setupdata.js" \
+  && grep -q '"nameRu": "Лента"' "$setup_data/setupdata.js" \
+  || fail "the setup style page gets no colours or live wallpapers"
+rm -r "$setup_data"
 for page in welcomeq localeq keyboardq wifiq usersq styleq summaryq finishedq; do
   for symbol in $(grep -o 'symbol("[a-z_0-9]*")\|icon: "[a-z_0-9]*"\|symbol: "[a-z_0-9]*"' "$branding/$page.qml" | grep -o '"[a-z_0-9]*"' | tr -d '"'); do
     grep -Eq "SETUP_SYMBOLS = .*\\b$symbol\\b|^  .*\\b$symbol\\b" "$package_root/debian/rules" \

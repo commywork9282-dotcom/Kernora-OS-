@@ -9,8 +9,8 @@ import io.calamares.ui 1.0
 import QtQuick
 import QtQuick.Effects
 import org.kernora.m3
-import org.kernora.system
 import org.kernora.ui
+import "setupdata.js" as SetupData
 
 PixelPage {
     id: page
@@ -19,8 +19,13 @@ PixelPage {
     title: qsTr("Choose a style")
     description: qsTr("You can change it later in Settings.")
 
-    readonly property var wallpapers: Files.liveWallpapers()
-    readonly property var colours: Appearance.colours()
+    property bool russian: Qt.locale().name.indexOf("ru") === 0
+    readonly property var wallpapers: SetupData.wallpapers.map(entry => ({
+        id: entry.id,
+        name: russian ? entry.nameRu : entry.name,
+        scene: "file:///usr/share/plasma/wallpapers/" + entry.id + "/contents/ui/Scene.qml"
+    }))
+    readonly property var colours: SetupData.colours
     property string wallpaper: wallpapers.length > 0 ? wallpapers[0].id : ""
     property string colour: "kernora"
     property bool dark: true
@@ -37,10 +42,10 @@ PixelPage {
         });
     }
 
-    onWallpaperChanged: store()
-    onColourChanged: store()
-    onDarkChanged: store()
-    onSameShapesChanged: store()
+    onWallpaperChanged: Qt.callLater(store)
+    onColourChanged: Qt.callLater(store)
+    onDarkChanged: Qt.callLater(store)
+    onSameShapesChanged: Qt.callLater(store)
 
     component Live: Item {
         id: live
@@ -226,9 +231,9 @@ PixelPage {
             }
 
             Flow {
-                x: -10
-                width: parent.width + 20
-                spacing: 4
+                x: -6
+                width: parent.width + 12
+                spacing: 2
 
                 Repeater {
                     model: page.colours
@@ -237,22 +242,21 @@ PixelPage {
                         id: chip
 
                         required property var modelData
-                        readonly property var swatch: page.dark ? modelData.dark : modelData.light
                         readonly property bool selected: modelData.id === page.colour
 
-                        width: 64
-                        height: 64
+                        width: 54
+                        height: 54
 
                         Rectangle {
                             anchors.fill: parent
-                            radius: chip.selected ? 20 : 32
+                            radius: chip.selected ? 18 : 27
                             color: chip.selected ? M3.surfaceContainerHighest : "transparent"
                         }
 
                         Item {
                             anchors.centerIn: parent
-                            width: 44
-                            height: 44
+                            width: 38
+                            height: 38
                             layer.enabled: true
                             layer.effect: MultiEffect {
                                 maskEnabled: true
@@ -262,38 +266,38 @@ PixelPage {
                             }
 
                             Rectangle {
-                                width: 44
-                                height: 22
-                                color: chip.swatch.primary
+                                width: 38
+                                height: 19
+                                color: chip.modelData.dark.primary
                             }
 
                             Rectangle {
-                                y: 22
-                                width: 22
-                                height: 22
-                                color: chip.swatch.secondaryContainer
+                                y: 19
+                                width: 19
+                                height: 19
+                                color: chip.modelData.light.secondaryContainer
                             }
 
                             Rectangle {
-                                x: 22
-                                y: 22
-                                width: 22
-                                height: 22
-                                color: chip.swatch.tertiary
+                                x: 19
+                                y: 19
+                                width: 19
+                                height: 19
+                                color: chip.modelData.dark.tertiary
                             }
                         }
 
                         Item {
                             id: circle
                             anchors.centerIn: parent
-                            width: 44
-                            height: 44
+                            width: 38
+                            height: 38
                             visible: false
                             layer.enabled: true
 
                             Rectangle {
                                 anchors.fill: parent
-                                radius: 22
+                                radius: 19
                                 color: "white"
                             }
                         }
@@ -338,7 +342,8 @@ PixelPage {
     }
 
     function onActivate() {
-        store();
+        russian = Qt.locale().name.indexOf("ru") === 0;
+        Qt.callLater(store);
     }
 
     function onLeave() {

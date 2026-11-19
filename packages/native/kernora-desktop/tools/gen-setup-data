@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+"""usage: gen-setup-data PALETTE_DIRECTORY WALLPAPER_DIRECTORY OUTPUT
+"""
+
+from __future__ import annotations
+
+import configparser
+import json
+import pathlib
+import sys
+
+
+def colours(directory: pathlib.Path) -> list[dict]:
+    found = []
+    for path in sorted(directory.glob("*.conf")):
+        parser = configparser.ConfigParser(interpolation=None)
+        parser.optionxform = str
+        parser.read(path, encoding="utf-8")
+        if not parser.has_section("Colour"):
+            continue
+        group = parser["Colour"]
+        entry = {
+            "id": group.get("id", path.stem),
+            "name": group.get("name", path.stem),
+            "nameRu": group.get("name_ru", group.get("name", path.stem)),
+        }
+        for mode in ("dark", "light"):
+            entry[mode] = {role: "#" + group.get(f"{mode}_{role}", "808080")
+                           for role in ("primary", "secondaryContainer", "tertiary")}
+        found.append((int(group.get("order", "100")), entry))
+    found.sort(key=lambda item: item[0])
+    return [entry for _, entry in found]
+
+
+def wallpapers(directory: pathlib.Path) -> list[dict]:
+    found = []
+    for path in sorted(directory.glob("org.kernora.*/metadata.json")):
+        plugin = json.loads(path.read_text(encoding="utf-8"))["KPlugin"]
+        found.append({"id": plugin["Id"], "name": plugin.get("Name", plugin["Id"]),
+                      "nameRu": plugin.get("Name[ru]", plugin.get("Name", plugin["Id"]))})
+    found.sort(key=lambda entry: (entry["id"] != "org.kernora.shapes", entry["id"]))
+    return found
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 4:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    palette = colours(pathlib.Path(argv[1]))
+    live = wallpapers(pathlib.Path(argv[2]))
+    if not palette or not live:
+        print("gen-setup-data: no colours or wallpapers found", file=sys.stderr)
+        return 1
+    output = pathlib.Path(argv[3])
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        ".pragma library\n\n"
+        f"var colours = {json.dumps(palette, ensure_ascii=False, indent=1)};\n\n"
+        f"var wallpapers = {json.dumps(live, ensure_ascii=False, indent=1)};\n",
+        encoding="utf-8",
+    )
+    print(f"setup data: {len(palette)} colours, {len(live)} wallpapers in {output}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

@@ -638,4 +638,39 @@
         <translation>Подключить</translation>
     </message>
 </context>
+<context>
+    <name>styleq</name>
+    <message>
+        <source>Choose a style</source>
+        <translation>Выберите стиль</translation>
+    </message>
+    <message>
+        <source>You can change it later in Settings.</source>
+        <translation>Это можно поменять позже в Настройках.</translation>
+    </message>
+    <message>
+        <source>Live wallpaper</source>
+        <translation>Живые обои</translation>
+    </message>
+    <message>
+        <source>Wallpaper</source>
+        <translation>Обои</translation>
+    </message>
+    <message>
+        <source>Colours</source>
+        <translation>Цвета</translation>
+    </message>
+    <message>
+        <source>Dark theme</source>
+        <translation>Тёмная тема</translation>
+    </message>
+    <message>
+        <source>Icons of one shape</source>
+        <translation>Значки одной формы</translation>
+    </message>
+    <message>
+        <source>Apps without a Kernora icon get a round one</source>
+        <translation>Приложения без значка Kernora получат круглый</translation>
+    </message>
+</context>
 </TS>

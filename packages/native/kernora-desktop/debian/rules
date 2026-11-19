@@ -90,6 +90,7 @@ override_dh_auto_build:
 	set -e; for colour in $(COLOURS); do \
 	  KERNORA_COLOUR=$$colour python3 $(TOOLS)/gen-qml-tokens --palette generated/palettes/$$colour.conf; \
 	done
+	python3 $(TOOLS)/gen-setup-data generated/palettes data/wallpaper generated/branding/setupdata.js
 	python3 $(TOOLS)/gen-kdeglobals generated/xdg/kdeglobals
 	set -e; for entry in $(APPLETS); do \
 	  source=$${entry%%:*}; id=$${entry#*:}; \
