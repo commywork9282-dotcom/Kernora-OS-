@@ -414,6 +414,10 @@
 <context>
     <name>welcomeq</name>
     <message>
+        <source>Accessibility</source>
+        <translation>Специальные возможности</translation>
+    </message>
+    <message>
         <source>Try without installing</source>
         <translation>Попробовать без установки</translation>
     </message>
@@ -717,6 +721,53 @@
         <source>%1 GB</source>
         <comment>@label, size in gigabytes</comment>
         <translation>%1 ГБ</translation>
+    </message>
+</context>
+<context>
+    <name>AccessibilitySheet</name>
+    <message>
+        <source>Default</source>
+        <translation>По умолчанию</translation>
+    </message>
+    <message>
+        <source>Large</source>
+        <translation>Крупный</translation>
+    </message>
+    <message>
+        <source>Larger</source>
+        <translation>Крупнее</translation>
+    </message>
+    <message>
+        <source>Largest</source>
+        <translation>Самый крупный</translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation>Назад</translation>
+    </message>
+    <message>
+        <source>Accessibility</source>
+        <translation>Специальные возможности</translation>
+    </message>
+    <message>
+        <source>Make text bigger or reduce motion. Kernora keeps these after setup, and Settings › Accessibility has zoom, colour filters and more.</source>
+        <translation>Сделайте текст крупнее или уменьшите движение. Kernora сохранит это и после установки, а лупа, цветовые фильтры и другое есть в «Настройках» › «Специальные возможности».</translation>
+    </message>
+    <message>
+        <source>Text size</source>
+        <translation>Размер текста</translation>
+    </message>
+    <message>
+        <source>Reduce motion</source>
+        <translation>Уменьшить движение</translation>
+    </message>
+    <message>
+        <source>Turn off animations everywhere</source>
+        <translation>Отключить анимацию везде</translation>
+    </message>
+    <message>
+        <source>Done</source>
+        <translation>Готово</translation>
     </message>
 </context>
 </TS>

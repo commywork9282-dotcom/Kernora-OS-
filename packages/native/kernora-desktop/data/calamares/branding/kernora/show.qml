@@ -19,6 +19,8 @@ Presentation {
     readonly property real margin: wide ? Math.round(Math.max(40, Math.min(72, width * 0.05))) : 24
     readonly property real topSpace: Math.round(Math.max(88, Math.min(136, height * 0.15)))
 
+    SetupAccessibility {}
+
     function symbol(name: string): url {
         return Qt.resolvedUrl("symbols/" + name + "_24px.svg");
     }
@@ -132,7 +134,7 @@ Presentation {
                     : modelData.tone === "secondary" ? M3.secondaryContainer : M3.surfaceContainerHighest
 
                 SequentialAnimation on rotation {
-                    running: presentation.activatedInCalamares
+                    running: presentation.activatedInCalamares && M3.motionScale > 0
                     loops: Animation.Infinite
                     NumberAnimation {
                         from: blob.index % 2 ? -6 : 6

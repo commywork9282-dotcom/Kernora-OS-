@@ -142,6 +142,52 @@ def install_style(root, name, style):
     set_entry(path, "Style", "dark", "true" if dark else "false", uid, gid)
 
 
+def user_config(root, name):
+    found = target_user(root, name)
+    if found is None:
+        return None
+    uid, gid, home = found
+    config = os.path.join(root, home.lstrip("/"), ".config")
+    if not os.path.isdir(os.path.dirname(config)):
+        return None
+    if not os.path.isdir(config):
+        os.makedirs(config)
+        os.chown(config, uid, gid)
+    return config, uid, gid
+
+
+def font_entry(size, weight):
+    return "Google Sans Flex,{:g},-1,5,{},0,0,0,0,0,0,0,0,0,0,1".format(size, weight)
+
+
+def install_accessibility(root, name, chosen):
+    found = user_config(root, name)
+    if found is None:
+        return
+    config, uid, gid = found
+    path = os.path.join(config, "kdeglobals")
+    try:
+        size = float(chosen.get("fontSize", 10.5))
+    except (TypeError, ValueError):
+        size = 10.5
+    if size in (12, 13.5, 15):
+        small = size - 1.5
+        for key, value in (("font", font_entry(size, 400)), ("menuFont", font_entry(size, 400)),
+                           ("toolBarFont", font_entry(small, 400)), ("smallestReadableFont", font_entry(small, 400))):
+            set_entry(path, "General", key, value, uid, gid)
+        set_entry(path, "WM", "activeFont", font_entry(size, 500), uid, gid)
+    if chosen.get("reduceMotion") is True:
+        set_entry(path, "KDE", "AnimationDurationFactor", "0", uid, gid)
+
+
+def mark_first_login(root, name):
+    found = user_config(root, name)
+    if found is None:
+        return
+    config, uid, gid = found
+    set_entry(os.path.join(config, "kernora-first-login"), "Setup", "firstLogin", "true", uid, gid)
+
+
 def hide_welcome(root, name):
     found = target_user(root, name)
     if found is None:
@@ -192,6 +238,21 @@ def run():
         sync_greeter(root, name, style)
     except OSError as error:
         libcalamares.utils.warning("kernorasetup: login screen keeps its style: {}".format(error))
+    chosen = storage.value("kernoraAccessibility")
+    if isinstance(chosen, str):
+        try:
+            chosen = json.loads(chosen)
+        except ValueError:
+            chosen = None
+    if isinstance(chosen, dict):
+        try:
+            install_accessibility(root, name, chosen)
+        except OSError as error:
+            libcalamares.utils.warning("kernorasetup: accessibility not saved: {}".format(error))
+    try:
+        mark_first_login(root, name)
+    except OSError as error:
+        libcalamares.utils.warning("kernorasetup: first login screen skipped: {}".format(error))
     try:
         hide_welcome(root, name)
     except OSError as error:

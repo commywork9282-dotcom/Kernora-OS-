@@ -16,6 +16,9 @@ Item {
     readonly property bool checking: !ViewManager.nextEnabled && failures.count === 0
     readonly property bool blocking: !checking && !config.requirementsModel.satisfiedMandatory
     property int shown: Qt.locale().name.indexOf("ru") === 0 ? 1 : 0
+    readonly property bool still: M3.motionScale === 0
+
+    SetupAccessibility {}
 
     function symbol(name: string): url {
         return Qt.resolvedUrl("symbols/" + name + "_24px.svg");
@@ -36,6 +39,7 @@ Item {
         opacity: 0.85
 
         RotationAnimation on rotation {
+            running: !hello.still
             from: 12
             to: 372
             duration: 240000
@@ -53,6 +57,7 @@ Item {
         opacity: 0.8
 
         RotationAnimation on rotation {
+            running: !hello.still
             from: -18
             to: -378
             duration: 300000
@@ -137,7 +142,7 @@ Item {
 
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: 600
+                        duration: hello.still ? 0 : 600
                         easing.type: Easing.Bezier
                         easing.bezierCurve: [0.2, 0, 0, 1, 1, 1]
                     }
@@ -145,7 +150,7 @@ Item {
 
                 Behavior on anchors.verticalCenterOffset {
                     NumberAnimation {
-                        duration: 600
+                        duration: hello.still ? 0 : 600
                         easing.type: Easing.Bezier
                         easing.bezierCurve: [0.2, 0, 0, 1, 1, 1]
                     }
@@ -166,7 +171,7 @@ Item {
 
         visible: hello.checking || failures.count > 0
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: next.top
+        anchors.bottom: actions.top
         anchors.bottomMargin: 32
         width: Math.min(560, hello.width - 64)
         height: noticeBody.implicitHeight + 40
@@ -218,60 +223,122 @@ Item {
         }
     }
 
-    Item {
-        id: next
+    Row {
+        id: actions
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Math.round(Math.max(40, Math.min(72, hello.height * 0.08)))
-        width: 280
-        height: 96
-        enabled: ViewManager.nextEnabled
-        opacity: enabled ? 1 : 0.38
-        activeFocusOnTab: true
-        focus: true
+        spacing: 12
 
-        Accessible.role: Accessible.Button
-        Accessible.name: qsTr("Next")
-        Keys.onReturnPressed: ViewManager.next()
-        Keys.onEnterPressed: ViewManager.next()
-        Keys.onSpacePressed: ViewManager.next()
+        Item {
+            id: assist
 
-        MMorph {
-            id: nextMorph
-            active: nextMouse.pressed
+            width: 96
+            height: 96
+            activeFocusOnTab: true
+
+            Accessible.role: Accessible.Button
+            Accessible.name: qsTr("Accessibility")
+            Keys.onReturnPressed: sheet.open()
+            Keys.onEnterPressed: sheet.open()
+            Keys.onSpacePressed: sheet.open()
+
+            MMorph {
+                id: assistMorph
+                active: assistMouse.pressed
+            }
+
+            Rectangle {
+                id: assistShape
+                anchors.fill: parent
+                radius: height / 2 + (24 - height / 2) * assistMorph.value
+                color: M3.surfaceContainerHighest
+            }
+
+            MIcon {
+                anchors.centerIn: parent
+                size: 32
+                source: hello.symbol("accessibility_new")
+                color: M3.surfaceContent
+            }
+
+            MStateLayer {
+                anchors.fill: parent
+                radius: assistShape.radius
+                color: M3.surfaceContent
+                hovered: assistMouse.containsMouse
+                pressed: assistMouse.pressed
+                focused: assist.activeFocus
+            }
+
+            MouseArea {
+                id: assistMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: sheet.open()
+            }
         }
 
-        Rectangle {
-            id: nextShape
-            anchors.fill: parent
-            radius: height / 2 + (24 - height / 2) * nextMorph.value
-            color: M3.primary
-        }
+        Item {
+            id: next
 
-        MIcon {
-            anchors.centerIn: parent
-            size: 36
-            source: hello.symbol("arrow_forward")
-            color: M3.primaryContent
-        }
+            width: 280
+            height: 96
+            enabled: ViewManager.nextEnabled
+            opacity: enabled ? 1 : 0.38
+            activeFocusOnTab: true
+            focus: true
 
-        MStateLayer {
-            anchors.fill: parent
-            radius: nextShape.radius
-            color: M3.primaryContent
-            hovered: nextMouse.containsMouse
-            pressed: nextMouse.pressed
-            focused: next.activeFocus
-        }
+            Accessible.role: Accessible.Button
+            Accessible.name: qsTr("Next")
+            Keys.onReturnPressed: ViewManager.next()
+            Keys.onEnterPressed: ViewManager.next()
+            Keys.onSpacePressed: ViewManager.next()
 
-        MouseArea {
-            id: nextMouse
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: ViewManager.next()
+            MMorph {
+                id: nextMorph
+                active: nextMouse.pressed
+            }
+
+            Rectangle {
+                id: nextShape
+                anchors.fill: parent
+                radius: height / 2 + (24 - height / 2) * nextMorph.value
+                color: M3.primary
+            }
+
+            MIcon {
+                anchors.centerIn: parent
+                size: 36
+                source: hello.symbol("arrow_forward")
+                color: M3.primaryContent
+            }
+
+            MStateLayer {
+                anchors.fill: parent
+                radius: nextShape.radius
+                color: M3.primaryContent
+                hovered: nextMouse.containsMouse
+                pressed: nextMouse.pressed
+                focused: next.activeFocus
+            }
+
+            MouseArea {
+                id: nextMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: ViewManager.next()
+            }
         }
+    }
+
+    AccessibilitySheet {
+        id: sheet
+        anchors.fill: parent
+        onClosed: assist.forceActiveFocus()
     }
 
     function onActivate() {

@@ -13,7 +13,7 @@ THEME_APPS = generated/icon-theme/scalable/apps
 
 TOOLS = tools
 SYMBOLS = data/symbols
-SETUP_SYMBOLS = account_circle arrow_back arrow_forward check check_circle computer error folder hard_drive image \
+SETUP_SYMBOLS = accessibility_new account_circle arrow_back arrow_forward check check_circle computer error folder hard_drive image \
   keyboard lan language lock music_note network_wifi_1_bar network_wifi_2_bar network_wifi_3_bar palette password person \
   photo_library settings signal_wifi_4_bar visibility visibility_off wifi
 APPLETS = launcher:org.kernora.launcher shade:org.kernora.quicksettings clipboard:org.kernora.clipboard datetime:org.kernora.datetime

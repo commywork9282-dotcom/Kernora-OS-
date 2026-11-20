@@ -1,0 +1,16 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -u
+
+marker="${XDG_CONFIG_HOME:-$HOME/.config}/kernora-first-login"
+if [ -e "$marker" ]; then
+    waited=0
+    while [ "$waited" -lt 240 ] && pgrep -u "$(id -u)" -x ksplashqml >/dev/null 2>&1; do
+        sleep 0.5
+        waited=$((waited + 1))
+    done
+    rm -f "$marker"
+    pgrep -u "$(id -u)" -x ksplashqml >/dev/null 2>&1 || exit 0
+fi
+exec dbus-send --session --reply-timeout=1 --type=method_call --dest=org.kde.KSplash /KSplash org.kde.KSplash.setStage string:ready

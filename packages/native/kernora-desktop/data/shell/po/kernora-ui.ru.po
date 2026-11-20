@@ -280,3 +280,33 @@ msgstr "Таблетка"
 
 msgid "Full size"
 msgstr "Во весь размер"
+
+msgid "Getting your desktop ready…"
+msgstr "Готовим рабочий стол…"
+
+msgid "The first start takes a little longer. Here is what is worth knowing in the meantime."
+msgstr "Первый запуск занимает чуть больше времени. А пока — несколько полезных вещей."
+
+msgid "Meta opens the launcher"
+msgstr "Meta открывает меню запуска"
+
+msgid "Start typing to find apps, files and settings"
+msgstr "Начните печатать, чтобы найти приложения, файлы и настройки"
+
+msgid "Network and battery icons open quick settings"
+msgstr "Значки сети и батареи открывают быстрые настройки"
+
+msgid "Wi-Fi, sound, brightness, Do Not Disturb and more"
+msgstr "Wi-Fi, звук, яркость, «Не беспокоить» и другое"
+
+msgid "Touch and hold the desktop"
+msgstr "Нажмите и удерживайте рабочий стол"
+
+msgid "Wallpaper & style, widgets and Home settings"
+msgstr "Обои и стиль, виджеты и главный экран"
+
+msgid "Print takes a screenshot"
+msgstr "Print делает снимок экрана"
+
+msgid "Choose an area, the screen or a window"
+msgstr "Область, весь экран или окно"

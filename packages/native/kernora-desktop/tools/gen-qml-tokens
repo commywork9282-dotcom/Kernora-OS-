@@ -51,6 +51,8 @@ QtObject {{
 
     property string colourOverride: ""
     property var darkOverride: null
+    property real scaleOverride: 0
+    property real motionOverride: -1
     property var schemeDark: null
 
     function reloadGeneration() {{
@@ -280,7 +282,8 @@ def motion_lines() -> list[str]:
     lines.append("    // Material durations, scaled by the user's animation speed setting so")
     lines.append("    // that turning animations down in System Settings is respected.")
     lines.append(
-        "    readonly property real motionScale: Kirigami.Units.longDuration > 1 ? Kirigami.Units.longDuration / 200 : 0"
+        "    readonly property real motionScale: tokens.motionOverride >= 0 ? tokens.motionOverride"
+        " : Kirigami.Units.longDuration > 1 ? Kirigami.Units.longDuration / 200 : 0"
     )
     for name, value in design.MOTION_DURATION.items():
         prop = "duration" + name[0].upper() + name[1:]
@@ -315,7 +318,7 @@ def type_lines() -> list[str]:
     lines.append("    // user's font size: gridUnit is the height of one line of the desktop")
     lines.append("    // font, 18 pixels at the default size Material's scale assumes.")
     lines.append(
-        "    readonly property real scale: Kirigami.Units.gridUnit / 18"
+        "    readonly property real scale: tokens.scaleOverride > 0 ? tokens.scaleOverride : Kirigami.Units.gridUnit / 18"
     )
     lines.append("")
     def pick(style: str, index: int, source=design.type_style) -> str:

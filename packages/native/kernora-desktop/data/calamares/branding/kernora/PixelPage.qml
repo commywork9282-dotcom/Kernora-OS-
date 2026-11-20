@@ -33,6 +33,8 @@ Item {
     readonly property real areaTop: wide ? topSpace : header.y + header.height + 24
     readonly property real areaHeight: height - areaTop - buttonsHeight - bottomSpace - 24
 
+    SetupAccessibility {}
+
     function plain(label: string): string {
         return label.replace(/&(?!&)/g, "").replace(/&&/g, "&");
     }

@@ -26,10 +26,13 @@ Description: Separate full-screen setup for Kernora OS
     another system the biggest resizable partition is picked by itself and
     the split is an M3 Expressive slider with both halves named and sized;
     the bootloader location row is not shown there, the boot record of the
-    chosen disk is used and manual partitioning keeps its own choice.
+    chosen disk is used and manual partitioning keeps its own choice;
+  - ViewManager.textScale lets the Hello page make text bigger at once: the
+    application font grows (QML follows through Kirigami's grid unit), the
+    branding stylesheet's pixel sizes and the choice cards' text grow too.
 Author: Kernora Developers <developers@kernora.invalid>
 Forwarded: not-needed
-Last-Update: 2026-11-19
+Last-Update: 2026-11-20
 ---
 --- a/src/calamares/CalamaresApplication.cpp
 +++ b/src/calamares/CalamaresApplication.cpp
@@ -102,7 +105,64 @@ Last-Update: 2026-11-19
  const TimeZoneData*
 --- a/src/libcalamaresui/ViewManager.cpp
 +++ b/src/libcalamaresui/ViewManager.cpp
-@@ -535,6 +535,11 @@
+@@ -34,6 +34,7 @@
+ #include <QFile>
+ #include <QMessageBox>
+ #include <QMetaObject>
++#include <QRegularExpression>
+ 
+ #define UPDATE_BUTTON_PROPERTY( name, value ) \
+     do \
+@@ -498,6 +499,48 @@
+ }
+ 
+ void
++ViewManager::setTextScale( qreal scale )
++{
++    scale = qBound( 1.0, scale, 2.0 );
++    if ( qFuzzyCompare( scale, m_textScale ) )
++    {
++        return;
++    }
++    static const QFont base = QApplication::font();
++    m_textScale = scale;
++    qApp->setProperty( "kernoraTextScale", scale );
++
++    QFont font = base;
++    if ( base.pointSizeF() > 0 )
++    {
++        font.setPointSizeF( base.pointSizeF() * scale );
++    }
++    else if ( base.pixelSize() > 0 )
++    {
++        font.setPixelSize( qRound( base.pixelSize() * scale ) );
++    }
++    QApplication::setFont( font );
++
++    const QString sheet = Calamares::Branding::instance()->stylesheet();
++    static const QRegularExpression size( QStringLiteral( "font-size:\\s*(\\d+(?:\\.\\d+)?)px" ) );
++    QString scaled;
++    qsizetype last = 0;
++    for ( auto it = size.globalMatch( sheet ); it.hasNext(); )
++    {
++        const auto match = it.next();
++        scaled += sheet.mid( last, match.capturedStart() - last );
++        scaled += QStringLiteral( "font-size: %1px" ).arg( qRound( match.captured( 1 ).toDouble() * scale ) );
++        last = match.capturedEnd();
++    }
++    scaled += sheet.mid( last );
++    if ( m_widget && m_widget->window() )
++    {
++        m_widget->window()->setStyleSheet( scaled );
++    }
++    emit textScaleChanged( scale );
++}
++
++void
+ ViewManager::quit()
+ {
+     const auto r = confirmCancelInstallation();
+@@ -535,6 +578,11 @@
          return Confirmation::EndOfInstallation;
      }
  
@@ -114,6 +174,45 @@ Last-Update: 2026-11-19
      // Not at the very end, cancel/quit might be disabled
      if ( settings->disableCancel() )
      {
+--- a/src/libcalamaresui/ViewManager.h
++++ b/src/libcalamaresui/ViewManager.h
+@@ -56,6 +56,8 @@
+     Q_PROPERTY( bool isSetupMode READ isSetupMode CONSTANT FINAL )
+     Q_PROPERTY( QString logFilePath READ logFilePath CONSTANT FINAL )
+ 
++    Q_PROPERTY( qreal textScale READ textScale WRITE setTextScale NOTIFY textScaleChanged FINAL )
++
+ public:
+     /**
+      * @brief instance access to the ViewManager singleton.
+@@ -219,6 +221,9 @@
+     /// @brief Proxy to Logger::logFile(), default empty
+     QString logFilePath() const;
+ 
++    qreal textScale() const { return m_textScale; }
++    void setTextScale( qreal scale );
++
+ signals:
+     void currentStepChanged();
+     void ensureSize( QSize size ) const;  // See ViewStep::ensureSize()
+@@ -239,6 +244,8 @@
+     void quitVisibleChanged( bool ) const;
+     void quitTooltipChanged( QString ) const;
+ 
++    void textScaleChanged( qreal ) const;
++
+ private:
+     explicit ViewManager( QObject* parent = nullptr );
+     ~ViewManager() override;
+@@ -276,6 +283,8 @@
+ 
+     Qt::Orientations m_panelSides;
+ 
++    qreal m_textScale = 1.0;
++
+ public:
+     /** @section Model
+      *
 --- a/src/libcalamaresui/viewpages/ExecutionViewStep.cpp
 +++ b/src/libcalamaresui/viewpages/ExecutionViewStep.cpp
 @@ -16,6 +16,7 @@
@@ -171,7 +270,15 @@ Last-Update: 2026-11-19
  QObject*
 --- a/src/libcalamaresui/widgets/PrettyRadioButton.cpp
 +++ b/src/libcalamaresui/widgets/PrettyRadioButton.cpp
-@@ -38,15 +38,16 @@
+@@ -12,6 +12,7 @@
+ #include "utils/Gui.h"
+ #include "widgets/ClickableLabel.h"
+ 
++#include <QApplication>
+ #include <QButtonGroup>
+ #include <QComboBox>
+ #include <QGridLayout>
+@@ -38,15 +39,16 @@
      m_label->setWordWrap( true );
      m_label->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
  
@@ -192,7 +299,7 @@ Last-Update: 2026-11-19
  
      connect( m_label, &ClickableLabel::clicked, m_radio, &QRadioButton::click );
      connect( m_radio, &QRadioButton::toggled, this, &PrettyRadioButton::toggleOptions );
-@@ -68,6 +69,13 @@
+@@ -68,6 +70,13 @@
  }
  
  void
@@ -206,22 +313,41 @@ Last-Update: 2026-11-19
  PrettyRadioButton::showText()
  {
      QString text = m_text;
-@@ -76,6 +84,14 @@
+@@ -76,11 +85,33 @@
          text.replace( QStringLiteral( "color=\"red\"" ),
                        QStringLiteral( "color=\"%1\"" ).arg( m_warningColor.name() ) );
      }
++    const qreal stored = qApp->property( "kernoraTextScale" ).toReal();
++    const qreal scale = stored > 0 ? stored : 1.0;
 +    const int lineBreak = text.indexOf( QStringLiteral( "<br/>" ) );
 +    if ( lineBreak >= 0 && m_subtitleColor.isValid() )
 +    {
-+        text = text.left( lineBreak ) + QStringLiteral( "<br/><span style=\"font-size:14px; color:%1;\">" ).arg( m_subtitleColor.name() )
++        text = text.left( lineBreak )
++            + QStringLiteral( "<br/><span style=\"font-size:%1px; color:%2;\">" ).arg( qRound( 14 * scale ) ).arg( m_subtitleColor.name() )
 +            + text.mid( lineBreak + 5 ) + QStringLiteral( "</span>" );
 +    }
-+    text.replace( QStringLiteral( "<strong>" ), QStringLiteral( "<span style=\"font-size:16px;\">" ) );
++    text.replace( QStringLiteral( "<strong>" ), QStringLiteral( "<span style=\"font-size:%1px;\">" ).arg( qRound( 16 * scale ) ) );
 +    text.replace( QStringLiteral( "</strong>" ), QStringLiteral( "</span>" ) );
      m_label->setText( text );
  }
  
-@@ -137,7 +153,7 @@
+ 
+ void
++PrettyRadioButton::changeEvent( QEvent* event )
++{
++    QWidget::changeEvent( event );
++    if ( event->type() == QEvent::FontChange || event->type() == QEvent::ApplicationFontChange )
++    {
++        showText();
++    }
++}
++
++
++void
+ PrettyRadioButton::setIconSize( const QSize& size )
+ {
+     m_radio->setIconSize( size );
+@@ -137,7 +168,7 @@
          m_optionsLayout->addStretch( 1 );
  
          w->setLayout( m_optionsLayout );
@@ -249,7 +375,15 @@ Last-Update: 2026-11-19
      void setWarningColor( const QColor& color );
  
  protected slots:
-@@ -86,6 +89,7 @@
+@@ -77,6 +80,7 @@
+     void toggleOptions( bool checked );
+ 
+ protected:
++    void changeEvent( QEvent* event ) override;
+     ClickableLabel* m_label;
+     QRadioButton* m_radio;
+     QGridLayout* m_mainLayout;
+@@ -86,6 +90,7 @@
      void showText();
      QString m_text;
      QColor m_warningColor;
@@ -730,7 +864,7 @@ Last-Update: 2026-11-19
  #include <QPainterPath>
  #include <QStyleOption>
  
-@@ -305,7 +306,112 @@
+@@ -305,7 +306,113 @@
  QSize
  PartitionSplitterWidget::sizeHint() const
  {
@@ -800,7 +934,8 @@ Last-Update: 2026-11-19
 +    painter->drawRoundedRect( QRectF( handleX - handle / 2, top - 8, handle, track + 16 ), 2, 2 );
 +
 +    QFont label = font();
-+    label.setPixelSize( 14 );
++    const qreal stored = qApp->property( "kernoraTextScale" ).toReal();
++    label.setPixelSize( qRound( 14 * ( stored > 0 ? stored : 1.0 ) ) );
 +    label.setWeight( QFont::Medium );
 +    painter->setFont( label );
 +    const QFontMetrics metrics( label );
@@ -844,7 +979,7 @@ Last-Update: 2026-11-19
  }
  
  QSize
-@@ -320,8 +426,13 @@
+@@ -320,8 +427,13 @@
      Q_UNUSED( event )
  
      QPainter painter( this );
@@ -859,7 +994,7 @@ Last-Update: 2026-11-19
  
      drawPartitions( &painter, rect(), m_items );
  }
-@@ -329,6 +440,12 @@
+@@ -329,6 +441,12 @@
  void
  PartitionSplitterWidget::mousePressEvent( QMouseEvent* event )
  {
@@ -872,7 +1007,7 @@ Last-Update: 2026-11-19
      if ( m_itemToResize && m_itemToResizeNext && event->button() == Qt::LeftButton )
      {
  #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-@@ -345,6 +462,15 @@
+@@ -345,6 +463,15 @@
  void
  PartitionSplitterWidget::mouseMoveEvent( QMouseEvent* event )
  {

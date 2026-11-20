@@ -3,6 +3,7 @@
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 
+import QtCore
 import QtQuick
 import QtQuick.Window
 import org.kernora.m3
@@ -22,6 +23,33 @@ Rectangle {
     readonly property string plugin: /^org\.kernora\.[a-z]+$/.test(chosen) ? chosen : "org.kernora.shapes"
     readonly property string image: chosen === "org.kde.image" ? String(choice.item.image) : ""
     readonly property string colour: choice.status === Loader.Ready && /^[a-z]+(-[a-z]+)*$/.test(String(choice.item.colour)) ? String(choice.item.colour) : ""
+    readonly property string mode: choice.status === Loader.Ready && /^(dark|light)$/.test(String(choice.item.mode)) ? String(choice.item.mode) : ""
+
+    Settings {
+        id: setup
+        location: StandardPaths.writableLocation(StandardPaths.GenericConfigLocation) + "/kernora-first-login"
+        category: "Setup"
+    }
+
+    property bool firstLogin: false
+
+    function applySetupStyle(): void {
+        if (!root.firstLogin) {
+            return;
+        }
+        if (root.colour.length > 0) {
+            M3.colourOverride = root.colour;
+        }
+        if (root.mode.length > 0) {
+            M3.darkOverride = root.mode === "dark";
+        }
+        M3.reloadGeneration();
+    }
+
+    Component.onCompleted: {
+        root.firstLogin = String(setup.value("firstLogin", "false")) === "true";
+        root.applySetupStyle();
+    }
 
     Rectangle {
         id: backdrop
@@ -39,7 +67,7 @@ Rectangle {
         Loader {
             id: scene
             anchors.fill: parent
-            active: root.image.length === 0 || picture.status === Image.Error
+            active: !root.firstLogin && (root.image.length === 0 || picture.status === Image.Error)
             source: "file:///usr/share/plasma/wallpapers/" + root.plugin + "/contents/ui/Scene.qml"
 
             readonly property real loop: status === Loader.Ready && item.loopSeconds > 0 ? item.loopSeconds : 180
@@ -80,5 +108,11 @@ Rectangle {
             fillMode: Image.PreserveAspectCrop
             sourceSize.width: width
         }
+    }
+
+    Loader {
+        anchors.fill: parent
+        active: root.firstLogin
+        source: "FirstLogin.qml"
     }
 }

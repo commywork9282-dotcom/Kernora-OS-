@@ -2068,7 +2068,7 @@ if grep -Fq '"AccentColor"' "$tools_root/kde_colors.py"; then
 fi
 splash="$data_root/look-and-feel/org.kernora.desktop/contents/splash/Splash.qml"
 [[ -s "$splash" ]] || fail "session splash is missing"
-if grep '^import' "$splash" | grep -Evq '^import (QtQuick|QtQuick\.Window|org\.kernora\.m3)$'; then
+if grep '^import' "$splash" | grep -Evq '^import (QtCore|QtQuick|QtQuick\.Window|org\.kernora\.m3)$'; then
   fail "splash imports something unexpected"
 fi
 grep -Fq 'source: "file:///var/lib/kernora/greeter/wallpaper.qml"' "$splash" \
@@ -2146,7 +2146,7 @@ grep -Fq 'import org.kernora.shell' "$package_root/data/editmode/ConfigOverlay.q
   && grep -Fq 'overlay.appletSettings.open(applet.plasmoid, overlay)' "$package_root/data/editmode/ConfigOverlay.qml" \
   || fail "a widget's settings end edit mode"
 
-grep -Fq 'motionScale: Kirigami.Units.longDuration > 1 ? Kirigami.Units.longDuration / 200 : 0' "$package_root/tools/gen-qml-tokens" \
+grep -Fq ': Kirigami.Units.longDuration > 1 ? Kirigami.Units.longDuration / 200 : 0' "$package_root/tools/gen-qml-tokens" \
   && grep -Fq '!isFinite(x) || !isFinite(v)' "$package_root/data/shell/m3/MSpring.qml" \
   && ! grep -rFq 'Kirigami.Units.longDuration === 0' "$package_root/data/wallpaper" \
   || fail "Reduce motion breaks the shell"
@@ -2436,6 +2436,35 @@ grep -Fq 'ConfigFile("kernora-setup-style", "Style").readEntry("wallpaper")' \
 grep -Fq 'if (!page.formatsChosen) {' "$branding/localeq.qml" \
   && grep -Fq 'page.formatsChosen = true;' "$branding/localeq.qml" \
   || fail "formats do not follow the chosen language"
+grep -Fq 'onClicked: sheet.open()' "$branding/welcomeq.qml" \
+  && grep -Fq 'AccessibilitySheet {' "$branding/welcomeq.qml" \
+  && grep -Fq 'ViewManager.textScale = value / 10.5;' "$branding/AccessibilitySheet.qml" \
+  && grep -Fq 'M3.motionOverride = setup.reduceMotion ? 0 : -1;' "$branding/SetupAccessibility.qml" \
+  && grep -Fq 'M3.scaleOverride = setup.points > 10.5 ? setup.baseScale * setup.points / 10.5 : 0;' "$branding/SetupAccessibility.qml" \
+  && grep -Fq 'SetupAccessibility {}' "$branding/PixelPage.qml" \
+  && grep -Fq 'SetupAccessibility {}' "$branding/welcomeq.qml" \
+  && grep -Fq 'SetupAccessibility {}' "$branding/show.qml" \
+  && grep -Fq 'Global.insert("kernoraAccessibility", JSON.stringify({' "$branding/AccessibilitySheet.qml" \
+  && grep -Fq 'running: !hello.still' "$branding/welcomeq.qml" \
+  && grep -Fq 'ViewManager::setTextScale( qreal scale )' "$project_root/packages/derived/calamares/patches/kernora-pixel-setup.patch" \
+  && grep -Fq '<name>AccessibilitySheet</name>' "$package_root/data/calamares/lang/calamares-kernora_ru.ts" \
+  || fail "the Hello page has no accessibility button like on a Pixel"
+splash_dir="$package_root/data/look-and-feel/org.kernora.desktop/contents/splash"
+grep -Fq '"/kernora-first-login"' "$splash_dir/Splash.qml" \
+  && grep -Fq 'source: "FirstLogin.qml"' "$splash_dir/Splash.qml" \
+  && grep -Fq 'i18nd("kernora-ui", "Getting your desktop ready…")' "$splash_dir/FirstLogin.qml" \
+  && grep -Fq 'msgid "Getting your desktop ready…"' "$package_root/data/shell/po/kernora-ui.ru.po" \
+  && grep -Fxq 'data/session/kernora-splash-ready.conf usr/lib/systemd/user/plasma-ksplash-ready.service.d' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'data/session/kernora-splash-ready usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'ExecStart=/usr/libexec/kernora-splash-ready' "$package_root/data/session/kernora-splash-ready.conf" \
+  && [[ -x "$package_root/data/session/kernora-splash-ready" ]] \
+  && sh -n "$package_root/data/session/kernora-splash-ready" \
+  && grep -Fxq 'data/session/kernora-splash-timeout.conf usr/lib/systemd/user/plasma-ksplash.service.d' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'TimeoutSec=130sec' "$package_root/data/session/kernora-splash-timeout.conf" \
+  && [[ $(grep -l 'busctl --user --auto-start=no call org.kde.KSplash /KSplash org.kde.KSplash setStage s ready' "$package_root"/data/wallpaper/*/contents/ui/main.qml | wc -l) \
+    == $(ls "$package_root"/data/wallpaper/*/contents/ui/main.qml | wc -l) ]] \
+  && grep -Fq 'readonly property string mode: "%s"' "$package_root/data/greeter/kernora-splash-wallpaper" \
+  || fail "the first login after setup has no loading screen until the desktop is drawn"
 setup_data=$(mktemp -d)
 for colour in kernora blue; do
   (cd "$package_root/tools" && KERNORA_COLOUR=$colour python3 gen-qml-tokens --palette "$setup_data/palettes/$colour.conf" >/dev/null)
@@ -2446,7 +2475,7 @@ python3 "$package_root/tools/gen-setup-data" "$setup_data/palettes" "$package_ro
   && grep -q '"nameRu": "Лента"' "$setup_data/setupdata.js" \
   || fail "the setup style page gets no colours or live wallpapers"
 rm -r "$setup_data"
-for page in welcomeq localeq keyboardq wifiq usersq styleq summaryq finishedq; do
+for page in welcomeq AccessibilitySheet localeq keyboardq wifiq usersq styleq summaryq finishedq; do
   for symbol in $(grep -o 'symbol("[a-z_0-9]*")\|icon: "[a-z_0-9]*"\|symbol: "[a-z_0-9]*"' "$branding/$page.qml" | grep -o '"[a-z_0-9]*"' | tr -d '"'); do
     grep -Eq "SETUP_SYMBOLS = .*\\b$symbol\\b|^  .*\\b$symbol\\b" "$package_root/debian/rules" \
       || fail "the setup page $page uses the symbol $symbol, which the package does not install"
@@ -2479,6 +2508,15 @@ with tempfile.TemporaryDirectory() as root:
     os.remove(os.path.join(config, "kernora-setup-style"))
     code["install_style"](root, "ann", {"wallpaper": "org.kernora.shapes", "colour": "kernora", "dark": True})
     assert not os.path.exists(os.path.join(config, "kernora-setup-style"))
+    code["install_accessibility"](root, "ann", {"fontSize": 13.5, "reduceMotion": True})
+    globals_text = open(os.path.join(config, "kdeglobals")).read()
+    assert "font=Google Sans Flex,13.5,-1,5,400," in globals_text and "toolBarFont=Google Sans Flex,12,-1,5,400," in globals_text, globals_text
+    assert "activeFont=Google Sans Flex,13.5,-1,5,500," in globals_text and "AnimationDurationFactor=0" in globals_text, globals_text
+    os.remove(os.path.join(config, "kdeglobals"))
+    code["install_accessibility"](root, "ann", {"fontSize": 10.5, "reduceMotion": False})
+    assert not os.path.exists(os.path.join(config, "kdeglobals"))
+    code["mark_first_login"](root, "ann")
+    assert "firstLogin=true" in open(os.path.join(config, "kernora-first-login")).read()
 PY
 grep -Fq 'source: parent.user ? parent.user.picture : ""' "$greeter_qml" \
   && ! grep -Fq '"file://" + parent.user.picture' "$greeter_qml" \
