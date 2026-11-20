@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c 'printf "KERNORA_BOOT_OK\n" > /dev/ttyS0 2>/dev/null; printf "KERNORA_BOOT_OK\n" > /dev/console'
+ExecStart=/bin/sh -c 'printf "KERNORA_BOOT_OK\n" > /dev/ttyS0 2>/dev/null || true'
 RemainAfterExit=yes
 
 [Install]

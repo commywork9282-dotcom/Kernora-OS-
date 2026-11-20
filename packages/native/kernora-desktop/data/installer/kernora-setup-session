@@ -7,7 +7,7 @@ state="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/kernora-setup"
 mkdir -p "$state"
 : > "$state/loop"
 
-export XDG_CURRENT_DESKTOP=KDE KDE_FULL_SESSION=true KDE_SESSION_VERSION=6
+export XDG_CURRENT_DESKTOP=KDE KDE_FULL_SESSION=true KDE_SESSION_VERSION=6 XDG_MENU_PREFIX=plasma-
 
 while :; do
     rm -f "$state/again"

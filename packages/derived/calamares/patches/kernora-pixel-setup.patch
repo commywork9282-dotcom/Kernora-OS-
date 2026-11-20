@@ -22,7 +22,9 @@ Description: Separate full-screen setup for Kernora OS
     list with the radio on the right and no icons, and the partition bars
     only where the user picks a partition (alongside, replace); next to
     another system the biggest resizable partition is picked by itself and
-    the split is an M3 Expressive slider with both halves named and sized.
+    the split is an M3 Expressive slider with both halves named and sized;
+    the bootloader location row is not shown there, the boot record of the
+    chosen disk is used and manual partitioning keeps its own choice.
 Author: Kernora Developers <developers@kernora.invalid>
 Forwarded: not-needed
 Last-Update: 2026-11-19
@@ -634,6 +636,14 @@ Last-Update: 2026-11-19
      }
      else
      {
+@@ -1704,6 +1916,7 @@
+     mainLayout->addWidget( m_bootloaderComboBox );
+     widgetLabel->setBuddy( m_bootloaderComboBox );
+     mainLayout->addStretch();
++    panelWidget->hide();
+ 
+     return panelWidget;
+ }
 --- a/src/modules/partition/gui/ChoicePage.h
 +++ b/src/modules/partition/gui/ChoicePage.h
 @@ -105,6 +105,10 @@

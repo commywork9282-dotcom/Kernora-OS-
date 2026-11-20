@@ -64,7 +64,7 @@ grep -Fq 'menuentry "Kernora OS · Русский" --id live-ru {' "$temporary_r
   || fail "the Russian live session is missing"
 grep -Fq '    set default=installed' "$temporary_root/grub.cfg" \
   || fail "an installed system no longer takes boot priority"
-[[ "$(grep -c ' quiet loglevel=3 splash ' "$temporary_root/grub.cfg")" == 2 ]] \
+[[ "$(grep -c ' quiet loglevel=3 systemd.show_status=false splash ' "$temporary_root/grub.cfg")" == 2 ]] \
   || fail "the live session prints kernel errors over the boot splash"
 
 xorriso -osirrox on -indev "$iso" \

@@ -2316,7 +2316,8 @@ grep -Fxq 'Exec=/usr/lib/x86_64-linux-gnu/libexec/plasma-dbus-run-session-if-nee
   && [[ -x "$package_root/data/installer/kernora-setup-session" ]] \
   && grep -Fq -- '--exit-with-session=/usr/bin/kernora-installer' "$package_root/data/installer/kernora-setup-session" \
   && grep -Fq '/usr/bin/startplasma-wayland' "$package_root/data/installer/kernora-setup-session" \
-  && grep -Fq 'org.kde.Shutdown.logout' "$package_root/data/installer/kernora-installer" \
+  && grep -Fq 'XDG_MENU_PREFIX=plasma-' "$package_root/data/installer/kernora-setup-session" \
+  && grep -Fq 'dbus-send --session --print-reply=literal --dest=org.kde.Shutdown /Shutdown org.kde.Shutdown.logout' "$package_root/data/installer/kernora-installer" \
   && [[ ! -e "$package_root/data/installer/org.kernora.installer-autostart.desktop" ]] \
   || fail "the live image does not start in the separate setup session"
 grep -Fxq 'Id=kernora_welcome_retired' "$package_root/data/kconf_update/kernora-welcome-retired.upd" \
