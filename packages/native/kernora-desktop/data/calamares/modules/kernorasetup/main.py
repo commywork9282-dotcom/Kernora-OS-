@@ -4,6 +4,7 @@
 import gettext
 import json
 import os
+import re
 import shutil
 
 import libcalamares
@@ -81,6 +82,44 @@ def set_entry(path, group, key, value, uid, gid):
     os.chown(path, uid, gid)
 
 
+def style_values(style):
+    wallpaper = str(style.get("wallpaper") or "org.kernora.shapes")
+    colour = str(style.get("colour") or "kernora")
+    dark = bool(style.get("dark", True))
+    return wallpaper, colour, dark
+
+
+def greeter_state(root, name, wallpaper, colour, mode):
+    found = target_user(root, name)
+    if found is None:
+        return
+    uid, gid, home = found
+    base = os.path.join(root, home.lstrip("/"))
+    if not os.path.isdir(base):
+        return
+    local = os.path.join(base, ".local")
+    state = os.path.join(local, "state")
+    for folder, mode_bits in ((local, 0o755), (state, 0o700)):
+        if not os.path.isdir(folder):
+            os.makedirs(folder)
+            os.chown(folder, uid, gid)
+            os.chmod(folder, mode_bits)
+    path = os.path.join(state, "kernora-update-notifierstaterc")
+    for key, value in (("plugin", wallpaper), ("image", ""), ("stamp", "0"), ("colour", colour), ("mode", mode)):
+        set_entry(path, "Greeter", key, value, uid, gid)
+    os.chmod(path, 0o600)
+
+
+def sync_greeter(root, name, style):
+    wallpaper, colour, dark = style_values(style)
+    mode = "dark" if dark else "light"
+    if not re.match(r"^org\.kernora\.[a-z]+$", wallpaper) or not re.match(r"^[a-z]+(-[a-z]+)*$", colour):
+        return
+    if libcalamares.utils.target_env_call(["/usr/libexec/kernora-greeter-background", wallpaper, "", colour, mode]) != 0:
+        return
+    greeter_state(root, name, wallpaper, colour, mode)
+
+
 def install_style(root, name, style):
     found = target_user(root, name)
     if found is None:
@@ -94,9 +133,7 @@ def install_style(root, name, style):
         os.chown(config, uid, gid)
     shapes = "true" if style.get("originalShapes") else "false"
     set_entry(os.path.join(config, "kernorarc"), "Icons", "originalShapes", shapes, uid, gid)
-    wallpaper = str(style.get("wallpaper") or "org.kernora.shapes")
-    colour = str(style.get("colour") or "kernora")
-    dark = bool(style.get("dark", True))
+    wallpaper, colour, dark = style_values(style)
     if wallpaper == "org.kernora.shapes" and colour == "kernora" and dark:
         return
     path = os.path.join(config, "kernora-setup-style")
@@ -145,11 +182,16 @@ def run():
             style = json.loads(style)
         except ValueError:
             style = None
-    if isinstance(style, dict):
-        try:
-            install_style(root, name, style)
-        except OSError as error:
-            libcalamares.utils.warning("kernorasetup: style not saved: {}".format(error))
+    if not isinstance(style, dict):
+        style = {}
+    try:
+        install_style(root, name, style)
+    except OSError as error:
+        libcalamares.utils.warning("kernorasetup: style not saved: {}".format(error))
+    try:
+        sync_greeter(root, name, style)
+    except OSError as error:
+        libcalamares.utils.warning("kernorasetup: login screen keeps its style: {}".format(error))
     try:
         hide_welcome(root, name)
     except OSError as error:

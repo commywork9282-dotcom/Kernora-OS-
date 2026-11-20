@@ -3,6 +3,7 @@
 
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
+#include <QDBusMessage>
 #include <QDBusServiceWatcher>
 #include <QFile>
 #include <QGuiApplication>
@@ -28,30 +29,36 @@ QtObject {
 
     signal finished()
 
-    function paint(): void {
-        if (apply.colour !== Appearance.colour) {
-            Appearance.setColour(apply.colour, ok => apply.finished());
+    Component.onCompleted: {
+        Files.setLockScreenPlugin(apply.wallpaper);
+        if (apply.colour !== Appearance.colour || apply.dark !== Appearance.dark) {
+            Appearance.setStyle(apply.colour, apply.dark, ok => apply.finished());
         } else {
             apply.finished();
-        }
-    }
-
-    Component.onCompleted: {
-        Files.setLiveWallpaper(apply.wallpaper);
-        Files.setLockScreenPlugin(apply.wallpaper);
-        if (apply.dark !== Appearance.dark) {
-            Appearance.setDark(apply.dark, ok => apply.paint());
-        } else {
-            apply.paint();
         }
     }
 }
 )";
 
+static void placeWallpaper(const QString &wallpaper)
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(QStringLiteral("org.kde.plasmashell"), QStringLiteral("/PlasmaShell"),
+                                                          QStringLiteral("org.kde.PlasmaShell"), QStringLiteral("evaluateScript"));
+    message.setArguments({QStringLiteral("for (const d of desktops()) {"
+                                         "  if (d.wallpaperPlugin === '%1') { continue; }"
+                                         "  d.currentConfigGroup = ['Wallpaper', '%1', 'General'];"
+                                         "  d.writeConfig('IntroAt', String(Date.now()));"
+                                         "  d.wallpaperPlugin = '%1';"
+                                         "}")
+                              .arg(wallpaper)});
+    QDBusConnection::sessionBus().call(message, QDBus::Block, 10000);
+}
+
 int main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
     QGuiApplication::setApplicationName(QStringLiteral("kernora-setup-apply"));
+    const bool early = app.arguments().contains(QStringLiteral("--early"));
 
     const QString path = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QStringLiteral("/kernora-setup-style");
     if (!QFile::exists(path)) {
@@ -74,10 +81,14 @@ int main(int argc, char **argv)
     QQmlEngine engine;
     QQmlComponent component(&engine);
     QObject *job = nullptr;
+    QTimer settle;
+    settle.setSingleShot(true);
+    settle.setInterval(1000);
+    QObject::connect(&settle, &QTimer::timeout, &app, &QCoreApplication::quit);
 
-    const auto finish = [path]() {
+    const auto finish = [path, wallpaper]() {
+        placeWallpaper(wallpaper);
         QFile::remove(path);
-        QTimer::singleShot(1000, qApp, &QCoreApplication::quit);
     };
 
     const auto start = [&]() {
@@ -93,9 +104,16 @@ int main(int argc, char **argv)
             QCoreApplication::exit(1);
             return;
         }
-        QObject::connect(job, SIGNAL(finished()), &app, SLOT(quit()));
-        QObject::connect(&app, &QCoreApplication::aboutToQuit, finish);
+        QObject::connect(job, SIGNAL(finished()), &settle, SLOT(start()));
     };
+
+    if (early) {
+        QTimer::singleShot(0, &app, start);
+        QTimer::singleShot(60000, &app, &QCoreApplication::quit);
+        return app.exec();
+    }
+
+    QObject::connect(&app, &QCoreApplication::aboutToQuit, finish);
 
     const QString shell = QStringLiteral("org.kde.plasmashell");
     QDBusServiceWatcher watcher(shell, QDBusConnection::sessionBus(), QDBusServiceWatcher::WatchForRegistration);

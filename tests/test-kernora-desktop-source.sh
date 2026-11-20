@@ -134,7 +134,7 @@ grep -Fxq 'path-exclude=/usr/share/wallpapers/Next/*' "$data_root/dpkg/kernora-w
 
 defaults="$data_root/look-and-feel/org.kernora.desktop/contents/defaults"
 [[ -s "$defaults" ]] || fail "look-and-feel defaults are missing"
-grep -Fq 'wallpaperPlugin = "org.kernora.shapes"' "$data_root/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
+grep -Fq ': "org.kernora.shapes";' "$data_root/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
   || fail "the default layout does not use Kernora Shapes"
 grep -Fxq 'cursorTheme=kernora_cursors' "$defaults" \
   || fail "look-and-feel does not select the Kernora cursors"
@@ -2426,6 +2426,10 @@ grep -Fq 'item.colour = Qt.binding(() => live.colour);' "$branding/styleq.qml" \
   && [[ $(grep -lFx '    property string colour: M3.colour' "$package_root"/data/wallpaper/*/contents/ui/Scene.qml | wc -l) \
     == $(ls "$package_root"/data/wallpaper/*/contents/ui/Scene.qml | wc -l) ]] \
   || fail "the style page previews do not show the chosen colour"
+grep -Fq 'ConfigFile("kernora-setup-style", "Style").readEntry("wallpaper")' \
+    "$package_root/data/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
+  && grep -Fq '"/usr/libexec/kernora-greeter-background", wallpaper, "", colour, mode' "$package_root/data/calamares/modules/kernorasetup/main.py" \
+  || fail "the first desktop does not start in the style picked in setup"
 grep -Fq 'if (!page.formatsChosen) {' "$branding/localeq.qml" \
   && grep -Fq 'page.formatsChosen = true;' "$branding/localeq.qml" \
   || fail "formats do not follow the chosen language"
@@ -2460,6 +2464,9 @@ with tempfile.TemporaryDirectory() as root:
     with open(os.path.join(root, "usr/share/kernora/whatsnew.json"), "w") as notes:
         notes.write('[{"id": "2026-11-19-1"}, {"id": "2026-11-16-2"}]')
     code["hide_welcome"](root, "ann")
+    code["greeter_state"](root, "ann", "org.kernora.ribbon", "blue", "light")
+    greeter = open(os.path.join(root, "home/ann/.local/state/kernora-update-notifierstaterc")).read()
+    assert "plugin=org.kernora.ribbon" in greeter and "colour=blue" in greeter and "mode=light" in greeter and "stamp=0" in greeter, greeter
     config = os.path.join(root, "home/ann/.config")
     style = open(os.path.join(config, "kernora-setup-style")).read()
     assert "wallpaper=org.kernora.ribbon" in style and "colour=blue" in style and "dark=false" in style, style

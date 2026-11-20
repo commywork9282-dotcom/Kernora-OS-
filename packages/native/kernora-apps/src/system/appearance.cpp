@@ -176,6 +176,12 @@ void Appearance::setColour(const QString &colour, const QJSValue &callback)
     applyTheme(colour, wantedGeneration(), wantedDark(), callback);
 }
 
+void Appearance::setStyle(const QString &colour, bool dark, const QJSValue &callback)
+{
+    setColourSource(QStringLiteral("preset"));
+    applyTheme(colour, wantedGeneration(), dark, callback);
+}
+
 QString Appearance::colourSource() const
 {
     auto config = KSharedConfig::openConfig(QStringLiteral("kernorarc"));

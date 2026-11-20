@@ -1,0 +1,1 @@
+usr/lib/systemd/user/kernora-setup-style.service usr/lib/systemd/user/plasma-workspace.target.wants/kernora-setup-style.service

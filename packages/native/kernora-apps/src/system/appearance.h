@@ -36,6 +36,7 @@ public:
     Q_INVOKABLE void setGeneration(const QString &generation, const QJSValue &callback = QJSValue());
     Q_INVOKABLE void apply(const QString &generation, bool dark, const QJSValue &callback = QJSValue());
     Q_INVOKABLE void setColour(const QString &colour, const QJSValue &callback = QJSValue());
+    Q_INVOKABLE void setStyle(const QString &colour, bool dark, const QJSValue &callback = QJSValue());
     Q_INVOKABLE QVariantList colours() const;
     Q_INVOKABLE QStringList wallpaperColours(const QString &wallpaper) const;
     Q_INVOKABLE void setWallpaperColour(const QString &colour, const QJSValue &callback = QJSValue());

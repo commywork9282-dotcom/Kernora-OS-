@@ -63,6 +63,7 @@ install(FILES data/copyright/librewolf DESTINATION ${KDE_INSTALL_DATADIR}/kernor
 install(FILES data/knotifications/kernora-screenshot.notifyrc data/knotifications/kernora-updates.notifyrc data/knotifications/kernora-store.notifyrc
         DESTINATION ${KDE_INSTALL_KNOTIFYRCDIR})
 install(FILES data/autostart/org.kernora.update-notifier.desktop data/autostart/org.kernora.setup-apply.desktop DESTINATION ${KDE_INSTALL_AUTOSTARTDIR})
+install(FILES data/systemd/kernora-setup-style.service DESTINATION lib/systemd/user)
 install(FILES data/whatsnew.json DESTINATION ${KDE_INSTALL_DATADIR}/kernora)
 install(FILES data/store/featured.json DESTINATION ${KDE_INSTALL_DATADIR}/kernora/store)
 install(FILES data/store/flathub.flatpakrepo DESTINATION ${KDE_INSTALL_DATADIR}/flatpak/remotes.d)

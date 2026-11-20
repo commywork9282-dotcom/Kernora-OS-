@@ -1,0 +1,12 @@
+[Unit]
+Description=Apply the style picked in setup before the desktop starts
+ConditionPathExists=%h/.config/kernora-setup-style
+After=plasma-kwin_wayland.service plasma-kwin_x11.service plasma-kded6.service
+Before=plasma-plasmashell.service
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+Environment=QT_QPA_PLATFORM=offscreen
+ExecStart=/usr/libexec/kernora-setup-apply --early
+TimeoutStartSec=90

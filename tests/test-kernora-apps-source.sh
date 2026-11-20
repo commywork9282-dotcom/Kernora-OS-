@@ -434,4 +434,14 @@ grep -Fq 'readEntry("originalShapes", false)' "$package_root/src/updatenotifier/
   && grep -Fq 'key: "originalShapes"' "$package_root/apps/settings/qml/pages/AppearancePage.qml" \
   && grep -Fq 'defaultValue: "false"' <<<"$(grep -A4 'id: originalIcons' "$package_root/apps/settings/qml/pages/AppearancePage.qml")" \
   || fail "the original icon shapes switch is missing or on by default"
+unit="$package_root/data/systemd/kernora-setup-style.service"
+grep -Fxq 'ExecStart=/usr/libexec/kernora-setup-apply --early' "$unit" \
+  && grep -Fxq 'Before=plasma-plasmashell.service' "$unit" \
+  && grep -Fxq 'ConditionPathExists=%h/.config/kernora-setup-style' "$unit" \
+  && grep -Fxq 'usr/lib/systemd/user/kernora-setup-style.service usr/lib/systemd/user/plasma-workspace.target.wants/kernora-setup-style.service' \
+    "$package_root/debian/kernora-apps.links" \
+  && grep -Fq 'Appearance.setStyle(apply.colour, apply.dark' "$package_root/src/setupapply/main.cpp" \
+  && grep -Fq "if (d.wallpaperPlugin === '%1') { continue; }" "$package_root/src/setupapply/main.cpp" \
+  && grep -Fq 'Q_INVOKABLE void setStyle(const QString &colour, bool dark' "$package_root/src/system/appearance.h" \
+  || fail "the style from setup is not applied before the desktop starts"
 printf 'kernora-apps source test: OK\n'

@@ -1,6 +1,8 @@
+var chosen = String(ConfigFile("kernora-setup-style", "Style").readEntry("wallpaper"));
+var wallpaper = /^org\.kernora\.[a-z]+$/.test(chosen) ? chosen : "org.kernora.shapes";
 var desktops = desktopsForActivity(currentActivity());
 for (var i = 0; i < desktops.length; i++) {
-    desktops[i].wallpaperPlugin = "org.kernora.shapes";
+    desktops[i].wallpaperPlugin = wallpaper;
 }
 
 loadTemplate("org.kde.plasma.desktop.defaultPanel");
