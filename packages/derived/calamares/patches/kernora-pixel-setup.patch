@@ -2,7 +2,9 @@ Description: Separate full-screen setup for Kernora OS
  Kernora runs the installer as its own full-screen setup before the desktop
  starts, drawn like the Pixel setup wizard:
   - a branding with windowExpanding: fullscreen shows a real full-screen
-    window instead of a maximized one;
+    window instead of a maximized one, already at the screen size when it
+    first appears, and QML pages show nothing while they load (the
+    "Loading" spinner only comes up when a page fails);
   - leaving from the first page (Try without installing) quits without the
     cancel question, nothing has been chosen there yet;
   - QML pages can store their choices with Global.insert / Global.remove;
@@ -31,11 +33,15 @@ Last-Update: 2026-11-19
 ---
 --- a/src/calamares/CalamaresApplication.cpp
 +++ b/src/calamares/CalamaresApplication.cpp
-@@ -274,7 +274,7 @@
+@@ -274,7 +274,11 @@
      if ( Calamares::Branding::instance()->windowMaximize() )
      {
          m_mainwindow->setWindowFlag( Qt::FramelessWindowHint );
 -        m_mainwindow->showMaximized();
++        if ( QScreen* screen = m_mainwindow->screen() )
++        {
++            m_mainwindow->setGeometry( screen->geometry() );
++        }
 +        m_mainwindow->showFullScreen();
      }
      else
@@ -145,6 +151,24 @@ Last-Update: 2026-11-19
  }
  
  void
+--- a/src/libcalamaresui/viewpages/QmlViewStep.cpp
++++ b/src/libcalamaresui/viewpages/QmlViewStep.cpp
+@@ -85,6 +85,7 @@
+ 
+     QVBoxLayout* layout = new QVBoxLayout( m_widget );
+     layout->addWidget( m_spinner );
++    m_spinner->hide();
+ 
+     m_qmlEngine->addImportPath( Calamares::qmlModulesDir().absolutePath() );
+ 
+@@ -284,6 +285,7 @@
+         cDebug() << Logger::SubEntry << "QML error:" << m_qmlComponent->errorString();
+     }
+     m_spinner->setText( prettyName() + ' ' + tr( "Loading failed.", "@info" ) );
++    m_spinner->show();
+ }
+ 
+ QObject*
 --- a/src/libcalamaresui/widgets/PrettyRadioButton.cpp
 +++ b/src/libcalamaresui/widgets/PrettyRadioButton.cpp
 @@ -38,15 +38,16 @@
@@ -265,7 +289,7 @@ Last-Update: 2026-11-19
  #include <QBoxLayout>
  #include <QButtonGroup>
  #include <QComboBox>
-@@ -54,8 +58,11 @@
+@@ -54,11 +58,28 @@
  #include <QFutureWatcher>
  #include <QLabel>
  #include <QListView>
@@ -277,7 +301,24 @@ Last-Update: 2026-11-19
  using Calamares::Partition::findPartitionByPath;
  using Calamares::Partition::isPartitionFreeSpace;
  using Calamares::Partition::PartitionIterator;
-@@ -98,18 +105,44 @@
++
++static bool
++hasRealPartitions( Device* device )
++{
++    for ( auto it = PartitionIterator::begin( device ); it != PartitionIterator::end( device ); ++it )
++    {
++        if ( !isPartitionFreeSpace( *it ) )
++        {
++            return true;
++        }
++    }
++    return false;
++}
++
+ using Calamares::Widgets::PrettyRadioButton;
+ using InstallChoice = Config::InstallChoice;
+ using SwapChoice = Config::SwapChoice;
+@@ -98,18 +119,44 @@
  
      BootInfoWidget* bootInfoWidget = new BootInfoWidget( this );
      m_drivesLayout->insertWidget( 0, bootInfoWidget );
@@ -325,7 +366,7 @@ Last-Update: 2026-11-19
  
      m_messageLabel->setWordWrap( true );
      m_messageLabel->hide();
-@@ -122,8 +155,21 @@
+@@ -122,8 +169,21 @@
      m_previewBeforeFrame->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
      m_previewAfterFrame->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
      m_previewAfterLabel->hide();
@@ -347,7 +388,7 @@ Last-Update: 2026-11-19
      m_reuseHomeCheckBox->hide();
      gs->insert( "reuseHome", false );
  
-@@ -143,6 +189,9 @@
+@@ -143,6 +203,9 @@
      updateSwapChoicesTr();
      updateChoiceButtonsTr();
      updateActionDescriptionsTr();
@@ -357,7 +398,7 @@ Last-Update: 2026-11-19
  }
  
  /** @brief Sets the @p model for the given @p box and adjusts UI sizes to match.
-@@ -186,6 +235,11 @@
+@@ -186,6 +249,11 @@
                   m_drivesCombo->setCurrentIndex( m_lastSelectedDeviceIndex );
               } );
      setModelToComboBox( m_drivesCombo, core->deviceModel() );
@@ -369,7 +410,7 @@ Last-Update: 2026-11-19
  
      connect( m_drivesCombo, qOverload< int >( &QComboBox::currentIndexChanged ), this, &ChoicePage::applyDeviceChoice );
      connect( m_encryptWidget, &EncryptWidget::stateChanged, this, &ChoicePage::onEncryptWidgetStateChanged );
-@@ -252,25 +306,16 @@
+@@ -252,25 +320,16 @@
      //  3) Manual
      //  TBD: upgrade option?
  
@@ -395,7 +436,7 @@ Last-Update: 2026-11-19
      m_replaceButton->addToGroup( m_grp, InstallChoice::Replace );
  
      // Fill up swap options
-@@ -305,9 +350,6 @@
+@@ -305,9 +364,6 @@
      m_itemsLayout->addWidget( m_eraseButton );
  
      m_somethingElseButton = new PrettyRadioButton;
@@ -405,7 +446,7 @@ Last-Update: 2026-11-19
      m_itemsLayout->addWidget( m_somethingElseButton );
      m_somethingElseButton->addToGroup( m_grp, InstallChoice::Manual );
  
-@@ -443,6 +485,8 @@
+@@ -443,6 +499,8 @@
  
      // Preview setup done. Now we show/hide choices as needed.
      setupActions();
@@ -414,7 +455,7 @@ Last-Update: 2026-11-19
  
      cDebug() << "Previous device" << m_lastSelectedDeviceIndex << "new device" << m_drivesCombo->currentIndex();
      if ( m_lastSelectedDeviceIndex != m_drivesCombo->currentIndex() )
-@@ -645,6 +689,29 @@
+@@ -645,6 +703,29 @@
                                                         qRound64( part->used() * 1.1 ),
                                                         part->capacity() - requiredStorageB,
                                                         part->capacity() / 2 );
@@ -444,7 +485,7 @@ Last-Update: 2026-11-19
  
      if ( m_isEfi )
      {
-@@ -1061,17 +1128,24 @@
+@@ -1061,17 +1142,24 @@
              }
          }
          m_previewBeforeLabel->setText( tr( "Current:", "@label" ) );
@@ -471,7 +512,7 @@ Last-Update: 2026-11-19
  
          if ( !m_isEfi )
          {
-@@ -1164,7 +1238,7 @@
+@@ -1164,7 +1252,7 @@
              m_beforePartitionLabelsView->setSelectionFilter( filter );
  
              m_selectLabel->show();
@@ -480,7 +521,7 @@ Last-Update: 2026-11-19
          }
  
          break;
-@@ -1211,10 +1285,147 @@
+@@ -1211,10 +1299,147 @@
      m_beforePartitionBarsView->setSelectionMode( previewSelectionMode );
      m_beforePartitionLabelsView->setSelectionMode( previewSelectionMode );
  
@@ -614,7 +655,7 @@ Last-Update: 2026-11-19
 +    {
 +        m_pixelDiskText->setText( tr( "On this disk: %1", "@label, %1 is a list of operating systems" ).arg( systems.join( QStringLiteral( ", " ) ) ) );
 +    }
-+    else if ( !device->partitionTable() || device->partitionTable()->children().isEmpty() )
++    else if ( !hasRealPartitions( device ) )
 +    {
 +        m_pixelDiskText->setText( tr( "This disk is empty", "@label" ) );
 +    }
@@ -628,7 +669,7 @@ Last-Update: 2026-11-19
  ChoicePage::setupEfiSystemPartitionSelector()
  {
      Q_ASSERT( m_isEfi );
-@@ -1238,6 +1449,7 @@
+@@ -1238,6 +1463,7 @@
                                   "@info, %1 is partition path, %2 is product name" )
                                   .arg( efiSystemPartitions.first()->partitionPath() )
                                   .arg( Calamares::Branding::instance()->shortProductName() ) );
@@ -636,7 +677,7 @@ Last-Update: 2026-11-19
      }
      else
      {
-@@ -1704,6 +1916,7 @@
+@@ -1704,6 +1930,7 @@
      mainLayout->addWidget( m_bootloaderComboBox );
      widgetLabel->setBuddy( m_bootloaderComboBox );
      mainLayout->addStretch();

@@ -13,7 +13,7 @@ import org.kernora.m3
 Item {
     id: scene
 
-    readonly property string colour: M3.colour
+    property string colour: M3.colour
     Loader {
         id: paletteSource
         source: Qt.resolvedUrl("palettes/" + scene.colour + ".qml")

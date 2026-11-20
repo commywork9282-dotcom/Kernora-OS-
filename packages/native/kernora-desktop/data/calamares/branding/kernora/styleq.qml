@@ -51,6 +51,7 @@ PixelPage {
         id: live
 
         property url scene
+        property string colour
         property real phase: 0.3
         property real radius: 16
 
@@ -72,6 +73,7 @@ PixelPage {
                 onLoaded: {
                     item.intro = 1;
                     item.phase = Qt.binding(() => live.phase % 1);
+                    item.colour = Qt.binding(() => live.colour);
                 }
             }
         }
@@ -107,6 +109,7 @@ PixelPage {
                 anchors.margins: 12
                 radius: 20
                 scene: page.current ? page.current.scene : ""
+                colour: page.colour
 
                 NumberAnimation on phase {
                     running: page.visible
@@ -194,6 +197,7 @@ PixelPage {
                             anchors.fill: parent
                             radius: 16
                             scene: tile.modelData.scene
+                            colour: page.colour
                             phase: [0.3, 0.12, 0.4, 0.5, 0.2, 0.6][tile.index % 6]
                         }
 

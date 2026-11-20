@@ -2421,6 +2421,14 @@ grep -Fxq 'windowExpanding: fullscreen' "$branding/branding.desc" \
   && grep -Fxq 'generated/branding/setupdata.js etc/calamares/branding/kernora' "$package_root/debian/kernora-calamares.install" \
   && ! grep -q 'org.kernora.system' "$branding/styleq.qml" \
   || fail "the installer is not the Pixel-style setup"
+grep -Fq 'item.colour = Qt.binding(() => live.colour);' "$branding/styleq.qml" \
+  && [[ $(grep -c '^                            colour: page.colour$\|^                colour: page.colour$' "$branding/styleq.qml") == 2 ]] \
+  && [[ $(grep -lFx '    property string colour: M3.colour' "$package_root"/data/wallpaper/*/contents/ui/Scene.qml | wc -l) \
+    == $(ls "$package_root"/data/wallpaper/*/contents/ui/Scene.qml | wc -l) ]] \
+  || fail "the style page previews do not show the chosen colour"
+grep -Fq 'if (!page.formatsChosen) {' "$branding/localeq.qml" \
+  && grep -Fq 'page.formatsChosen = true;' "$branding/localeq.qml" \
+  || fail "formats do not follow the chosen language"
 setup_data=$(mktemp -d)
 for colour in kernora blue; do
   (cd "$package_root/tools" && KERNORA_COLOUR=$colour python3 gen-qml-tokens --palette "$setup_data/palettes/$colour.conf" >/dev/null)

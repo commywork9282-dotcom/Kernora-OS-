@@ -33,6 +33,8 @@ PixelPage {
         return territory.length > 0 ? name + " (" + territory + ")" : name;
     }
 
+    property bool formatsChosen: false
+
     readonly property var languages: {
         const seen = {};
         const list = [];
@@ -212,7 +214,12 @@ PixelPage {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: config.currentLanguageCode = row.modelData.code
+                        onClicked: {
+                            config.currentLanguageCode = row.modelData.code;
+                            if (!page.formatsChosen) {
+                                config.currentLCCode = row.modelData.code;
+                            }
+                        }
                     }
                 }
             }
@@ -237,7 +244,10 @@ PixelPage {
         searchable: true
         options: page.languages.map(l => ({ value: l.code, label: l.name }))
         currentValue: config.currentLCCode
-        onChosen: value => config.currentLCCode = value
+        onChosen: value => {
+            page.formatsChosen = true;
+            config.currentLCCode = value;
+        }
     }
 
     function onActivate() {}
