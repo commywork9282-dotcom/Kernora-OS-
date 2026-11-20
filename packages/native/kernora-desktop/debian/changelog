@@ -1,3 +1,18 @@
+kernora-desktop (1.4.85) UNRELEASED; urgency=medium
+
+  * The live image opens its own full-screen setup before the desktop,
+    drawn like the Pixel setup wizard: Hello, language, keyboard, Wi-Fi,
+    disk, account with Kernora avatars, style, a review and the install
+    progress. "Try without installing" opens the live desktop, and
+    "Install Kernora" there brings the setup back.
+  * The disk page reads like Google's: a card for the disk, the choices
+    as one grouped list, and a slider for how much space to give Kernora
+    next to another system.
+  * The avatar and style picked in setup reach the new account, and the
+    old Welcome window no longer opens after setup.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 19 Nov 2026 22:00:00 -0800
+
 kernora-desktop (1.4.84) UNRELEASED; urgency=medium
 
   * Desktop shortcuts no longer get pushed off the screen. With the

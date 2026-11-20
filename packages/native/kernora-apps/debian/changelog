@@ -1,3 +1,10 @@
+kernora-apps (1.1.96) UNRELEASED; urgency=medium
+
+  * The wallpaper, colour and theme picked in setup are applied at the
+    first login.
+
+ -- Kernora Developers <developers@kernora.invalid>  Thu, 19 Nov 2026 22:00:00 -0800
+
 kernora-apps (1.1.95) UNRELEASED; urgency=medium
 
   * What's new: Stopwatch and Timer starter widgets, photo shapes and
