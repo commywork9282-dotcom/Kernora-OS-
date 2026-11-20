@@ -2290,6 +2290,9 @@ grep -Fxq 'data/greeter/kernora-splash-wallpaper usr/libexec' "$package_root/deb
   && grep -Fq '/usr/libexec/kernora-splash-wallpaper || true' "$package_root/debian/kernora-desktop.postinst" \
   && [[ -x "$package_root/data/greeter/kernora-splash-wallpaper" ]] \
   || fail "the splash does not learn which wallpaper to show"
+grep -Fq 'readonly property string colour: "%s"' "$package_root/data/greeter/kernora-splash-wallpaper" \
+  && grep -Fq 'item.colour = root.colour;' "$package_root/data/look-and-feel/org.kernora.desktop/contents/splash/Splash.qml" \
+  || fail "the splash after login is not in the colour of the login screen"
 grep -Fxq 'FloatingToolbar 1.0 FloatingToolbar.qml' "$package_root/data/ui/qmldir" \
   && grep -Fq 'checkedFill: M3.secondaryContainer' "$package_root/data/ui/IconButton.qml" \
   || fail "there is no floating toolbar"

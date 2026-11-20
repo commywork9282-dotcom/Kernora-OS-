@@ -21,6 +21,7 @@ Rectangle {
     readonly property string chosen: choice.status === Loader.Ready ? String(choice.item.plugin) : ""
     readonly property string plugin: /^org\.kernora\.[a-z]+$/.test(chosen) ? chosen : "org.kernora.shapes"
     readonly property string image: chosen === "org.kde.image" ? String(choice.item.image) : ""
+    readonly property string colour: choice.status === Loader.Ready && /^[a-z]+(-[a-z]+)*$/.test(String(choice.item.colour)) ? String(choice.item.colour) : ""
 
     Rectangle {
         id: backdrop
@@ -57,6 +58,9 @@ Rectangle {
             }
 
             onLoaded: {
+                if (root.colour.length > 0) {
+                    item.colour = root.colour;
+                }
                 item.intro = 1;
                 scene.phase = scene.clockPhase();
                 item.phase = Qt.binding(() => scene.phase);
