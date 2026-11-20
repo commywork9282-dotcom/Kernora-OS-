@@ -521,7 +521,7 @@ Last-Update: 2026-11-19
          }
  
          break;
-@@ -1211,10 +1299,147 @@
+@@ -1211,10 +1299,148 @@
      m_beforePartitionBarsView->setSelectionMode( previewSelectionMode );
      m_beforePartitionLabelsView->setSelectionMode( previewSelectionMode );
  
@@ -643,6 +643,7 @@ Last-Update: 2026-11-19
 +    const QString name = device->name().isEmpty() ? device->deviceNode() : device->name();
 +    m_pixelDiskTitle->setText(
 +        tr( "%1 · %2", "@label, disk model and size" ).arg( name, formatByteSize( device->capacity() ) ) );
++    Device* original = m_core->immutableDeviceCopy( device );
 +    QStringList systems;
 +    for ( const auto& entry : getOsproberEntriesForDevice( device ) )
 +    {
@@ -655,7 +656,7 @@ Last-Update: 2026-11-19
 +    {
 +        m_pixelDiskText->setText( tr( "On this disk: %1", "@label, %1 is a list of operating systems" ).arg( systems.join( QStringLiteral( ", " ) ) ) );
 +    }
-+    else if ( !hasRealPartitions( device ) )
++    else if ( !hasRealPartitions( original ? original : device ) )
 +    {
 +        m_pixelDiskText->setText( tr( "This disk is empty", "@label" ) );
 +    }
@@ -669,7 +670,7 @@ Last-Update: 2026-11-19
  ChoicePage::setupEfiSystemPartitionSelector()
  {
      Q_ASSERT( m_isEfi );
-@@ -1238,6 +1463,7 @@
+@@ -1238,6 +1464,7 @@
                                   "@info, %1 is partition path, %2 is product name" )
                                   .arg( efiSystemPartitions.first()->partitionPath() )
                                   .arg( Calamares::Branding::instance()->shortProductName() ) );
@@ -677,7 +678,7 @@ Last-Update: 2026-11-19
      }
      else
      {
-@@ -1704,6 +1930,7 @@
+@@ -1704,6 +1931,7 @@
      mainLayout->addWidget( m_bootloaderComboBox );
      widgetLabel->setBuddy( m_bootloaderComboBox );
      mainLayout->addStretch();
