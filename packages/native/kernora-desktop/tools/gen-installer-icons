@@ -24,6 +24,7 @@ ICONS = {
 GLYPHS = {
     "pixel-arrow-back.svg": ("arrow_back", "onSurface"),
     "pixel-hard-drive.svg": ("hard_drive", "primary"),
+    "pixel-disk.svg": ("hard_drive", "onSurfaceVariant"),
 }
 
 

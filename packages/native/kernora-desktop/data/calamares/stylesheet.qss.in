@@ -4,22 +4,98 @@
 */
 
 #prettyRadioButton {
-    background-color: @surfaceContainer@;
-    border-radius: 20px;
+    background-color: @surfaceContainerHigh@;
+    border-radius: 6px;
     qproperty-warningColor: @error@;
+    qproperty-subtitleColor: @onSurfaceVariant@;
+}
+
+#prettyRadioButton[segment="first"] {
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+}
+
+#prettyRadioButton[segment="last"] {
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
+#prettyRadioButton[segment="only"] {
+    border-radius: 24px;
 }
 
 #prettyRadioButton[checked="true"] {
     background-color: @secondaryContainer@;
+    qproperty-subtitleColor: @onSecondaryContainer@;
 }
 
 #prettyRadioButton QLabel {
     background: transparent;
     color: @onSurface@;
+    font-size: 16px;
 }
 
 #prettyRadioButton[checked="true"] QLabel {
     color: @onSecondaryContainer@;
+}
+
+#pixelDisk {
+    background-color: @surfaceContainerHigh@;
+    border-radius: 24px;
+}
+
+#pixelDisk QLabel {
+    background: transparent;
+}
+
+#pixelDisk QLabel#pixelDiskTitle {
+    color: @onSurface@;
+    font-size: 16px;
+}
+
+#pixelDisk QLabel#pixelDiskText {
+    color: @onSurfaceVariant@;
+    font-size: 14px;
+}
+
+#pixelDisk QComboBox#pixelDiskPicker {
+    background-color: @secondaryContainer@;
+    color: @onSecondaryContainer@;
+    border: none;
+    border-radius: 20px;
+    min-height: 40px;
+    padding: 0px 16px;
+}
+
+ChoicePage QLabel#pixelSection,
+QLabel#pixelSection {
+    background: transparent;
+    color: @onSurface@;
+    font-size: 14px;
+    font-weight: 500;
+    padding-top: 12px;
+}
+
+EncryptWidget {
+    background-color: @surfaceContainerHigh@;
+    border-radius: 24px;
+}
+
+EncryptWidget QCheckBox {
+    color: @onSurface@;
+    font-size: 16px;
+    min-height: 40px;
+}
+
+EncryptWidget QLabel {
+    background: transparent;
+}
+
+#pixelSplitter {
+    qproperty-keepColor: @surfaceContainerHighest@;
+    qproperty-keepTextColor: @onSurfaceVariant@;
+    qproperty-newColor: @primary@;
+    qproperty-newTextColor: @onPrimary@;
 }
 
 BootInfoWidget QLabel,
@@ -118,4 +194,10 @@ QMessageBox QLabel#qt_msgbox_label {
     border: none;
     margin: 0px;
     padding: 0px;
+}
+
+QScrollArea#pixelScroll,
+QScrollArea#pixelScroll > QWidget#qt_scrollarea_viewport {
+    background: transparent;
+    border: none;
 }

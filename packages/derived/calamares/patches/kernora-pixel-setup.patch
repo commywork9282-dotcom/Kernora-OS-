@@ -6,13 +6,23 @@ Description: Separate full-screen setup for Kernora OS
   - leaving from the first page (Try without installing) quits without the
     cancel question, nothing has been chosen there yet;
   - QML pages can store their choices with Global.insert / Global.remove;
+  - plasma-nm's library is loaded once on the main thread before any QML
+    page: its static initializers call KLocalizedString while holding the
+    loader lock and deadlocked against KI18n loading ktranscript on another
+    QML loader thread (seen on a Russian setup with llvmpipe);
   - the zones model tells QML the region of each zone;
   - the install page hides its own progress bar and log button and writes
     the progress to the global storage (kernoraProgress, kernoraProgressMessage)
     so the slideshow draws it;
   - the partition page sits in the same Pixel frame as the QML pages: back
     button, title and text on the left, the choices on the right and the
-    Next button at the bottom, because the window has no navigation bar.
+    Next button at the bottom, because the window has no navigation bar;
+  - the choice page reads like Google's: a card for the disk with its model,
+    size and the systems on it (no EFI/GPT chips), the choices as one grouped
+    list with the radio on the right and no icons, and the partition bars
+    only where the user picks a partition (alongside, replace); next to
+    another system the biggest resizable partition is picked by itself and
+    the split is an M3 Expressive slider with both halves named and sized.
 Author: Kernora Developers <developers@kernora.invalid>
 Forwarded: not-needed
 Last-Update: 2026-11-19
@@ -28,6 +38,29 @@ Last-Update: 2026-11-19
      }
      else
      {
+--- a/src/calamares/main.cpp
++++ b/src/calamares/main.cpp
+@@ -26,6 +26,7 @@
+ #include <QCommandLineParser>
+ #include <QDebug>
+ #include <QDir>
++#include <QLibrary>
+ 
+ #include <memory>
+ 
+@@ -149,6 +150,12 @@
+         qCritical() << "Calamares has invalid settings, shutting down.";
+         return 78;  // EX_CONFIG on FreeBSD
+     }
++    QLibrary networkmanagement( QStringLiteral( "plasmanm_internal" ) );
++    networkmanagement.setLoadHints( QLibrary::ExportExternalSymbolsHint );
++    if ( !networkmanagement.load() )
++    {
++        cDebug() << "Kernora: Wi-Fi library not preloaded:" << networkmanagement.errorString();
++    }
+     a.init();
+     return a.exec();
+ }
 --- a/src/libcalamares/GlobalStorage.h
 +++ b/src/libcalamares/GlobalStorage.h
 @@ -62,7 +62,7 @@
@@ -110,6 +143,94 @@ Last-Update: 2026-11-19
  }
  
  void
+--- a/src/libcalamaresui/widgets/PrettyRadioButton.cpp
++++ b/src/libcalamaresui/widgets/PrettyRadioButton.cpp
+@@ -38,15 +38,16 @@
+     m_label->setWordWrap( true );
+     m_label->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
+ 
+-    m_mainLayout->addWidget( m_radio, 0, 0 );
+-    m_mainLayout->addWidget( m_label, 0, 1 );
++    m_mainLayout->addWidget( m_label, 0, 0 );
++    m_mainLayout->addWidget( m_radio, 0, 1, Qt::AlignRight | Qt::AlignVCenter );
++    m_mainLayout->setColumnStretch( 0, 1 );
+     // Kernora: a Material 3 card. The branding's stylesheet draws it
+     // (#prettyRadioButton) and tells the chosen one by its "checked" property.
+     setObjectName( QStringLiteral( "prettyRadioButton" ) );
+     setAttribute( Qt::WA_StyledBackground, true );
+     setProperty( "checked", false );
+-    m_mainLayout->setContentsMargins( 16, 12, 16, 12 );
+-    m_mainLayout->setHorizontalSpacing( 12 );
++    m_mainLayout->setContentsMargins( 24, 16, 20, 16 );
++    m_mainLayout->setHorizontalSpacing( 16 );
+ 
+     connect( m_label, &ClickableLabel::clicked, m_radio, &QRadioButton::click );
+     connect( m_radio, &QRadioButton::toggled, this, &PrettyRadioButton::toggleOptions );
+@@ -68,6 +69,13 @@
+ }
+ 
+ void
++PrettyRadioButton::setSubtitleColor( const QColor& color )
++{
++    m_subtitleColor = color;
++    showText();
++}
++
++void
+ PrettyRadioButton::showText()
+ {
+     QString text = m_text;
+@@ -76,6 +84,14 @@
+         text.replace( QStringLiteral( "color=\"red\"" ),
+                       QStringLiteral( "color=\"%1\"" ).arg( m_warningColor.name() ) );
+     }
++    const int lineBreak = text.indexOf( QStringLiteral( "<br/>" ) );
++    if ( lineBreak >= 0 && m_subtitleColor.isValid() )
++    {
++        text = text.left( lineBreak ) + QStringLiteral( "<br/><span style=\"font-size:14px; color:%1;\">" ).arg( m_subtitleColor.name() )
++            + text.mid( lineBreak + 5 ) + QStringLiteral( "</span>" );
++    }
++    text.replace( QStringLiteral( "<strong>" ), QStringLiteral( "<span style=\"font-size:16px;\">" ) );
++    text.replace( QStringLiteral( "</strong>" ), QStringLiteral( "</span>" ) );
+     m_label->setText( text );
+ }
+ 
+@@ -137,7 +153,7 @@
+         m_optionsLayout->addStretch( 1 );
+ 
+         w->setLayout( m_optionsLayout );
+-        m_mainLayout->addWidget( w, 1, 1 );
++        m_mainLayout->addWidget( w, 1, 0, 1, 2 );
+ 
+         toggleOptions( m_radio->isChecked() );
+     }
+--- a/src/libcalamaresui/widgets/PrettyRadioButton.h
++++ b/src/libcalamaresui/widgets/PrettyRadioButton.h
+@@ -43,6 +43,7 @@
+      * <font color="red">), set by the branding's stylesheet through
+      * qproperty-warningColor. */
+     Q_PROPERTY( QColor warningColor READ warningColor WRITE setWarningColor )
++    Q_PROPERTY( QColor subtitleColor READ subtitleColor WRITE setSubtitleColor )
+ public:
+     explicit PrettyRadioButton( QWidget* parent = nullptr );
+     ~PrettyRadioButton() override {}
+@@ -70,6 +71,8 @@
+     void addOptionsComboBox( QComboBox* );
+ 
+     QColor warningColor() const { return m_warningColor; }
++    QColor subtitleColor() const { return m_subtitleColor; }
++    void setSubtitleColor( const QColor& color );
+     void setWarningColor( const QColor& color );
+ 
+ protected slots:
+@@ -86,6 +89,7 @@
+     void showText();
+     QString m_text;
+     QColor m_warningColor;
++    QColor m_subtitleColor;
+ };
+ }  // namespace Widgets
+ }  // namespace Calamares
 --- a/src/modules/partition/CMakeLists.txt
 +++ b/src/modules/partition/CMakeLists.txt
 @@ -82,6 +82,7 @@
@@ -120,9 +241,651 @@ Last-Update: 2026-11-19
              gui/ResizeVolumeGroupDialog.cpp
              gui/ScanningDialog.cpp
              gui/VolumeGroupBaseDialog.cpp
+--- a/src/modules/partition/gui/ChoicePage.cpp
++++ b/src/modules/partition/gui/ChoicePage.cpp
+@@ -24,6 +24,7 @@
+ #include "core/PartitionCoreModule.h"
+ #include "core/PartitionInfo.h"
+ #include "core/PartitionModel.h"
++#include "core/SizeUtils.h"
+ #include "gui/BootInfoWidget.h"
+ #include "gui/DeviceInfoWidget.h"
+ #include "gui/PartitionBarsView.h"
+@@ -45,8 +46,11 @@
+ #include "widgets/PrettyRadioButton.h"
+ 
+ #include <kpmcore/core/device.h>
++#include <kpmcore/core/partitiontable.h>
++#include <kpmcore/fs/filesystem.h>
+ #include <kpmcore/core/softwareraid.h>
+ 
++#include <QAbstractScrollArea>
+ #include <QBoxLayout>
+ #include <QButtonGroup>
+ #include <QComboBox>
+@@ -54,8 +58,11 @@
+ #include <QFutureWatcher>
+ #include <QLabel>
+ #include <QListView>
++#include <QResizeEvent>
+ #include <QtConcurrent/QtConcurrent>
+ 
++#include <functional>
++
+ using Calamares::Partition::findPartitionByPath;
+ using Calamares::Partition::isPartitionFreeSpace;
+ using Calamares::Partition::PartitionIterator;
+@@ -98,18 +105,44 @@
+ 
+     BootInfoWidget* bootInfoWidget = new BootInfoWidget( this );
+     m_drivesLayout->insertWidget( 0, bootInfoWidget );
+-    m_drivesLayout->insertSpacing( 1, Calamares::defaultFontHeight() / 2 );
++    bootInfoWidget->hide();
++    m_drivesLabel->hide();
+ 
+     m_drivesCombo = new QComboBox( this );
++    m_drivesCombo->setObjectName( QStringLiteral( "pixelDiskPicker" ) );
+     m_mainLayout->setStretchFactor( m_drivesLayout, 0 );
+     m_mainLayout->setStretchFactor( m_rightLayout, 1 );
++    m_mainLayout->setSpacing( 16 );
+     m_drivesLabel->setBuddy( m_drivesCombo );
+ 
+-    m_drivesLayout->addWidget( m_drivesCombo );
++    m_pixelDisk = new QWidget( this );
++    m_pixelDisk->setObjectName( QStringLiteral( "pixelDisk" ) );
++    m_pixelDisk->setAttribute( Qt::WA_StyledBackground, true );
++    auto* diskLayout = new QHBoxLayout( m_pixelDisk );
++    diskLayout->setContentsMargins( 20, 14, 16, 14 );
++    diskLayout->setSpacing( 16 );
++    auto* diskIcon = new QLabel( m_pixelDisk );
++    QPixmap diskPixmap = Calamares::Branding::instance()->image( QStringLiteral( "images/pixel-disk.svg" ), QSize( 48, 48 ) );
++    diskPixmap.setDevicePixelRatio( 2.0 );
++    diskIcon->setPixmap( diskPixmap );
++    diskIcon->setFixedSize( 24, 24 );
++    diskLayout->addWidget( diskIcon );
++    auto* diskText = new QVBoxLayout;
++    diskText->setSpacing( 2 );
++    m_pixelDiskTitle = new QLabel( m_pixelDisk );
++    m_pixelDiskTitle->setObjectName( QStringLiteral( "pixelDiskTitle" ) );
++    m_pixelDiskText = new QLabel( m_pixelDisk );
++    m_pixelDiskText->setObjectName( QStringLiteral( "pixelDiskText" ) );
++    m_pixelDiskText->setWordWrap( true );
++    diskText->addWidget( m_pixelDiskTitle );
++    diskText->addWidget( m_pixelDiskText );
++    diskLayout->addLayout( diskText, 1 );
++    diskLayout->addWidget( m_drivesCombo );
++    m_drivesLayout->addWidget( m_pixelDisk, 1 );
+ 
+     m_deviceInfoWidget = new DeviceInfoWidget;
+     m_drivesLayout->addWidget( m_deviceInfoWidget );
+-    m_drivesLayout->addStretch();
++    m_deviceInfoWidget->hide();
+ 
+     m_messageLabel->setWordWrap( true );
+     m_messageLabel->hide();
+@@ -122,8 +155,21 @@
+     m_previewBeforeFrame->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
+     m_previewAfterFrame->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
+     m_previewAfterLabel->hide();
++    m_previewBeforeLabel->hide();
+     m_previewAfterFrame->hide();
+     m_encryptWidget->hide();
++    m_encryptWidget->setAttribute( Qt::WA_StyledBackground, true );
++    m_itemsLayout->setSpacing( 2 );
++    m_selectLabel->setObjectName( QStringLiteral( "pixelSection" ) );
++    hLine->hide();
++    m_itemsScrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
++    m_rightLayout->setStretchFactor( m_itemsScrollArea, 0 );
++    m_rightLayout->addStretch( 1 );
++    if ( m_encryptWidget->layout() )
++    {
++        m_encryptWidget->layout()->setContentsMargins( 20, 8, 20, 8 );
++    }
++    m_encryptWidget->setFixedHeight( 64 );
+     m_reuseHomeCheckBox->hide();
+     gs->insert( "reuseHome", false );
+ 
+@@ -143,6 +189,9 @@
+     updateSwapChoicesTr();
+     updateChoiceButtonsTr();
+     updateActionDescriptionsTr();
++    updatePixelDisk();
++    m_previewAfterLabel->hide();
++    fitPixelChoices();
+ }
+ 
+ /** @brief Sets the @p model for the given @p box and adjusts UI sizes to match.
+@@ -186,6 +235,11 @@
+                  m_drivesCombo->setCurrentIndex( m_lastSelectedDeviceIndex );
+              } );
+     setModelToComboBox( m_drivesCombo, core->deviceModel() );
++    m_drivesCombo->setVisible( core->deviceModel()->rowCount() > 1 );
++    connect( core->deviceModel(),
++             &QAbstractItemModel::modelReset,
++             this,
++             [ this, core ] { m_drivesCombo->setVisible( core->deviceModel()->rowCount() > 1 ); } );
+ 
+     connect( m_drivesCombo, qOverload< int >( &QComboBox::currentIndexChanged ), this, &ChoicePage::applyDeviceChoice );
+     connect( m_encryptWidget, &EncryptWidget::stateChanged, this, &ChoicePage::onEncryptWidgetStateChanged );
+@@ -252,25 +306,16 @@
+     //  3) Manual
+     //  TBD: upgrade option?
+ 
+-    QSize iconSize( Calamares::defaultIconSize().width() * 2, Calamares::defaultIconSize().height() * 2 );
+     m_grp = new QButtonGroup( this );
+ 
+     m_alongsideButton = new PrettyRadioButton;
+-    m_alongsideButton->setIconSize( iconSize );
+-    m_alongsideButton->setIcon(
+-        Calamares::defaultPixmap( Calamares::PartitionAlongside, Calamares::Original, iconSize ) );
+     m_alongsideButton->addToGroup( m_grp, InstallChoice::Alongside );
+ 
+     m_eraseButton = new PrettyRadioButton;
+-    m_eraseButton->setIconSize( iconSize );
+-    m_eraseButton->setIcon( Calamares::defaultPixmap( Calamares::PartitionEraseAuto, Calamares::Original, iconSize ) );
+     m_eraseButton->addToGroup( m_grp, InstallChoice::Erase );
+ 
+     m_replaceButton = new PrettyRadioButton;
+ 
+-    m_replaceButton->setIconSize( iconSize );
+-    m_replaceButton->setIcon(
+-        Calamares::defaultPixmap( Calamares::PartitionReplaceOs, Calamares::Original, iconSize ) );
+     m_replaceButton->addToGroup( m_grp, InstallChoice::Replace );
+ 
+     // Fill up swap options
+@@ -305,9 +350,6 @@
+     m_itemsLayout->addWidget( m_eraseButton );
+ 
+     m_somethingElseButton = new PrettyRadioButton;
+-    m_somethingElseButton->setIconSize( iconSize );
+-    m_somethingElseButton->setIcon(
+-        Calamares::defaultPixmap( Calamares::PartitionManual, Calamares::Original, iconSize ) );
+     m_itemsLayout->addWidget( m_somethingElseButton );
+     m_somethingElseButton->addToGroup( m_grp, InstallChoice::Manual );
+ 
+@@ -443,6 +485,8 @@
+ 
+     // Preview setup done. Now we show/hide choices as needed.
+     setupActions();
++    updatePixelSegments();
++    updatePixelDisk();
+ 
+     cDebug() << "Previous device" << m_lastSelectedDeviceIndex << "new device" << m_drivesCombo->currentIndex();
+     if ( m_lastSelectedDeviceIndex != m_drivesCombo->currentIndex() )
+@@ -645,6 +689,29 @@
+                                                        qRound64( part->used() * 1.1 ),
+                                                        part->capacity() - requiredStorageB,
+                                                        part->capacity() / 2 );
++    QString keepName;
++    bool windows = false;
++    for ( const auto& entry : getOsproberEntriesForDevice( selectedDevice() ) )
++    {
++        windows = windows || entry.prettyName.contains( QStringLiteral( "Windows" ) );
++        if ( entry.path == part->partitionPath() && !entry.prettyName.isEmpty() )
++        {
++            keepName = entry.prettyName;
++        }
++    }
++    if ( keepName.isEmpty() && !part->fileSystem().label().isEmpty() )
++    {
++        keepName = part->fileSystem().label();
++    }
++    if ( keepName.isEmpty() && windows && part->fileSystem().type() == FileSystem::Type::Ntfs )
++    {
++        keepName = QStringLiteral( "Windows" );
++    }
++    if ( keepName.isEmpty() )
++    {
++        keepName = tr( "%1 partition", "@label, %1 is a file system name" ).arg( part->fileSystem().name() );
++    }
++    m_afterPartitionSplitterWidget->setPixelNames( keepName, Calamares::Branding::instance()->shortProductName() );
+ 
+     if ( m_isEfi )
+     {
+@@ -1061,17 +1128,24 @@
+             }
+         }
+         m_previewBeforeLabel->setText( tr( "Current:", "@label" ) );
+-        m_selectLabel->setText( tr( "<strong>Select a partition to shrink, "
+-                                    "then drag the bottom bar to resize</strong>" ) );
++        m_selectLabel->setText( tr( "Choose the partition to make smaller", "@label" ) );
+         m_selectLabel->show();
+ 
++        QLabel* splitTitle = new QLabel( tr( "How much space to give %1", "@label, %1 is product name" )
++                                             .arg( Calamares::Branding::instance()->shortProductName() ),
++                                         m_previewAfterFrame );
++        splitTitle->setObjectName( QStringLiteral( "pixelSection" ) );
++        layout->addWidget( splitTitle );
++
+         m_afterPartitionSplitterWidget = new PartitionSplitterWidget( m_previewAfterFrame );
++        m_afterPartitionSplitterWidget->setObjectName( QStringLiteral( "pixelSplitter" ) );
+         m_afterPartitionSplitterWidget->init( selectedDevice(), mode == PartitionBarsView::DrawNestedPartitions );
+         layout->addWidget( m_afterPartitionSplitterWidget );
+ 
+         QLabel* sizeLabel = new QLabel( m_previewAfterFrame );
+         layout->addWidget( sizeLabel );
+         sizeLabel->setWordWrap( true );
++        sizeLabel->hide();
+ 
+         if ( !m_isEfi )
+         {
+@@ -1164,7 +1238,7 @@
+             m_beforePartitionLabelsView->setSelectionFilter( filter );
+ 
+             m_selectLabel->show();
+-            m_selectLabel->setText( tr( "<strong>Select a partition to install on</strong>", "@label" ) );
++            m_selectLabel->setText( tr( "Choose the partition to install on", "@label" ) );
+         }
+ 
+         break;
+@@ -1211,10 +1285,147 @@
+     m_beforePartitionBarsView->setSelectionMode( previewSelectionMode );
+     m_beforePartitionLabelsView->setSelectionMode( previewSelectionMode );
+ 
++    updatePixelPreviews( m_config->installChoice() );
+     updateNextEnabled();
+ }
+ 
+ void
++ChoicePage::updatePixelPreviews( Config::InstallChoice choice )
++{
++    m_previewBeforeLabel->hide();
++    m_previewAfterLabel->hide();
++    const bool pick = choice == InstallChoice::Alongside || choice == InstallChoice::Replace;
++    m_previewBeforeFrame->setVisible( pick );
++    if ( choice == InstallChoice::Alongside && m_core && selectedDevice() && m_beforePartitionBarsView )
++    {
++        PartitionModel* model = m_core->partitionModelForDevice( selectedDevice() );
++        QModelIndex best;
++        qint64 bestSize = -1;
++        int candidates = 0;
++        std::function< void( const QModelIndex& ) > scan = [ & ]( const QModelIndex& parent )
++        {
++            for ( int row = 0; row < model->rowCount( parent ); ++row )
++            {
++                const QModelIndex index = model->index( row, 0, parent );
++                Partition* partition = model->partitionForIndex( index );
++                if ( partition && PartUtils::canBeResized( partition, Logger::Once() ) )
++                {
++                    ++candidates;
++                    if ( partition->capacity() > bestSize )
++                    {
++                        bestSize = partition->capacity();
++                        best = index;
++                    }
++                }
++                scan( index );
++            }
++        };
++        scan( QModelIndex() );
++        auto* selection = m_beforePartitionBarsView->selectionModel();
++        if ( best.isValid() && selection && !selection->currentIndex().isValid() )
++        {
++            selection->setCurrentIndex( best, QItemSelectionModel::ClearAndSelect );
++        }
++        if ( candidates <= 1 )
++        {
++            m_previewBeforeFrame->hide();
++            m_selectLabel->hide();
++        }
++    }
++    if ( choice == InstallChoice::Erase || choice == InstallChoice::Replace )
++    {
++        if ( m_afterPartitionBarsView )
++        {
++            m_afterPartitionBarsView->hide();
++        }
++        if ( m_afterPartitionLabelsView )
++        {
++            m_afterPartitionLabelsView->hide();
++        }
++        m_previewAfterFrame->setVisible( !m_isEfi || choice == InstallChoice::Replace );
++    }
++}
++
++void
++ChoicePage::updatePixelSegments()
++{
++    QList< Calamares::Widgets::PrettyRadioButton* > shown;
++    for ( auto* button : { m_alongsideButton, m_replaceButton, m_eraseButton, m_somethingElseButton } )
++    {
++        if ( button && !button->isHidden() )
++        {
++            shown.append( button );
++        }
++    }
++    for ( int i = 0; i < shown.count(); ++i )
++    {
++        const QString segment = shown.count() == 1 ? QStringLiteral( "only" )
++            : i == 0                              ? QStringLiteral( "first" )
++            : i == shown.count() - 1              ? QStringLiteral( "last" )
++                                                  : QStringLiteral( "middle" );
++        shown[ i ]->setProperty( "segment", segment );
++        shown[ i ]->style()->unpolish( shown[ i ] );
++        shown[ i ]->style()->polish( shown[ i ] );
++    }
++    fitPixelChoices();
++}
++
++void
++ChoicePage::fitPixelChoices()
++{
++    QWidget* contents = m_itemsScrollArea->widget();
++    if ( !contents )
++    {
++        return;
++    }
++    const int width = qMax( 1, m_itemsScrollArea->viewport()->width() );
++    const int height = contents->hasHeightForWidth() ? contents->heightForWidth( width ) : contents->sizeHint().height();
++    m_itemsScrollArea->setFixedHeight( qMax( 0, height ) );
++}
++
++void
++ChoicePage::resizeEvent( QResizeEvent* event )
++{
++    QWidget::resizeEvent( event );
++    fitPixelChoices();
++}
++
++void
++ChoicePage::updatePixelDisk()
++{
++    Device* device = m_core ? selectedDevice() : nullptr;
++    if ( !device )
++    {
++        m_pixelDiskTitle->clear();
++        m_pixelDiskText->clear();
++        return;
++    }
++    const QString name = device->name().isEmpty() ? device->deviceNode() : device->name();
++    m_pixelDiskTitle->setText(
++        tr( "%1 · %2", "@label, disk model and size" ).arg( name, formatByteSize( device->capacity() ) ) );
++    QStringList systems;
++    for ( const auto& entry : getOsproberEntriesForDevice( device ) )
++    {
++        if ( !entry.prettyName.isEmpty() && !systems.contains( entry.prettyName ) )
++        {
++            systems.append( entry.prettyName );
++        }
++    }
++    if ( !systems.isEmpty() )
++    {
++        m_pixelDiskText->setText( tr( "On this disk: %1", "@label, %1 is a list of operating systems" ).arg( systems.join( QStringLiteral( ", " ) ) ) );
++    }
++    else if ( !device->partitionTable() || device->partitionTable()->children().isEmpty() )
++    {
++        m_pixelDiskText->setText( tr( "This disk is empty", "@label" ) );
++    }
++    else
++    {
++        m_pixelDiskText->setText( tr( "This disk has partitions with files", "@label" ) );
++    }
++}
++
++void
+ ChoicePage::setupEfiSystemPartitionSelector()
+ {
+     Q_ASSERT( m_isEfi );
+@@ -1238,6 +1449,7 @@
+                                  "@info, %1 is partition path, %2 is product name" )
+                                  .arg( efiSystemPartitions.first()->partitionPath() )
+                                  .arg( Calamares::Branding::instance()->shortProductName() ) );
++        m_efiLabel->hide();
+     }
+     else
+     {
+--- a/src/modules/partition/gui/ChoicePage.h
++++ b/src/modules/partition/gui/ChoicePage.h
+@@ -105,6 +105,10 @@
+     /// @brief Calls onActionChanged() as needed.
+     void onEraseSwapChoiceChanged();
+ 
++protected:
++    void resizeEvent( QResizeEvent* event ) override;
++
++public:
+     void retranslate();
+ 
+ private:
+@@ -122,6 +126,10 @@
+ 
+     /* Change the UI depending on the device selected. */
+     void hideButtons();  // Hide everything when no device
++    void updatePixelDisk();
++    void updatePixelSegments();
++    void fitPixelChoices();
++    void updatePixelPreviews( Config::InstallChoice choice );
+     void applyDeviceChoice();  // Start scanning new device
+     void continueApplyDeviceChoice();  // .. called after scan
+ 
+@@ -146,6 +154,9 @@
+ 
+     bool m_isEfi;
+     QComboBox* m_drivesCombo;
++    QWidget* m_pixelDisk = nullptr;
++    QLabel* m_pixelDiskTitle = nullptr;
++    QLabel* m_pixelDiskText = nullptr;
+ 
+     QButtonGroup* m_grp;
+     Calamares::Widgets::PrettyRadioButton* m_alongsideButton;
+--- a/src/modules/partition/gui/PartitionSplitterWidget.cpp
++++ b/src/modules/partition/gui/PartitionSplitterWidget.cpp
+@@ -24,6 +24,7 @@
+ #include <QApplication>
+ #include <QMouseEvent>
+ #include <QPainter>
++#include <QLocale>
+ #include <QPainterPath>
+ #include <QStyleOption>
+ 
+@@ -305,7 +306,112 @@
+ QSize
+ PartitionSplitterWidget::sizeHint() const
+ {
+-    return QSize( -1, VIEW_HEIGHT );
++    return QSize( -1, qMax( VIEW_HEIGHT, 64 ) );
++}
++
++void
++PartitionSplitterWidget::setPixelNames( const QString& keep, const QString& add )
++{
++    m_keepName = keep;
++    m_newName = add;
++    update();
++}
++
++bool
++PartitionSplitterWidget::pixelMode() const
++{
++    return m_itemToResize && m_itemToResizeNext;
++}
++
++QString
++PartitionSplitterWidget::pixelSize( qint64 bytes ) const
++{
++    const double gigabytes = static_cast< double >( bytes ) / ( 1024.0 * 1024.0 * 1024.0 );
++    return tr( "%1 GB", "@label, size in gigabytes" ).arg( QLocale().toString( gigabytes, 'f', gigabytes < 10 ? 1 : 0 ) );
++}
++
++static QPainterPath
++pixelSegment( const QRectF& r, qreal leftRadius, qreal rightRadius )
++{
++    leftRadius = qMin( leftRadius, qMin( r.width(), r.height() ) / 2 );
++    rightRadius = qMin( rightRadius, qMin( r.width(), r.height() ) / 2 );
++    QPainterPath path;
++    path.moveTo( r.left() + leftRadius, r.top() );
++    path.lineTo( r.right() - rightRadius, r.top() );
++    path.arcTo( QRectF( r.right() - 2 * rightRadius, r.top(), 2 * rightRadius, 2 * rightRadius ), 90, -90 );
++    path.lineTo( r.right(), r.bottom() - rightRadius );
++    path.arcTo(
++        QRectF( r.right() - 2 * rightRadius, r.bottom() - 2 * rightRadius, 2 * rightRadius, 2 * rightRadius ), 0, -90 );
++    path.lineTo( r.left() + leftRadius, r.bottom() );
++    path.arcTo( QRectF( r.left(), r.bottom() - 2 * leftRadius, 2 * leftRadius, 2 * leftRadius ), 270, -90 );
++    path.lineTo( r.left(), r.top() + leftRadius );
++    path.arcTo( QRectF( r.left(), r.top(), 2 * leftRadius, 2 * leftRadius ), 180, -90 );
++    path.closeSubpath();
++    return path;
++}
++
++void
++PartitionSplitterWidget::drawPixel( QPainter* painter )
++{
++    const qreal span = qMax< qreal >( 1, m_itemToResize.size + m_itemToResizeNext.size );
++    const qreal w = width();
++    const qreal track = 48;
++    const qreal top = ( height() - track ) / 2.0;
++    const qreal gap = 6;
++    const qreal handle = 4;
++    const qreal handleX = qBound( gap + handle, w * m_itemToResize.size / span, w - gap - handle );
++    m_resizeHandleX = qRound( handleX );
++
++    const QRectF keep( 0, top, handleX - handle / 2 - gap, track );
++    const QRectF add( handleX + handle / 2 + gap, top, w - ( handleX + handle / 2 + gap ), track );
++    painter->setPen( Qt::NoPen );
++    painter->fillPath( pixelSegment( keep, track / 2, 4 ), m_keepColor );
++    painter->fillPath( pixelSegment( add, 4, track / 2 ), m_newColor );
++    painter->setBrush( m_newColor );
++    painter->drawRoundedRect( QRectF( handleX - handle / 2, top - 8, handle, track + 16 ), 2, 2 );
++
++    QFont label = font();
++    label.setPixelSize( 14 );
++    label.setWeight( QFont::Medium );
++    painter->setFont( label );
++    const QFontMetrics metrics( label );
++    const QString keepText = QStringLiteral( "%1 · %2" ).arg( m_keepName, pixelSize( m_itemToResize.size ) );
++    const QString addText = QStringLiteral( "%1 · %2" ).arg( m_newName, pixelSize( m_itemToResizeNext.size ) );
++    painter->setPen( m_keepTextColor );
++    painter->drawText( keep.adjusted( 20, 0, -12, 0 ),
++                       Qt::AlignVCenter | Qt::AlignLeft,
++                       metrics.elidedText( keepText, Qt::ElideRight, int( keep.width() ) - 32 ) );
++    painter->setPen( m_newTextColor );
++    painter->drawText( add.adjusted( 12, 0, -20, 0 ),
++                       Qt::AlignVCenter | Qt::AlignRight,
++                       metrics.elidedText( addText, Qt::ElideRight, int( add.width() ) - 32 ) );
++}
++
++void
++PartitionSplitterWidget::pixelResize( qreal x )
++{
++    const qint64 span = m_itemToResize.size + m_itemToResizeNext.size;
++    qreal size = x / qMax( 1, width() ) * span;
++    size = qBound( static_cast< qreal >( m_itemMinSize ), size, static_cast< qreal >( qMin( m_itemMaxSize, span ) ) );
++    m_itemToResize.size = qRound64( size );
++    m_itemToResizeNext.size = span - m_itemToResize.size;
++    countTransform( m_items,
++                    [ this ]( PartitionSplitterItem& item ) -> bool
++                    {
++                        if ( item.status == PartitionSplitterItem::Resizing )
++                        {
++                            item.size = m_itemToResize.size;
++                            return true;
++                        }
++                        else if ( item.status == PartitionSplitterItem::ResizingNext )
++                        {
++                            item.size = m_itemToResizeNext.size;
++                            return true;
++                        }
++                        return false;
++                    } );
++    repaint();
++    Q_EMIT partitionResized( m_itemToResize.itemPath, m_itemToResize.size, m_itemToResizeNext.size );
+ }
+ 
+ QSize
+@@ -320,8 +426,13 @@
+     Q_UNUSED( event )
+ 
+     QPainter painter( this );
+-    painter.fillRect( rect(), palette().window() );
+     painter.setRenderHint( QPainter::Antialiasing );
++    if ( pixelMode() )
++    {
++        drawPixel( &painter );
++        return;
++    }
++    painter.fillRect( rect(), palette().window() );
+ 
+     drawPartitions( &painter, rect(), m_items );
+ }
+@@ -329,6 +440,12 @@
+ void
+ PartitionSplitterWidget::mousePressEvent( QMouseEvent* event )
+ {
++    if ( pixelMode() && event->button() == Qt::LeftButton )
++    {
++        m_resizing = true;
++        pixelResize( event->position().x() );
++        return;
++    }
+     if ( m_itemToResize && m_itemToResizeNext && event->button() == Qt::LeftButton )
+     {
+ #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+@@ -345,6 +462,15 @@
+ void
+ PartitionSplitterWidget::mouseMoveEvent( QMouseEvent* event )
+ {
++    if ( pixelMode() )
++    {
++        setCursor( Qt::SizeHorCursor );
++        if ( m_resizing )
++        {
++            pixelResize( event->position().x() );
++        }
++        return;
++    }
+     if ( m_resizing )
+     {
+         qint64 start = 0;
+--- a/src/modules/partition/gui/PartitionSplitterWidget.h
++++ b/src/modules/partition/gui/PartitionSplitterWidget.h
+@@ -10,6 +10,7 @@
+ #ifndef PARTITIONSPLITTERWIDGET_H
+ #define PARTITIONSPLITTERWIDGET_H
+ 
++#include <QColor>
+ #include <QWidget>
+ 
+ #include <functional>
+@@ -43,7 +44,12 @@
+ class PartitionSplitterWidget : public QWidget
+ {
+     Q_OBJECT
++    Q_PROPERTY( QColor keepColor MEMBER m_keepColor )
++    Q_PROPERTY( QColor keepTextColor MEMBER m_keepTextColor )
++    Q_PROPERTY( QColor newColor MEMBER m_newColor )
++    Q_PROPERTY( QColor newTextColor MEMBER m_newTextColor )
+ public:
++    void setPixelNames( const QString& keep, const QString& add );
+     explicit PartitionSplitterWidget( QWidget* parent = nullptr );
+ 
+     void init( Device* dev, bool drawNestedPartitions );
+@@ -71,6 +77,10 @@
+     void drawPartitions( QPainter* painter, const QRect& rect, const QVector< PartitionSplitterItem >& itemList );
+     void drawSection( QPainter* painter, const QRect& rect_, int x, int width, const PartitionSplitterItem& item );
+     void drawResizeHandle( QPainter* painter, const QRect& rect_, int x );
++    bool pixelMode() const;
++    void drawPixel( QPainter* painter );
++    void pixelResize( qreal x );
++    QString pixelSize( qint64 bytes ) const;
+ 
+     QPair< QVector< PartitionSplitterItem >, qreal >
+     computeItemsVector( const QVector< PartitionSplitterItem >& originalItems ) const;
+@@ -89,6 +99,12 @@
+     const int HANDLE_SNAP;
+ 
+     bool m_drawNestedPartitions;
++    QColor m_keepColor { 0x4f, 0x45, 0x3f };
++    QColor m_keepTextColor { 0xd8, 0xc2, 0xba };
++    QColor m_newColor { 0xff, 0xb5, 0x95 };
++    QColor m_newTextColor { 0x5a, 0x1c, 0x00 };
++    QString m_keepName;
++    QString m_newName;
+ };
+ 
+ #endif  // PARTITIONSPLITTERWIDGET_H
 --- a/src/modules/partition/gui/PixelFrame.cpp
 +++ b/src/modules/partition/gui/PixelFrame.cpp
-@@ -0,0 +1,135 @@
+@@ -0,0 +1,141 @@
 +/* === This file is part of Calamares - <https://calamares.io> ===
 + *
 + *   SPDX-FileCopyrightText: 2026 Kernora Developers
@@ -141,6 +904,7 @@ Last-Update: 2026-11-19
 +#include <QLabel>
 +#include <QPushButton>
 +#include <QResizeEvent>
++#include <QScrollArea>
 +#include <QToolButton>
 +
 +#include <algorithm>
@@ -154,6 +918,7 @@ Last-Update: 2026-11-19
 +PixelFrame::PixelFrame( QWidget* content, QWidget* parent )
 +    : QWidget( parent )
 +    , m_content( content )
++    , m_scroll( new QScrollArea( this ) )
 +    , m_back( new QToolButton( this ) )
 +    , m_icon( new QLabel( this ) )
 +    , m_title( new QLabel( this ) )
@@ -162,7 +927,11 @@ Last-Update: 2026-11-19
 +{
 +    setObjectName( QStringLiteral( "pixelPage" ) );
 +    setAttribute( Qt::WA_StyledBackground, true );
-+    m_content->setParent( this );
++    m_scroll->setObjectName( QStringLiteral( "pixelScroll" ) );
++    m_scroll->setFrameShape( QFrame::NoFrame );
++    m_scroll->setWidgetResizable( true );
++    m_scroll->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
++    m_scroll->setWidget( m_content );
 +
 +    const auto* branding = Calamares::Branding::instance();
 +    m_back->setObjectName( QStringLiteral( "pixelBack" ) );
@@ -256,11 +1025,11 @@ Last-Update: 2026-11-19
 +
 +    const int contentTop = wide ? top : y + 24;
 +    const int contentLeft = wide ? w / 2 + 24 : margin;
-+    m_content->setGeometry( contentLeft, contentTop, pane, std::max( 0, h - contentTop - 56 - bottom - 24 ) );
++    m_scroll->setGeometry( contentLeft, contentTop, pane, std::max( 0, h - contentTop - 56 - bottom - 24 ) );
 +}
 --- a/src/modules/partition/gui/PixelFrame.h
 +++ b/src/modules/partition/gui/PixelFrame.h
-@@ -0,0 +1,42 @@
+@@ -0,0 +1,44 @@
 +/* === This file is part of Calamares - <https://calamares.io> ===
 + *
 + *   SPDX-FileCopyrightText: 2026 Kernora Developers
@@ -276,6 +1045,7 @@ Last-Update: 2026-11-19
 +#include <QWidget>
 +
 +class QLabel;
++class QScrollArea;
 +class QPushButton;
 +class QToolButton;
 +
@@ -295,6 +1065,7 @@ Last-Update: 2026-11-19
 +    void layoutChildren();
 +
 +    QWidget* m_content;
++    QScrollArea* m_scroll;
 +    QToolButton* m_back;
 +    QLabel* m_icon;
 +    QLabel* m_title;

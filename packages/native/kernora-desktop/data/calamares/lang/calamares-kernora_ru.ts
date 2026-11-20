@@ -673,4 +673,50 @@
         <translation>Приложения без значка Kernora получат круглый</translation>
     </message>
 </context>
+<context>
+    <name>ChoicePage</name>
+    <message>
+        <source>%1 partition</source>
+        <comment>@label, %1 is a file system name</comment>
+        <translation>Раздел %1</translation>
+    </message>
+    <message>
+        <source>On this disk: %1</source>
+        <comment>@label, %1 is a list of operating systems</comment>
+        <translation>На диске: %1</translation>
+    </message>
+    <message>
+        <source>This disk is empty</source>
+        <comment>@label</comment>
+        <translation>Диск пустой</translation>
+    </message>
+    <message>
+        <source>This disk has partitions with files</source>
+        <comment>@label</comment>
+        <translation>На диске есть разделы с файлами</translation>
+    </message>
+    <message>
+        <source>Choose the partition to make smaller</source>
+        <comment>@label</comment>
+        <translation>Выберите раздел, который уменьшить</translation>
+    </message>
+    <message>
+        <source>How much space to give %1</source>
+        <comment>@label, %1 is product name</comment>
+        <translation>Сколько места отдать %1</translation>
+    </message>
+    <message>
+        <source>Choose the partition to install on</source>
+        <comment>@label</comment>
+        <translation>Выберите раздел для установки</translation>
+    </message>
+</context>
+<context>
+    <name>PartitionSplitterWidget</name>
+    <message>
+        <source>%1 GB</source>
+        <comment>@label, size in gigabytes</comment>
+        <translation>%1 ГБ</translation>
+    </message>
+</context>
 </TS>
