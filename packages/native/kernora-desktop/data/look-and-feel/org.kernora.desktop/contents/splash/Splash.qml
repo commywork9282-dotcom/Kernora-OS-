@@ -43,6 +43,8 @@ Rectangle {
         if (root.mode.length > 0) {
             M3.darkOverride = root.mode === "dark";
         }
+        const points = Number(Qt.application.font.pointSize);
+        M3.scaleOverride = points > 10.5 ? points / 10.5 : 0;
         M3.reloadGeneration();
     }
 

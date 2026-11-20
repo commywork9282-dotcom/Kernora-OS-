@@ -1,0 +1,35 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2026 Kernora Developers
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -u
+
+marker="${XDG_CONFIG_HOME:-$HOME/.config}/kernora-first-login"
+[ -e "$marker" ] || exit 0
+engine=$(kreadconfig6 --file ksplashrc --group KSplash --key Engine --default KSplashQML 2>/dev/null)
+theme=$(kreadconfig6 --file ksplashrc --group KSplash --key Theme --default org.kernora.desktop 2>/dev/null)
+stages="${XDG_RUNTIME_DIR:-/tmp}/kernora-first-login.stages"
+busctl --user monitor --json=short \
+    --match "type='method_call',interface='org.kde.KSplash',member='setStage'" > "$stages" 2>/dev/null &
+monitor=$!
+relays=""
+next=20
+waited=0
+while [ "$waited" -lt 360 ] && ! grep -q '"desktop"' "$stages" 2>/dev/null; do
+    if [ "$engine" = KSplashQML ] && [ "$waited" -ge $((next * 2)) ]; then
+        ksplashqml "$theme" >/dev/null 2>&1 &
+        relays="$relays $!"
+        next=$((next + 20))
+    fi
+    sleep 0.5
+    waited=$((waited + 1))
+done
+kill "$monitor" 2>/dev/null
+rm -f "$stages"
+sleep 1
+rm -f "$marker"
+if [ -n "$relays" ]; then
+    kill $relays 2>/dev/null
+    sleep 1
+    kill -KILL $relays 2>/dev/null
+fi
+exit 0

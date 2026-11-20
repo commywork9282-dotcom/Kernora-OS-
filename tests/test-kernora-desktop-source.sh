@@ -2454,15 +2454,16 @@ grep -Fq '"/kernora-first-login"' "$splash_dir/Splash.qml" \
   && grep -Fq 'source: "FirstLogin.qml"' "$splash_dir/Splash.qml" \
   && grep -Fq 'i18nd("kernora-ui", "Getting your desktop ready…")' "$splash_dir/FirstLogin.qml" \
   && grep -Fq 'msgid "Getting your desktop ready…"' "$package_root/data/shell/po/kernora-ui.ru.po" \
-  && grep -Fxq 'data/session/kernora-splash-ready.conf usr/lib/systemd/user/plasma-ksplash-ready.service.d' "$package_root/debian/kernora-desktop.install" \
-  && grep -Fxq 'data/session/kernora-splash-ready usr/libexec' "$package_root/debian/kernora-desktop.install" \
-  && grep -Fxq 'ExecStart=/usr/libexec/kernora-splash-ready' "$package_root/data/session/kernora-splash-ready.conf" \
-  && [[ -x "$package_root/data/session/kernora-splash-ready" ]] \
-  && sh -n "$package_root/data/session/kernora-splash-ready" \
-  && grep -Fxq 'data/session/kernora-splash-timeout.conf usr/lib/systemd/user/plasma-ksplash.service.d' "$package_root/debian/kernora-desktop.install" \
-  && grep -Fxq 'TimeoutSec=130sec' "$package_root/data/session/kernora-splash-timeout.conf" \
-  && [[ $(grep -l 'busctl --user --auto-start=no call org.kde.KSplash /KSplash org.kde.KSplash setStage s ready' "$package_root"/data/wallpaper/*/contents/ui/main.qml | wc -l) \
-    == $(ls "$package_root"/data/wallpaper/*/contents/ui/main.qml | wc -l) ]] \
+  && ! grep -q 'KSplash' "$package_root"/data/wallpaper/*/contents/ui/main.qml \
+  && grep -Fxq 'data/session/kernora-first-login.service usr/lib/systemd/user' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'data/session/kernora-first-login usr/libexec' "$package_root/debian/kernora-desktop.install" \
+  && grep -Fxq 'usr/lib/systemd/user/kernora-first-login.service usr/lib/systemd/user/plasma-workspace.target.wants/kernora-first-login.service' "$package_root/debian/kernora-desktop.links" \
+  && grep -Fxq 'Before=plasma-plasmashell.service' "$package_root/data/session/kernora-first-login.service" \
+  && grep -Fq "member='setStage'" "$package_root/data/session/kernora-first-login" \
+  && grep -Fq 'ksplashqml "$theme"' "$package_root/data/session/kernora-first-login" \
+  && grep -Fq 'Math.floor(Date.now() / 5000) % page.tips.length' "$splash_dir/FirstLogin.qml" \
+  && [[ -x "$package_root/data/session/kernora-first-login" ]] && sh -n "$package_root/data/session/kernora-first-login" \
+  && grep -Fq 'M3.scaleOverride = points > 10.5 ? points / 10.5 : 0;' "$splash_dir/Splash.qml" \
   && grep -Fq 'readonly property string mode: "%s"' "$package_root/data/greeter/kernora-splash-wallpaper" \
   || fail "the first login after setup has no loading screen until the desktop is drawn"
 setup_data=$(mktemp -d)

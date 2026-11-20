@@ -3,3 +3,4 @@ usr/share/applications/org.kernora.terminal.desktop usr/share/kglobalaccel/org.k
 etc/skel/.face etc/skel/.face.icon
 usr/lib/systemd/user/kernora-android-sync.path usr/lib/systemd/user/default.target.wants/kernora-android-sync.path
 usr/lib/systemd/user/kernora-android-done.path usr/lib/systemd/user/default.target.wants/kernora-android-done.path
+usr/lib/systemd/user/kernora-first-login.service usr/lib/systemd/user/plasma-workspace.target.wants/kernora-first-login.service

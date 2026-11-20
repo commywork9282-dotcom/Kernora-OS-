@@ -8,7 +8,6 @@ import QtQuick.Window
 import org.kde.kirigami as Kirigami
 import org.kde.kitemmodels as KItemModels
 import org.kde.plasma.plasmoid
-import org.kde.plasma.plasma5support as P5Support
 import org.kde.taskmanager as TaskManager
 
 WallpaperItem {
@@ -47,25 +46,7 @@ WallpaperItem {
         target: root.Window.window
         function onFrameSwapped() {
             root.lastFrame = Date.now();
-            if (!root.shown && !root.lockScreen) {
-                root.shown = true;
-                shownTimer.start();
-            }
         }
-    }
-
-    property bool shown: false
-
-    Timer {
-        id: shownTimer
-        interval: 1000
-        onTriggered: splash.connectSource("busctl --user --auto-start=no call org.kde.KSplash /KSplash org.kde.KSplash setStage s ready")
-    }
-
-    P5Support.DataSource {
-        id: splash
-        engine: "executable"
-        onNewData: sourceName => disconnectSource(sourceName)
     }
 
     NumberAnimation {

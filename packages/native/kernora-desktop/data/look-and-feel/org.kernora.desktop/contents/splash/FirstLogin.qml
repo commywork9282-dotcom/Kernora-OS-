@@ -27,14 +27,18 @@ Rectangle {
         { icon: "kernora-select-region", title: i18nd("kernora-ui", "Print takes a screenshot"),
           text: i18nd("kernora-ui", "Choose an area, the screen or a window") }
     ]
-    property int tip: 0
-    property int shownTip: 0
+    function tipNow(): int {
+        return Math.floor(Date.now() / 5000) % page.tips.length;
+    }
+
+    property int tip: tipNow()
+    property int shownTip: tip
 
     Timer {
-        interval: 5000
+        interval: 250
         repeat: true
         running: true
-        onTriggered: page.tip = (page.tip + 1) % page.tips.length
+        onTriggered: page.tip = page.tipNow()
     }
 
     onTipChanged: {
@@ -104,6 +108,7 @@ Rectangle {
         }
 
         MLinearProgress {
+            visible: !page.still
             width: parent.width
             indeterminate: true
             thickness: 6
@@ -111,7 +116,7 @@ Rectangle {
 
         Item {
             width: 1
-            height: 40
+            height: page.still ? 0 : 40
         }
 
         Rectangle {

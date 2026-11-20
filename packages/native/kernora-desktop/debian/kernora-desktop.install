@@ -105,9 +105,8 @@ data/kconf_update/kernora-add-widgets-menu.sh usr/share/kconf_update
 data/kconf_update/kernora-welcome-retired.upd usr/share/kconf_update
 data/kconf_update/kernora-welcome-retired.sh usr/share/kconf_update
 data/session/kernora-widgets-menu.conf usr/lib/systemd/user/plasma-plasmashell.service.d
-data/session/kernora-splash-ready.conf usr/lib/systemd/user/plasma-ksplash-ready.service.d
-data/session/kernora-splash-ready usr/libexec
-data/session/kernora-splash-timeout.conf usr/lib/systemd/user/plasma-ksplash.service.d
+data/session/kernora-first-login usr/libexec
+data/session/kernora-first-login.service usr/lib/systemd/user
 data/kconf_update/kernora-marbles-to-pastel.upd usr/share/kconf_update
 data/kconf_update/kernora-marbles-to-pastel.sh usr/share/kconf_update
 data/shell-updates/kernora_marbles_to_pastel.js usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates

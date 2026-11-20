@@ -1,0 +1,11 @@
+[Unit]
+Description=Keep the first login screen until the desktop is ready
+ConditionPathExists=%h/.config/kernora-first-login
+After=plasma-kwin_wayland.service
+Before=plasma-plasmashell.service
+PartOf=graphical-session.target
+
+[Service]
+Type=exec
+ExecStart=/usr/libexec/kernora-first-login
+TimeoutStopSec=5
