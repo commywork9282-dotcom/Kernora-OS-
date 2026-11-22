@@ -1,5 +1,22 @@
 [
   {
+    "id": "2026-11-22-1",
+    "date": "2026-11-22",
+    "items": [
+      {
+        "icon": "kernora-android",
+        "title": {
+          "en": "Android permission windows stay visible",
+          "ru": "Без чёрных окон при запросе разрешений"
+        },
+        "text": {
+          "en": "Fixed an issue where an Android permission question could leave an app window black until another click. Opening and closing the question now refreshes the window correctly. After installing this update, close Android apps and sign out and back in.",
+          "ru": "Исправлена ошибка, из-за которой при запросе разрешения Android окно приложения могло оставаться чёрным до следующего нажатия. Теперь окно правильно перерисовывается при открытии и закрытии диалога. После установки обновления закройте Android-приложения, выйдите из сеанса и войдите снова."
+        }
+      }
+    ]
+  },
+  {
     "id": "2026-11-16-2",
     "date": "2026-11-16",
     "items": [

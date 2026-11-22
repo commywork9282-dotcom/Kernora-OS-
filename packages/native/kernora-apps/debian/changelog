@@ -1,3 +1,9 @@
+kernora-apps (1.1.97) UNRELEASED; urgency=medium
+
+  * What's New: Android permission questions no longer leave app windows black.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 22 Nov 2026 13:00:00 -0800
+
 kernora-apps (1.1.96) UNRELEASED; urgency=medium
 
   * The wallpaper, colour and theme picked in setup are applied at the

@@ -401,7 +401,15 @@ doesn't assign layers.
 Permission questions are Kernora windows. Only a dump from the permission
 controller counts, and only one question is open at a time. When
 `GrantPermissionsActivity` resumes, `kernora-android-windows` tells the display service to hold the app:
-every layer much smaller than the app's largest one moves off screen. It then
+every layer much smaller than the app's largest one is stacked below the
+opaque backing surface, at its original coordinates. The proxy remembers
+Android's layer order, including changes received while the question is open,
+and restores it when the hold is released. Moving a layer to −32000, −32000
+expanded KWin's offscreen texture beyond the GPU limit and could leave windows
+black with an incomplete framebuffer. The immutable backing buffer is
+reattached and damaged after restacking so KWin also refreshes its cached
+offscreen image while the app is idle. App buffers are not detached or replayed.
+The helper then
 reads the question with `uiautomator dump`, which needs `EXTERNAL_STORAGE` set
 in `waydroid shell`, and passes the text and button labels to
 `kernora-androiddialog`. The dialog's exit code is 10 plus the chosen button,

@@ -40,7 +40,6 @@ SLACK = 2
 HOLD = 2.5
 SETTLE = 0.25
 READY_FOR = 15
-OFFSCREEN = -32000
 PULSE = 0.5
 PULSE_SERIAL = 0xF0000000
 LISTED_WITHIN = 8
@@ -124,6 +123,8 @@ class Surface:
         self.hidden = False
         self.parent: Surface | None = None
         self.children: set[Surface] = set()
+        self.stack: list[Surface] = [self]
+        self.stack_dirty = False
         self.xdg: int | None = None
         self.held_attach: bytes | None = None
         self.geometry: tuple[int, int, int, int] | None = None
@@ -472,7 +473,39 @@ class Session:
             hidden = surface.app in self.held and child in shown and child.size[0] * child.size[1] < largest * 0.8
             if hidden != child.hidden and child.subsurface is not None:
                 child.hidden = hidden
-                self.send(child.subsurface, 1, struct.pack("<ii", *((OFFSCREEN, OFFSCREEN) if hidden else child.position)))
+                surface.stack_dirty = True
+
+    def stack_questions(self, surface: Surface) -> None:
+        if not surface.stack_dirty or surface.backing is None:
+            return
+        ordered = [item for item in surface.stack if not item.hidden]
+        middle = ordered.index(surface)
+        sibling = surface.server_id
+        for child in ordered[middle + 1:]:
+            self.send(child.subsurface, 2, struct.pack("<I", sibling))
+            sibling = child.server_id
+        sibling = surface.server_id
+        for child in reversed(ordered[:middle]):
+            self.send(child.subsurface, 3, struct.pack("<I", sibling))
+            sibling = child.server_id
+        self.send(surface.backing_sub, 3, struct.pack("<I", sibling))
+        for child in surface.stack:
+            if child.hidden:
+                self.send(child.subsurface, 3, struct.pack("<I", surface.backing))
+        self.send(surface.backing, 1, struct.pack("<Iii", self.black, 0, 0))
+        self.send(surface.backing, 2, struct.pack("<iiii", 0, 0, 1, 1))
+        self.send(surface.backing, COMMIT)
+        surface.stack_dirty = False
+
+    @staticmethod
+    def remove_child(child: Surface) -> None:
+        parent = child.parent
+        if parent is not None:
+            parent.children.discard(child)
+            if child in parent.stack:
+                parent.stack.remove(child)
+            parent.stack_dirty = True
+        child.parent = None
 
     def refresh_app(self, app: str) -> None:
         for key, surface in self.surfaces.items():
@@ -540,6 +573,7 @@ class Session:
             surface.geometry = rect
             self.send(self.to_server[surface.xdg], 3, struct.pack("<iiii", *rect))
         self.place_backing(surface_id, surface, rect)
+        self.stack_questions(surface)
         self.fit(surface, content)
 
     @staticmethod
@@ -607,8 +641,7 @@ class Session:
             self.before_commit(object_id, surface)
         elif name == "destroy":
             owner = self.owner_of(surface)
-            if surface.parent:
-                surface.parent.children.discard(surface)
+            self.remove_child(surface)
             for child in surface.children:
                 child.parent = None
             self.waiting.pop(surface, None)
@@ -661,19 +694,28 @@ class Session:
             child.parent = parent
             child.subsurface = self.to_server[values[0]]
             parent.children.add(child)
+            parent.stack.append(child)
+            parent.stack_dirty = True
             self.subsurfaces[values[0]] = child
         elif interface == "wl_subsurface":
             child = self.subsurfaces.get(client_id)
             if child and name == "set_position":
                 child.position = struct.unpack_from("<ii", body)
                 child.fitted = None
-                if child.hidden:
-                    return
+            elif child and name in ("place_above", "place_below"):
+                parent = child.parent
+                sibling = self.surfaces.get(values[0])
+                if parent is not None and sibling is not child and sibling in parent.stack:
+                    previous = parent.stack.copy()
+                    parent.stack.remove(child)
+                    index = parent.stack.index(sibling) + (name == "place_above")
+                    parent.stack.insert(index, child)
+                    parent.stack_dirty |= parent.stack != previous
+                    if any(item.hidden for item in parent.children):
+                        return
             elif child and name == "destroy":
                 owner = self.owner_of(child)
-                if child.parent:
-                    child.parent.children.discard(child)
-                child.parent = None
+                self.remove_child(child)
                 self.subsurfaces.pop(client_id, None)
                 if owner:
                     self.freeze(owner, client_id)

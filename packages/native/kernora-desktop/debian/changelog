@@ -1,3 +1,11 @@
+kernora-desktop (1.4.86) UNRELEASED; urgency=medium
+
+  * Keep Android permission layers inside the app bounds and restore their
+    stacking order without exceeding KWin texture limits. Refresh the
+    compositor cache immediately when a permission question opens or closes.
+
+ -- Kernora Developers <developers@kernora.invalid>  Sun, 22 Nov 2026 13:00:00 -0800
+
 kernora-desktop (1.4.85) UNRELEASED; urgency=medium
 
   * The live image opens its own full-screen setup before the desktop,

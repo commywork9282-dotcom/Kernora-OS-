@@ -17,7 +17,7 @@ done
 version=$(dpkg-parsechangelog -l"$package_root/debian/changelog" -S Version)
 distribution=$(dpkg-parsechangelog \
   -l"$package_root/debian/changelog" -S Distribution)
-[[ "$version" == "1.4.85" ]] || fail "unexpected source version"
+[[ "$version" == "1.4.86" ]] || fail "unexpected source version"
 [[ "$distribution" == "UNRELEASED" ]] \
   || fail "development package must remain UNRELEASED"
 [[ "$(<"$package_root/debian/source/format")" == "3.0 (native)" ]] \
@@ -1481,6 +1481,8 @@ front.reorder(7)
 ok = ok and front.shell.commands == ["dumpsys input"]
 sys.exit(0 if ok else 1)
 EOF
+python3 "$project_root/tests/android-permissions/run.py" \
+  || fail "Android permission layers expand the window or lose their stacking order"
 grep -Fq 'loadTemplate("org.kde.plasma.desktop.defaultPanel")' \
   "$data_root/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
   && ! grep -Fq 'new Panel' "$data_root/look-and-feel/org.kernora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" \
