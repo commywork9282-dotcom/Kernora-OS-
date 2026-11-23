@@ -412,6 +412,7 @@ Item {
     }
     Item {
         id: containmentParent
+        readonly property bool kernoraStatusBar: root.statusBar
         Kirigami.Theme.textColor: root.statusBar ? root.statusBarInk : undefined
         anchors.centerIn: isOpaque ? floatingOpaqueItem : floatingTranslucentItem
         width: root.verticalPanel ? panel.thickness : root.width - fixedLeftFloatingPadding - fixedRightFloatingPadding

@@ -15,7 +15,6 @@ panels().forEach(function (other) {
 });
 
 bar.addWidget("org.kernora.datetime");
-bar.addWidget("org.kde.plasma.panelspacer");
 
 var tray = bar.addWidget("org.kde.plasma.systemtray");
 var trayContainmentId = tray.readConfig("SystrayContainmentId");
@@ -41,8 +40,9 @@ if (trayContainmentId) {
         "org.kde.kdeconnect"
     ]);
     trayContainment.writeConfig("extraItems", []);
-    trayContainment.writeConfig("scaleIconsToFit", false);
 }
+
+bar.addWidget("org.kde.plasma.panelspacer");
 
 var bell = bar.addWidget("org.kde.plasma.notifications");
 if (taken.indexOf("Meta+N") < 0) {

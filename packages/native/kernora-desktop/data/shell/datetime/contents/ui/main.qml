@@ -20,6 +20,7 @@ PlasmoidItem {
     readonly property color ink: expanded ? M3.primaryContent : clear ? BarTint.ink(Screen.name, "left") : M3.surfaceContent
     readonly property string timeFormat: Qt.locale().timeFormat(Locale.ShortFormat)
         .replace(/[.:]?s+/g, "").replace(/\s+t$/, "").trim()
+    readonly property int trailingPadding: Plasmoid.location === PlasmaCore.Types.TopEdge ? 2 : 10
     readonly property bool dayFirst: {
         const pattern = Qt.locale().dateFormat(Locale.ShortFormat);
         return pattern.indexOf("d") >= 0 && pattern.indexOf("d") < pattern.indexOf("M");
@@ -66,9 +67,9 @@ PlasmoidItem {
     compactRepresentation: Item {
         id: compact
 
-        Layout.minimumWidth: row.implicitWidth + 20
-        Layout.preferredWidth: row.implicitWidth + 20
-        Layout.maximumWidth: row.implicitWidth + 20
+        Layout.minimumWidth: row.implicitWidth + 10 + root.trailingPadding
+        Layout.preferredWidth: row.implicitWidth + 10 + root.trailingPadding
+        Layout.maximumWidth: row.implicitWidth + 10 + root.trailingPadding
         Layout.fillHeight: true
 
         Accessible.role: Accessible.Button
@@ -101,7 +102,9 @@ PlasmoidItem {
 
         RowLayout {
             id: row
-            anchors.centerIn: parent
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
             spacing: 8
 
             MText {
